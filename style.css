@@ -1,4 +1,10 @@
-
+@media (max-width: 768px) {
+  ul.text-left {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 20px;
+  }
+}
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
