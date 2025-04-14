@@ -4,141 +4,114 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI SOFTWARE DEPT.</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-white text-gray-800">
-  <!-- 상단 헤더 -->
- <header class="fixed top-0 w-full bg-white shadow z-50">
-  <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-   <!-- 왼쪽: 로고 + 타이틀 -->
-    <div class="flex items-center space-x-3">
-      <img src="images/dlogo.png" alt="AI 소프트웨어과 로고" class="h-12 w-auto">
-      <h1 class="text-2xl font-bold text-purple-700">AI SOFTWARE DEPT.</h1>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="logo-title">
+        <img src="images/dlogo.png" alt="AI 소프트웨어과 로고" style="height: 48px;">
+        <h1 style="font-size: 12px; font-weight: bold; color: #6b21a8;">AI SOFTWARE DEPT.</h1>
+      </div>
+      <nav class="nav-links">
+        <a href="#about">학과소개</a>
+        <a href="#curriculum">교육과정</a>
+        <a href="#professors">교수진</a>
+        <a href="#news">공지사항</a>
+        <a href="#contact">문의</a>
+      </nav>
     </div>
-   <!-- 오른쪽: 메뉴 -->
-    <nav class="space-x-4 hidden md:block">
-      <a href="#about" class="hover:text-purple-600">학과소개</a>
-      <a href="#curriculum" class="hover:text-purple-600">교육과정</a>
-      <a href="#professors" class="hover:text-purple-600">교수진</a>
-      <a href="#news" class="hover:text-purple-600">공지사항</a>
-      <a href="#contact" class="hover:text-purple-600">문의</a>
-    </nav>
-  </div>
-</header>
-
-  <!-- 본문 -->
-<section id="about" class="relative py-16 bg-cover bg-center" style="background-image: url('images/introDept.png');">
-  <!-- 오버레이 -->
-  <div class="absolute inset-0 bg-white opacity-90"></div>
-
-  <!-- 실제 콘텐츠 -->
-  <div class="relative max-w-6xl mx-auto px-4 py-10">
-
-    <!-- 학과 소개 -->
-    <h2 class="text-3xl font-bold mb-6 text-purple-700 text-center">학과 소개</h2>
-    <p class="text-lg leading-relaxed text-gray-700 text-center mb-10">
-      4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 실무 기술을<br class="hidden md:block">
-      이론과 실습을 병행하여 체계적으로 교육합니다.<br>
-      다양한 산업 현장에서 소프트웨어와 AI를 실질적으로 활용할 수 있는<br class="hidden md:block">
-      실무형 전문 인력을 양성하는 학과입니다.
-    </p>
-
-    <!-- 완전 가운데 정렬된 취업/자격증 영역 -->
-    <div class="flex flex-col md:flex-row justify-center items-start md:items-stretch gap-12 text-center md:text-left mx-auto max-w-4xl">
-
-      <!-- 취업 분야 -->
-      <div class="flex-1">
-        <h3 class="text-2xl font-semibold text-purple-600 mb-4">📌 취업 분야</h3>
-        <ul class="list-disc list-inside text-lg text-gray-700 space-y-1 text-left">
-          <li>AI 실무 활용 관련 업체</li>
-          <li>AI 디지털 콘텐츠 관련 업체</li>
-          <li>AI 에듀테크 관련 업체</li>
-          <li>AIoT 관련 업체</li>
-          <li>웹 / 앱 개발 업체</li>
-          <li>AI 기반 서비스 업체</li>
-          <li>보안 / 금융 / 공공기관</li>
-          <li>게임 / XR 관련 업체</li>
-        </ul>
+  </header>
+  <!-- About -->
+  <section id="about" class="relative">
+    <div class="overlay"></div>
+    <div class="content">
+      <h2 class="title">학과 소개</h2>
+      <p class="text-lg text-center">
+        4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 실무 기술을<br>
+        이론과 실습을 병행하여 체계적으로 교육합니다.<br>
+        다양한 산업 현장에서 소프트웨어와 AI를 실질적으로 활용할 수 있는<br>
+        실무형 전문 인력을 양성하는 학과입니다.
+      </p>
+      <div class="flex-row" style="margin-top: 40px;">
+        <div class="flex-1">
+          <h3 class="text-lg" style="color:#6b21a8; font-weight: bold;">📌 취업 분야</h3>
+          <ul class="text-lg text-left">
+            <li>AI 실무 활용 관련 업체</li>
+            <li>AI 디지털 콘텐츠 관련 업체</li>
+            <li>AI 에듀테크 관련 업체</li>
+            <li>AIoT 관련 업체</li>
+            <li>웹 / 앱 개발 업체</li>
+            <li>AI 기반 서비스 업체</li>
+            <li>보안 / 금융 / 공공기관</li>
+            <li>게임 / XR 관련 업체</li>
+          </ul>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg" style="color:#6b21a8; font-weight: bold;">📌 취득 가능 자격증</h3>
+          <ul class="text-lg text-left">
+            <li>정보처리산업기사</li>
+            <li>AI 코딩 자격증 (AICE)</li>
+            <li>Unity Certified Associate</li>
+            <li>IoT 지식능력검정 자격증</li>
+            <li>SW코딩역량 인증</li>
+          </ul>
+        </div>
       </div>
-
-      <!-- 자격증 -->
-      <div class="flex-1">
-        <h3 class="text-2xl font-semibold text-purple-600 mb-4">📌 취득 가능 자격증</h3>
-        <ul class="list-disc list-inside text-lg text-gray-700 space-y-1 text-left">
-          <li>정보처리산업기사</li>
-          <li>AI 코딩 자격증 (AICE)</li>
-          <li>Unity Certified Associate</li>
-          <li>IoT 지식능력검정 자격증</li>
-          <li>SW코딩역량 인증</li>
-        </ul>
-      </div>
-
     </div>
+  </section>
 
-  </div>
-</section>
+  <!-- Curriculum -->
+  <section id="curriculum" class="section bg-gray">
+    <h2 class="title">교육과정</h2>
+    <ul class="text-lg text-left container">
+      <li>Python 기반 인공지능 프로그래밍</li>
+      <li>머신러닝/딥러닝 프로젝트 실습</li>
+      <li>웹/앱 개발 실무</li>
+      <li>AI 융합 캡스톤 디자인</li>
+    </ul>
+  </section>
 
-
-    <!-- 교육과정 -->
-    <section id="curriculum" class="py-10 bg-gray-100 rounded-xl">
-      <h2 class="text-3xl font-bold mb-4 text-purple-700">교육과정</h2>
-      <ul class="list-disc list-inside text-lg">
-        <li>Python 기반 인공지능 프로그래밍</li>
-        <li>머신러닝/딥러닝 프로젝트 실습</li>
-        <li>웹/앱 개발 실무</li>
-        <li>AI 융합 캡스톤 디자인</li>
-      </ul>
-    </section>
-
-    <!-- 교수진 -->
-   <section id="professors" class="py-10 bg-gray-50">
-  <div class="max-w-6xl mx-auto px-4">
-    <h2 class="text-3xl font-bold mb-8 text-purple-700 text-center">교수진</h2>
-    <div class="grid md:grid-cols-3 gap-8">
-      
-      <!-- 교수 1 -->
-      <div class="text-center">
-        <img src="images/hkh.PNG" alt="홍광희 교수" class="w-80 h-50 mx-auto shadow-md mb-4">
-        <h3 class="text-xl font-semibold text-gray-800">홍광희 교수</h3>
-        <p class="text-sm text-gray-600">AI 알고리즘 / JAVA</p>
+  <!-- Professors -->
+  <section id="professors" class="section bg-gray">
+    <h2 class="title">교수진</h2>
+    <div class="grid">
+      <div>
+        <img src="images/hkh.PNG" alt="홍광희 교수" class="prof-img">
+        <h3>홍광희 교수</h3>
+        <p>AI 알고리즘 / JAVA</p>
       </div>
-
-      <!-- 교수 2 -->
-      <div class="text-center">
-        <img src="images/pgb.PNG" alt="박경배 교수" class="w-80 h-50 mx-auto  shadow-md mb-4">
-        <h3 class="text-xl font-semibold text-gray-800">박경배 교수</h3>
-        <p class="text-sm text-gray-600">AI 웹프로그래밍/가상현실 XR</p>
+      <div>
+        <img src="images/pgb.PNG" alt="박경배 교수" class="prof-img">
+        <h3>박경배 교수</h3>
+        <p>AI 웹프로그래밍 / 가상현실 XR</p>
       </div>
-
-      <!-- 교수 3 -->
-      <div class="text-center">
-        <img src="images/hsj.PNG" alt="홍성준 교수" class="w-80 h-50 mx-auto  shadow-md mb-4">
-        <h3 class="text-xl font-semibold text-gray-800">홍성준 교수</h3>
-        <p class="text-sm text-gray-600">AI 응용 / 딥러닝</p>
+      <div>
+        <img src="images/hsj.PNG" alt="홍성준 교수" class="prof-img">
+        <h3>홍성준 교수</h3>
+        <p>AI 응용 / 딥러닝</p>
       </div>
-
     </div>
-  </div>
-</section>
+  </section>
 
-    <!-- 공지사항 -->
-    <section id="news" class="py-10 bg-gray-100 rounded-xl">
-      <h2 class="text-3xl font-bold mb-4 text-purple-700">공지사항</h2>
-      <ul class="text-lg space-y-2">
-        <li>[2025.04.01] 신입생 환영회 공지</li>
-        <li>[2025.03.15] 산학협력 기업 설명회 개최</li>
-      </ul>
-    </section>
+  <!-- News -->
+  <section id="news" class="section bg-gray">
+    <h2 class="title">공지사항</h2>
+    <ul class="text-lg text-left container">
+      <li>[2025.04.01] 신입생 환영회 공지</li>
+      <li>[2025.03.15] 산학협력 기업 설명회 개최</li>
+    </ul>
+  </section>
 
-    <!-- 연락처 -->
-    <section id="contact" class="py-10">
-      <h2 class="text-3xl font-bold mb-4 text-purple-700">문의</h2>
-      <p class="text-lg">이메일: gbpark@yit.ac.kr / 전화: 031-880-5265</p>
-    </section>
-  </main>
+  <!-- Contact -->
+  <section id="contact" class="section">
+    <h2 class="title">문의</h2>
+    <p class="text-lg text-center">이메일: gbpark@yit.ac.kr / 전화: 031-880-5265</p>
+  </section>
 
-  <!-- 하단 푸터 -->
-  <footer class="bg-gray-800 text-white text-center py-6 mt-10">
+  <!-- Footer -->
+  <footer class="bg-dark">
     <p>&copy; 2025 AI SOFTWARE DEPT. All rights reserved.</p>
   </footer>
 
