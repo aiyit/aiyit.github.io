@@ -76,7 +76,7 @@ nav a:hover {
 }
 .prof-img {
   width: 100%;
-  max-width: 480px;
+  max-width: 360px;
   height: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
@@ -99,7 +99,7 @@ ul {
 .relative {
   position: relative;
   background-image: url('images/introDept.png');
-  background-size: 70% auto;
+  background-size: 100% auto;
   background-repeat: no-repeat;
   background-position: center;
 }
