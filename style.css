@@ -1,0 +1,117 @@
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  color: #2d3748;
+  background-color: white;
+}
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+}
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+nav a {
+  margin-left: 16px;
+  text-decoration: none;
+  color: #4c1d95;
+}
+nav a:hover {
+  color: #6b21a8;
+}
+.section {
+  padding: 100px 16px 40px;
+}
+.title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #6b21a8;
+  margin-bottom: 24px;
+}
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-lg {
+  font-size: 18px;
+  line-height: 1.6;
+}
+.bg-gray {
+  background-color: #f7fafc;
+}
+.bg-dark {
+  background-color: #1a202c;
+  color: white;
+  text-align: center;
+  padding: 24px 0;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.grid > div {
+  flex: 1 1 280px;
+  max-width: 300px;
+  text-align: center;
+}
+.prof-img {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+}
+ul {
+  list-style: disc inside;
+  padding-left: 0;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.flex-1 {
+  flex: 1 1 320px;
+  max-width: 500px;
+}
+.relative {
+  position: relative;
+  background-image: url('images/introDept.png');
+  background-size: 50% auto;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: white;
+  opacity: 0.5;
+}
+.content {
+  position: relative;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 60px 16px;
+}
