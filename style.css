@@ -39,7 +39,7 @@ nav a:hover {
 }
 .title {
   text-align: center;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   color: #6b21a8;
   margin-bottom: 24px;
@@ -76,7 +76,7 @@ nav a:hover {
 }
 .prof-img {
   width: 100%;
-  max-width: 320px;
+  max-width: 480px;
   height: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
@@ -99,7 +99,7 @@ ul {
 .relative {
   position: relative;
   background-image: url('images/introDept.png');
-  background-size: 50% auto;
+  background-size: 70% auto;
   background-repeat: no-repeat;
   background-position: center;
 }
