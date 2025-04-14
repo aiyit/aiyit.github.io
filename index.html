@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AI SOFTWARE DEPT.</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="container">
-      <div class="logo-title">
-        <img src="images/dlogo.png" alt="AI 소프트웨어과 로고" style="height: 48px;">
-        <h1 style="font-size: 14px; font-weight: bold; color: #6b21a8;">AI SOFTWARE DEPT.</h1>
-      </div>
-      <nav class="nav-links">
-        <a href="#about">학과소개</a>
-        <a href="#curriculum">교육과정</a>
-        <a href="#professors">교수진</a>
-        <a href="#news">공지사항</a>
-        <a href="#contact">문의</a>
-      </nav>
+<header>
+  <div class="container">
+    <div class="logo-title">
+      <img src="images/dlogo.png" alt="AI 소프트웨어과 로고" style="height: 48px;">
+      <h1 style="font-size: 18px; font-weight: bold; color: #6b21a8;">AI SOFTWARE DEPT.</h1>
     </div>
-  </header>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <nav class="nav-links" id="navMenu">
+      <a href="#about">학과소개</a>
+      <a href="#curriculum">교육과정</a>
+      <a href="#professors">교수진</a>
+      <a href="#news">공지사항</a>
+      <a href="#contact">문의</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById("navMenu");
+    menu.classList.toggle("show");
+  }
+</script>
 
   <!-- About -->
   <section id="about" class="relative">
