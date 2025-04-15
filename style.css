@@ -82,3 +82,32 @@ p, ul {
     font-size: 0.95rem; /* 본문 텍스트 크기 줄이기 */
   }
 }
+.section {
+  height: 600px; /* 원하는 고정 높이 (예: 600px) */
+  padding: 40px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bg-pattern {
+  background-image: url('images/introDept.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+}
+
+.bg-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: white;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.section > * {
+  position: relative;
+  z-index: 1; /* 배경 오버레이 위로 텍스트 올리기 */
+}
