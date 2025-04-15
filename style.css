@@ -84,7 +84,7 @@ p, ul {
 }
 .section {
   height: 400px; /* 원하는 고정 높이 (예: 600px) */
-  padding: 40px 16px;
+  padding: 16px 16px;
   display: flex;
   flex-direction: column;
   justify-content: upper;
