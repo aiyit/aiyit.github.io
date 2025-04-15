@@ -20,7 +20,7 @@ header h1 {
 h2, h3 {
   color: #1d4ed8; /* 짙은 파랑색 */
   text-align: left; /* 왼쪽 정렬 */
-  margin-bottom: 0.5rem; /* 소제목 하단 여백 */
+  margin-bottom: 1rem; /* 소제목 하단 여백 */
 }
 
 /* 본문 내용 */
