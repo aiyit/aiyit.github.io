@@ -87,7 +87,7 @@ p, ul {
   padding: 40px 16px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: upper;
 }
 
 .bg-pattern {
