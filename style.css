@@ -83,7 +83,7 @@ p, ul {
   }
 }
 .section {
-  height: 600px; /* 원하는 고정 높이 (예: 600px) */
+  height: 400px; /* 원하는 고정 높이 (예: 600px) */
   padding: 40px 16px;
   display: flex;
   flex-direction: column;
