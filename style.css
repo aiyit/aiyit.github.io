@@ -93,7 +93,7 @@ p, ul {
 .bg-pattern {
   background-image: url('images/introDept.PNG');
   background-size: cover;
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-position: center;
   position: relative;
 }
