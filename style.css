@@ -10,7 +10,7 @@ body {
 
 /* 헤더 */
 .custom-header {
-  background-color: rgba(0, 0, 255, 0.4);
+  background-color: rgba(50, 50, 255, 0.4);
 }
 header h1 {
   font-size: 1rem; /* 모바일에서 적당한 크기 */
