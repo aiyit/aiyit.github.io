@@ -10,7 +10,7 @@
 </head>
 <body class="bg-white text-gray-300 leading-relaxed">
 <!-- 헤더 -->
-<header class="shadow-md fixed top-0 left-0 right-0 z-50" style="background-color: rgba(0, 0, 255, 0.4); !important;">
+<header class="shadow-md fixed top-0 left-0 right-0 z-50" >
 <div class="max-w-6xl mx-auto flex justify-between items-center px-4 py-1">
 <!-- 왼쪽: ChatGPT 로고 -->
 <div class="flex-shrink-0">
@@ -87,7 +87,7 @@
 <li class="text-gray-300"><strong>XR/게임 개발</strong> – Unity 기반 AI 인터랙션 캐릭터 설계, VR/AR 콘텐츠 제작</li>
 <li class="text-gray-300"><strong>공공기관/금융/보안 분야</strong> – AI 민원 챗봇 운영, 사이버보안/AI 이상징후 분석 등</li>
 </ul></div>
-     <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="jobToggleBtn">더보기+</button></div>
+     <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="jobToggleBtn">더보기 +</button></div>
 </section>
 <section class="mb-10 section bg-pattern" id="professors">
 <h2 class=" text-xl font-bold mb-1 text-left underline text-gray-300">교수진</h2>
@@ -202,37 +202,21 @@
 </footer>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const aboutToggle = document.getElementById("aboutToggle");
-  const aboutText = document.getElementById("aboutText");
+  const toggleSection = (btnId, contentId, collapsedHeight) => {
+    const btn = document.getElementById(btnId);
+    const content = document.getElementById(contentId);
 
-  if (aboutToggle && aboutText) {
-    aboutToggle.addEventListener("click", function () {
-      const isExpanded = aboutText.style.maxHeight !== "none";
-      if (isExpanded) {
-        aboutText.style.maxHeight = "250px";
-        aboutToggle.textContent = "더보기+";
-      } else {
-        aboutText.style.maxHeight = "none";
-        aboutToggle.textContent = "접기";
-      }
-    });
-  }
+    if (btn && content) {
+      btn.addEventListener("click", function () {
+        const expanded = content.classList.toggle("expanded");
+        content.style.maxHeight = expanded ? "2000px" : collapsedHeight;
+        btn.textContent = expanded ? "접기" : "더보기+";
+      });
+    }
+  };
 
-  const jobToggle = document.getElementById("jobToggleBtn");
-  const jobText = document.getElementById("jobText");
-
-  if (jobToggle && jobText) {
-    jobToggle.addEventListener("click", function () {
-      const isExpanded = jobText.style.maxHeight !== "none";
-      if (isExpanded) {
-        jobText.style.maxHeight = "180px";
-        jobToggle.textContent = "더보기+";
-      } else {
-        jobText.style.maxHeight = "none";
-        jobToggle.textContent = "접기";
-      }
-    });
-  }
+  toggleSection("aboutToggle", "aboutText", "250px");
+  toggleSection("jobToggleBtn", "jobText", "180px");
 });
 </script>
 </body>
