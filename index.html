@@ -85,13 +85,11 @@
   const aboutText = document.getElementById("aboutText");
 
   toggleBtn.addEventListener("click", function () {
-    const isExpanded = aboutText.style.maxHeight !== "200px";
-    if (isExpanded) {
-      aboutText.style.maxHeight = "200px";
-      toggleBtn.textContent = "더보기";
-    } else {
-      aboutText.style.maxHeight = aboutText.scrollHeight + "px";
+    aboutText.classList.toggle("expanded");
+    if (aboutText.classList.contains("expanded")) {
       toggleBtn.textContent = "접기";
+    } else {
+      toggleBtn.textContent = "더보기+";
     }
   });
 </script>
