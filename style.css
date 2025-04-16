@@ -10,7 +10,7 @@ body {
 
 /* 헤더 */
 .custom-header {
-  background-color: rgba(0, 0, 255, 0.6);
+  background-color: rgba(0, 0, 255, 0.4);
 }
 header h1 {
   font-size: 1rem; /* 모바일에서 적당한 크기 */
@@ -21,7 +21,7 @@ header h1 {
 
 /* 소제목 */
 h2, h3 {
-  color:#6b21a8; /* 짙은 파랑색 */
+  color: #1d4ed8; /* 짙은 파랑색 */
   text-align: left; /* 왼쪽 정렬 */
   margin-bottom: 1rem; /* 소제목 하단 여백 */
 }
@@ -131,6 +131,16 @@ p, ul {
   position: relative;
   z-index: 1;
 }
+.about-text {
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.about-text.expanded {
+  max-height: 2000px; /* 충분히 큰 값으로 설정 */
+}
+
+
 #aboutText.expanded {
   max-height: 2000px !important;
 }
