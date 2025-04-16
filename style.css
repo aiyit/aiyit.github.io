@@ -139,3 +139,10 @@ p, ul {
 .custom-header {
   background-color: rgba(50, 50, 255, 0.4); /* 밝은 파랑색 투명도 */
 }
+#aboutText.expanded {
+  max-height: 2000px;
+}
+
+#jobText.expanded {
+  max-height: 2000px;
+}
