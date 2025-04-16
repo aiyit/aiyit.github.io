@@ -1,93 +1,84 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI SOFTWARE DEPT.</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI SOFTWARE DEPT.</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="style.css" rel="stylesheet"/>
 </head>
 <body class="bg-white text-gray-300 leading-relaxed">
-
 <!-- 헤더 -->
 <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50" style="background-color: #60a5fa;">
-  <div class="max-w-6xl mx-auto flex justify-between items-center px-4 py-1">
-
-    <!-- 왼쪽: ChatGPT 로고 -->
-    <div class="flex-shrink-0">
-      <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">
-      <img src="images/chatLogo.png" alt="Chat Logo" class="h-10 w-auto"></a>
-    </div>
-
-    <!-- 가운데: 학과 로고 + 텍스트 -->
-    <div class="flex flex-col items-center text-center ">
-       
-      <img src="images/depMenu.png" alt="AI 소프트웨어과 로고" class="h-10 ">
-      <h1 class="text-sm font-bold text-white">AI SOFTWARE DEPT.</h1>
-    </div>
-
-    <!-- 오른쪽: 메뉴 버튼 + 여주대 로고 -->
-    <div class="flex items-center space-x-2">
-      <button id="menuToggle">
-        <img src="images/dlogo.png" alt="메뉴 버튼" class="h-10 w-auto">
-      </button>
-      <a href="https://www.yit.ac.kr" target="_blank" rel="noopener noreferrer">
-        <img src="images/YITLogo.jpg" alt="여주대학교 로고" class="h-10 border-2 border-blue-500 rounded">
-      </a>
-    </div>
-
-  </div>
-</header>
-
-<!-- 메뉴 오버레이 -->
-<div id="menuOverlay" class="hidden fixed inset-0 bg-black bg-opacity-70 z-40 flex items-center justify-center">
-  <div class="bg-white p-6 rounded-lg space-y-4 text-center">
-    <a href="#about" class="block text-lg font-semibold text-purple-700">학과소개</a>
-    <a href="#curriculum" class="block text-lg font-semibold text-purple-700">교육과정</a>
-    <a href="#professors" class="block text-lg font-semibold text-purple-700">교수진</a>
-     <a href="#gallery" class="block text-lg font-semibold text-purple-700">학과갤러리</a>
-    <a href="#news" class="block text-lg font-semibold text-purple-700">공지사항</a>
-    <a href="#contact" class="block text-lg font-semibold text-purple-700">문의</a>
-    <button onclick="toggleMenu()" class="mt-4 text-sm text-gray-500">닫기</button>
-  </div>
+<div class="max-w-6xl mx-auto flex justify-between items-center px-4 py-1">
+<!-- 왼쪽: ChatGPT 로고 -->
+<div class="flex-shrink-0">
+<a href="https://chatgpt.com" rel="noopener noreferrer" target="_blank">
+<img alt="Chat Logo" class="h-10 w-auto" src="images/chatLogo.png"/></a>
 </div>
-
+<!-- 가운데: 학과 로고 + 텍스트 -->
+<div class="flex flex-col items-center text-center">
+<img alt="AI 소프트웨어과 로고" class="h-10" src="images/depMenu.png"/>
+<h1 class="text-sm font-bold text-gray-300">AI SOFTWARE DEPT.</h1>
+</div>
+<!-- 오른쪽: 메뉴 버튼 + 여주대 로고 -->
+<div class="flex items-center space-x-2">
+<button id="menuToggle">
+<img alt="메뉴 버튼" class="h-10 w-auto" src="images/dlogo.png"/>
+</button>
+<a href="https://www.yit.ac.kr" rel="noopener noreferrer" target="_blank">
+<img alt="여주대학교 로고" class="h-10 border-2 border-blue-500 rounded" src="images/YITLogo.jpg"/>
+</a>
+</div>
+</div>
+</header>
+<!-- 메뉴 오버레이 -->
+<div class="hidden fixed inset-0 bg-black bg-opacity-70 z-40 flex items-center justify-center" id="menuOverlay">
+<div class="bg-white p-6 rounded-lg space-y-4 text-center">
+<a class="block text-lg font-semibold text-purple-700" href="#about">학과소개</a>
+<a class="block text-lg font-semibold text-purple-700" href="#curriculum">교육과정</a>
+<a class="block text-lg font-semibold text-purple-700" href="#professors">교수진</a>
+<a class="block text-lg font-semibold text-purple-700" href="#gallery">학과갤러리</a>
+<a class="block text-lg font-semibold text-purple-700" href="#news">공지사항</a>
+<a class="block text-lg font-semibold text-purple-700" href="#contact">문의</a>
+<button class="mt-4 text-sm text-gray-300" onclick="toggleMenu()">닫기</button>
+</div>
+</div>
 <main class="pt-24 px-4 text-justify">
-  <section id="about" class="mb-10 section bg-pattern">
-  <h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-10px decoration-2">학과 소개</h2>
-
-  <div id="aboutText" class="text-base overflow-hidden transition-all duration-500" style="max-height: 250px;" >
-    <p class="mb-4">
+<section class="mb-10 section bg-pattern" id="about">
+<h2 class="text-gray-300 text-xl font-bold mb-2 text-left underline underline-offset-10px decoration-2 text-gray-300">학과 소개</h2>
+<div class="text-base overflow-hidden transition-all duration-500 text-gray-300" id="aboutText" style="max-height: 250px;">
+<p class="mb-4 text-gray-300">
       4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 실무 기술을 이론과 실습을 병행하여 체계적으로 교육합니다. 
       다양한 산업 현장에서 소프트웨어와 AI를 실질적으로 활용할 수 있는 실무형 전문 인력을 양성하는 학과입니다.
     </p>
-    <p>
+<p class="text-gray-300">
       AI 소프트웨어과는 4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 기술을 
-      2년 안에 집중적으로 습득할 수 있도록 설계된 실무 중심 전문 과정입니다. <br><br>
+      2년 안에 집중적으로 습득할 수 있도록 설계된 실무 중심 전문 과정입니다. <br/><br/>
       빠르게 변화하는 산업 현장에서 요구되는 AI 알고리즘, 데이터 분석, 웹·앱 개발, 
-      AI 융합 서비스 구현 능력을 실습 중심으로 교육하며, 졸업 후 바로 IT 및 AI 분야 실무에 투입될 수 있는 전문 인력을 양성합니다.<br><br>
-      특히, 본 학과는 다양한 산업체와의 산학협력을 기반으로, AI 기반 서비스 기업, 
-      소프트웨어 개발사, 에듀테크 및 IoT 분야 등 다양한 진로로의 연계가 가능하며, 
-      실무 능력 중심의 자격증 취득과 취업을 지원합니다.
-   
-      AI 소프트웨어과는 4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 기술을 
-      2년 안에 집중적으로 습득할 수 있도록 설계된 실무 중심 전문 과정입니다. <br><br>
-      빠르게 변화하는 산업 현장에서 요구되는 AI 알고리즘, 데이터 분석, 웹·앱 개발, 
-      AI 융합 서비스 구현 능력을 실습 중심으로 교육하며, 졸업 후 바로 IT 및 AI 분야 실무에 투입될 수 있는 전문 인력을 양성합니다.<br><br>
+      AI 융합 서비스 구현 능력을 실습 중심으로 교육하며, 졸업 후 바로 IT 및 AI 분야 실무에 투입될 수 있는 전문 인력을 양성합니다.<br/><br/>
       특히, 본 학과는 다양한 산업체와의 산학협력을 기반으로, AI 기반 서비스 기업, 
       소프트웨어 개발사, 에듀테크 및 IoT 분야 등 다양한 진로로의 연계가 가능하며, 
       실무 능력 중심의 자격증 취득과 취업을 지원합니다.
     </p>
-  </div>
-
-  <!-- 더보기 버튼 -->
-  <div class="mt-3">
-    <button id="toggleBtn" class="text-blue-600 underline text-sm focus:outline-none underline">
+<p class="text-gray-300">
+      AI 소프트웨어과는 4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 기술을 
+      2년 안에 집중적으로 습득할 수 있도록 설계된 실무 중심 전문 과정입니다. <br/><br/>
+      빠르게 변화하는 산업 현장에서 요구되는 AI 알고리즘, 데이터 분석, 웹·앱 개발, 
+      AI 융합 서비스 구현 능력을 실습 중심으로 교육하며, 졸업 후 바로 IT 및 AI 분야 실무에 투입될 수 있는 전문 인력을 양성합니다.<br/><br/>
+      특히, 본 학과는 다양한 산업체와의 산학협력을 기반으로, AI 기반 서비스 기업, 
+      소프트웨어 개발사, 에듀테크 및 IoT 분야 등 다양한 진로로의 연계가 가능하며, 
+      실무 능력 중심의 자격증 취득과 취업을 지원합니다.
+    </p>
+</div>
+<!-- 더보기 버튼 -->
+<div class="mt-3 text-gray-300">
+<button class="text-gray-300 underline text-sm focus:outline-none underline" id="toggleBtn">
       더보기+
     </button>
-  </div>
+</div>
 </section>
-
 <script>
   const toggleBtn = document.getElementById("toggleBtn");
   const aboutText = document.getElementById("aboutText");
@@ -101,139 +92,129 @@
     }
   });
 </script>
-
-  <section id="curriculum" class="mb-10 section">
-    <h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">취업분야</h2>
-    <div id="jobText" class="overflow-hidden transition-all duration-500" style="max-height: 180px;"><ul class="list-disc list-inside space-y-2 text-base">
-    <li><strong>AI 소프트웨어 기업</strong> – AI 서비스 개발 및 운영, 챗봇/음성인식/영상 분석 시스템 지원</li>
-    <li><strong>데이터 분석 및 처리</strong> – 데이터 전처리, 통계 분석, 리포트 작성, 데이터 라벨링 등</li>
-    <li><strong>웹/앱 개발 분야</strong> – 프론트엔드 및 백엔드 개발, AI 기능 연동 웹 서비스 구축</li>
-    <li><strong>AI 에듀테크/콘텐츠 기업</strong> – 교육용 AI 콘텐츠 기획 및 구현, AI 챗봇 개발</li>
-    <li><strong>AI + IoT 융합 분야</strong> – 스마트홈, 스마트팩토리 등에서 센서 데이터 기반 AI 응용</li>
-    <li><strong>XR/게임 개발</strong> – Unity 기반 AI 인터랙션 캐릭터 설계, VR/AR 콘텐츠 제작</li>
-    <li><strong>공공기관/금융/보안 분야</strong> – AI 민원 챗봇 운영, 사이버보안/AI 이상징후 분석 등</li>
-  </ul></div><div class="mt-2"><button id="jobToggle" class="text-blue-400 underline text-sm focus:outline-none">더보기+</button></div>
-  </section>
-
-  <section id="professors" class="mb-10 section bg-pattern">
-    <h2 class="text-blue-800 text-xl font-bold mb-1 text-left underline">교수진</h2>
-    <div class="grid grid-cols-1 gap-1">
-      <div class="text-center">
-        <img src="images/hkh.PNG" alt="홍광희 교수" class="w-32 mx-auto">
-        <p class="mt-1 text-center"> AI웹서버프로그래밍/AI알고리즘/JAVA/SQL</p>
-      </div>
-      <div class="text-center">
-        <img src="images/pgb.PNG" alt="박경배 교수" class="w-32 mx-auto">
-        <p class="mt-1 text-center">AI웹프로그래밍/가상현실 XR/AI콘텐츠</p>
-      </div>
-      <div class="text-center">
-        <img src="images/hsj.PNG" alt="홍성준 교수" class="w-32 mx-auto">
-        <p class="mt-1 text-center">AI응용/딥러닝/콘텐츠크리에이터</p>
-      </div>
-    </div>
-  </section>
- <section id="curriculum" class="mb-10 section">
-  <h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">자격증</h2>
-
-  <ul class="list-disc list-inside space-y-1 text-base">
-    <li>
-      <a href="https://www.q-net.or.kr" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">
+<section class="mb-10 section" id="curriculum">
+<h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">취업분야</h2>
+<div class="overflow-hidden transition-all duration-500 text-gray-300" id="jobText" style="max-height: 180px;"><ul class="list-disc list-inside space-y-2 text-base text-gray-300">
+<li class="text-gray-300"><strong>AI 소프트웨어 기업</strong> – AI 서비스 개발 및 운영, 챗봇/음성인식/영상 분석 시스템 지원</li>
+<li class="text-gray-300"><strong>데이터 분석 및 처리</strong> – 데이터 전처리, 통계 분석, 리포트 작성, 데이터 라벨링 등</li>
+<li class="text-gray-300"><strong>웹/앱 개발 분야</strong> – 프론트엔드 및 백엔드 개발, AI 기능 연동 웹 서비스 구축</li>
+<li class="text-gray-300"><strong>AI 에듀테크/콘텐츠 기업</strong> – 교육용 AI 콘텐츠 기획 및 구현, AI 챗봇 개발</li>
+<li class="text-gray-300"><strong>AI + IoT 융합 분야</strong> – 스마트홈, 스마트팩토리 등에서 센서 데이터 기반 AI 응용</li>
+<li class="text-gray-300"><strong>XR/게임 개발</strong> – Unity 기반 AI 인터랙션 캐릭터 설계, VR/AR 콘텐츠 제작</li>
+<li class="text-gray-300"><strong>공공기관/금융/보안 분야</strong> – AI 민원 챗봇 운영, 사이버보안/AI 이상징후 분석 등</li>
+</ul></div><div class="mt-2 text-gray-300"><button class="text-blue-400 underline text-sm focus:outline-none" id="jobToggle">더보기+</button></div>
+</section>
+<section class="mb-10 section bg-pattern" id="professors">
+<h2 class="text-blue-800 text-xl font-bold mb-1 text-left underline text-gray-300">교수진</h2>
+<div class="grid grid-cols-1 gap-1 text-gray-300">
+<div class="text-center text-gray-300">
+<img alt="홍광희 교수" class="w-32 mx-auto" src="images/hkh.PNG"/>
+<p class="mt-1 text-center text-gray-300"> AI웹서버프로그래밍/AI알고리즘/JAVA/SQL</p>
+</div>
+<div class="text-center text-gray-300">
+<img alt="박경배 교수" class="w-32 mx-auto" src="images/pgb.PNG"/>
+<p class="mt-1 text-center text-gray-300">AI웹프로그래밍/가상현실 XR/AI콘텐츠</p>
+</div>
+<div class="text-center text-gray-300">
+<img alt="홍성준 교수" class="w-32 mx-auto" src="images/hsj.PNG"/>
+<p class="mt-1 text-center text-gray-300">AI응용/딥러닝/콘텐츠크리에이터</p>
+</div>
+</div>
+</section>
+<section class="mb-10 section" id="curriculum">
+<h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">자격증</h2>
+<ul class="list-disc list-inside space-y-1 text-base text-gray-300">
+<li class="text-gray-300">
+<a class="text-gray-300 underline hover:text-blue-900 text-gray-300" href="https://www.q-net.or.kr" rel="noopener noreferrer" target="_blank">
         정보처리산업기사 - Q-net (한국산업인력공단)
       </a>
-    </li>
-    <li>
-      <a href="https://aice.or.kr" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">
+</li>
+<li class="text-gray-300">
+<a class="text-gray-300 underline hover:text-blue-900 text-gray-300" href="https://aice.or.kr" rel="noopener noreferrer" target="_blank">
         AICE (AI 코딩 자격증) - NIA
       </a>
-    </li>
-    <li>
-      <a href="https://swexpert.or.kr" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">
+</li>
+<li class="text-gray-300">
+<a class="text-gray-300 underline hover:text-blue-900 text-gray-300" href="https://swexpert.or.kr" rel="noopener noreferrer" target="_blank">
         SW 코딩역량 인증 - 한국정보통신진흥협회(KAIT)
       </a>
-    </li>
-    <li>
-      <a href="https://www.datasociety.or.kr" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">
+</li>
+<li class="text-gray-300">
+<a class="text-gray-3000 underline hover:text-blue-900 text-gray-300" href="https://www.datasociety.or.kr" rel="noopener noreferrer" target="_blank">
         ADsP (데이터분석 준전문가) - 한국데이터산업진흥원
       </a>
-    </li>
-    <li>
-      <a href="http://www.iotq.or.kr" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">
+</li>
+<li class="text-gray-300">
+<a class="text-gray-300 underline hover:text-blue-900 text-gray-300" href="http://www.iotq.or.kr" rel="noopener noreferrer" target="_blank">
         IoT 지식능력검정 - 한국정보통신자격협회
       </a>
-    </li>
-    <li>
-      <a href="https://디지털배움터.kr" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900">
+</li>
+<li class="text-gray-300">
+<a class="text-gray-3000 underline hover:text-blue-900 text-gray-300" href="https://디지털배움터.kr" rel="noopener noreferrer" target="_blank">
         디지털 역량 인증 - 디지털배움터
       </a>
-    </li>
-  </ul>
+</li>
+</ul>
 </section>
-<section id="gallery" class="mb-10 section ">
-    <h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">학과 갤러리</h2>
-   <div class="flex flex-wrap justify-center items-center gap-4">
-    
-      <video controls class="w-64 h-40 rounded shadow">
-      <source src="video/volcano.mp4" type="video/mp4">
+<section class="mb-10 section" id="gallery">
+<h2 class="text-gray-3000 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">학과 갤러리</h2>
+<div class="flex flex-wrap justify-center items-center gap-4 text-gray-300">
+<video class="w-64 h-40 rounded shadow" controls="">
+<source src="video/volcano.mp4" type="video/mp4"/>
       브라우저가 동영상을 지원하지 않습니다.
-       </video> 
-      
-        <video controls class="w-64 h-40 rounded shadow">
-      <source src="video/sunder.mp4" type="video/mp4">
+       </video>
+<video class="w-64 h-40 rounded shadow" controls="">
+<source src="video/sunder.mp4" type="video/mp4"/>
       브라우저가 동영상을 지원하지 않습니다.
-    </video> 
-  </div>
-  </section>
-  
-  <section id="news" class="mb-10 section bg-pattern">
-    <h2 class="text-white text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">NEWS</h2>
-    <ul class="list-disc list-inside space-y-2 text-base leading-relaxed">
-  <li>
-    <a href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N2&view_type=sm" target="_blank" rel="noopener noreferrer" class="text-white hover:underline font-medium">
+    </video>
+</div>
+</section>
+<section class="mb-10 section bg-pattern" id="news">
+<h2 class="text-gray-300 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">NEWS</h2>
+<ul class="list-disc list-inside space-y-2 text-base leading-relaxed text-gray-300">
+<li class="text-gray-300">
+<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N2&amp;view_type=sm" rel="noopener noreferrer" target="_blank">
       인공지능 최신 기술 보기 →
     </a>
-  </li>
-  <li>
-    <a href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N4&view_type=sm" target="_blank" rel="noopener noreferrer" class="text-white hover:underline font-medium">
+</li>
+<li class="text-gray-300">
+<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N4&amp;view_type=sm" rel="noopener noreferrer" target="_blank">
       인공지능 최신 산업 보기 →
     </a>
-  </li>
-  <li>
-    <a href="https://www.aitimes.com/news/articleList.html?sc_sub_section_code=S2N110&view_type=sm" target="_blank" rel="noopener noreferrer" class="text-white hover:underline font-medium">
+</li>
+<li class="text-gray-300">
+<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.com/news/articleList.html?sc_sub_section_code=S2N110&amp;view_type=sm" rel="noopener noreferrer" target="_blank">
       AI Times 뉴스브리핑 →
     </a>
-  </li>
+</li>
 </ul>
-  </section>
-
- <section id="contact" class="mb-6 py-8" style="background-color: #0f172a;">
-  <h2 class="text-xl font-bold mb-3 text-white text-left underline underline-offset-4 decoration-2 pl-6">SNS & 문의</h2>
-
-  <!-- 아이콘 링크 영역 -->
-  <div class="flex justify-center gap-4 items-center">
-    <!-- Blog -->
-    <a href="https://m.blog.naver.com/PostList.naver?blogId=gbpark20&tab=2" target="_blank" rel="noopener noreferrer">
-      <img src="images/blog.PNG" alt="블로그" class="w-12 h-12 hover:scale-110 transition-transform">
-    </a>
-    <!-- Instagram -->
-    <a href="https://www.instagram.com/ai_software_yit" target="_blank" rel="noopener noreferrer">
-      <img src="images/instagram.PNG" alt="인스타그램" class="w-12 h-12 hover:scale-110 transition-transform">
-    </a>
-    <!-- YouTube -->
-    <a href="https://youtube.com/@yit_nde" target="_blank" rel="noopener noreferrer">
-      <img src="images/ytube.PNG" alt="유튜브" class="w-12 h-12 hover:scale-110 transition-transform">
-    </a>
-    <!-- Email -->
-    <a href="mailto:gbpark@yit.ac.kr">
-      <img src="images/email.PNG" alt="이메일" class="w-12 h-12 hover:scale-110 transition-transform">
-    </a>
-  </div>
+</section>
+<section class="mb-6 py-8" id="contact" style="background-color: #0f172a;">
+<h2 class="text-xl font-bold mb-3 text-gray-300 text-left underline underline-offset-4 decoration-2 pl-6">SNS &amp; 문의</h2>
+<!-- 아이콘 링크 영역 -->
+<div class="flex justify-center gap-4 items-center text-gray-300">
+<!-- Blog -->
+<a class="text-gray-300" href="https://m.blog.naver.com/PostList.naver?blogId=gbpark20&amp;tab=2" rel="noopener noreferrer" target="_blank">
+<img alt="블로그" class="w-12 h-12 hover:scale-110 transition-transform" src="images/blog.PNG"/>
+</a>
+<!-- Instagram -->
+<a class="text-gray-300" href="https://www.instagram.com/ai_software_yit" rel="noopener noreferrer" target="_blank">
+<img alt="인스타그램" class="w-12 h-12 hover:scale-110 transition-transform" src="images/instagram.PNG"/>
+</a>
+<!-- YouTube -->
+<a class="text-gray-300" href="https://youtube.com/@yit_nde" rel="noopener noreferrer" target="_blank">
+<img alt="유튜브" class="w-12 h-12 hover:scale-110 transition-transform" src="images/ytube.PNG"/>
+</a>
+<!-- Email -->
+<a class="text-gray-300" href="mailto:gbpark@yit.ac.kr">
+<img alt="이메일" class="w-12 h-12 hover:scale-110 transition-transform" src="images/email.PNG"/>
+</a>
+</div>
 </section>
 </main>
-
-<footer class="bg-gray-100 py-4 text-center text-sm text-gray-500">
-  &copy; 2025 AI SOFTWARE DEPT. All rights reserved.
+<footer class="bg-gray-100 py-4 text-center text-sm text-gray-300">
+  © 2025 AI SOFTWARE DEPT. All rights reserved.
 </footer>
-
 <script>
   const menu = document.getElementById('menuOverlay');
   const btn = document.getElementById('menuToggle');
@@ -242,8 +223,6 @@
   }
   btn.addEventListener('click', toggleMenu);
 </script>
-
-
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const toggleBtn = document.getElementById("toggleBtn");
