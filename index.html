@@ -210,10 +210,10 @@
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const jobToggle = document.getElementById("aboutToggle");
+    const aboutToggle = document.getElementById("aboutToggle");
     const aboutText = document.getElementById("aboutText");
     if (aboutToggle && aboutText) {
-      toggleBtn.addEventListener("click", function () {
+     aboutToggle.addEventListener("click", function () {
         const expanded = aboutText.classList.toggle("expanded");
         aboutText.style.maxHeight = expanded ? aboutText.scrollHeight + "px" : "250px";
         aboutToggle.textContent = expanded ? "접기" : "더보기+";
