@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-white text-gray-900 leading-relaxed">
+<body class="bg-white text-gray-300 leading-relaxed">
 
 <!-- 헤더 -->
 <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50" style="background-color: #60a5fa;">
@@ -56,7 +56,7 @@
   <section id="about" class="mb-10 section bg-pattern">
   <h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-10px decoration-2">학과 소개</h2>
 
-  <div id="aboutText" class="text-base overflow-hidden transition-all duration-500" >
+  <div id="aboutText" class="text-base overflow-hidden transition-all duration-500" style="max-height: 250px;" >
     <p class="mb-4">
       4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 실무 기술을 이론과 실습을 병행하여 체계적으로 교육합니다. 
       다양한 산업 현장에서 소프트웨어와 AI를 실질적으로 활용할 수 있는 실무형 전문 인력을 양성하는 학과입니다.
@@ -105,7 +105,7 @@
 
   <section id="curriculum" class="mb-10 section">
     <h2 class="text-blue-800 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">취업분야</h2>
-    <ul class="list-disc list-inside space-y-2 text-base">
+    <div id="jobText" class="overflow-hidden transition-all duration-500" style="max-height: 180px;"><ul class="list-disc list-inside space-y-2 text-base">
     <li><strong>AI 소프트웨어 기업</strong> – AI 서비스 개발 및 운영, 챗봇/음성인식/영상 분석 시스템 지원</li>
     <li><strong>데이터 분석 및 처리</strong> – 데이터 전처리, 통계 분석, 리포트 작성, 데이터 라벨링 등</li>
     <li><strong>웹/앱 개발 분야</strong> – 프론트엔드 및 백엔드 개발, AI 기능 연동 웹 서비스 구축</li>
@@ -113,7 +113,7 @@
     <li><strong>AI + IoT 융합 분야</strong> – 스마트홈, 스마트팩토리 등에서 센서 데이터 기반 AI 응용</li>
     <li><strong>XR/게임 개발</strong> – Unity 기반 AI 인터랙션 캐릭터 설계, VR/AR 콘텐츠 제작</li>
     <li><strong>공공기관/금융/보안 분야</strong> – AI 민원 챗봇 운영, 사이버보안/AI 이상징후 분석 등</li>
-  </ul>
+  </ul></div><div class="mt-2"><button id="jobToggle" class="text-blue-400 underline text-sm focus:outline-none">더보기+</button></div>
   </section>
 
   <section id="professors" class="mb-10 section bg-pattern">
@@ -244,5 +244,29 @@
   btn.addEventListener('click', toggleMenu);
 </script>
 
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("toggleBtn");
+    const aboutText = document.getElementById("aboutText");
+    if (toggleBtn && aboutText) {
+      toggleBtn.addEventListener("click", function () {
+        const expanded = aboutText.classList.toggle("expanded");
+        aboutText.style.maxHeight = expanded ? aboutText.scrollHeight + "px" : "250px";
+        toggleBtn.textContent = expanded ? "접기" : "더보기+";
+      });
+    }
+
+    const jobToggle = document.getElementById("jobToggle");
+    const jobText = document.getElementById("jobText");
+    if (jobToggle && jobText) {
+      jobToggle.addEventListener("click", function () {
+        const expanded = jobText.classList.toggle("expanded");
+        jobText.style.maxHeight = expanded ? jobText.scrollHeight + "px" : "180px";
+        jobToggle.textContent = expanded ? "접기" : "더보기+";
+      });
+    }
+  });
+</script>
 </body>
 </html>
