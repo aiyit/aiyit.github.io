@@ -48,7 +48,7 @@
 <main class="pt-24 px-4 text-justify">
 <section class="mb-10 section bg-pattern" id="about">
 <h2 class="text-gray-300 text-xl font-bold mb-2 text-left underline underline-offset-10px decoration-2 text-gray-300">학과 소개</h2>
-<div class="text-base overflow-hidden transition-all duration-500 text-gray-300" id="aboutText" style="max-height: 250px;">
+<div class="text-base overflow-hidden transition-all duration-500 text-gray-300 max-h-[250px]" id="aboutText">
 <p class="mb-4 text-gray-300">
       4차 산업혁명 시대에 필수적인 소프트웨어 기초 역량과 인공지능 실무 기술을 이론과 실습을 병행하여 체계적으로 교육합니다. 
       다양한 산업 현장에서 소프트웨어와 AI를 실질적으로 활용할 수 있는 실무형 전문 인력을 양성하는 학과입니다.
@@ -202,37 +202,21 @@
 </footer>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const aboutToggle = document.getElementById("aboutToggle");
-  const aboutText = document.getElementById("aboutText");
+  const toggleSection = (btnId, contentId, collapsedText = "더보기+", expandedText = "접기") => {
+    const btn = document.getElementById(btnId);
+    const content = document.getElementById(contentId);
 
-  if (aboutToggle && aboutText) {
-    aboutToggle.addEventListener("click", function () {
-      const isExpanded = aboutText.style.maxHeight !== "none";
-      if (isExpanded) {
-        aboutText.style.maxHeight = "250px";
-        aboutToggle.textContent = "더보기+";
-      } else {
-        aboutText.style.maxHeight = "none";
-        aboutToggle.textContent = "접기";
-      }
-    });
-  }
+    if (btn && content) {
+      btn.addEventListener("click", () => {
+        const expanded = content.classList.toggle("expanded");
+        btn.textContent = expanded ? expandedText : collapsedText;
+      });
+    }
+  };
 
-  const jobToggle = document.getElementById("jobToggleBtn");
-  const jobText = document.getElementById("jobText");
-
-  if (jobToggle && jobText) {
-    jobToggle.addEventListener("click", function () {
-      const isExpanded = jobText.style.maxHeight !== "none";
-      if (isExpanded) {
-        jobText.style.maxHeight = "180px";
-        jobToggle.textContent = "더보기+";
-      } else {
-        jobText.style.maxHeight = "none";
-        jobToggle.textContent = "접기";
-      }
-    });
-  }
+  toggleSection("aboutToggle", "aboutText");
+  toggleSection("jobToggleBtn", "jobText");
 });
+</script>
 
 </html>
