@@ -132,7 +132,7 @@ p, ul {
   z-index: 1;
 }
 .about-text {
-  max-height: 2000px;
+  max-height: 500px;
   overflow: hidden;
 }
 
