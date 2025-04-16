@@ -7,13 +7,6 @@ body {
 .custom-header {
   background-color: rgba(0, 0, 255, 0.4);
 }
-.section {
-  background-color: #0f172a;
-  padding: 20px;
-  margin-bottom: 24px;
-  color: #ccc;
-  border-radius: 8px;
-}
 .about-text {
   max-height: 250px;
   overflow: hidden;
