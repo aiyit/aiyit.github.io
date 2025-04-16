@@ -1,132 +1,32 @@
-/* 기본 글꼴 설정 */
+
 body {
-  font-family: 'Arial', sans-serif;
-  line-height: 1.6; /* 줄 간격 */
-  color: #333; /* 본문 기본 색상 */
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #0000ff; /* 배경색 */
 }
-
-/* 헤더 */
 .custom-header {
   background-color: rgba(0, 0, 255, 0.4);
 }
-header h1 {
-  font-size: 1rem; /* 모바일에서 적당한 크기 */
-  font-weight: bold;
-  color: #6b21a8;
-  margin: 0;
-}
-
-/* 소제목 */
-h2, h3 {
-  color: #1d4ed8; /* 짙은 파랑색 */
-  text-align: left; /* 왼쪽 정렬 */
-  margin-bottom: 1rem; /* 소제목 하단 여백 */
-}
-
-/* 본문 내용 */
-p, ul {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: #333; /* 본문 텍스트 색상 */
-  text-align: justify; /* 양쪽 정렬 */
-  margin-bottom: 1.2rem; /* 항목 간 여백 */
-}
-
-/* 메뉴 오버레이 */
-#menuOverlay {
-  transition: all 0.3s ease-in-out;
-}
-
-#menuOverlay a {
-  display: block;
-  margin-bottom: 0.8rem;
-  text-decoration: none;
-  color: #4c1d95;
-  font-size: 1.25rem;
-}
-
-/* 메뉴 항목 호버 효과 */
-#menuOverlay a:hover {
-  color: #1d4ed8;
-  text-decoration: underline;
-}
-
-/* 반응형 스타일 */
-@media (max-width: 768px) {
-  header {
-    padding: 10px;
-  }
-
-  header h1 {
-    font-size: 1rem; /* 모바일에서 제목 크기 줄이기 */
-  }
-
-  #menuOverlay a {
-    font-size: 1.1rem;
-  }
-
-  .flex-row {
-    flex-direction: column;
-  }
-
-  #menuOverlay div {
-    width: 85%;
-  }
-
-  /* 본문 내용 및 소제목 */
-  h2, h3 {
-    font-size: 1.1rem; /* 모바일에 맞는 크기 */
-  }
-
-  p, ul {
-    font-size: 0.95rem; /* 본문 텍스트 크기 줄이기 */
-  }
-}
 .section {
-  padding: 16px 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: upper;
+  background-color: #0f172a;
+  padding: 20px;
+  margin-bottom: 24px;
+  color: #ccc;
+  border-radius: 8px;
 }
-
-.section:nth-of-type(odd) {
-  background-image: url('images/bgimg01.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: relative;
+.about-text {
+  max-height: 250px;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
 }
-
-.section:nth-of-type(odd)::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: rgba(50, 50, 255, 0.4); /* 밝기 조정 */
-  z-index: 0;
+.about-text.expanded {
+  max-height: 2000px;
 }
-
-/* 짝수 섹션 배경 (bgimg02.png) */
-.section:nth-of-type(even) {
-  background-image: url('images/bgimg02.png');
-  background-size: cover;
-  background-repeat: repeat;
-  background-position: center;
-  position: relative;
-}
-
-.section:nth-of-type(even)::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: rgba(50, 50, 255, 0.4);
-  z-index: 0;
-}
-
-/* 모든 섹션의 자식 요소는 배경 위에 표시 */
-.section > * {
-  position: relative;
-  z-index: 1;
+.toggle-btn {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #66ccff;
+  cursor: pointer;
+  text-decoration: underline;
 }
