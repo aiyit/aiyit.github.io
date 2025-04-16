@@ -73,7 +73,7 @@
     </p>
 </div>
 <!-- 더보기 버튼 -->
-<div class="mt-3 text-gray-300"><button class="text-gray-300 underline text-sm focus:outline-none" id="jobToggle">더보기+</button></div>
+<div class="mt-3 text-gray-300"><button class="text-gray-300 underline text-sm focus:outline-none" id="aboutToggle">더보기+</button></div>
 </section>
 
 <section class="mb-10 section" id="curriculum">
@@ -210,13 +210,13 @@
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const toggleBtn = document.getElementById("toggleBtn");
+    const jobToggle = document.getElementById("aboutToggle");
     const aboutText = document.getElementById("aboutText");
-    if (toggleBtn && aboutText) {
+    if (aboutToggle && aboutText) {
       toggleBtn.addEventListener("click", function () {
         const expanded = aboutText.classList.toggle("expanded");
         aboutText.style.maxHeight = expanded ? aboutText.scrollHeight + "px" : "250px";
-        toggleBtn.textContent = expanded ? "접기" : "더보기+";
+        aboutToggle.textContent = expanded ? "접기" : "더보기+";
       });
     }
 
