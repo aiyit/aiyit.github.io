@@ -202,20 +202,28 @@
 </footer>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const toggleSection = (btnId, contentId, collapsedText = "더보기+", expandedText = "접기") => {
+  const toggleSection = (btnId, contentId, collapsedHeight = "250px", expandedText = "접기", collapsedText = "더보기+") => {
     const btn = document.getElementById(btnId);
     const content = document.getElementById(contentId);
 
     if (btn && content) {
+      content.style.maxHeight = collapsedHeight; // 초기 접힌 상태
+
       btn.addEventListener("click", () => {
-        const expanded = content.classList.toggle("expanded");
-        btn.textContent = expanded ? expandedText : collapsedText;
+        const isCollapsed = content.style.maxHeight === collapsedHeight;
+        if (isCollapsed) {
+          content.style.maxHeight = content.scrollHeight + "px";  // 실제 높이로 확장
+          btn.textContent = expandedText;
+        } else {
+          content.style.maxHeight = collapsedHeight;
+          btn.textContent = collapsedText;
+        }
       });
     }
   };
 
-  toggleSection("aboutToggle", "aboutText");
-  toggleSection("jobToggleBtn", "jobText");
+  toggleSection("aboutToggle", "aboutText", "250px");
+  toggleSection("jobToggleBtn", "jobText", "180px");
 });
 </script>
 
