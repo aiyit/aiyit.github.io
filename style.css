@@ -21,7 +21,7 @@ header h1 {
 
 /* 소제목 */
 h2, h3 {
-  color: #1d4ed8; /* 짙은 파랑색 */
+  color:#6b21a8; /* 짙은 파랑색 */
   text-align: left; /* 왼쪽 정렬 */
   margin-bottom: 1rem; /* 소제목 하단 여백 */
 }
@@ -132,7 +132,7 @@ p, ul {
   z-index: 1;
 }
 .about-text {
-  max-height: 200px;
+  max-height: 2000px;
   overflow: hidden;
 }
 
