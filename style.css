@@ -31,13 +31,13 @@ body {
   text-decoration: underline;
 }
 .section:nth-of-type(odd) {
-  background-image: url('bgimg01.png');
+  background-image: url('images/bgimg01.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
 .section:nth-of-type(even) {
-  background-image: url('bgimg02.png');
+  background-image: url('images/bgimg02.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
