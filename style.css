@@ -96,7 +96,7 @@ p, ul {
 .section:nth-of-type(odd) {
   background-image: url('images/bgimg01.png');
   background-size: cover;
-  background-repeat: repeat;
+  background-repeat: no-repeat;
   background-position: center;
   position: relative;
 }
