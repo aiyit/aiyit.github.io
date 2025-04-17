@@ -61,3 +61,52 @@ body {
   background-repeat: no-repeat;
   background-position: center;
 }
+/* 반응형 컨테이너 */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* 반응형 폰트, 패딩 조정 */
+body {
+  font-size: 16px;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 18px;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .section {
+    padding: 40px;
+    margin-bottom: 24px;
+  }
+
+  .about-text {
+    max-height: 300px;
+  }
+
+  .toggle-btn {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 20px;
+  }
+
+  .section {
+    padding: 60px;
+  }
+}
