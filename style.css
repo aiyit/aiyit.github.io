@@ -27,6 +27,8 @@ body {
   width: 100vw;
   margin-left: 0;
   margin-right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   position: relative;
   padding: 20px;
   margin-bottom: 12px;
