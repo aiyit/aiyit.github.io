@@ -1,4 +1,6 @@
-
+main {
+  padding-top: 80px; /* header 높이만큼 조정 */
+}
 body {
   font-family: Arial, sans-serif;
   margin: 0;
