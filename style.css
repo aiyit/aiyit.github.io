@@ -33,7 +33,6 @@ body {
   padding: 20px;
   margin-bottom: 12px;
   color: #ccc;
-  border-radius: 8px;
   z-index: 1;
 }
 .section::before {
@@ -42,7 +41,6 @@ body {
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0, 0, 255, 0.4); /* 파란색 투명 오버레이 */
   z-index: 0;
-  border-radius: 8px;
 }
 
 .section > * {
