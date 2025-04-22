@@ -122,7 +122,7 @@
     </div>
     <!-- 불러올 내용이 들어갈 영역 -->
     <!-- 동적으로 문서가 삽입될 영역 -->
-    <div id="x3dContent" style="min-height: 500px;">
+    <div id="x3dContent" style="min-height: 300px;">
      
     </div>
   </div>
@@ -130,27 +130,45 @@
     <script type="text/javascript" src="https://www.x3dom.org/x3dom/release/x3dom.js"></script>
     <link rel="stylesheet" type="text/css" href="https://www.x3dom.org/x3dom/release/x3dom.css" /> 
 	<!-- 로딩 스크립트 -->
-     <script>
-    function loadX3D(fileName) {
-      fetch(fileName)
-        .then(response => {
-          if (!response.ok) throw new Error("로드 실패");
-          return response.text();
-        })
-        .then(data => {
-          document.getElementById('x3dContent').innerHTML = data;
-        })
-        .catch(error => {
-          document.getElementById('x3dContent').innerHTML =
-            '<p style="color: red;">문서 불러오기 실패: ' + error.message + '</p>';
-        });
-    }
+    <script>
+  function loadX3D(fileName) {
+    fetch(fileName)
+      .then(response => {
+        if (!response.ok) throw new Error("로드 실패");
+        return response.text();
+      })
+      .then(data => {
+        document.getElementById('x3dContent').innerHTML = data;
 
-    // 페이지 로딩 시 자동으로 기본 나비 애니메이션 삽입
-    window.addEventListener('DOMContentLoaded', () => {
-      loadX3D('11-2groupbutterFlying_around.html');
-    });
-  </script>
+        // X3DOM 재처리 (삽입 후)
+        if (typeof x3dom !== 'undefined') {
+          x3dom.reload(); // 반드시 필요
+        }
+
+        // 잠깐 딜레이 후 애니메이션 시작
+        setTimeout(() => {
+          const time = document.getElementById('time');
+          const rtime = document.getElementById('rtime');
+
+          if (time && rtime) {
+            time.setAttribute('loop', 'true');
+            time.setAttribute('startTime', '0');
+            rtime.setAttribute('loop', 'true');
+            rtime.setAttribute('startTime', '0');
+          }
+        }, 300); // X3DOM이 씬 파싱할 시간을 약간 줘야 함
+      })
+      .catch(error => {
+        document.getElementById('x3dContent').innerHTML =
+          '<p style="color: red;">문서 불러오기 실패: ' + error.message + '</p>';
+      });
+  }
+
+  // 초기 로딩 시 기본 콘텐츠 불러오기
+  window.addEventListener('DOMContentLoaded', () => {
+    loadX3D('11-2groupbutterFlying_around.html');
+  });
+</script>
   <!-- <h3 style="text-align:center;">나비 애니메이션</h3>	
   <x3d width="100%" height="500px" vrmode="true" stereo="true" eyeSeparation="0.2" showStat="false" showLog="false">
        <scene>
