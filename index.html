@@ -134,52 +134,37 @@
 	<!-- 로딩 스크립트 -->
 <script>
   function loadX3D(fileName) {
-    fetch(fileName)
-      .then(response => {
-        if (!response.ok) throw new Error("로드 실패");
-        return response.text();
-      })
-      .then(data => {
-        const container = document.getElementById('x3dContent');
+  fetch(fileName)
+  .then(response => {
+    if (!response.ok) throw new Error("로드 실패");
+    return response.text();
+  })
+  .then(data => {
+    const container = document.getElementById('x3dContent');
 
-        // 기존 X3D 완전히 제거
-        while (container.firstChild) {
-          container.removeChild(container.firstChild);
-        }
+    // 기존 내용 제거
+    container.innerHTML = '';
 
-        // 새로운 DOM 객체로 파싱
-        const temp = document.createElement('div');
-        temp.innerHTML = data;
+    // 전체 HTML을 삽입
+    container.innerHTML = data;
 
-        // 삽입
-        const newX3D = temp.querySelector('x3d');
-        if (newX3D) {
-          container.appendChild(newX3D);
+    // X3DOM 파싱 재시작
+    if (typeof x3dom !== 'undefined') {
+      x3dom.reload();
+    }
 
-          // X3DOM이 새롭게 파싱하도록 강제
-          if (typeof x3dom !== 'undefined') {
-            x3dom.reload();
-          }
-
-          // timeSensor가 존재할 경우 자동 재생
-          setTimeout(() => {
-            const time = newX3D.querySelector('#time');
-            const rtime = newX3D.querySelector('#rtime');
-            if (time && rtime) {
-              time.setAttribute('loop', 'true');
-              time.setAttribute('startTime', '0');
-              rtime.setAttribute('loop', 'true');
-              rtime.setAttribute('startTime', '0');
-            }
-          }, 200); // 약간의 로딩 시간 고려
-        } else {
-          container.innerHTML = '<p style="color:red;">X3D 콘텐츠가 없음</p>';
-        }
-      })
-      .catch(error => {
-        document.getElementById('x3dContent').innerHTML =
-          '<p style="color: red;">문서 불러오기 실패: ' + error.message + '</p>';
-      });
+    // timeSensor 재생 설정
+    setTimeout(() => {
+      const time = container.querySelector('#time');
+      const rtime = container.querySelector('#rtime');
+      if (time && rtime) {
+        time.setAttribute('loop', 'true');
+        time.setAttribute('startTime', '0');
+        rtime.setAttribute('loop', 'true');
+        rtime.setAttribute('startTime', '0');
+      }
+    }, 200);
+  })
   }
 
   window.addEventListener('DOMContentLoaded', () => {
