@@ -442,5 +442,19 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('time').setAttribute('startTime', '0'); // 시작 시점 설정
     document.getElementById('rtime').setAttribute('startTime', '0');
   });
+</script><script>
+  function handleClick(event) {
+    var r = event.hitPnt[0];
+    var g = event.hitPnt[1];
+    var b = event.hitPnt[2];
+    document.getElementById("Rcolor").innerHTML = r;
+    document.getElementById("Gcolor").innerHTML = g;
+    document.getElementById("Bcolor").innerHTML = b;
+
+    var rc = (r / 255).toFixed(2);
+    var gc = (g / 255).toFixed(2);
+    var bc = (b / 255).toFixed(2);
+    document.getElementById('target').setAttribute('diffuseColor', rc + ' ' + gc + ' ' + bc);
+  }
 </script>
 </html>
