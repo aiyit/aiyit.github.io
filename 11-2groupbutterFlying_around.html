@@ -7,10 +7,20 @@
     <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
 	<link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'/>
 </head>
+	<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const time = document.getElementById('time');
+    const rtime = document.getElementById('rtime');
+
+    if (time && rtime) {
+      time.setAttribute('loop', 'true');
+      time.setAttribute('startTime', '0'); // 시작 시점
+      rtime.setAttribute('loop', 'true');
+      rtime.setAttribute('startTime', '0');
+    }
+  });
+</script>
 <body id='main'>
-	<h3 style="text-align:center;"> 나비 애니메이션</h3>
-<input type='button' value="애니메이션" 
-onclick="document.getElementById('time').setAttribute('loop','true');document.getElementById('rtime').setAttribute('loop','true');"/>
 <x3d> <!--showStat='true' showLog='true' -->
     <scene>
 	<viewpoint position='0 0 20'></viewpoint>
