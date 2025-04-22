@@ -7,19 +7,7 @@
     <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
 	<link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'/>
 </head>
-	<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const time = document.getElementById('time');
-    const rtime = document.getElementById('rtime');
 
-    if (time && rtime) {
-      time.setAttribute('loop', 'true');
-      time.setAttribute('startTime', '0'); // 시작 시점
-      rtime.setAttribute('loop', 'true');
-      rtime.setAttribute('startTime', '0');
-    }
-  });
-</script>
 <body id='main'>
 <x3d> <!--showStat='true' showLog='true' -->
     <scene>
@@ -92,6 +80,18 @@
 	   
     </scene>		
 </x3d>
+	<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const time = document.getElementById('time');
+    const rtime = document.getElementById('rtime');
 
+    if (time && rtime) {
+      time.setAttribute('loop', 'true');
+      time.setAttribute('startTime', '0'); // 시작 시점
+      rtime.setAttribute('loop', 'true');
+      rtime.setAttribute('startTime', '0');
+    }
+  });
+</script>
 </body>
 </html>		
