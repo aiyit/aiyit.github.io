@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+   <title>Web3D,VR,가상현실,X3D,색상선택후 색상 변경하기</title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.js"></script>
+    <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
+	<link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'/>
+	<script>
+    	//색상 팔레트를 클릭했을 때 색상 값 '+rc+' '+gc+' '+bc+'
+    	function handleClick(event)
+    	{
+    		var r = event.hitPnt[0]; var g = event.hitPnt[1]; var b = event.hitPnt[2];
+			document.getElementById("Rcolor").innerHTML=r ;
+			document.getElementById("Gcolor").innerHTML=g ;
+			document.getElementById("Bcolor").innerHTML=b ;
+			//물체에 색상 변경하기
+			var rc = (r/255).toFixed(2) ; var gc=(g/255).toFixed(2); var bc=(b/255).toFixed(2) ; 
+			document.getElementById('target').setAttribute('diffuseColor', ''+rc+' '+gc+' '+bc+''); 
+		}
+        </script>
+		<Style>#guide{ text-align:center;} </Style>
+</head>
+<body id='main'>
+<h3 style="text-align:center;">Object Change Color</h3>
+
+<span id="guide">
+	<table style="border:1px solid black; width:200px;">
+		<tr><td>R: </td><td id="Rcolor"></td></tr>
+		<tr><td>G: </td><td id="Gcolor"></td></tr>
+		<tr><td>B: </td><td id="Bcolor"></td></tr>
+	</table>
+	<div id="select" style="width:200px;height:25px;background-color:white;margin-top:20px;"></div>
+</span>
+<x3d > <!--showStat='true' showLog='true' -->
+    <scene pickMode="color">
+	  <transform translation='0 -2 0'>
+    	<Shape onclick="handleClick(event)">
+        <indexedFaceSet coordIndex='0 1 2 3 -1' solid='false' colorIndex='0 1 2 3 -1'>
+	     <coordinate point='-2 0 0, 2 0 0, 2 4 0, -2 4 0'></coordinate>
+		 <color color='1 0 0, 0 1 0, 0 0 1, 0 0 0'/></Color>
+        </indexedFaceSet>
+       </Shape></transform>
+	<transform translation='-5 0 0'>
+	  <Shape><sphere></sphere>
+		<appearance><material id='target' diffuseColor='1 0 0'></material>
+	</appearance></Shape></transform> 
+	</Scene></x3d>
+</body>
+</html>		
