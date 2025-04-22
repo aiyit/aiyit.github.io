@@ -23,23 +23,21 @@
 </head>
 <body id='main'>
 <h3 style="text-align:center;">Object Change Color</h3>
-
 <span id="guide">
 	<table style="border:1px solid black; width:200px;">
 		<tr><td>R: </td><td id="Rcolor"></td></tr>
 		<tr><td>G: </td><td id="Gcolor"></td></tr>
 		<tr><td>B: </td><td id="Bcolor"></td></tr>
 	</table>
-	
 </span>
 <x3d > <!--showStat='true' showLog='true' -->
     <scene pickMode="color">
-	    <viewpoint position="0 2 15" orientation="0 1 0 0" fieldOfView="1.2" description="전체 보기"></viewpoint>
+	    <viewpoint position="0 2 10" orientation="0 1 0 0" fieldOfView="1.2" description="전체 보기"></viewpoint>
 	  <transform translation='0 0 0'>
     	<Shape onclick="handleClick(event)">
         <indexedFaceSet coordIndex='0 1 2 3 -1' solid='false' colorIndex='0 1 2 3 -1'>
 	     <coordinate point='-2 0 0, 2 0 0, 2 4 0, -2 4 0'></coordinate>
-		 <color color='1 0 0, 0 1 0, 0 0 1, 0 0 0'></Color>
+		 <color color='1 0 0, 0 1 0, 0 0 1, 0 0 0'/>
         </indexedFaceSet>
        </Shape></transform>
 	<transform translation='-5 1 0'>
