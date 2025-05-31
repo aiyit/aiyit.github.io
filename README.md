@@ -1,2 +1,2 @@
 # ai
-AI Software Dept.
+Dept. Of AI Software.
