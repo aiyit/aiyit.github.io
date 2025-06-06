@@ -1,40 +1,61 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <title>예제 6-2 마진(margin)과 패딩(padding)</title>
-  <style>
-    body {
-      margin-top: 20px;
-      margin-left: 140px;
-      padding: 20px;
-      border: 1px solid cyan;
-    }
-    #container {
-      border: 1px solid red;
-    }
-    .box-margin {
-      width: 200px;
-      height: 50px;
-      background: #00ffff;
-      margin: 30px;
-      box-shadow: 5px 5px 3px #888888;
-    }
-    .box-padding {
-      width: 200px;
-      height: 100px;
-      background: #ffff00;
-      padding: 30px;
-      box-shadow: 5px 5px 3px #770000;
-      border-radius: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>HTML 문법 기본</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #ffffff;
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+
 </head>
 <body>
-  <div id="container">
-    <p>body { margin-top:20px; margin-left:140px; padding:20px; }</p>
-    <div class="box-margin">margin:30px;</div>
-    <div class="box-padding">padding:30px;</div>
-  </div>
+    <h1>HTML 문법 기본</h1>
+    <ul>
+      <li><a href="예제3-1htmlFrame.html">예제3-1htmlFrame.html - HTML Document Structure (meta)</a></li>
+        <li><a href="예제3-2meta.html">예제3-2meta.html - Paragraph and Line Break Tags</a></li>
+        <li><a href="예제3-3phragraph.html">예제3-3phragraph.html - Character Formatting Tags (italic, bold, underline, strong, emphasized, code, superscript, subscript)</a></li>
+        <li><a href="예제3-4character.html">예제3-4character.html - Special Characters (&nbsp;, &lt;, &gt;, &amp;, &quot;, &apos;, &cent;, &euro;, &copy;, &reg;)</a></li>
+        <li><a href="예제3-5heading.html">예제3-5heading.html - Heading Tags (h1-h6)</a></li>
+        <li><a href="예제3-6stext.html">예제3-6stext.html - Simple Table Example (border, caption, th, tr, td)</a></li>
+        <li><a href="예제3-7table.html">예제3-7table.html - Table with colspan and rowspan</a></li>
+        <li><a href="예제3-8tableSpan.html">예제3-8tableSpan.html - Table with colspan and rowspan (width/height attributes)</a></li>
+        <li><a href="예제3-9tableSize.html">예제3-9tableSize.html - Image Hyperlinks (external site, local HTML, email)</a></li>
+        <li><a href="예제3-10image.html">예제3-10image.html - Image Tag Examples (src, alt, width, height, border, loading)</a></li>
+        <li><a href="예제3-11imageSize.html">예제3-11imageSize.html - Hyperlinks (external, internal document, email, bookmark)</a></li>
+        <li><a href="예제3-12hyperlink.html">예제3-12hyperlink.html - Special Characters Display (revisited with more examples)</a></li>
+        <li><a href="예제3-13hyperImg.html">예제3-13hyperImg.html - Form Input Elements (text, password, radio, checkbox)</a></li>
+    </ul>
 </body>
 </html>
+
