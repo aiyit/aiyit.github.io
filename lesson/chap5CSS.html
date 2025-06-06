@@ -1,40 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>CSS 기본 문법</title>
     <meta charset="utf-8">
+    <title>CSS 기본 문법</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #eef2f7;
             color: #333;
+            line-height: 1.6;
         }
         h1 {
-            color: #0056b3;
-            border-bottom: 2px solid #0056b3;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
             padding-bottom: 10px;
-            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
         }
         ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
+            margin: 0;
         }
         li {
             background-color: #ffffff;
-            margin-bottom: 10px;
-            padding: 12px 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
         }
-        a {
+        li a {
+            display: block;
+            padding: 15px 20px;
             text-decoration: none;
             color: #007bff;
-            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        a:hover {
+        li a:hover,
+        li a:focus {
+            background-color: #f0f8ff;
             color: #0056b3;
-            text-decoration: underline;
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            li a {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
         }
     </style>
 </head>
