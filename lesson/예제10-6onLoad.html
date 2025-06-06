@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>예제 10-6 onLoad()</title>
+</head>
+<body onload="checkCookies()">
+  <p id="cook"></p>
+  
+  <script>
+    function checkCookies() {
+      var text = "";
+      
+      if (navigator.cookieEnabled) {
+        text = "브라우저의 쿠키 기능이 설정되어 있습니다.";
+      } else {
+        text = "브라우저의 쿠키 기능이 꺼져 있습니다.";
+      }
+      
+      document.getElementById("cook").innerHTML = text;
+    }
+  </script>
+</body>
+</html>
+
+
+

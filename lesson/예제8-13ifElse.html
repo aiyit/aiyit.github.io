@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>예제8-14if 조건문</title>
+<Script>
+function time(){
+var clock = new Date().getHours(); // 현재시간
+document.getElementById("time").innerHTML=clock;
+	// 오전 6시 이전이면 
+	if(clock < 6) document.getElementById("cont").innerHTML="꿈나라 입니다."; 
+	//오전 10이전
+	else if(clock<10) document.getElementById("cont").innerHTML="좋은 아침입니다.";
+	else if(clock<13) document.getElementById("cont").innerHTML="점심시간입니다.";
+	else if(clock<16) document.getElementById("cont").innerHTML="좋은 오후 입니다.";
+	else if(clock<19) document.getElementById("cont").innerHTML="저녁시간입니다.";
+	// 오후 7시가 넘을 경우
+	else  document.getElementById("cont").innerHTML="잘 쉬세요.";
+}
+</Script>
+</head>
+<body>
+<h3> else if 조건문</h3>
+<h4>현재 시간 Date()의 시간에 따른 문자열 표시</h4>
+<p onclick="time();">현재시각:<b id="time">클릭 </p>
+<p id="cont"></p>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

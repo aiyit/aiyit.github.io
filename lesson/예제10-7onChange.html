@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>예제10-7onchange()</title>
+  <script>
+    function changeText() {
+      var x = document.getElementById("txt").value;
+      document.getElementById("txt").value = x.toUpperCase();  // 대문자로 변환
+      var y = x.length;  // 입력된 문자의 길이 계산
+
+      if (y < 10) {
+        alert(y + "자 입력됨. 10자 이상 입력하세요!");
+      } else {
+        alert("올바른 입력입니다.");
+      }
+    }
+  </script>
+</head>
+<body id="main">
+  <h3 style="text-align:center;">onchange() 이벤트 예제</h3>
+  <h3 id="bttn">소문자로 입력한 후, 엔터를 누르거나 포커스를 이동해 보세요.</h3>
+  <input type="text" id="txt" size="20" onchange="changeText();">
+</body>
+</html>
+
+
+
+

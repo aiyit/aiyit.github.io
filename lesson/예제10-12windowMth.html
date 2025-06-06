@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'></meta>
+<title>예제 10-12 Window 메소드</title>
+</head>
+<body>
+<p id="target"></p>
+<h3>윈도우 메소드</h3>
+<button  value="창열기" onclick="openWin()">새창열기</button>
+<button  value="창이동" onclick="moveWin()">창이동</button>
+<button  value="창크기" onclick="resizeWin()">창크게 보기</button>
+<button  value="창닫기" onclick="closeWin()">창닫기</button>
+<script>
+	var myWindow;
+	function openWin() {
+	  myWindow = window.open("", "myWindow", "width=250,height=100");
+	  myWindow.document.write("공지사항"); 
+	}
+	function moveWin() {  myWindow.moveTo(600,600); }
+	function resizeWin() { myWindow.resizeTo(600,600); }
+	function closeWin() {   myWindow.close();  }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

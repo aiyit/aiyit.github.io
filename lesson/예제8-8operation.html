@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>함수(Function)</title>
+</head>
+<body>
+<h1>JavaScript 함수(Function)</h1>
+<p id="first"></p>
+<p id="second"></p>
+<script> //함수 선언
+	function jsFunction(a1,a2){  //js함수
+		var a3;  //변수 선언
+		a3 = a1 + a2  //a1, a2 더하기 결과
+		document.write("a1 = "+a1+" a2 = "+a2+" = "+a3+"<br/>");//출력
+		return a3; 	
+	}
+//매개변수 5,6으로 jsFunction 함수 호출한 결과를 “first"에 나타냄
+document.getElementById("first").innerHTML = jsFunction(5,6);
+//매개변수 4,10으로 jsFunction 함수 호출한 결과를 “second"에 나타냄
+document.getElementById("second").innerHTML = jsFunction(4,10);
+</script>
+</body>
+</html>
+
+
+
+
+
+
+

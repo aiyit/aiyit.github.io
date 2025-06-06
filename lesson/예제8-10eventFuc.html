@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>예제8-10함수(Function)계산</title>
+    <script>
+        function calc() {
+            var x = document.getElementById("x").value;//입력된 정수1 값
+            var y = document.getElementById("y").value;//입력된 정수2 값
+            var tot;
+            tot = parseInt(x) + parseInt(y);//입력1,2를 정수로 변환
+            document.getElementById("sum").value = tot;//id="sum"에 결과 출력
+        }
+    </script>
+</head>
+<body>
+<h3>함수 계산 결과</h3>
+<h4>두개의 정수를 입력하세요.</h4>
+     <form>
+        정수 입력1:        
+        <input type="text"　id="x" size="10"/><br />
+        정수 입력2:        
+        <input type="text"　id="y" size="10"/><br />
+	<input type="button" value="확인" onclick="calc();" /> <br />
+        합-------계: 	<input id="sum"size="10" /><br />
+    </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>예제 10-3 노드 추가/삭제(addChild/removeChild)</title>
+<script>
+	function Add() {
+		var add = document.createElement("li");
+		var cnode = document.createTextNode("오렌지");
+		add.appendChild(cnode);
+		document.getElementById("myList").appendChild(add); 
+	}
+	
+	function remove() {
+		var list = document.getElementById("myList");
+		var rnode = list.lastElementChild;
+		if (rnode) list.removeChild(rnode);
+	} 
+</script>
+</head>
+<body id='main'>
+	<h3 style="text-align:center;">노드 추가/삭제(addChild/removeChild)</h3>
+	<h4>클릭버튼 추가/삭제</h4>
+	<ul id="myList">
+		<li>사과</li>
+		<li>바나나</li>
+	</ul>
+	<input type="button" id="bt1" value="추가" onclick="Add();">
+	<input type="button" id="bt2" value="삭제" onclick="remove();">
+</body>
+</html>
+
+

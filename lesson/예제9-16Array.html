@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>예제 9-16 Array 메소드</title>
+</head>
+<body>
+    <h3>Array 메소드 실습</h3>
+    <script>
+        var cars = ["Hyundai", "Kia", "Bens"];
+        var num = [1, 2, 3, 4];
+        var week = ["Mon", "Thu", "Wen"];
+
+        // 메소드 적용 및 결과 저장
+        var concatResult = cars.concat(num);
+        var indexResult = week.indexOf("Thu");
+        var joinResult = num.join("*");
+        var popResult = num.pop(); // 마지막 요소 제거
+        week.push("Thr");          // 요소 추가
+        var pushResult = week;
+        var shiftResult = num.shift(); // 첫 요소 제거
+        var sliceResult = num.slice(1, 3); // 복사된 부분
+        var sortResult = cars.sort();     // 정렬
+        cars.splice(1, 0, "BMW");         // 삽입
+        var spliceResult = cars;
+
+        // 결과 출력
+        document.write("cars.concat(num): " + concatResult + "<br>");
+        document.write("week.indexOf('Thu'): " + indexResult + "<br>");
+        document.write("num.join('*'): " + joinResult + "<br>");
+        document.write("num.pop(): " + popResult + " → [" + num + "]<br>");
+        document.write("week.push('Thr'): [" + pushResult + "]<br>");
+        document.write("num.shift(): " + shiftResult + " → [" + num + "]<br>");
+        document.write("num.slice(1,3): [" + sliceResult + "]<br>");
+        document.write("cars.sort(): [" + sortResult + "]<br>");
+        document.write("cars.splice(1, 0, 'BMW'): [" + spliceResult + "]<br>");
+    </script>
+</body>
+</html>

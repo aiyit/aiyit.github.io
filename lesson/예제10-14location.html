@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>예제 10-14 Location 객체</title>
+</head>
+<body>
+<p>Location href: <b id="wh"></b>입니다.</p>
+<p>Location hostname: <b id="awh"></b>입니다.</p>
+<p>Location pathname: <b id="cd"></b>입니다.</p>
+<p>Location protocol: <b id="pd"></b>입니다.</p>
+<p>Location port: <b id="prt"></b>입니다.</p>
+<h3>Location 객체</h3>
+<button type="button" onclick="lct()">Location 정보 보기</button>
+<button type="button" onclick="assgn()">새 문서 열기</button>
+<script>
+	function lct() {
+		var hf = location.href;
+		var hn = location.hostname;
+		var pn = location.pathname;
+		var pt = location.protocol;
+		var prt = location.port;
+
+		document.getElementById("wh").textContent = hf;
+		document.getElementById("awh").textContent = hn;
+		document.getElementById("cd").textContent = pn;
+		document.getElementById("pd").textContent = pt;
+		document.getElementById("prt").textContent = prt;
+	}
+	function assgn(){ 
+		location.assign("https://w3schools.com/js/");
+	}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

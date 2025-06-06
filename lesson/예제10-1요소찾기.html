@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>예제10-1요소찾기(Find Element)</title>
+  <script>
+    function changeTag() {
+      document.getElementsByTagName("h1")[0].innerHTML = '첫번째 h1: getElementsByTagName';
+    }
+
+    function changeId() {
+      document.getElementById('txt').innerHTML = 'getElementById';
+    }
+
+    function changeCls() {
+      document.getElementsByClassName('cls')[0].innerHTML = 'getElementsByClassName';
+    }
+  </script>
+</head>
+<body id="main">
+  <h1 style="text-align:center;">요소찾기(Find Element)</h1>
+
+  <p id="txt">이 문장은 p 태그의 내용입니다.</p>
+  <h1 class="cls" style="color:blue;">두 번째 h1 요소</h1>
+
+  <input type="button" id="bt1" value="change_title" onclick="changeTag();">
+  <input type="button" id="bt2" value="change_id" onclick="changeId();">
+  <input type="button" class="bt3" value="change_class" onclick="changeCls();">
+</body>
+</html>
+

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>예제 10-13 Screen 객체</title>
+</head>
+<body>
+<p>Screen 크기는 <b id="wh"></b>입니다.</p>
+<p>Screen 가능한 크기는 <b id="awh"></b>입니다.</p>
+<p>Screen 색상은 <b id="cd"></b> 비트입니다.</p>
+<p>Screen 픽셀은 <b id="pd"></b> 비트입니다.</p>
+<h3>Screen 객체</h3>
+<button type="button" onclick="wH()">화면 크기</button>
+<button type="button" onclick="aWh()">가용 크기</button>
+<button type="button" onclick="cD()">칼라 깊이</button>
+<button type="button" onclick="pD()">픽셀 깊이</button>
+<script>
+	function wH() {  
+		var w = screen.width, h = screen.height; 
+		document.getElementById("wh").textContent = "w:" + w + " h:" + h; 
+	}
+	function aWh() {  
+		var w = screen.availWidth, h = screen.availHeight; 
+		document.getElementById("awh").textContent = "w:" + w + " h:" + h;
+	}
+	function cD() {  
+		var c = screen.colorDepth;
+		document.getElementById("cd").textContent = "color:" + c; 	
+	}
+	function pD() { 
+		var p = screen.pixelDepth;  
+		document.getElementById("pd").textContent = "pixel:" + p; 
+	}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

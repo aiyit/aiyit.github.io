@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>예제9-16로또(Lotto) 게임</title>
+    <script>
+        function randomV() {
+            const lottoNum = [];
+
+            while (lottoNum.length < 6) {
+                const num = Math.floor(Math.random() * 45) + 1; // 1~45
+                if (!lottoNum.includes(num)) {
+                    lottoNum.push(num);
+                }
+            }
+
+            lottoNum.sort((a, b) => a - b); // 정렬
+
+            document.getElementById("txt").value = lottoNum.join(", ");
+        }
+    </script>
+</head>
+<body>
+    <h2 align="center">로또(Lotto) 게임(by Park GB)</h2>
+    <p align="center">행운의 로또 1~45 숫자 발생기</p>
+    <form>
+        <input type="button" value="행운의 숫자" onclick="randomV()">
+        <input type="text" size="30" id="txt" readonly>
+    </form>
+</body>
+</html>

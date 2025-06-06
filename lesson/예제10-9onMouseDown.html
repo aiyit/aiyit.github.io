@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>예제 10-9 onMouseDown()/onMouseUp()</title>
+  <script>
+    function mouseDown() {
+      var target = document.getElementById("mouse");
+      target.innerHTML = "onMouseDown()";
+      target.style.border = "2px solid blue";
+    }
+
+    function mouseUp() {
+      var target = document.getElementById("mouse");
+      target.innerHTML = "onMouseUp()";
+      target.style.border = "2px solid red";
+    }
+  </script>
+</head>
+<body id="main">
+  <h3 id="bttn">마우스를 누르고 놓아보세요</h3>
+  <h3 id="mouse"
+      style="text-align:center; border:2px solid red;"
+      onmousedown="mouseDown()" onmouseup="mouseUp()">
+    onMouseUp()
+  </h3>
+</body>
+</html>
+
+
+
+
+
+
+

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>예제 9-15 현재 시간 표시</title>
+</head>
+<body>
+    <h3>setTimeout()으로 현재 시간 갱신</h3>
+    <p>현재 시간: <b id="ca"></b></p>
+
+    <script>
+        // 시간을 표시하는 함수 정의
+        function setTime() {
+            var time = new Date();
+
+            // 시:분:초:밀리초 형식으로 시간 구성
+            var nowTime = 
+                time.getHours().toString().padStart(2, '0') + ":" +
+                time.getMinutes().toString().padStart(2, '0') + ":" +
+                time.getSeconds().toString().padStart(2, '0') + ":" +
+                time.getMilliseconds().toString().padStart(3, '0');
+
+            // 화면에 출력
+            document.getElementById("ca").innerText = nowTime;
+
+            // 재귀적으로 10ms 후 함수 다시 호출
+            setTimeout(setTime, 10);  // 문자열 대신 함수 이름 사용 권장
+        }
+
+        // 최초 호출
+        setTime();
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>예제8-12내장 함수</title>
+    <script>
+  	 function promptMsg() {
+               prompt("무엇이든지 물어보세요?" , "질문은 여기에");
+	}
+	 function confirmMsg() {
+                var result= confirm("계속 진행할까요?");
+		if(result){ }//예를 클릭한 경우 실행할까요
+		else {}// 아니로를 클릭한 경우 실행
+	}
+      function alertMsg() {
+              alert("실행할까요?");
+	}
+    </script>
+</head>
+<body>
+<h3>유용한 함수</h3>
+<h4>단추를 누르면 경고창이 나타납니다.</h4>
+<input type="button" value="prompt" onclick="promptMsg()">
+<input type="button" value="confirm" onclick="confirmMsg()"> 
+<input type="button" value="경고창" onclick="alertMsg()">
+</body>
+
+
+
+
+
+
+
+
+
+

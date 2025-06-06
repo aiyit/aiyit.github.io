@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>예제9-3프로토타입</title>
+</head>
+<body>
+<h3>프로토타입</h3>
+    <script>
+        function Human(name, age, sex,speed)
+        {
+	        this.name=name;           
+		this.age=age;
+        	this.sex = sex;
+		this.speed = speed;
+	}
+	Human.prototype.walk = function(){ this.speed = 5;  }
+        Human.prototype.run = function () { this.speed += 3; }
+	var cmHuman  = new Human("Park",12,"male", 20) ;
+	var cfHuman  = new Human("Kim",12,"female", 15) ;
+	do {
+  	document.write("Name:"+cmHuman.name+" run:"+ cmHuman.speed + "<br />");
+        cmHuman.run();
+  	document.write("Name:" + cfHuman.name + " run:" + cfHuman.speed+ "<br />");
+        cfHuman.run();} while( cmHuman.speed < 35)
+	cmHuman.walk();  cfHuman.walk();
+  	document.write("Name:" + cmHuman.name + " walk:" + cmHuman.speed + "<br />");
+  	document.write("Name:" + cfHuman.name + " walk:" + cfHuman.speed+"<br />");
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

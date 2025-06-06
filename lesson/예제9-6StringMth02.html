@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head><title>예제9-6String 메소드2</title></head>
+<body>
+<h3>String 메소드2</h3>
+<p>match : <b id="ca"></b></p>
+<p>search : <b id="cca"></b></p>
+<p>slice : <b id="cnct"></b></p>
+<p>split : <b id="ido"></b></p>
+<p>toUpperCase : <b id="lido"></b></p>
+<p>toString : <b id="rpl"></b></p>
+<script>
+  var str = "Hello, welcome, AI, Software";
+  var str2 = 5678;
+  var ca = str.match("AI"), cca = str.search("Software");
+  var cnct = str.slice(7,12), ido = str.split(" ");
+  var lido = str.toUpperCase(), rpl = str2.toString();
+  document.getElementById("ca").innerHTML = ca;
+  document.getElementById("cca").innerHTML = cca;
+  document.getElementById("cnct").innerHTML = cnct;
+  document.getElementById("ido").innerHTML = ido;
+  document.getElementById("lido").innerHTML = lido;
+  document.getElementById("rpl").innerHTML = rpl;
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

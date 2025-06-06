@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>예제8-15switch case문</title>
+<Script>
+function time(){
+    var grade = prompt("성적을 입력하시오:", "A-F사이의 문자로");
+    switch (grade) {
+        case 'A': document.getElementById("grade").innerHTML="A학점입니다.";
+          break;
+        case 'B': document.getElementById("grade").innerHTML="B학점입니다.";
+            break;
+        case 'C': document.getElementById("grade").innerHTML="C학점입니다.";
+            break;
+        case 'D': document.getElementById("grade").innerHTML="D학점입니다.";
+            break;
+        case 'F': document.getElementById("grade").innerHTML="F학점입니다.";
+            break;
+        default: document.getElementById("grade").innerHTML="잘못입력...";  }
+}
+</Script>
+</head>
+<body>
+<h3> switch 조건문</h3>
+<h4>사용자 입력 문자에 따른 문자표시</h4>
+<p onclick="time();">학점입력:<b id="grade">클릭 </p>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

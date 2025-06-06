@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>   <title>숫자 맞추기 게임</title>
+  <script>     var randomNum;       // 랜덤 숫자 저장
+	    var clickNum = 0;    // 클릭 횟수
+    function randomV() {
+      randomNum = Math.floor(Math.random() * 100);  // 0~99 정수
+      document.getElementById("rnd").value = "**";
+      clickNum = 0;
+      document.getElementById("clickN").value = "";
+      document.getElementById("result").value = "";
+      document.getElementById("txt").value = "";      }
+    function findNum() {
+      if (typeof randomNum !== 'number') {
+        alert("먼저 '랜덤발생' 버튼을 눌러 주세요.");
+        return;    }
+      var number = parseInt(document.getElementById("txt").value);
+      if (isNaN(number) || number < 0 || number > 99) {
+        alert("0부터 99 사이의 숫자를 입력하세요.");         return;    }
+      clickNum++;        var result = "";
+      if (number === randomNum) {          result = "성공입니다!";       
+      } else if (number < randomNum) {         result = "값이 낮습니다.";
+      } else {        result = "값이 높습니다.";     }
+      document.getElementById("result").value = result;
+      document.getElementById("clickN").value = clickNum;     }
+  </script> </head>
+<body>
+  <h2>숫자 맞추기 게임</h2>
+  <p>컴퓨터가 발생한 0~99 사이의 숫자를 가장 적은 횟수로 맞추세요.</p>
+  <form onsubmit="return false;">
+    컴퓨터 랜덤 숫자:
+    <input type="button" value="랜덤발생" onclick="randomV()">
+    <input type="text" id="rnd" size="3" readonly><p/>
+    숫자 입력(0~99): <input type="text" id="txt" size="3">
+    <input type="button" value="확인" onclick="findNum();"><p/>
+    힌트: <input type="text" id="result" size="16" readonly><p/>
+    클릭 횟수: <input type="text" id="clickN" size="5" readonly><br/><br/>
+    <input type="reset" value="다시하기" onclick="location.reload();">
+  </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

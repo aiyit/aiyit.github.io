@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>예제 10-6 addEventListener()</title>
+  <script>
+    function addE() {
+      var x = document.getElementById("txt");
+      // 같은 요소에 클릭 이벤트를 두 개 등록한다
+      x.addEventListener("click", add2);
+      x.addEventListener("click", add3);
+    }
+
+    function add2() {
+      alert("두번째 이벤트 호출");
+    }
+    function add3() {
+      alert("세번째 이벤트 호출!");
+    }
+  </script>
+</head>
+<body>
+  <h3>버튼을 클릭하세요</h3>
+  <input id="txt" type="button" value="클릭" onclick="addE()">
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>예제 10-5 onClick()</title>
+<script>
+	function changeText(){
+	  document.getElementById("one").innerHTML = "입력타입을 눌렀군요!"
+	}
+	function changeButton(){
+	  document.getElementById("bttn").innerHTML = "버튼을 눌렀군요!"
+	}
+</script>
+</head>
+<body id="main">
+	<h3 id="one" style="text-align:center;">onClick()</h3>
+	<h4 onclick="this.innerHTML='나를 눌렀군요!!'">Click me!!</h4>
+	<h3 id="bttn">Button</h3>
+	<input type="button" id="bt1" value="onClick" onclick="changeText();">
+	<button onclick="changeButton()">눌러봐!!</button>
+</body>
+</html>
+
+

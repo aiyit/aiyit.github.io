@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>navigator 객체</title>
+</head>
+<body>
+<h3>navigator 객체</h3>
+<p>navigator appCodeName: <b id="wh"></b>입니다.</p>
+<p>navigator appName: <b id="awh"></b>입니다.</p>
+<p>navigator appVersion: <b id="cd"></b>입니다.</p>
+<p>navigator cookieEnabled: <b id="pd"></b>입니다.</p>
+<p>navigator onLine: <b id="prt"></b>입니다.</p>
+<p>navigator platform: <b id="pltf"></b>입니다.</p>
+<p>navigator userAgent: <b id="userA"></b>입니다.</p>
+<button type="button" onclick="lct()">navigator 정보 보기</button>
+<script>
+	function lct() {
+		 var appCodeName = navigator.appCodeName;
+		 var appVersion = navigator.appVersion; 
+		 var appName = navigator.appName;
+		 var cookieEnabled = navigator.cookieEnabled;
+		 var onLine = navigator.onLine;
+		 var platform = navigator.platform;
+		 var userAgent = navigator.userAgent;
+		 
+		document.getElementById("wh").textContent = appCodeName;
+		document.getElementById("awh").textContent = appName;
+		document.getElementById("cd").textContent = appVersion;
+		document.getElementById("pd").textContent = cookieEnabled;
+		document.getElementById("prt").textContent = onLine;
+		document.getElementById("pltf").textContent = platform;
+		document.getElementById("userA").textContent = userAgent;
+	}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

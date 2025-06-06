@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>예제9-8Number 메소드</title>
+</head>
+<body>
+<h3>Number 메소드</h3>
+<p>isFinite : <b id="ca"></b></p>
+<p>isInteger : <b id="cca"></b></p>
+<p>isNaN : <b id="cnct"></b></p>
+<p>toExponential : <b id="ido"></b></p>
+<p>toFixed : <b id="fxd"></b></p>
+<p>toPrecision : <b id="prc"></b></p>
+<p>toString : <b id="str"></b></p>
+<p>valueOf : <b id="vlf"></b></p>
+<script>
+  var num = 1234.567 ;
+  document.getElementById("ca").innerHTML = Number.isFinite(num);
+  document.getElementById("cca").innerHTML =Number.isInteger(num);
+	// num은 NaN인가? false
+  document.getElementById("cnct").innerHTML = Number.isNaN(num);
+  document.getElementById("ido").innerHTML = num.toExponential(); 
+	// 소수 첫째짜리 까지 표현 234.3
+  document.getElementById("fxd").innerHTML = num.toFixed(1);
+	// 4자리 표현 234.3
+  document.getElementById("prc").innerHTML =num.toPrecision(4);
+  document.getElementById("str").innerHTML = num.toString();
+  document.getElementById("vlf").innerHTML = num.valueOf();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

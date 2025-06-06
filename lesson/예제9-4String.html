@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head> <title>예제9-4String 속성</title> </head>
+<body>
+<h3>String 속성</h3>
+<p>Length : <b id="Lth"></p>
+<p>Prototype : <b id="proto"></p>
+<p>Constructor : <b id="cnst"></p>
+<script> //prototype에 의한 속성 추가
+	function Human(name, job, birth) { //객체 생성
+		this.name = name;
+		this.job = job;
+		this.birth = birth; 
+	}
+	Human.prototype.age = 23;  //prototype에 의한 속성 추가
+	var kim = new Human("Kim", "student", 2003);
+	document.getElementById("proto").innerHTML = kim.age;
+	document.getElementById("cnst").innerHTML = kim.constructor;
+	document.getElementById("Lth").innerHTML = kim.name.length;
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

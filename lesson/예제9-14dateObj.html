@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>예제9-17Date 객체 메소드 예제</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<h3>Date 객체 메소드 활용</h3>
+	<p><b>getDate()</b> : 오늘 날짜 (1~31) → <span id="ca"></span></p>
+	<p><b>getDay()</b> : 요일 (0~6, 일=0) → <span id="cca"></span></p>
+	<p><b>getFullYear()</b> : 연도 → <span id="cnct"></span></p>
+	<p><b>getHours()</b> : 현재 시 (0~23) → <span id="ido"></span></p>
+	<p><b>getMilliseconds()</b> : 밀리초 (0~999) → <span id="vlf"></span></p>
+	<p><b>getMinutes()</b> : 분 (0~59) → <span id="fxd"></span></p>
+	<p><b>getMonth()</b> : 월 (0~11, 0=1월) → <span id="prc"></span></p>
+	<p><b>getSeconds()</b> : 초 (0~59) → <span id="exp"></span></p>
+	<p><b>getTime()</b> : 1970년 1월 1일부터 현재까지의 밀리초 → <span id="str"></span></p>
+
+	<script>
+		// 현재 날짜와 시간 정보 가져오기
+		var today = new Date();
+
+		// 각 Date 메소드를 이용하여 HTML에 출력
+		document.getElementById("ca").innerText = today.getDate();
+		document.getElementById("cca").innerText = today.getDay();
+		document.getElementById("cnct").innerText = today.getFullYear();
+		document.getElementById("ido").innerText = today.getHours();
+		document.getElementById("vlf").innerText = today.getMilliseconds();
+		document.getElementById("fxd").innerText = today.getMinutes();
+		document.getElementById("prc").innerText = today.getMonth();
+		document.getElementById("exp").innerText = today.getSeconds();
+		document.getElementById("str").innerText = today.getTime();
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

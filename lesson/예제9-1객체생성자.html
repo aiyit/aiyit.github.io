@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>예제9-1객체 생성자</title>
+</head>
+<body>
+<h3>객체생성</h3>
+    <script>
+       var human ={ name: "Park", age:40, sex:"female", speed:20,    //속성
+              walk : function(){ this.speed = 5;},      //걷기 메소드
+              run : function(){ this.speed +=3;},        //달리기 메소드
+        };
+ 	do {
+ 	document.write("이름:"+human.name+ " 달리기:" + human.speed + "<br />");
+        human.run();
+        } while( human.speed < 35)
+	human.walk();
+	document.write("이름:"+ human.name + " 걷기:" + human.speed + "<br />");
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
