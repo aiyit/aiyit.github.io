@@ -4,12 +4,22 @@ body {
     padding: 20px;
     background-color: #f9fbfd;
     color: #333;
-    font-size: 2em;
-    line-height: 1.6;
+    font-size: 1.1em;
+    line-height: 1.8;
+    text-align: center;
 }
-p {
-    margin-bottom: 20px;
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.2em;
+    color: #2c3e50;
 }
+
+p, pre, ul, ol, table, form, div {
+    margin: 0 auto 20px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
 pre {
     background-color: #eef2f7;
     border: 1px solid #ccc;
@@ -18,7 +28,32 @@ pre {
     overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
+    text-align: left; /* 코드 가독성을 위해 예외적으로 왼쪽 정렬 */
 }
+
+ul, ol {
+    padding-left: 20px;
+    text-align: left; /* 목록도 예외적으로 왼쪽 정렬 */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+img, video, audio, iframe {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
 @media (max-width: 480px) {
     body {
         font-size: 1em;
