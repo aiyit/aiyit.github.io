@@ -56,10 +56,10 @@ img, video, audio, iframe {
 
 @media (max-width: 980px) {
     body {
-        font-size: 2em;
+        font-size: 25px;
         padding: 15px;
     }
     pre {
-        font-size: 2em;
+        font-size: 25px;
     }
 }
