@@ -4,7 +4,7 @@ body {
     padding: 20px;
     background-color: #f9fbfd;
     color: #333;
-    font-size: 1.1em;
+    font-size: 2em;
     line-height: 1.8;
     text-align: center;
 }
@@ -56,10 +56,10 @@ img, video, audio, iframe {
 
 @media (max-width: 480px) {
     body {
-        font-size: 1em;
+        font-size: 2em;
         padding: 15px;
     }
     pre {
-        font-size: 0.95em;
+        font-size: 2em;
     }
 }
