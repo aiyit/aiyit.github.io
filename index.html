@@ -21,8 +21,7 @@
 <meta charset="utf-8"/>
 <meta property="og:title" content="여주대학교 AI 소프트웨어과"/>
 <meta property="og:description" content="여주대학교 AI 소프트웨어과의 교육, 취업, 교수진 정보를 소개합니다."/>
-<meta property="og:image" content="https://aiyit.github.io/images/logo.png"/> <!-- 로고 URL로 교체 -->
-<meta property="og:url" content="https://aiyit.github.io/"/>
+<meta property="og:image" content="https://aiyit.github.io/images/logo.png"/> <meta property="og:url" content="https://aiyit.github.io/"/>
 <meta property="og:type" content="website"/>
 <meta name="title" content="여주대학교 AI 소프트웨어과"/>
 <meta name="author" content="여주대학교 AI 소프트웨어과"/>
@@ -32,20 +31,16 @@
 <link href="style.css" rel="stylesheet"/>
 </head>
 <body class="bg-white text-gray-300 leading-relaxed">
-<!-- 헤더 -->
 <header class="custom-header shadow-md fixed top-0 left-0 right-0 z-50">
 <div class="max-w-6xl mx-auto flex justify-between items-center px-4 py-1">
-<!-- 왼쪽: ChatGPT 로고 -->
 <div class="flex-shrink-0">
 <a href="https://chatgpt.com" rel="noopener noreferrer" target="_blank">
 <img alt="Chat Logo" class="h-12 w-auto" src="/images/chatLogo.png"/></a>
 </div>
-<!-- 가운데: 학과 로고 + 텍스트 -->
 <div class="flex flex-col items-center text-center">
 <img alt="AI 소프트웨어과 로고" class="h-12" src="/images/depMenu.png"/>
 <h1 class="text-sm font-bold text-gray-300">AI 소프트웨어과</h1>
 </div>
-<!-- 오른쪽: 메뉴 버튼 + 여주대 로고 -->
 <div class="flex items-center space-x-2">
 <button id="menuToggle">
 <img alt="AI 소프트웨어" class="h-12 w-auto" src="/images/dlogo.png"/>
@@ -56,7 +51,6 @@
 </div>
 </div>
 </header>
-<!-- 메뉴 오버레이 -->
 <div class="hidden fixed inset-0 bg-black bg-opacity-70 z-40 flex items-center justify-center" id="menuOverlay">
 <div class="bg-white p-6 rounded-lg space-y-4 text-center">
 <a class="block text-lg font-semibold text-purple-700" href="#about">학과소개</a>
@@ -97,8 +91,7 @@
     <p><a class="text-gray-300 hover:underline font-bold" href="#news" rel="noopener noreferrer" target="_blank">
       AI 스토리</a></p>
 </div>
-<!-- 더보기 버튼 -->
-      <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="aboutToggle">더보기 +</button></div>
+<div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="aboutToggle">더보기 +</button></div>
 </section>
 	<section class="mb-2 section" id="gallery">
 <h2 class="text-gray-3000 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">AI 소프트웨어과 홍보 갤러리</h2>
@@ -123,31 +116,26 @@
   <script async src="//www.instagram.com/embed.js"></script>
 </div>
   </div>
-  <!-- 더보기 버튼 -->
-      <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="galleryToggle">더보기 +</button></div>
+  <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="galleryToggle">더보기 +</button></div>
 </section>
 <section class="mb-2 section bg-pattern" id="x3d">
 <div class="flex items-center justify-start space-x-2 mb-2">
   <h2 class="text-xl font-bold underline text-gray-300">AI 소프트웨어과 VR/AR</h2>
   <div class="text-sm text-gray-400"> --->  드래그 또는 입체안경은 스마트폰을 세로방향.</div>
 </div>
-<!-- 버튼 -->
-  <div id="x3dControls" class="mb-4">
+<div id="x3dControls" class="mb-4">
     <button onclick="loadX3D('11-2groupbutterFlying_around.html')" style="margin-right: 10px;">나비 애니메이션</button>
     <button onclick="loadX3D('11-5aspot_ani.html')" style="margin-right: 10px;">서치라이트</button>
     <button onclick="loadX3D('11-6pick_changebutter.html')">색상 바꾸기</button>
   </div>
 
 <div class="grid grid-cols-1 gap-1 text-gray-300">
-    <!-- 불러올 내용이 들어갈 영역 -->
-    <!-- 동적으로 문서가 삽입될 영역 -->
     <div id="x3dContent" style="min-height: 200px;"> </div>
  </div>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.js"></script>
     <script type="text/javascript" src="https://www.x3dom.org/x3dom/release/x3dom.js"></script>
     <link rel="stylesheet" type="text/css" href="https://www.x3dom.org/x3dom/release/x3dom.css" /> 
-	<!-- 로딩 스크립트 -->
-<script>
+	<script>
   function loadX3D(fileName) {
   fetch(fileName)
   .then(response => {
@@ -190,7 +178,33 @@
  <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="aboutToggle">더보기 +</button></div>
 </section>
 
-
+<section class="mb-2 section" id="web_programming">
+  <h2 class="text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">웹 프로그래밍</h2>
+  <div class="overflow-hidden transition-all duration-500 text-gray-300" id="webProgrammingText" style="max-height: 250px;">
+    <p class="mb-4">
+      웹 프로그래밍은 웹 페이지와 웹 애플리케이션을 개발하는 기술입니다. 
+      사용자와 상호작용하는 동적인 웹 콘텐츠를 만들고, 데이터를 처리하며, 
+      다양한 기능을 구현하는 데 필수적인 역량입니다.
+    </p>
+    <ul class="list-disc list-inside space-y-2 text-base text-gray-300">
+      <li>
+        <strong>HTML5 (HyperText Markup Language 5):</strong> 웹 페이지의 구조와 내용을 정의하는 마크업 언어입니다. 
+        텍스트, 이미지, 비디오 등 다양한 콘텐츠를 웹에 표현할 수 있게 합니다.
+      </li>
+      <li>
+        <strong>CSS3 (Cascading Style Sheets 3):</strong> 웹 페이지의 디자인과 레이아웃을 담당하는 스타일 시트 언어입니다. 
+        색상, 글꼴, 간격, 애니메이션 등 시각적인 요소를 제어하여 웹 페이지를 아름답게 꾸며줍니다.
+      </li>
+      <li>
+        <strong>JavaScript:</strong> 웹 페이지에 동적인 기능을 부여하는 프로그래밍 언어입니다. 
+        사용자의 행동에 반응하고, 데이터를 조작하며, 복잡한 웹 애플리케이션을 구축하는 데 사용됩니다.
+      </li>
+    </ul>
+  </div>
+  <div class="mt-3 text-gray-300">  
+    <a href="Lesson/indexL.html" class="text-gray-300 underline text-sm focus:outline-none">자세히 보기 +</a>
+  </div>
+</section>
 <section class="mb-2 section" id="entrance">
   <h2 class="text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">AI 소프트웨어과 입학안내</h2>
   <div class="overflow-hidden transition-all duration-500 text-gray-300" id="jobText" style="max-height: 250px;">
@@ -270,30 +284,28 @@
         </a>
   </li>
   </ul>
-   <!-- 더보기 버튼 -->
-        <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="curriculumToggle">더보기 +</button></div> 
+   <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="curriculumToggle">더보기 +</button></div> 
   </section>
 <section class="mb-2 section bg-pattern" id="news">
 <h2 class="text-gray-300 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">AI 소프트웨어과 NEWS</h2>
 <ul class="list-disc list-inside space-y-2 text-base leading-relaxed text-gray-300">
 <li class="text-gray-300">
-<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N2&amp;view_type=sm" rel="noopener noreferrer" target="_blank">
+<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N2&view_type=sm" rel="noopener noreferrer" target="_blank">
       인공지능 최신 기술 보기 →
     </a>
 </li>
 <li class="text-gray-300">
-<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N4&amp;view_type=sm" rel="noopener noreferrer" target="_blank">
+<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N4&view_type=sm" rel="noopener noreferrer" target="_blank">
       인공지능 최신 산업 보기 →
     </a>
 </li>
 <li class="text-gray-300">
-<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.com/news/articleList.html?sc_sub_section_code=S2N110&amp;view_type=sm" rel="noopener noreferrer" target="_blank">
+<a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.com/news/articleList.html?sc_sub_section_code=S2N110&view_type=sm" rel="noopener noreferrer" target="_blank">
       AI Times 뉴스브리핑 →
     </a>
 </li>
 </ul>
-  <!-- 더보기 버튼 -->
-      <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="newsToggle">더보기 +</button></div>
+  <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="newsToggle">더보기 +</button></div>
 </section>
   
  
@@ -315,28 +327,21 @@
   </div>
   </section>
 <section class="mb-2 py-4" id="contact" style="background-color: #0f172a;">
-<h2 class="text-xl font-bold mb-3 text-gray-300 text-left underline underline-offset-4 decoration-2 pl-6">AI 소프트웨어과 SNS &amp; 문의</h2>
-<!-- 아이콘 링크 영역 -->
+<h2 class="text-xl font-bold mb-3 text-gray-300 text-left underline underline-offset-4 decoration-2 pl-6">AI 소프트웨어과 SNS & 문의</h2>
 <div class="flex justify-center gap-4 items-center text-gray-300">
-<!-- Blog -->
-<a class="text-gray-300" href="https://m.blog.naver.com/PostList.naver?blogId=gbpark20&amp;tab=2" rel="noopener noreferrer" target="_blank">
+<a class="text-gray-300" href="https://m.blog.naver.com/PostList.naver?blogId=gbpark20&tab=2" rel="noopener noreferrer" target="_blank">
 <img alt="블로그" class="w-10 h-10 hover:scale-110 transition-transform" src="/images/blog.PNG"/>
 </a>
-<!-- Instagram -->
 <a class="text-gray-300" href="https://www.instagram.com/ai_software_yit" rel="noopener noreferrer" target="_blank">
 <img alt="인스타그램" class="w-10 h-10 hover:scale-110 transition-transform" src="/images/instagram.PNG"/>
 </a>
-<!-- YouTube -->
 <a class="text-gray-300" href="https://youtube.com/@yit_nde" rel="noopener noreferrer" target="_blank">
 <img alt="유튜브" class="w-10 h-10 hover:scale-110 transition-transform" src="/images/ytube.PNG"/>
 </a>
-<!-- Email -->
 <a class="text-gray-300" href="mailto:gbpark@yit.ac.kr">
 <img alt="이메일" class="w-10 h-10 hover:scale-110 transition-transform" src="/images/email.PNG"/>
 </a>
-  <!-- QR code -->
- 
-<a class="text-gray-300" href="https://aiyit.github.io/">
+  <a class="text-gray-300" href="https://aiyit.github.io/">
 <img class="w-10 h-10 hover:scale-110 transition-transform" src="/images/qr_code_ai_300x300.png" alt="AIYIT QR 코드">
 </a>
 </div>
@@ -373,6 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
   toggleSection("aboutToggle", "aboutText", "250px");
   toggleSection("jobToggleBtn", "jobText", "180px");
   toggleSection("galleryToggle", "galleryText", "250px");
+  // No toggle needed for "webProgrammingText" as it has a direct link
 });
 </script>
 <script>
