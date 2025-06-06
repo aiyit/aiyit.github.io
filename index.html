@@ -112,6 +112,7 @@
 <section class="mb-2 section bg-pattern" id="x3d">
 <div class="flex items-center justify-start space-x-2 mb-2">
   <h2 class="text-xl font-bold underline text-gray-300">AI 소프트웨어과 VR/AR</h2>
+ <div class="text-base overflow-hidden transition-all duration-500 text-gray-300" id="x3dText" style="max-height: 250px;">
   <div class="text-sm text-gray-400"> --->  드래그 또는 입체안경은 스마트폰을 세로방향.</div>
 </div>
 <div id="x3dControls" class="mb-4">
@@ -164,14 +165,14 @@
   window.addEventListener('DOMContentLoaded', () => {
     loadX3D('11-2groupbutterFlying_around.html');
   });
-
 </script>
+</div>
  <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="x3dToggle">더보기 +</button></div>
 </section>
 
 <section class="mb-2 section" id="web">
   <h2 class="text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">AI 웹 프로그래밍</h2>
-  <div class="overflow-hidden transition-all duration-500 text-gray-300" id="webProgrammingText" style="max-height: 250px;">
+  <div class="overflow-hidden transition-all duration-500 text-gray-300" id="weText" style="max-height: 250px;">
     <p class="mb-4">
       웹 프로그래밍은 웹 페이지와 웹 애플리케이션을 개발하는 기술입니다. 
       사용자와 상호작용하는 동적인 웹 콘텐츠를 만들고, 데이터를 처리하며, 
@@ -199,7 +200,7 @@
 </section>
 <section class="mb-2 section" id="entrance">
   <h2 class="text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">AI 소프트웨어과 입학안내</h2>
-  <div class="overflow-hidden transition-all duration-500 text-gray-300" id="jobText" style="max-height: 250px;">
+  <div class="overflow-hidden transition-all duration-500 text-gray-300" id="entranceText" style="max-height: 250px;">
    <p><a class="text-gray-300 hover:underline font-bold" href="https://ipsi.yit.ac.kr/ipsi/cms/CM_PV01_CON/CM_PV01_V01.do?MENU_SN=1868" rel="noopener noreferrer" target="_blank">
       모집요강</a></p>
    <p><a class="text-gray-300 hover:underline font-bold" href="https://ipsi.yit.ac.kr/ipsi/cms/CM_BB01_CON/CM_BB01_L01.do?MENU_SN=1391" rel="noopener noreferrer" target="_blank">
@@ -239,6 +240,7 @@
 
 <section class="mb-2 section" id="licence">
   <h2 class=" text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-gray-300">AI 소프트웨어과 자격증</h2>
+  <div class="overflow-hidden transition-all duration-500 text-gray-300" id="licenceText" style="max-height: 250px;">
   <ul class="list-disc list-inside space-y-1 text-base text-gray-300">
   <li class="text-gray-300">
   <a class="text-gray-300 underline hover:text-blue-900 text-gray-300" href="https://www.q-net.or.kr" rel="noopener noreferrer" target="_blank">
@@ -276,9 +278,11 @@
         </a>
   </li>
   </ul>
+  </div>
    <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="licenceToggle">더보기 +</button></div>
 <section class="mb-2 section bg-pattern" id="news">
 <h2 class="text-gray-300 text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2">AI 소프트웨어과 NEWS</h2>
+	  <div class="overflow-hidden transition-all duration-500 text-gray-300" id="newsText" style="max-height: 250px;">
 <ul class="list-disc list-inside space-y-2 text-base leading-relaxed text-gray-300">
 <li class="text-gray-300">
 <a class="text-gray-300 hover:underline font-medium" href="https://www.aitimes.kr/news/articleList.html?sc_section_code=S1N2&view_type=sm" rel="noopener noreferrer" target="_blank">
@@ -302,6 +306,7 @@
  
 <section class="mb-2 section bg-pattern" id="professors">
   <h2 class=" text-xl font-bold mb-1 text-left underline text-gray-300">AI 소프트웨어과 교수진</h2>
+	 <div class="overflow-hidden transition-all duration-500 text-gray-300" id="professorsText" style="max-height: 250px;">
   <div class="grid grid-cols-1 gap-1 text-gray-300">
   <div class="text-center text-gray-300">
   <img alt="홍광희 교수" class="w-48 mx-auto" src="/images/hkh.PNG"/>
@@ -316,6 +321,7 @@
   <p class="mt-1 text-center text-gray-300">AI에이전트 응용/딥러닝/AI콘텐츠크리에이터</p>
   </div>
   </div>
+ </div>
  <div class="mt-3 text-gray-300">  <button class="text-gray-300 underline text-sm focus:outline-none" id="professorsToggle">더보기 +</button></div>
   </section>
 <section class="mb-2 py-4" id="contact" style="background-color: #0f172a;">
@@ -368,8 +374,13 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   toggleSection("aboutToggle", "aboutText", "250px");
-  toggleSection("jobToggleBtn", "jobText", "180px");
+  toggleSection("jobToggle", "jobText", "180px");
   toggleSection("galleryToggle", "galleryText", "250px");
+  toggleSection("licenceToggle", "licenceText", "250px");
+  toggleSection("entranceToggle", "entrance", "180px");
+  toggleSection("x3dToggle", "x3dText", "250px");
+  toggleSection("webToggle", "webText", "250px");
+	  toggleSection("newsToggle", "newsText", "250px");
   // No toggle needed for "webProgrammingText" as it has a direct link
 });
 </script>
