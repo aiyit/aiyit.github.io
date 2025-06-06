@@ -54,7 +54,7 @@ img, video, audio, iframe {
     margin: 0 auto;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 980px) {
     body {
         font-size: 2em;
         padding: 15px;
