@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 디자인 기본 - 모바일</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #eef2f7;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            overflow: hidden; /* Ensure no overflow on smaller screens */
+        }
+
+        li a {
+            display: block;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #007bff;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        li a:hover,
+        li a:focus {
+            background-color: #f0f8ff;
+            color: #0056b3;
+        }
+
+        /* Small adjustments for very narrow screens if needed */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+            li a {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>CSS 디자인 기본 예제 (모바일)</h1>
+    <ul>
+        <li><a href="예제6-1display.html" target="_blank">예제6-1 display 속성</a></li>
+        <li><a href="예제6-2marginPadding.html" target="_blank">예제6-2 margin과 padding</a></li>
+        <li><a href="예제6-3static.html" target="_blank">예제6-3 position: static</a></li>
+        <li><a href="예제6-4relative.html" target="_blank">예제6-4 position: relative</a></li>
+        <li><a href="예제6-5absolute.html" target="_blank">예제6-5 position: absolute</a></li>
+        <li><a href="예제6-6fixed.html" target="_blank">예제6-6 position: fixed</a></li>
+        <li><a href="예제6-7sticky.html" target="_blank">예제6-7 position: sticky</a></li>
+        <li><a href="예제6-8position.html" target="_blank">예제6-8 다양한 position 속성</a></li>
+        <li><a href="예제6-9zIndex.html" target="_blank">예제6-9 z-Index</a></li>
+        <li><a href="예제6-10opacity.html" target="_blank">예제6-10 투명성 (Opacity)</a></li>
+        <li><a href="예제6-11overflow.html" target="_blank">예제6-11 overflow 속성</a></li>
+        <li><a href="예제6-12floatClear.html" target="_blank">예제6-12 float과 clear</a></li>
+        <li><a href="예제6-13headerStyle.html" target="_blank">예제6-13 헤더 스타일</a></li>
+        <li><a href="예제6-14navigation.html" target="_blank">예제6-14 내비게이션</a></li>
+        <li><a href="예제6-15horizontalNav.html" target="_blank">예제6-15 수평 내비게이션</a></li>
+        <li><a href="예제6-16verticallNav.html" target="_blank">예제6-16 수직 내비게이션</a></li>
+        <li><a href="예제6-17dropDown.html" target="_blank">예제6-17 드롭다운 메뉴</a></li>
+    </ul>
+</body>
+</html>

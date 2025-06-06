@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 비서와 함께하는 웹호스팅</title>
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #eef2f7;
+            color: #333;
+            line-height: 1.6;
+            box-sizing: border-box;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            background-color: #333;
+            color: white;
+            padding: 8px 0; /* 헤더 높이를 절반으로 줄임 */
+            text-align: center;
+            position: fixed; /* 상단 고정 */
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: white; /* 헤더 글씨 색상을 흰색으로 변경하여 잘 보이도록 함 */
+        }
+
+        /* 메인 콘텐츠 영역 */
+        main {
+            padding-top: 40px; /* 고정 헤더 높이에 맞춰 여백 조정 */
+            /* padding-bottom 제거: 푸터가 고정되지 않으므로 필요 없음 */
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        section h2 {
+            color: #007bff;
+            font-size: 1.8em;
+            margin-top: 0;
+        }
+
+        section p {
+            line-height: 1.6;
+        }
+
+        /* '자세히 보기' 링크 스타일 */
+        section a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        section a:hover {
+            background-color: #0056b3;
+        }
+
+        /* 푸터 스타일 */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 8px 0; /* 푸터 높이를 절반으로 줄임 */
+            /* position: fixed; 제거 */
+            /* bottom: 0; 제거 */
+            /* left: 0; 제거 */
+            /* width: 100%; 제거 (auto로 자동 조절) */
+            margin-top: 40px; /* 메인 콘텐츠와 푸터 사이에 여백 추가 */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.2em;
+            }
+
+            main {
+                margin: 10px;
+                padding: 15px;
+                padding-top: 40px; /* 모바일에서도 헤더 높이 반영 */
+                /* padding-bottom 제거 */
+            }
+
+            section {
+                padding: 15px;
+            }
+
+            section h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AI 비서와 함께하는 웹호스팅</h1>
+    </header>
+
+    <main>
+        <section id="html-basic">
+            <h2>HTML 기본 문법</h2>
+            <p>웹 페이지의 뼈대를 이루는 HTML의 기본 구조와 필수 태그들을 학습합니다. 웹 페이지의 모든 내용은 HTML 문서 위에 작성됩니다.</p>
+            <a href="chap3html.html">자세히 보기</a>
+        </section>
+
+        <section id="multimedia">
+            <h2>멀티미디어 처리</h2>
+            <p>이미지, 오디오, 비디오 등 다양한 멀티미디어 콘텐츠를 웹 페이지에 효과적으로 삽입하고 관리하는 방법을 알아봅니다.</p>
+            <a href="chap4multi.html">자세히 보기</a>
+        </section>
+
+        <section id="css-basic">
+            <h2>CSS 기본 문법</h2>
+            <p>웹 페이지의 스타일과 디자인을 담당하는 CSS의 핵심 문법을 익힙니다. 폰트, 색상, 레이아웃 등 시각적인 요소를 제어할 수 있습니다.</p>
+            <a href="chap5CSS.html">자세히 보기</a>
+        </section>
+
+        <section id="css-design">
+            <h2>CSS 디자인</h2>
+            <p>CSS를 활용하여 반응형 웹 디자인, 플렉스박스, 그리드 등 복잡한 레이아웃을 구현하고 시각적으로 매력적인 웹 페이지를 만드는 방법을 심층적으로 다룹니다.</p>
+            <a href="chap6Dsgn.html">자세히 보기</a>
+        </section>
+
+        <section id="javascript-basic">
+            <h2>JavaScript 기본 문법</h2>
+            <p>웹 페이지에 동적인 기능을 부여하는 JavaScript의 기본 문법과 데이터 타입을 학습합니다. 사용자 인터랙션을 가능하게 하는 핵심 언어입니다.</p>
+            <a href="chap8javascript.html">자세히 보기</a>
+        </section>
+
+        <section id="javascript-object">
+            <h2>JavaScript 객체</h2>
+            <p>JavaScript의 객체 지향 프로그래밍 개념을 이해하고, 내장 객체(String, Number, Math, Date, Array 등) 및 사용자 정의 객체를 활용하는 방법을 배웁니다.</p>
+            <a href="chap9jsObj.html">자세히 보기</a>
+        </section>
+
+        <section id="animation">
+            <h2>애니메이션</h2>
+            <p>CSS와 JavaScript를 활용하여 웹 페이지에 부드럽고 생동감 넘치는 애니메이션 효과를 적용하는 방법을 배웁니다. 사용자 경험을 향상시킬 수 있습니다.</p>
+            <a href="chap7Animation.html">자세히 보기</a>
+        </section>
+
+        <section id="event">
+            <h2>이벤트</h2>
+            <p>사용자의 행동(클릭, 마우스 오버 등)에 반응하여 특정 동작을 수행하는 JavaScript 이벤트를 처리하는 방법을 이해합니다.</p>
+            <a href="chap10event.html">자세히 보기</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AI 비서와 함께하는 웹호스팅. All rights reserved.</p>
+    </footer>
+</body>
+</html>

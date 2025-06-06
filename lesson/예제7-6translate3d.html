@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>예제7-7scale3d()</title>
+  <style>
+    .container {
+      perspective: 500px;      margin: 50px;
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      margin: 30px;
+      display: inline-block;
+      line-height: 100px;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      transition: transform 0.5s;
+    }
+
+    .box1 {
+      background-color: red;
+      transform: scale3d(0.5, 0.5, 1);
+    }
+
+    .box2 {
+      background-color: green;
+      transform: scale3d(1.5, 1, 1);
+    }
+
+    .box3 {
+      background-color: blue;
+      transform: scale3d(1, 1.5, 1);
+    }
+
+    .box4 {
+      background-color: purple;
+      transform: scale3d(1, 1, 2);
+    }
+  </style>
+</head>
+<body>
+  <h2>scale3d() 3차원 크기 조절 예제</h2>
+  <div class="container">
+    <div class="box box1">0.5x, 0.5y</div>
+    <div class="box box2">1.5x</div>
+    <div class="box box3">1.5y</div>
+    <div class="box box4">z=2</div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

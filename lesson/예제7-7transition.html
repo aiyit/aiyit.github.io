@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>transition-timing-function 예제</title>
+  <style>
+    .box {
+      width: 100px;
+      height: 100px;
+      background-color: tomato;
+      margin: 10px;
+      transition: transform 1s;
+    }
+
+    .container:hover .linear { transform: translateX(300px); }
+    .container:hover .ease { transform: translateX(300px); }
+    .container:hover .ease-in { transform: translateX(300px); }
+    .container:hover .ease-out { transform: translateX(300px); }
+    .container:hover .ease-in-out { transform: translateX(300px); }
+
+    .linear { transition-timing-function: linear; }
+    .ease { transition-timing-function: ease; }
+    .ease-in { transition-timing-function: ease-in; }
+    .ease-out { transition-timing-function: ease-out; }
+    .ease-in-out { transition-timing-function: ease-in-out; }
+  </style>
+</head>
+<body>
+  <h3>마우스를 아래 박스 위에 올려보세요</h3>
+  <div class="container">
+    <div class="box linear">linear</div>
+    <div class="box ease">ease</div>
+    <div class="box ease-in">ease-in</div>
+    <div class="box ease-out">ease-out</div>
+    <div class="box ease-in-out">ease-in-out</div>
+  </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
