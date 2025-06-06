@@ -28,7 +28,7 @@ pre {
     overflow-x: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
-    text-align: left; /* 코드 가독성을 위해 예외적으로 왼쪽 정렬 */
+    text-align: center; /* 코드 가독성을 위해 예외적으로 왼쪽 정렬 */
 }
 
 ul, ol {
@@ -54,7 +54,7 @@ img, video, audio, iframe {
     margin: 0 auto;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
     body {
         font-size: 2em;
         padding: 15px;
