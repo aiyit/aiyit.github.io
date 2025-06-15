@@ -41,7 +41,7 @@ body {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0, 0, 255, 0.4); /* 파란색 투명 오버레이 */
+  background-color: rgba(170, 200, 255, 0.4); /* 파란색 투명 오버레이 */
   z-index: 0;
 }
 
