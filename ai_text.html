@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini API를 활용한 인터랙티브 3D 텍스트</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+        :root {
+            /* 색상 변수 */
+            --bg-color: #2c2c32;
+            --text-color: #d0d0d0;
+            --primary-color: #4a90e2;
+            --light-shadow: rgba(255, 255, 255, 0.1);
+            --dark-shadow: rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--text-color);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .ai-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20vw;
+            font-weight: 900;
+            color: var(--bg-color);
+            cursor: pointer;
+            transition: text-shadow 0.2s ease-out;
+            transform-style: preserve-3d;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .text-input {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 2px solid #555;
+            background-color: #3a3a42;
+            color: var(--text-color);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .text-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn:hover {
+            background-color: #357abd;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        #gemini-btn {
+            background-color: #2ecc71;
+        }
+        
+        #gemini-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .gemini-result {
+            margin-top: 20px;
+            min-height: 50px;
+            max-width: 80%;
+            font-size: 1.2rem;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none; /* 기본적으로 숨김 */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 모바일 기기 스타일 */
+        @media (max-width: 768px) {
+            .ai-text {
+                font-size: 25vw;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            .gemini-result {
+                font-size: 1rem;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="ai-text" id="aiText">AI</div>
+        
+        <div class="controls">
+            <input type="text" id="customTextInput" class="text-input" placeholder="원하는 단어 입력...">
+            <button id="changeTextBtn" class="btn">텍스트 변경</button>
+            <button id="geminiBtn" class="btn">✨ AI로 설명 생성</button>
+        </div>
+
+        <div class="gemini-result" id="geminiResult">
+            <div class="loader" id="loader"></div>
+            <span id="resultText"></span>
+        </div>
+    </div>
+
+    <script>
+        const aiText = document.getElementById('aiText');
+        const body = document.body;
+        const changeTextBtn = document.getElementById('changeTextBtn');
+        const customTextInput = document.getElementById('customTextInput');
+        const geminiBtn = document.getElementById('geminiBtn');
+        const loader = document.getElementById('loader');
+        const resultText = document.getElementById('resultText');
+
+        // 3D 효과를 위한 마우스 이동 핸들러
+        function handleMouseMove(e) {
+            const yCenter = window.innerHeight / 2;
+            const mouseY = e.clientY || (e.touches && e.touches[0].clientY);
+            if (mouseY === undefined) return;
+
+            const shadowOffsetY = (yCenter - mouseY) / 20;
+            const blur = Math.abs(yCenter - mouseY) / 25;
+
+            let textShadow;
+            if (mouseY < yCenter) {
+                textShadow = `${-shadowOffsetY}px ${-shadowOffsetY}px ${blur}px var(--light-shadow), ${shadowOffsetY}px ${shadowOffsetY}px ${blur}px var(--dark-shadow)`;
+            } else {
+                textShadow = `${shadowOffsetY}px ${shadowOffsetY}px ${blur}px var(--dark-shadow), ${-shadowOffsetY}px ${-shadowOffsetY}px ${blur}px var(--light-shadow)`;
+            }
+            aiText.style.textShadow = textShadow;
+        }
+
+        // 텍스트 변경 버튼 이벤트
+        changeTextBtn.addEventListener('click', () => {
+            const newText = customTextInput.value.trim();
+            if (newText) {
+                aiText.textContent = newText;
+                resultText.textContent = ''; // 결과 텍스트 초기화
+            }
+        });
+
+        // Gemini API 호출 버튼 이벤트
+        geminiBtn.addEventListener('click', async () => {
+            const userText = aiText.textContent;
+            if (!userText) {
+                resultText.textContent = "먼저 텍스트를 입력하거나 변경해주세요.";
+                return;
+            }
+            
+            await callGeminiAPI(userText);
+        });
+        
+        // Gemini API 호출 함수
+        async function callGeminiAPI(text) {
+            loader.style.display = 'block';
+            resultText.textContent = '';
+            
+            const apiKey = ""; // API 키는 비워두세요. 캔버스 환경에서 자동으로 제공됩니다.
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            // Gemini에 전달할 프롬프트
+            const prompt = `'${text}'(이)라는 단어에 대해 짧고 창의적이며, 영감을 주는 문장을 한국어로 만들어줘.`;
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 요청 실패: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const generatedText = result.candidates[0].content.parts[0].text;
+                    resultText.textContent = generatedText;
+                } else {
+                    resultText.textContent = "AI가 응답을 생성하지 못했습니다. 다시 시도해주세요.";
+                }
+
+            } catch (error) {
+                console.error("Gemini API 호출 중 오류 발생:", error);
+                resultText.textContent = "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        // 이벤트 리스너 등록
+        body.addEventListener('mousemove', handleMouseMove);
+        body.addEventListener('touchmove', handleMouseMove);
+        
+        // 페이지 로드 시 초기 그림자 설정
+        handleMouseMove({ clientY: window.innerHeight * 0.75 });
+    </script>
+
+</body>
+</html>
