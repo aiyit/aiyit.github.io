@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>여주대 AI소프트웨어과 Q&A 챗봇</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-container {
+      background-color: white;
+      width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 16px;
+    }
+    #chat {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 8px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      white-space: pre-line;
+    }
+    #userInput {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 8px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <h2>💬 여주대 AI소프트웨어과 챗봇</h2>
+    <div id="chat"></div>
+    <input type="text" id="userInput" placeholder="질문을 입력하세요 (예: 졸업 후 진로는?)" />
+    <button onclick="sendMessage()">전송</button>
+  </div>  <script>
+    const chatBox = document.getElementById('chat');
+
+    const qaData = {
+      "AI소프트웨어과는 어떤 과인가요?": "AI소프트웨어과는 인공지능, 머신러닝, 데이터분석, 챗봇 개발 등 차세대 기술을 배우는 학과입니다.",
+      "졸업 후 진로는?": "졸업 후에는 인공지능 개발자, 데이터 분석가, 프론트엔드/백엔드 개발자, 정보보안 전문가 등 다양한 진로가 있습니다.",
+      "지원 자격은 어떻게 되나요?": "고등학교 졸업(예정)자 또는 이와 동등한 학력을 가진 사람은 누구나 지원할 수 있습니다.",
+      "학과 분위기는 어떤가요?": "실습 중심의 수업과 협업 프로젝트가 많아 창의적이고 활기찬 분위기입니다.",
+      "산학협력은 어떻게 되나요?": "지역 기업 및 기관과 협력해 현장실습 및 캡스톤 디자인이 활발히 진행됩니다."
+    };
+
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const question = input.value.trim();
+      if (!question) return;
+
+      chatBox.innerText += `🧑: ${question}\n`;
+
+      const answer = qaData[question] || "죄송합니다. 해당 질문에 대한 답변이 준비되어 있지 않습니다.";
+      chatBox.innerText += `🤖: ${answer}\n`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+      input.value = '';
+    }
+  </script></body>
+</html>
