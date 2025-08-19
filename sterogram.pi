@@ -1,0 +1,126 @@
+#!/usr/bin/env python3 """ Autostereogram Builder
+
+Usage: python autostereogram_builder.py 
+--mask mask.png --pattern pattern.png --out stereogram.png 
+--period 80 --dmin 0 --dmax 40
+
+Requirements: pip install pillow numpy
+
+Description: Takes a grayscale depth map (mask) and a pattern/tile image and generates a single-image autostereogram (Magic Eye style). The algorithm works row-by-row using a union-find (disjoint set) linkage based on computed disparities.
+
+Notes: - The mask should be same width as desired output (or will be resized to match pattern tiling width). - The pattern will be tiled horizontally and vertically. - Tweak --period (P), --dmin and --dmax to tune the 3D effect (dmax roughly <= period/2).
+
+""" import argparse from PIL import Image import numpy as np import sys
+
+class UnionFind: def init(self, n): self.parent = list(range(n))
+
+def find(self, x):
+    p = self.parent
+    while p[x] != x:
+        p[x] = p[p[x]]
+        x = p[x]
+    return x
+
+def union(self, a, b):
+    ra = self.find(a)
+    rb = self.find(b)
+    if ra == rb:
+        return
+    self.parent[rb] = ra
+
+def build_autostereogram(mask_arr, pattern_arr, period, d_min, d_max): # mask_arr: H x W, float in [0,1] # pattern_arr: H_p x W_p x C (uint8) H, W = mask_arr.shape Hp, Wp = pattern_arr.shape[:2] channels = 1 if pattern_arr.ndim == 2 else pattern_arr.shape[2]
+
+out = np.zeros((H, W, channels), dtype=np.uint8)
+
+# Ensure pattern height at least H by repeating vertically if needed
+# We'll sample pattern pixel at (y % Hp, x % Wp)
+
+for y in range(H):
+    # 1) prepare union-find and best_sep
+    uf = UnionFind(W)
+    best_sep = np.full(W, -1, dtype=int)
+
+    # compute disparities and build links
+    for x in range(W):
+        depth = mask_arr[y, x]  # 0..1, 1 is near
+        s = int(round(d_min + (1.0 - depth) * (d_max - d_min)))
+        if s <= 0:
+            continue
+        L = x - s // 2
+        R = L + s
+        if 0 <= L < R < W:
+            # occlusion: prefer larger separation (closer)
+            if s > best_sep[L] and s > best_sep[R]:
+                best_sep[L] = s
+                best_sep[R] = s
+                uf.union(L, R)
+
+    # 2) fill left seed with pattern (0..period-1)
+    for x in range(min(period, W)):
+        px = x % Wp
+        py = y % Hp
+        if channels == 1:
+            out[y, x, 0] = pattern_arr[py, px]
+        else:
+            out[y, x, :] = pattern_arr[py, px, :]
+
+    # 3) fill rest of row
+    # We'll use representative values: if rep == x -> copy from x-period
+    # else copy from rep
+    for x in range(period, W):
+        rep = uf.find(x)
+        if rep == x:
+            # copy from previous period position
+            src_x = x - period
+            # src_x might be < 0 only if period > x, but we are in x>=period
+            out[y, x, :] = out[y, src_x, :]
+        else:
+            # use representative's color (might be within left seed or already set)
+            out[y, x, :] = out[y, rep, :]
+
+# if pattern was grayscale and out has single channel, squeeze
+if channels == 1:
+    return out[:, :, 0]
+return out
+
+def load_mask(path, target_w=None, target_h=None): im = Image.open(path).convert('L') if target_w is not None and target_h is not None: if im.size != (target_w, target_h): im = im.resize((target_w, target_h), Image.LANCZOS) arr = np.array(im).astype(np.float32) / 255.0 return arr
+
+def load_pattern(path, target_h=None): im = Image.open(path).convert('RGBA') if target_h is not None and im.size[1] != target_h: # we won't stretch horizontally; just allow vertical tiling using modulo pass arr = np.array(im) # If pattern has alpha, composite onto white background for simplicity if arr.shape[2] == 4: alpha = arr[:, :, 3:4].astype(np.float32) / 255.0 rgb = arr[:, :, :3].astype(np.float32) bg = np.ones_like(rgb) * 255.0 comp = (rgb * alpha + bg * (1 - alpha)).astype(np.uint8) return comp return arr
+
+def main(): parser = argparse.ArgumentParser(description='Autostereogram (single-image) generator') parser.add_argument('--mask', required=True, help='Path to grayscale depth mask image (white = near)') parser.add_argument('--pattern', required=True, help='Path to tile/pattern image (will be repeated)') parser.add_argument('--out', required=True, help='Output path for generated stereogram (PNG recommended)') parser.add_argument('--period', type=int, default=80, help='Pattern period in pixels (P). Try 40..120') parser.add_argument('--dmin', type=int, default=0, help='Minimum disparity (px)') parser.add_argument('--dmax', type=int, default=40, help='Maximum disparity (px). Typically <= period/2') parser.add_argument('--resize-width', type=int, default=0, help='Optional: force output width (resizes mask)') parser.add_argument('--resize-height', type=int, default=0, help='Optional: force output height (resizes mask)')
+
+args = parser.parse_args()
+
+# load images
+try:
+    # load pattern first to get height/width
+    pattern = load_pattern(args.pattern)
+except Exception as e:
+    print('Failed to load pattern:', e)
+    sys.exit(1)
+
+try:
+    target_w = args.resize_width if args.resize_width > 0 else None
+    target_h = args.resize_height if args.resize_height > 0 else None
+    # if only width provided, calculate height to maintain mask aspect? We'll leave as optional
+    mask = load_mask(args.mask, target_w, target_h)
+except Exception as e:
+    print('Failed to load mask:', e)
+    sys.exit(1)
+
+H, W = mask.shape
+print(f'Mask loaded: {W}x{H}, pattern: {pattern.shape[1]}x{pattern.shape[0]}')
+
+out_arr = build_autostereogram(mask, pattern, args.period, args.dmin, args.dmax)
+
+# convert to PIL and save
+if out_arr.ndim == 2:
+    out_im = Image.fromarray(out_arr, mode='L')
+else:
+    out_im = Image.fromarray(out_arr, mode='RGB')
+
+out_im.save(args.out)
+print('Saved stereogram to', args.out)
+
+if name == 'main': main()
+
