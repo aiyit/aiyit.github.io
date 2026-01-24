@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>병아리 점프 게임</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #f0f0f0; font-family: sans-serif; }
+        canvas { display: block; background: #87CEEB; } /* 하늘색 배경 */
+        #ui {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); text-align: center;
+        }
+        button {
+            padding: 15px 30px; font-size: 20px; cursor: pointer;
+            background-color: #ffe100; border: none; border-radius: 10px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <h1 id="msg">병아리 점프!</h1>
+        <button id="startBtn">게임 시작</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const ui = document.getElementById('ui');
+        const msg = document.getElementById('msg');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let animationId;
+        let isGameOver = true;
+        let score = 0;
+
+        // 병아리 객체
+        const chick = {
+            x: 50,
+            y: canvas.height - 50,
+            width: 40,
+            height: 40,
+            gravity: 0.6,
+            velocity: 0,
+            jumpPower: -12,
+            draw() {
+                ctx.fillStyle = '#ffe100'; // 병아리 색상
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                // 눈 그리기
+                ctx.fillStyle = 'black';
+                ctx.fillRect(this.x + 25, this.y + 10, 5, 5);
+            },
+            update() {
+                this.velocity += this.gravity;
+                this.y += this.velocity;
+                if (this.y > canvas.height - this.height) {
+                    this.y = canvas.height - this.height;
+                    this.velocity = 0;
+                }
+            },
+            jump() {
+                if (this.y >= canvas.height - this.height) {
+                    this.velocity = this.jumpPower;
+                }
+            }
+        };
+
+        // 장애물(박스) 관리
+        const boxes = [];
+        class Box {
+            constructor() {
+                this.width = 40;
+                this.height = 40;
+                this.x = canvas.width - Math.random() * 100;
+                this.y = 0; // 하늘에서 생성
+                this.speedX = 5;
+                this.speedY = 4;
+                this.onGround = false;
+            }
+            draw() {
+                ctx.fillStyle = '#8B4513'; // 박스 색상(갈색)
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            update() {
+                if (!this.onGround) {
+                    this.y += this.speedY; // 낙하
+                    if (this.y >= canvas.height - this.height) {
+                        this.y = canvas.height - this.height;
+                        this.onGround = true;
+                    }
+                } else {
+                    this.x -= this.speedX; // 왼쪽 이동
+                }
+            }
+        }
+
+        function spawnBox() {
+            if (!isGameOver) {
+                boxes.push(new Box());
+                setTimeout(spawnBox, 1500 + Math.random() * 1500);
+            }
+        }
+
+        function checkCollision(p, b) {
+            return p.x < b.x + b.width &&
+                   p.x + p.width > b.x &&
+                   p.y < b.y + b.height &&
+                   p.y + p.height > b.y;
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            chick.update();
+            chick.draw();
+
+            boxes.forEach((box, index) => {
+                box.update();
+                box.draw();
+
+                // 충돌 체크
+                if (checkCollision(chick, box)) {
+                    gameOver();
+                }
+
+                // 화면 밖으로 나간 박스 제거
+                if (box.x + box.width < 0) {
+                    boxes.splice(index, 1);
+                    score++;
+                }
+            });
+
+            // 점수 표시
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, 20, 30);
+
+            if (!isGameOver) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        function gameOver() {
+            isGameOver = true;
+            cancelAnimationFrame(animationId);
+            msg.innerText = "게임 오버! 점수: " + score;
+            ui.style.display = 'block';
+            startBtn.innerText = "다시 시작";
+        }
+
+        function resetGame() {
+            isGameOver = false;
+            score = 0;
+            boxes.length = 0;
+            chick.y = canvas.height - 50;
+            chick.velocity = 0;
+            ui.style.display = 'none';
+            spawnBox();
+            animate();
+        }
+
+        // 이벤트 리스너
+        startBtn.addEventListener('click', resetGame);
+        window.addEventListener('touchstart', (e) => {
+            if (!isGameOver) chick.jump();
+            // e.preventDefault(); // 필요 시 스크롤 방지
+        });
+        window.addEventListener('mousedown', () => {
+            if (!isGameOver) chick.jump();
+        });
+    </script>
+</body>
+</html>
