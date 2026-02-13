@@ -47,11 +47,19 @@
     overflow:hidden;
   ">
 
-    <!-- 홍보 이미지 -->
+    <!-- 홍보 이미지 
     <img src="/images/notice02.mp4"
          alt="2026 신입생 전원 장학금 100만원"
          style="width:100%;display:block;">
-
+	  -->
+<video 
+  autoplay 
+  loop 
+  playsinline
+  style="width:100%; display:block;">
+  <source src="/images/notice02.mp4" type="video/mp4">
+  브라우저가 video 태그를 지원하지 않습니다.
+</video>
     <!-- 하단 컨트롤 -->
     <div style="
       display:flex;
@@ -533,6 +541,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('time').setAttribute('loop', 'true');
     document.getElementById⁸
+
 
 
 
