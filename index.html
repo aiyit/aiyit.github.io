@@ -191,18 +191,40 @@ window.addEventListener("load", function () {
 </section>
 <section class="mb-2 section" id="aiConcept">
 	
-<h2 class="text-white text-xl font-bold underline underline-offset-4 decoration-blue-300">AI개념과 학생홈페이지</h2>
-	<div class="flex flex-wrap justify-center items-center gap-4 text-white">
-	<!--AI 개념 -->
-	<a href="aiCnct/perceptron.html","target=_blank"> AI 개념(Perceptron) </a>
-<!-- 홈페이지 등록 버튼 -->
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSddqEZ89MtNsxWU8SB_ag3_u57ERv-jA9HuZ67wr4XmHJucyQ/viewform","target=_blank">
-홈페이지 등록
-</a>
-<!-- 학생 홈페이지 목록 보기 버튼 -->
-<p><button onclick="window.open('https://docs.google.com/spreadsheets/d/1Y3LLNtzFKoXh9aCxJwJcI34FGoWEdEGM-uuTYpQ5kMY/edit','_blank')">
-학생 홈페이지 목록 보기
-</button>	</div>
+<h2 class="text-white text-xl font-bold underline underline-offset-4 decoration-blue-300">
+  AI개념과 학생홈페이지
+</h2>
+
+<ul class="flex flex-wrap justify-center items-center gap-4 text-white list-none p-0">
+
+  <!-- AI 개념 -->
+  <li>
+    <button 
+      class="px-4 py-2 bg-gray-800 rounded-lg hover:bg-blue-500 transition"
+      onclick="window.open('aiCnct/perceptron.html', '_blank')">
+      🤖 AI 개념 (Perceptron)
+    </button>
+  </li>
+
+  <!-- 홈페이지 등록 -->
+  <li>
+    <button 
+      class="px-4 py-2 bg-gray-800 rounded-lg hover:bg-green-500 transition"
+      onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSddqEZ89MtNsxWU8SB_ag3_u57ERv-jA9HuZ67wr4XmHJucyQ/viewform', '_blank')">
+      📝 홈페이지 등록
+    </button>
+  </li>
+
+  <!-- 학생 홈페이지 목록 -->
+  <li>
+    <button 
+      class="px-4 py-2 bg-gray-800 rounded-lg hover:bg-purple-500 transition"
+      onclick="window.open('https://docs.google.com/spreadsheets/d/1Y3LLNtzFKoXh9aCxJwJcI34FGoWEdEGM-uuTYpQ5kMY/edit', '_blank')">
+      📊 학생 홈페이지 목록 보기
+    </button>
+  </li>
+
+</ul>	</div>
 </section>
 	<section class="mb-2 section" id="gallery">
 <h2 class="text-white text-xl font-bold underline underline-offset-4 decoration-blue-300">AI소프트웨어과 갤러리</h2>
