@@ -1,1 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>🤖 슬로우 모션 AI 퍼셉트론 실험실</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #050505; font-family: 'Malgun Gothic', sans-serif; }
+    #ui {
+      position: absolute; top: 20px; left: 20px; color: white;
+      background: rgba(20, 20, 20, 0.75); padding: 20px; border-radius: 15px;
+      max-width: 340px; border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(5px); z-index: 100;
+    }
+    h2 { color: #00ff88; margin: 0 0 10px 0; font-size: 1.2em; }
+    .step-box {
+      background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px;
+      font-size: 0.85em; line-height: 1.5; border-left: 4px solid #00ff88; margin-bottom: 15px;
+    }
+    .btn-group { display: flex; gap: 8px; margin-bottom: 8px; }
+    button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn-start { background: #00ff88; color: #000; }
+    .btn-stop { background: #ff4444; color: white; }
+    .btn-reset { background: #4488ff; color: white; width: 100%; }
+    .slider-box { margin-top: 10px; font-size: 0.85em; color: #aaa; }
+    input[type=range] { width: 100%; margin-top: 5px; }
+    #status {
+      position: absolute; bottom: 20px; right: 20px; color: #00ff88;
+      background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;
+      font-family: monospace; font-size: 0.85em; pointer-events: none;
+    }
+	/* 우측 설명서 스타일 */
+#guide {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: white;
+  background: rgba(20, 20, 20, 0.8);
+  padding: 15px;
+  border-radius: 12px;
+  width: 260px;
+  border: 1px solid #00ff88;
+  font-size: 0.85em;
+  z-index: 100;
+}
+.guide-item { margin-bottom: 10px; }
+.guide-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+.red { background: #ff4444; }
+.blue { background: #4488ff; }
+.green { background: #00ff88; }
+  </style>
+</head>
+<body>
+<div id="guide">
+  <h3 style="margin-top:0; color:#00ff88;">📋 Perceptron 실험 가이드</h3>
+  <div class="guide-item">
+    <span class="guide-dot red"></span> <b>빨간 공:</b> AI가 'A그룹'으로 분류
+  </div>
+  <div class="guide-item">
+    <span class="guide-dot blue"></span> <b>파란 공:</b> AI가 'B그룹'으로 분류
+  </div>
+  <div class="guide-item">
+    <span class="guide-dot green"></span> <b>초록 선:</b> AI의 '판단 기준' (경계선)
+  </div>
+  <hr style="border:0.5px solid rgba(255,255,255,0.1);">
+  <p style="font-size:0.9em; line-height:1.4; color:#ccc;">
+    <b>학습 원리:</b><br>
+    AI는 공을 하나씩 확인하며 선의 위치를 수정합니다. <br><br>
+    선이 공들 사이를 <b>정확히 가를 때까지</b> 스스로 반복해서 공부합니다.
+  </p>
+</div>
+<div id="ui">
+  <h2>🤖 인공지능 '빛의 검' 실험실</h2>
+  <div class="step-box">
+    <b>슬로우 모션 학습:</b><br>
+    AI가 공을 <b>하나씩</b> 검사하며 초록색 '경계선'을 수정합니다. 공이 섞여 있으면 선이 계속 움직이며 고민하게 됩니다!
+  </div>
+  <div class="btn-group">
+    <button class="btn-start" onclick="startTrain()">학습 시작</button>
+    <button class="btn-stop" onclick="stopTrain()">멈춤</button>
+  </div>
+  <button class="btn-reset" onclick="resetWeights()">🔄 새로 시작(가중치+데이터)</button>
+  <div class="slider-box">
+    학습 속도(Learning Rate): <span id="lrVal" style="color:#00ff88;">0.10</span>
+    <input type="range" id="lr" min="0.01" max="0.3" step="0.01" value="0.1">
+  </div>
+</div>
 
+<div id="status">
+  W1: <span id="w1_val">0</span> | W2: <span id="w2_val">0</span> | B: <span id="b_val">0</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+/* 1. 환경 설정 */
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 7);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+/* 2. 조명 */
+const light = new THREE.PointLight(0xffffff, 1, 100);
+light.position.set(5, 5, 5);
+scene.add(light, new THREE.AmbientLight(0x404040));
+
+/* 3. 퍼셉트론 모델 */
+class Perceptron {
+  constructor() { this.reset(); this.lr = 0.1; }
+  reset() {
+    this.w1 = Math.random() * 2 - 1;
+    this.w2 = Math.random() * 2 - 1;
+    this.b = Math.random() * 2 - 1;
+    this.currentIndex = 0;
+  }
+  predict(x, y) { return (this.w1 * x + this.w2 * y + this.b > 0) ? 1 : 0; }
+  trainStep(dataset) {
+    if (dataset.length === 0) return;
+    let p = dataset[this.currentIndex];
+    let error = p.label - this.predict(p.x, p.y);
+    if (error !== 0) {
+      this.w1 += error * p.x * this.lr;
+      this.w2 += error * p.y * this.lr;
+      this.b += error * this.lr;
+    }
+    this.currentIndex = (this.currentIndex + 1) % dataset.length;
+  }
+}
+const ai = new Perceptron();
+
+/* 4. 경계선 생성 */
+const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff88, linewidth: 2 });
+const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+  new THREE.Vector3(-10, 0, 0.1), new THREE.Vector3(10, 0, 0.1)
+]);
+const boundaryLine = new THREE.Line(lineGeometry, lineMaterial);
+scene.add(boundaryLine);
+
+/* 5. 데이터 관리 */
+const data = [];
+function createData() {
+  const threshold = Math.random() * 2 - 1;
+  for (let i = 0; i < 80; i++) {
+    let x = Math.random() * 6 - 3;
+    let y = Math.random() * 6 - 3;
+    let label = (x + y > threshold) ? 1 : 0;
+ 
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.12, 16, 16),
+      new THREE.MeshPhongMaterial({ color: label ? 0xff4444 : 0x4488ff })
+    );
+    mesh.position.set(x, y, 0.1);
+    scene.add(mesh);
+    data.push({ x, y, label, mesh });
+  }
+}
+createData();
+
+/* 6. 제어 함수 */
+let isLearning = false;
+function startTrain() { isLearning = true; }
+function stopTrain() { isLearning = false; }
+function resetWeights() {
+  isLearning = false;
+  data.forEach(p => scene.remove(p.mesh));
+  data.length = 0;
+  createData();
+  ai.reset();
+}
+
+document.getElementById("lr").oninput = (e) => {
+  ai.lr = parseFloat(e.target.value);
+  document.getElementById("lrVal").innerText = ai.lr.toFixed(2);
+};
+
+/* 7. 업데이트 및 애니메이션 */
+function updateBoundary() {
+  // 1. 각도 계산 수정: w1과 w2의 관계를 정확히 반영
+  // 직선의 기울기는 -w1 / w2 이므로 이에 수직인 각도를 적용합니다.
+  let angle = Math.atan2(ai.w2, ai.w1); 
+  boundaryLine.rotation.z = angle + Math.PI / 2;
+
+  // 2. 위치(b) 보정 수정: 부호 반전 해결
+  let norm = Math.sqrt(ai.w1**2 + ai.w2**2);
+  if (norm > 0.001) {
+    // 거리는 -b / norm 이며, 방향 벡터를 따라 이동시킵니다.
+    let d = -ai.b / norm;
+    boundaryLine.position.x = (ai.w1 / norm) * d;
+    boundaryLine.position.y = (ai.w2 / norm) * d;
+  }
+
+  // 상태값 출력
+  document.getElementById("w1_val").innerText = ai.w1.toFixed(2);
+  document.getElementById("w2_val").innerText = ai.w2.toFixed(2);
+  document.getElementById("b_val").innerText = ai.b.toFixed(2);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  if (isLearning) ai.trainStep(data);
+  updateBoundary();
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
