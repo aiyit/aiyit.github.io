@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OSI 7 Layer: Advanced Security Lab</title>
+    <script src="https://www.x3dom.org/download/dev/x3dom.js"></script>
+    <link rel="stylesheet" href="https://www.x3dom.org/download/dev/x3dom.css">
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; background: #2c3e50; color: #fff; overflow: hidden; }
+        #top-gui { position: absolute; top: 0; left: 0; width: 100%; height: 160px; background: rgba(44, 62, 80, 0.98); 
+                   border-bottom: 2px solid #f1c40f; z-index: 100; display: flex; padding: 15px; box-sizing: border-box; gap: 20px; }
+        
+        /* 상세 설명 패널: 내용이 많아짐에 따라 텍스트 가독성 및 높이 최적화 */
+        #desc-panel { position: absolute; top: 160px; left: 0; width: 100%; background: rgba(20, 30, 48, 0.9); 
+                      padding: 15px 30px; box-sizing: border-box; z-index: 99; border-bottom: 2px solid #e74c3c;
+                      font-size: 0.92em; line-height: 1.7; color: #ecf0f1; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        .gui-section { display: flex; flex-direction: column; justify-content: center; border-right: 1px solid #555; padding-right: 20px; }
+        .gui-section:last-child { border-right: none; flex-grow: 1; }
+        .btn-group { display: flex; gap: 8px; margin-top: 8px; }
+        button { padding: 10px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; font-size: 0.85em; transition: 0.2s; }
+        .btn-reset { background: #e74c3c; color: #fff; }
+        .btn-step { background: #f1c40f; color: #000; min-width: 100px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8em; margin-top: 5px; }
+        .grid-item { background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 3px; border-left: 3px solid #1abc9c; }
+        .label-span { color: #f1c40f; font-weight: bold; margin-right: 5px; }
+        
+        /* 설명문 내 강조 스타일 */
+        .desc-title { color: #f1c40f; font-weight: bold; margin-right: 10px; }
+        .desc-threat { color: #e74c3c; font-weight: bold; }
+        
+        x3d { width: 100vw; height: 100vh; border: none; }
+    </style>
+</head>
+<body>
+
+<div id="top-gui">
+    <div class="gui-section">
+        <div style="font-size: 0.7em; color: #bdc3c7;">CONTROLS</div>
+        <div class="btn-group">
+            <button class="btn-reset" onclick="resetSim()">초기화</button>
+            <button class="btn-step" onclick="prevStep()" id="prevBtn">이전</button>
+            <button class="btn-step" onclick="nextStep()" id="nextBtn">다음 단계</button>
+        </div>
+    </div>
+    <div class="gui-section">
+        <div id="info-title" style="font-size: 1.1em; font-weight: bold; color: #f1c40f; margin-bottom: 5px;">전문가용 보안 교육 모드</div>
+        <div class="info-grid">
+            <div class="grid-item"><span class="label-span">계층:</span> <span id="layer-text">-</span></div>
+            <div class="grid-item"><span class="label-span">프로토콜:</span> <span id="proto-text">-</span></div>
+            <div class="grid-item"><span class="label-span">보안위협:</span> <span id="hack-text">-</span></div>
+            <div class="grid-item"><span class="label-span">PDU 단위:</span> <span id="pdu-name">-</span></div>
+        </div>
+    </div>
+</div>
+
+<div id="desc-panel">
+    <div id="detailed-desc">시뮬레이션을 시작하면 해당 계층의 <strong>프로토콜 분석 및 보안 취약점 리포트</strong>가 상세히 출력됩니다.</div>
+</div>
+
+<x3d>
+    <scene>
+        <viewpoint id="mainView" position="0 10 45" orientation="0 1 0 0"></viewpoint>
+        <background skyColor='0.17 0.24 0.31'></background>
+        
+        <transform id="tower-sender" translation="-21 0 0">
+            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="1 1 1"></material></appearance>
+            <text string='"SENDER"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
+        </transform>
+        <transform id="tower-switch" translation="-7 0 0">
+            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="0.8 0.9 1"></material></appearance>
+            <text string='"SWITCH"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
+        </transform>
+        <transform id="tower-router" translation="7 0 0">
+            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="1 0.8 0.8"></material></appearance>
+            <text string='"ROUTER"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
+        </transform>
+        <transform id="tower-receiver" translation="21 0 0">
+            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="1 1 1"></material></appearance>
+            <text string='"RECEIVER"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
+        </transform>
+
+        <group>
+            <transform translation="-14 0.5 0" rotation="0 0 1 1.57"><shape><appearance><material diffuseColor="0.95 0.77 0.06"></material></appearance><cylinder radius="0.04" height="12"></cylinder></shape></transform>
+            <transform translation="0 0.5 0" rotation="0 0 1 1.57"><shape><appearance><material diffuseColor="0.95 0.77 0.06"></material></appearance><cylinder radius="0.04" height="12"></cylinder></shape></transform>
+            <transform translation="14 0.5 0" rotation="0 0 1 1.57"><shape><appearance><material diffuseColor="0.95 0.77 0.06"></material></appearance><cylinder radius="0.04" height="12"></cylinder></shape></transform>
+        </group>
+
+        <transform id="pdu-mover" translation="-21 15 0">
+            <group id="pdu-horizontal-group"></group>
+            <transform translation="0 2.0 0"><billboard><text id="pdu-label" string='""' scale='0.4 0.4 0.4'></text></billboard></transform>
+        </transform>
+    </scene>
+</x3d>
+
+<script>
+    const layerData = [
+        { 
+            name: "7. Application Layer (응용 계층)", color: "0.5 0.2 0.9", pdu: "Data", proto: "HTTP/3, DNS, MQTT, FTP", hack: "L7 DDoS, Injection", 
+            desc: "<b>[프로토콜]</b> HTTP/3(QUIC기반), DNS, SMTP, MQTT <br><b>[주요 기능]</b> 사용자 응용 프로세스와 직접 통신하여 네트워크 서비스를 제공하는 창구 역할을 수행합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>SQL Injection / XSS:</span> 앱 취약점을 이용해 DB 정보를 탈취하거나 악성 스크립트를 실행합니다. <span class='desc-threat'>L7 DDoS:</span> 정상적인 HTTP 요청을 대량으로 보내 서버 자원을 고갈시킵니다." 
+        },
+        { 
+            name: "6. Presentation Layer (표현 계층)", color: "0.2 0.4 0.8", pdu: "Data", proto: "TLS 1.3, JPEG, ASCII", hack: "암호화 취약점 공격", 
+            desc: "<b>[프로토콜]</b> TLS 1.3, SSL, JPEG, MPEG, ASCII <br><b>[주요 기능]</b> 데이터의 인코딩/디코딩, 압축, 암호화 및 복호화를 통해 서로 다른 시스템 간 데이터 형식을 통일합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>암호화 미비:</span> 취약한 SSL 버전 사용 시 패킷 스니핑을 통해 데이터 본문을 노출합니다. <span class='desc-threat'>SSL Stripping:</span> HTTPS 연결을 강제로 HTTP로 다운그레이드하여 평문 데이터를 가로챕니다." 
+        },
+        { 
+            name: "5. Session Layer (세션 계층)", color: "0.2 0.6 0.9", pdu: "Data", proto: "RPC, NetBIOS, PAP", hack: "Session Hijacking", 
+            desc: "<b>[프로토콜]</b> RPC, NetBIOS, PAP, PPTP <br><b>[주요 기능]</b> 응용 프로그램 간의 세션을 설정, 관리, 종료하며 통신 중 체크포인트를 두어 동기화를 유지합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>Session Hijacking:</span> 이미 인증된 사용자의 세션 ID를 탈취하여 별도의 로그인 없이 시스템 권한을 획득합니다. <span class='desc-threat'>Brute Force:</span> 인증 과정의 허점을 이용해 세션 연결 권한을 강제로 탈취합니다." 
+        },
+        { 
+            name: "4. Transport Layer (전송 계층)", color: "0.1 0.7 0.3", pdu: "Segment / Datagram", proto: "TCP, UDP", hack: "SYN Flood, Port Scan", 
+            desc: "<b>[프로토콜]</b> TCP (신뢰성 전송), UDP (속도 중심) <br><b>[주요 기능]</b> 종단간(End-to-End) 오류 검출 및 복구, 흐름 제어, 포트 주소를 통한 프로세스 구분을 담당합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>SYN Flooding:</span> TCP 3-Way Handshake의 취약점을 악용해 가짜 연결 요청을 보내 백로그 큐를 가득 채웁니다. <span class='desc-threat'>Port Scanning:</span> 열려 있는 포트를 확인하여 후속 공격을 위한 시스템 정보를 수집합니다." 
+        },
+        { 
+            name: "3. Network Layer (네트워크 계층)", color: "0.9 0.8 0.1", pdu: "Packet", proto: "IPv4/v6, ICMP, IPsec", hack: "IP Spoofing, Smurf", 
+            desc: "<b>[프로토콜]</b> IPv4, IPv6, ICMP, ARP, IPsec <br><b>[주요 기능]</b> 논리적 주소(IP)를 부여하고 목적지까지의 최적 경로를 설정하는 라우팅(Routing)을 수행합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>IP Spoofing:</span> 송신자 IP 주소를 공격 대상이나 신뢰받는 호스트로 위장합니다. <span class='desc-threat'>Smurf Attack:</span> ICMP Echo 요청의 발신 주소를 희생자로 속여 브로드캐스트함으로써 대량의 응답 패킷이 희생자에게 쏟아지게 합니다." 
+        },
+        { 
+            name: "2. Data Link Layer (데이터 링크 계층)", color: "0.9 0.5 0.1", pdu: "Frame", proto: "Ethernet, ARP, VLAN", hack: "ARP Spoofing, MAC Flood", 
+            desc: "<b>[프로토콜]</b> Ethernet, ARP, VLAN(802.1Q), PPP <br><b>[주요 기능]</b> 인접 노드 간의 신뢰성 있는 데이터 전송을 위해 물리적 주소(MAC)를 할당하고 흐름/오류를 제어합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>ARP Spoofing:</span> 가짜 ARP 응답을 보내 희생자의 트래픽이 공격자에게 오도록 가로챕니다(MITM). <span class='desc-threat'>MAC Flooding:</span> 스위치의 MAC 테이블을 가짜 정보로 가득 채워 허브처럼 동작하게 유도하여 정보를 탈취합니다." 
+        },
+        { 
+            name: "1. Physical Layer (물리 계층)", color: "0.8 0.2 0.2", pdu: "Bit", proto: "1000Base-T, WiFi(PHY)", hack: "Wiretapping, Jamming", 
+            desc: "<b>[프로토콜]</b> Ethernet(PHY), RS-232, Wi-Fi 6 <br><b>[주요 기능]</b> 0과 1의 비트 스트림을 전기, 광, 무선 신호로 변환하여 물리적 매체로 전송하는 하드웨어 단계입니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>Wiretapping(도청):</span> 케이블에 물리적 탭을 설치하여 신호를 복제합니다. <span class='desc-threat'>RF Jamming:</span> 강력한 전파 간섭 신호를 발생시켜 무선 네트워크 통신을 물리적으로 마비시킵니다." 
+        }
+    ];
+
+    const simulationPath = [
+        { stage: "ENCAP", layer: 0, pos: [-21, 9.0, 0], h: 1, msg: "송신측: 애플리케이션 서비스 실행" },
+        { stage: "ENCAP", layer: 1, pos: [-21, 7.5, 0], h: 2, msg: "송신측: TLS 암호화 및 인코딩 적용" },
+        { stage: "ENCAP", layer: 2, pos: [-21, 6.0, 0], h: 3, msg: "송신측: 통신 세션 수립 및 동기화" },
+        { stage: "ENCAP", layer: 3, pos: [-21, 4.5, 0], h: 4, msg: "송신측: TCP 포트번호 및 흐름제어 삽입" },
+        { stage: "ENCAP", layer: 4, pos: [-21, 3.0, 0], h: 5, msg: "송신측: IP 패킷 생성 (라우팅 주소 결합)" },
+        { stage: "ENCAP", layer: 5, pos: [-21, 1.5, 0], h: 6, msg: "송신측: 이더넷 프레임 구성 (MAC 주소)" },
+        { stage: "ENCAP", layer: 6, pos: [-21, 0.0, 0], h: 7, msg: "송신측: 전기 신호로 물리 매체 전송 시작" },
+        { stage: "TRANS", layer: 5, pos: [-7, 0.0, 0], h: 7, msg: "L2 스위치: 인접 장치 간 하드웨어 주소 교환" },
+        { stage: "TRANS", layer: 4, pos: [7, 0.0, 0], h: 7, msg: "L3 라우터: 네트워크 간 패킷 최적 경로 선정" },
+        { stage: "TRANS", layer: 6, pos: [21, 0.0, 0], h: 7, msg: "수신측: 신호 수집 및 디지털 변환 시작" },
+        { stage: "DECAP", layer: 5, pos: [21, 1.5, 0], h: 6, msg: "수신측: MAC 주소 일치 확인 및 역캡슐화" },
+        { stage: "DECAP", layer: 4, pos: [21, 3.0, 0], h: 5, msg: "수신측: IP 패킷 검증 및 조립" },
+        { stage: "DECAP", layer: 3, pos: [21, 4.5, 0], h: 4, msg: "수신측: TCP 세그먼트 순서 정렬 및 신뢰성 확인" },
+        { stage: "DECAP", layer: 2, pos: [21, 6.0, 0], h: 3, msg: "수신측: 통신 세션 정상 종료 확인" },
+        { stage: "DECAP", layer: 1, pos: [21, 7.5, 0], h: 2, msg: "수신측: 암호화 해제 및 데이터 파싱" },
+        { stage: "DECAP", layer: 0, pos: [21, 9.0, 0], h: 1, msg: "수신측: 최종 응용 서비스 데이터 도달" }
+    ];
+
+    let currentStep = 0;
+
+    function buildTopology() {
+        const nodes = [{id:'tower-sender',l:7}, {id:'tower-switch',l:2}, {id:'tower-router',l:3}, {id:'tower-receiver',l:7}];
+        nodes.forEach(node => {
+            const root = document.getElementById(node.id);
+            for(let i=0; i<node.l; i++) {
+                let t = document.createElement('transform');
+                t.setAttribute('translation', `0 ${i * 1.5} 0`);
+                let s = document.createElement('shape');
+                let m = document.createElement('material');
+                m.setAttribute('diffuseColor', layerData[6-i].color);
+                m.setAttribute('transparency', '0.6');
+                s.appendChild(document.createElement('appearance')).appendChild(m);
+                s.appendChild(document.createElement('box')).setAttribute('size', '2.5 1.2 1.8');
+                t.appendChild(s); root.appendChild(t);
+            }
+        });
+    }
+
+    function updatePDU(headerCount) {
+        const group = document.getElementById('pdu-horizontal-group');
+        while(group.firstChild) group.removeChild(group.firstChild);
+        addBlock(group, "1 1 1", 0); 
+        for (let i = 0; i < headerCount - 1; i++) {
+            addBlock(group, layerData[i].color, -(i + 1) * 0.8);
+        }
+    }
+
+    function addBlock(parent, color, xPos) {
+        let t = document.createElement('transform');
+        t.setAttribute('translation', `${xPos} 0 0`);
+        let s = document.createElement('shape');
+        let m = document.createElement('material');
+        m.setAttribute('diffuseColor', color);
+        s.appendChild(document.createElement('appearance')).appendChild(m);
+        s.appendChild(document.createElement('box')).setAttribute('size', '0.75 0.75 0.75');
+        t.appendChild(s); parent.appendChild(t);
+    }
+
+    function render() {
+        const cur = simulationPath[currentStep];
+        const mover = document.getElementById('pdu-mover');
+        const info = layerData[cur.layer];
+        
+        mover.setAttribute('translation', cur.pos.join(' '));
+        updatePDU(cur.h);
+
+        document.getElementById('info-title').innerText = cur.msg;
+        document.getElementById('layer-text').innerText = info.name;
+        document.getElementById('proto-text').innerText = info.proto;
+        document.getElementById('hack-text').innerText = info.hack;
+        document.getElementById('pdu-name').innerText = info.pdu;
+        document.getElementById('pdu-label').setAttribute('string', `"${info.pdu}"`);
+        
+        // 상세 설명문 패널에 HTML 형식으로 업데이트
+        document.getElementById('detailed-desc').innerHTML = info.desc;
+
+        document.getElementById('prevBtn').disabled = currentStep === 0;
+        document.getElementById('nextBtn').disabled = currentStep === simulationPath.length - 1;
+    }
+
+    function nextStep() { if(currentStep < simulationPath.length - 1) { currentStep++; render(); } }
+    function prevStep() { if(currentStep > 0) { currentStep--; render(); } }
+    function resetSim() { currentStep = 0; render(); }
+
+    window.onload = () => { buildTopology(); render(); };
+</script>
+</body>
+</html>
