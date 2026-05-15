@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ Smart Microwave Digital Twin & Data Visualization</title>
+<title>⚡ Smart Microwave Digital Twin & Dual Visualization</title>
 
 <!-- 단일 라이브러리 및 마우스 드래그 관찰 체계 유지 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -53,12 +53,12 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
     }
 
-    /* [신규 사양] 우측 하단 실시간 전력 분석 모니터 패널 UI */
+    /* [교정] 우측 하단 실시간 듀얼 데이터 분석 모니터 패널 UI (폭 확장) */
     #graph-panel {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 340px;
+        width: 390px;
         padding: 16px;
         border-radius: 18px;
         background: rgba(15, 23, 42, 0.95);
@@ -151,7 +151,7 @@
 
 <div id="canvas-container"></div>
 
-<!-- 좌측 제어 컨트롤 가이드 -->
+<!-- 좌측 제어 패널 -->
 <div id="ui">
     <h2>⚡ Smart Microwave</h2>
     <div class="control">
@@ -167,13 +167,13 @@
     <div id="status">대기중</div>
 </div>
 
-<!-- 우측 하단 데이터 시각화 모니터링 컴포넌트 -->
+<!-- 우측 하단 멀티 데이터 모니터 (막대 그래프 영역 공간 포함 캔버스 지정) -->
 <div id="graph-panel">
     <div class="panel-title">
-        <span>📉 Real-time Power Consumption</span>
+        <span>📉 Dual Power Meter Monitoring</span>
         <span id="current-watt">15 W</span>
     </div>
-    <canvas id="powerGraph" width="308" height="140"></canvas>
+    <canvas id="powerGraph" width="358" height="140"></canvas>
 </div>
 
 <script>
@@ -237,62 +237,39 @@ window.onload = function() {
         updateCameraPosition();
     });
 
-    ///////////////////////////////////////////////////////////
-    // LIGHTS SYSTEM
-    ///////////////////////////////////////////////////////////
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
+    // LIGHTS
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); scene.add(ambientLight);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.4); mainLight.position.set(6, 12, 8); scene.add(mainLight);
+    const internalLight = new THREE.PointLight(0xffaa44, 0, 5); internalLight.position.set(-0.4, 0, 0); scene.add(internalLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.4);
-    mainLight.position.set(6, 12, 8);
-    scene.add(mainLight);
-
-    const internalLight = new THREE.PointLight(0xffaa44, 0, 5); 
-    internalLight.position.set(-0.4, 0, 0);
-    scene.add(internalLight);
-
-    // FLOOR
-    const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(60, 60),
-        new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.6 })
-    );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.4;
-    scene.add(floor);
-
-    const grid = new THREE.GridHelper(30, 30, 0x4b5563, 0xbcbcbc);
-    grid.position.y = -1.39;
-    scene.add(grid);
+    // FLOOR & GRID
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.6 }));
+    floor.rotation.x = -Math.PI / 2; floor.position.y = -1.4; scene.add(floor);
+    const grid = new THREE.GridHelper(30, 30, 0x4b5563, 0xbcbcbc); grid.position.y = -1.39; scene.add(grid);
 
     ///////////////////////////////////////////////////////////
-    // DIGITAL TWIN MICROWAVE MODEL
+    // MICROWAVE MODEL COMPONENTS
     ///////////////////////////////////////////////////////////
     const microwave = new THREE.Group();
     scene.add(microwave);
 
-    // 가전제품용 플라스틱 외벽 바디
     const bodyGeom = new THREE.BoxGeometry(4.6, 2.8, 3.2);
-    const bodyMat = new THREE.MeshStandardMaterial({
-        color: 0x222630, metalness: 0.0, roughness: 0.2, transparent: true, opacity: 0.45            
-    });
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x222630, metalness: 0.0, roughness: 0.2, transparent: true, opacity: 0.45 });
     const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
     microwave.add(bodyMesh);
 
-    // 최적화 크기의 메탈 턴테이블 원판
     const plateGeom = new THREE.CylinderGeometry(0.85, 0.85, 0.04, 40);
     const plateMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.95, roughness: 0.25 });
     const plateMesh = new THREE.Mesh(plateGeom, plateMat);
     plateMesh.position.set(-0.4, -1.1, 0);
     microwave.add(plateMesh);
 
-    // 피가열체 음식
     const foodGeom = new THREE.SphereGeometry(0.24, 32, 32);
     const foodMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, emissive: 0xff0000, emissiveIntensity: 0.1, roughness: 0.4 });
     const foodMesh = new THREE.Mesh(foodGeom, foodMat);
     foodMesh.position.set(-0.4, -0.86, 0.38); 
     microwave.add(foodMesh);
 
-    // 우측 패널 및 디스플레이
     const panelGeom = new THREE.BoxGeometry(0.8, 2.6, 0.1);
     const panelMat = new THREE.MeshStandardMaterial({ color: 0x090d16, metalness: 0.1, roughness: 0.2, emissive: 0x020617, emissiveIntensity: 0.3 });
     const panelMesh = new THREE.Mesh(panelGeom, panelMat);
@@ -305,7 +282,6 @@ window.onload = function() {
     displayMesh.position.set(1.8, 0.9, 1.64);
     microwave.add(displayMesh);
 
-    // 도어 시스템 피벗
     const doorPivot = new THREE.Group();
     doorPivot.position.set(1.4, 0, 1.61); 
     microwave.add(doorPivot);
@@ -316,12 +292,19 @@ window.onload = function() {
     doorMesh.position.set(-1.8, 0, 0); 
     doorPivot.add(doorMesh);
 
-    // 고주파 전파 파형 이펙트 무대
+    ///////////////////////////////////////////////////////////
+    // [교정] 고화질 출력 가변형 전파 파형 레이어 풀(Pool) 구성
+    // 세기가 커지면 더 많은 고리가 동적으로 활성화되도록 최대 6개 배치
+    ///////////////////////////////////////////////////////////
     const waves = [];
-    const totalWaves = 4; 
-    for (let i = 0; i < totalWaves; i++) {
-        const waveGeom = new THREE.TorusGeometry(0.25 + i * 0.18, 0.012, 16, 60);
-        const waveMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0 });
+    const maxWavesCount = 6; 
+    for (let i = 0; i < maxWavesCount; i++) {
+        const waveGeom = new THREE.TorusGeometry(0.18 + i * 0.16, 0.013, 16, 60);
+        const waveMat = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0
+        });
         const waveMesh = new THREE.Mesh(waveGeom, waveMat);
         waveMesh.rotation.x = Math.PI / 2;
         waveMesh.position.set(-0.4, -0.2, 0);
@@ -330,7 +313,7 @@ window.onload = function() {
     }
 
     ///////////////////////////////////////////////////////////
-    // INTERFACES & CONTROL LOGIC DATA
+    // CONTROL LOGIC INTERFACES
     ///////////////////////////////////////////////////////////
     let heating = false;
     let doorOpen = false;
@@ -379,56 +362,99 @@ window.onload = function() {
     };
 
     ///////////////////////////////////////////////////////////
-    // REAL-TIME POWER GRAPH SYSTEM (HTML5 Canvas 시계열 렌더러)
+    // [신규] DUAL GRAPH MONITORING SYSTEM (막대 그래프 + 꺾은선)
     ///////////////////////////////////////////////////////////
     const graphCanvas = document.getElementById('powerGraph');
     const graphCtx = graphCanvas.getContext('2d');
-    const dataPoints = new Array(60).fill(15); // 그래프 가로 해상도 버퍼 배열(60프레임 축적)
+    const dataPoints = new Array(50).fill(15); 
 
-    function drawRealTimeGraph(targetWatt) {
-        // 배열 데이터 한 칸씩 밀어내며 타겟 전력 누적 (큐 파이프라인 구현)
+    function drawDualGraph(targetWatt) {
         dataPoints.push(targetWatt);
         dataPoints.shift();
 
-        // 캔버스 잔상 지우기
         graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
 
-        // 뒷배경 모니터 격자 무늬(Grid) 작도
-        graphCtx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
+        // 1. 레이아웃 파티션 정의 (좌측: 막대그래프 존, 우측: 시계열 오실로스코프 존)
+        const barZoneWidth = 45; 
+        const lineZoneX = barZoneWidth + 15;
+        const lineZoneWidth = graphCanvas.width - lineZoneX;
+
+        // 격자 그리기 (우측 시계열 영역에만 적용)
+        graphCtx.strokeStyle = 'rgba(56, 189, 248, 0.04)';
         graphCtx.lineWidth = 1;
-        for (let x = 0; x < graphCanvas.width; x += 20) {
+        for (let x = lineZoneX; x < graphCanvas.width; x += 20) {
             graphCtx.beginPath(); graphCtx.moveTo(x, 0); graphCtx.lineTo(x, graphCanvas.height); graphCtx.stroke();
         }
         for (let y = 0; y < graphCanvas.height; y += 20) {
-            graphCtx.beginPath(); graphCtx.moveTo(0, y); graphCtx.lineTo(graphCanvas.width, y); graphCtx.stroke();
+            graphCtx.beginPath(); graphCtx.moveTo(lineZoneX, y); graphCtx.lineTo(graphCanvas.width, y); graphCtx.stroke();
         }
 
-        // 오실로스코프 형태의 선형 데이터 플롯 드로잉
+        // 전체 최대 기준 전력 스케일 계수 (1300W 기준)
+        const maxScale = 1300;
+        const ratio = Math.min(targetWatt / maxScale, 1.0);
+        const graphH = graphCanvas.height - 30; // 상하 여백 제거 높이
+
+        ///////////////////////////////////////////////////////
+        // A. [좌측] 실시간 수직 전력 막대 그래프 (Bar Chart) 구현
+        ///////////////////////////////////////////////////////
+        const barX = 12;
+        const barW = 22;
+        const barY = graphCanvas.height - (ratio * graphH) - 15;
+        const barMaxY = graphCanvas.height - graphH - 15;
+
+        // 막대 뒷배경 트랙 바디
+        graphCtx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        graphCtx.fillRect(barX, barMaxY, barW, graphH);
+
+        // 현재 전력 층 그라데이션 충진
+        const barGrad = graphCtx.createLinearGradient(barX, graphCanvas.height - 15, barX, barY);
+        if (heating) {
+            barGrad.addColorStop(0, '#f43f5e');
+            barGrad.addColorStop(0.6, '#f97316');
+            barGrad.addColorStop(1, '#facc15');
+        } else {
+            barGrad.addColorStop(0, '#16a34a');
+            barGrad.addColorStop(1, '#4ade80');
+        }
+        graphCtx.fillStyle = barGrad;
+        graphCtx.fillRect(barX, barY, barW, (ratio * graphH));
+
+        // 테두리 마감인자 추가
+        graphCtx.strokeStyle = heating ? 'rgba(244, 63, 94, 0.4)' : 'rgba(74, 222, 128, 0.3)';
+        graphCtx.strokeRect(barX, barMaxY, barW, graphH);
+
+        // 하단 서브라벨 텍스트 마킹
+        graphCtx.fillStyle = '#64748b';
+        graphCtx.font = '9px Arial';
+        graphCtx.fillText("LOAD", barX - 1, graphCanvas.height - 3);
+
+        ///////////////////////////////////////////////////////
+        // B. [우측] 실시간 시계열 라인 그래프 (Line Chart) 구현
+        ///////////////////////////////////////////////////////
         graphCtx.beginPath();
-        graphCtx.lineWidth = 2.5;
-        graphCtx.strokeStyle = heating ? '#f43f5e' : '#4ade80'; // 상태별 선 색상 변경
+        graphCtx.lineWidth = 2.2;
+        graphCtx.strokeStyle = heating ? '#f43f5e' : '#4ade80';
         
-        const stepX = graphCanvas.width / (dataPoints.length - 1);
+        const stepX = lineZoneWidth / (dataPoints.length - 1);
         
         for (let i = 0; i < dataPoints.length; i++) {
-            // 최대 1300W를 차트 높이에 맞춤 정규화 사형 공식 적용
-            const ratio = dataPoints[i] / 1300; 
-            const x = i * stepX;
-            const y = graphCanvas.height - (ratio * (graphCanvas.height - 20)) - 10;
+            const lRatio = dataPoints[i] / maxScale;
+            const lx = lineZoneX + (i * stepX);
+            const ly = graphCanvas.height - (lRatio * graphH) - 15;
 
-            if (i === 0) graphCtx.moveTo(x, y);
-            else graphCtx.lineTo(x, y);
+            if (i === 0) graphCtx.moveTo(lx, ly);
+            else graphCtx.lineTo(lx, ly);
         }
         graphCtx.stroke();
 
-        // 파형 아랫부분 그라데이션 채우기 효과 (가시성 향상)
-        graphCtx.lineTo(graphCanvas.width, graphCanvas.height);
-        graphCtx.lineTo(0, graphCanvas.height);
+        // 라인 하단 반투명 영역 채우기
+        graphCtx.lineTo(graphCanvas.width, graphCanvas.height - 15);
+        graphCtx.lineTo(lineZoneX, graphCanvas.height - 15);
         graphCtx.closePath();
-        const fillGrad = graphCtx.createLinearGradient(0, 0, 0, graphCanvas.height);
-        fillGrad.addColorStop(0, heating ? 'rgba(244, 63, 94, 0.15)' : 'rgba(74, 222, 128, 0.1)');
-        fillGrad.addColorStop(1, 'rgba(2, 6, 23, 0)');
-        graphCtx.fillStyle = fillGrad;
+        const lineGrad = graphCtx.createLinearGradient(lineZoneX, 0, lineZoneX, graphCanvas.height);
+        lineGrad.addColorStop(0, heating ? 'rgba(244, 63, 94, 0.12)' : 'rgba(74, 222, 128, 0.06)');
+        lineGrad.addColorStop(1, 'rgba(2, 6, 23, 0)');
+        graphCtx.fillStyle = lineGrad;
         graphCtx.fill();
     }
 
@@ -443,7 +469,8 @@ window.onload = function() {
         requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
 
-        // 실시간 전력량 상태 트리거 분기 연산
+        const powerVal = parseFloat(powerSlider.value); // 1단 ~ 10단 수치 데이터
+
         if (heating) {
             const currentSpeed = parseFloat(speedSlider.value) * 0.012;
             plateMesh.rotation.y += currentSpeed;
@@ -453,42 +480,55 @@ window.onload = function() {
             foodMesh.position.z = 0 + Math.cos(foodAngle) * 0.38;
             foodMesh.rotation.y += currentSpeed;
 
-            const powerVal = parseFloat(powerSlider.value); 
             const powerFactor = powerVal * 0.35;
-            
             foodMesh.material.emissiveIntensity = 0.5 + Math.sin(t * 15) * 0.3 + powerFactor;
             internalLight.intensity = 1.0 + Math.sin(t * 10) * 0.2;
 
-            const waveSpeedFactor = 4.0 + (powerVal * 1.2); 
+            // [교정] 출력 세기 비례 고주파 파형(Waves) 동적 밀도 제어 로직
+            // 출력세기가 1~3단일 땐 전파 링이 2개, 4~7단일 땐 4개, 8단 이상일 땐 6개 전부 활성화
+            let activeWavesLimit = 2;
+            if (powerVal >= 4 && powerVal <= 7) activeWavesLimit = 4;
+            if (powerVal >= 8) activeWavesLimit = maxWavesCount;
+
+            const waveSpeedFactor = 4.0 + (powerVal * 1.3); // 고출력일수록 전파 확산 속도 업
+
             waves.forEach((wave, index) => {
-                wave.material.opacity = 0.35 + Math.sin(t * waveSpeedFactor + index * 1.5) * 0.2;
-                const pulse = 1 + Math.sin(t * waveSpeedFactor + index) * (0.03 + (powerVal * 0.008));
-                wave.scale.set(pulse, pulse, pulse);
+                if (index < activeWavesLimit) {
+                    // [교정] 출력 강도(powerVal)에 비례하여 사인 진폭(Amplitude)을 키워 전파가 훨씬 크게 요동치도록 제어
+                    const amplitudeFactor = 0.02 + (powerVal * 0.009);
+                    const pulse = 1 + Math.sin(t * waveSpeedFactor + index * 1.2) * amplitudeFactor;
+                    
+                    wave.scale.set(pulse, pulse, pulse);
+                    wave.material.opacity = 0.35 + Math.sin(t * waveSpeedFactor + index) * 0.2;
+                } else {
+                    // 활성화 인계점을 벗어난 고차 파형 링은 즉시 소멸(숨김 처리)
+                    wave.material.opacity *= 0.8;
+                }
             });
 
             displayMesh.material.emissiveIntensity = 1.6 + Math.sin(t * 6) * 0.4;
 
-            // [출력 세기 수식 모델] 기본 120W * 단계 + 마그네트론 무작위 주파수 노이즈 결합
-            const microWaveNoise = (Math.random() - 0.5) * 28; 
+            // 계측용 전력 수식 모델링 및 고출력 시 주파수 노이즈 요동 폭 확대
+            const microWaveNoise = (Math.random() - 0.5) * (20 + powerVal * 4); 
             targetPowerWatt = (powerVal * 120) + microWaveNoise;
 
         } else {
             foodMesh.material.emissiveIntensity = 0.1;
             internalLight.intensity = 0;
             displayMesh.material.emissiveIntensity = 0.4;
-            waves.forEach(wave => wave.material.opacity *= 0.85);
+            
+            // 미가열 시 전파 완전 은폐
+            waves.forEach(wave => wave.material.opacity *= 0.8);
 
-            // 대기모드 소모전력 시뮬레이션 (15W 근처에서 노이즈 잔류)
+            // 대기전력 모드 유지
             targetPowerWatt = 14 + (Math.random() - 0.5) * 2;
         }
 
-        // 상단 수치 텍스트 실시간 디스플레이 출력 정수형 바인딩
+        // 전력값 디스플레이 업데이트 및 그래프 동시 인젝션
         wattText.innerHTML = Math.round(targetPowerWatt) + " W";
+        drawDualGraph(targetPowerWatt);
 
-        // 우측 하단 차트 60fps 동기화 갱신
-        drawRealTimeGraph(targetPowerWatt);
-
-        // 도어 개폐 애니메이션
+        // 도어 개폐 제어
         const targetDoorRotation = doorOpen ? (Math.PI / 1.5) : 0;
         doorPivot.rotation.y += (targetDoorRotation - doorPivot.rotation.y) * 0.1;
 
