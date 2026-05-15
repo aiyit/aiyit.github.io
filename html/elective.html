@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⚡ Smart Microwave Digital Twin</title>
 
-<!-- 단일 라이브러리 방식 유지 (의존성 최소화) -->
+<!-- 단일 라이브러리 체계 유지 (추가 플러그인 없이 내장 드래그 로직 구현) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
@@ -21,6 +21,7 @@
         overflow: hidden;
         background: #d1d5db;
         font-family: 'Malgun Gothic', Arial, sans-serif;
+        user-select: none;
     }
 
     #canvas-container {
@@ -31,6 +32,10 @@
         height: 100vh;
         z-index: 1;
         background: #d1d5db;
+        cursor: grab;
+    }
+    #canvas-container:active {
+        cursor: grabbing;
     }
 
     #ui {
@@ -139,12 +144,22 @@ window.onload = function() {
     ///////////////////////////////////////////////////////////
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xd1d5db); 
-    scene.fog = new THREE.Fog(0xd1d5db, 15, 40);
+    scene.fog = new THREE.Fog(0xd1d5db, 15, 45);
 
-    // [교정] X축 설정을 0으로 고정하여 완벽한 정면(Front) 뷰 구현
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
-    camera.position.set(0, 0.8, 6.5);
-    camera.lookAt(0, 0, 0);
+    
+    // [교정] 초기 위치를 정면으로 잡되, 거리를 기존 6.5에서 8.5로 멀리 떨어뜨려 시야 확보
+    let cameraRadius = 8.5; 
+    let cameraTheta = Math.PI / 2; // 좌우 회전각 (정면)
+    let cameraPhi = Math.PI / 2.2;  // 상하 회전각 (약간 내려다보는 앵글)
+
+    function updateCameraPosition() {
+        camera.position.x = cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+        camera.position.y = cameraRadius * Math.cos(cameraPhi) + 0.8; // 기기 중심 높이 보정
+        camera.position.z = cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+        camera.lookAt(0, 0, 0);
+    }
+    updateCameraPosition();
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
@@ -152,16 +167,55 @@ window.onload = function() {
     container.appendChild(renderer.domElement);
 
     ///////////////////////////////////////////////////////////
+    // MOUSE INTERACTION SYSTEM (3D 마우스 자유 관찰 제어기)
+    ///////////////////////////////////////////////////////////
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const deltaX = e.clientX - previousMousePosition.x;
+        const deltaY = e.clientY - previousMousePosition.y;
+
+        // 마우스 이동 변위량 계산 및 회전각 누적
+        cameraTheta -= deltaX * 0.007;
+        cameraPhi -= deltaY * 0.007;
+
+        // 화면이 뒤집히는 물리 현상을 막기 위한 상하 구동 제한 (임계 보정)
+        cameraPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, cameraPhi));
+
+        updateCameraPosition();
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // 휠 줌인/줌아웃 기능 추가하여 관찰 자유도 보장
+    window.addEventListener('wheel', (e) => {
+        cameraRadius += e.deltaY * 0.005;
+        cameraRadius = Math.max(5.0, Math.min(15.0, cameraRadius));
+        updateCameraPosition();
+    });
+
+    ///////////////////////////////////////////////////////////
     // LIGHTS SYSTEM
     ///////////////////////////////////////////////////////////
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.3);
-    mainLight.position.set(5, 10, 7);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    mainLight.position.set(6, 12, 8);
     scene.add(mainLight);
 
-    const internalLight = new THREE.PointLight(0xffaa44, 0, 5); // 가열 작동 시 내부 조명 효과
+    const internalLight = new THREE.PointLight(0xffaa44, 0, 5); 
     internalLight.position.set(-0.4, 0, 0);
     scene.add(internalLight);
 
@@ -181,37 +235,35 @@ window.onload = function() {
     scene.add(grid);
 
     ///////////////////////////////////////////////////////////
-    // DIGITAL TWIN MICROWAVE MODEL (공간 고정 구조)
+    // DIGITAL TWIN MICROWAVE MODEL
     ///////////////////////////////////////////////////////////
     const microwave = new THREE.Group();
     scene.add(microwave);
 
-    // 1. 외벽 바디 프레임
+    // 1. [교정] 가전제품 전용 투명 플라스틱 외벽 바디 사양 변경
     const bodyGeom = new THREE.BoxGeometry(4.6, 2.8, 3.2);
     const bodyMat = new THREE.MeshStandardMaterial({
         color: 0x222630,
-        metalness: 0.7,
-        roughness: 0.3,
+        metalness: 0.0,          // 플라스틱 재질을 위해 금속성 제거
+        roughness: 0.2,          // 매끄러운 플라스틱 특유의 하이라이트 광택 유도
         transparent: true,
-        opacity: 0.4
+        opacity: 0.45            
     });
     const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
     microwave.add(bodyMesh);
 
-    // 2. [교정] 불투명 크리스탈 유리 턴테이블 원판 (은은한 반투명 재질)
+    // 2. [교정] 내부 턴테이블 메탈 원판 사양 변경 (실버 스테인리스 메탈)
     const plateGeom = new THREE.CylinderGeometry(1.0, 1.0, 0.04, 40);
     const plateMat = new THREE.MeshStandardMaterial({
-        color: 0xe2e8f0,         
-        metalness: 0.1,
-        roughness: 0.1,          
-        transparent: true,
-        opacity: 0.65            
+        color: 0xd1d5db,         // 은빛 메탈 베이스 컬러
+        metalness: 0.95,         // 강렬한 금속 반사율 설정
+        roughness: 0.25,         // 메탈 결의 은은한 거칠기 표현
     });
     const plateMesh = new THREE.Mesh(plateGeom, plateMat);
     plateMesh.position.set(-0.4, -1.1, 0);
     microwave.add(plateMesh);
 
-    // 3. 음식 피가열체 
+    // 3. 음식 피가열체
     const foodGeom = new THREE.SphereGeometry(0.26, 32, 32);
     const foodMat = new THREE.MeshStandardMaterial({
         color: 0xe11d48,
@@ -223,12 +275,12 @@ window.onload = function() {
     foodMesh.position.set(-0.4, -0.84, 0.45); 
     microwave.add(foodMesh);
 
-    // 4. 전면 우측 스마트 컨트롤 조작 패널
+    // 4. 전면 우측 조작 패널
     const panelGeom = new THREE.BoxGeometry(0.8, 2.6, 0.1);
     const panelMat = new THREE.MeshStandardMaterial({
         color: 0x090d16,
-        metalness: 0.8,
-        roughness: 0.1,
+        metalness: 0.1,
+        roughness: 0.2,
         emissive: 0x020617,
         emissiveIntensity: 0.3
     });
@@ -248,23 +300,21 @@ window.onload = function() {
     microwave.add(displayMesh);
 
     ///////////////////////////////////////////////////////////
-    // [교정] 우측 경첩 가장자리를 기준으로 설계된 도어 피벗(Pivot) 시스템
+    // 우측 경첩 기반 도어 피벗(Pivot) 시스템
     ///////////////////////////////////////////////////////////
     const doorPivot = new THREE.Group();
-    // 우측 패널 경계선 부근에 가상의 경첩 축 포지셔닝
     doorPivot.position.set(1.4, 0, 1.61); 
     microwave.add(doorPivot);
 
     const doorGeom = new THREE.BoxGeometry(3.6, 2.6, 0.06);
     const doorMat = new THREE.MeshStandardMaterial({
         color: 0x0f172a,
-        metalness: 0.8,
-        roughness: 0.1,
+        metalness: 0.0,          // 전면 도어 프레임도 플라스틱 사양 적용
+        roughness: 0.2,
         transparent: true,
         opacity: 0.5
     });
     const doorMesh = new THREE.Mesh(doorGeom, doorMat);
-    // 축 기준 왼쪽으로 오프셋을 주어 문이 한쪽 방향으로만 활짝 열리도록 배치
     doorMesh.position.set(-1.8, 0, 0); 
     doorPivot.add(doorMesh);
 
@@ -298,7 +348,6 @@ window.onload = function() {
     const doorBtn = document.getElementById('doorBtn');
     const statusText = document.getElementById('status');
 
-    // 가열 제어 이벤트 논리
     startBtn.onclick = function() {
         if (doorOpen) {
             statusText.innerHTML = "⚠️ 문을 닫아야 가열이 시작됩니다!";
@@ -319,11 +368,10 @@ window.onload = function() {
         }
     };
 
-    // [교정] 문 열기/닫기 인터랙션 이벤트 논리
     doorBtn.onclick = function() {
         doorOpen = !doorOpen;
         if (doorOpen) {
-            heating = false; // 안전 규격 보장: 문이 열리면 실시간으로 가열 중단
+            heating = false; 
             statusText.innerHTML = "🚪 문 열림";
             statusText.style.color = "#eab308";
             doorBtn.innerHTML = "문 닫기";
@@ -337,7 +385,7 @@ window.onload = function() {
     };
 
     ///////////////////////////////////////////////////////////
-    // MAIN LOOP & PHYSICS ANIMATION (실시간 피드백 루프)
+    // MAIN LOOP & PHYSICS ANIMATION
     ///////////////////////////////////////////////////////////
     const clock = new THREE.Clock();
     let foodAngle = 0;
@@ -346,21 +394,20 @@ window.onload = function() {
         requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
 
-        // 1. 가열 중일 때 내부 오브젝트 구동 알고리즘
+        // 1. 가열 중 작동 제어 알고리즘
         if (heating) {
-            // 슬라이더 변경 수치 정밀 실시간 변환 연동
             const currentSpeed = parseFloat(speedSlider.value) * 0.012;
             
-            // 크리스탈 원판 회전
+            // 메탈 원판 회전 및 하이라이트 움직임 연출
             plateMesh.rotation.y += currentSpeed;
             
-            // 크리스탈 판 위에서 음식 공전 물리 연산
+            // 메탈 원판 위 피가열체 공전 궤도
             foodAngle += currentSpeed;
             foodMesh.position.x = -0.4 + Math.sin(foodAngle) * 0.45;
             foodMesh.position.z = 0 + Math.cos(foodAngle) * 0.45;
             foodMesh.rotation.y += currentSpeed;
 
-            // 출력 세기 슬라이더 실시간 연동 및 발광 주파수 매핑
+            // 출력 세기 실시간 광도 갱신
             const powerFactor = parseFloat(powerSlider.value) * 0.35;
             foodMesh.material.emissiveIntensity = 0.5 + Math.sin(t * 15) * 0.3 + powerFactor;
             internalLight.intensity = 1.0 + Math.sin(t * 10) * 0.2;
@@ -373,17 +420,14 @@ window.onload = function() {
 
             displayMesh.material.emissiveIntensity = 1.6 + Math.sin(t * 6) * 0.4;
         } else {
-            // 정지 모드 시 초기 상태 감쇠 복귀
             foodMesh.material.emissiveIntensity = 0.1;
             internalLight.intensity = 0;
             displayMesh.material.emissiveIntensity = 0.4;
             waves.forEach(wave => wave.material.opacity *= 0.85);
         }
 
-        // 2. [교정] 문 열림 제어용 120도(Math.PI / 1.5) 개폐 선형 보간 알고리즘
+        // 2. 도어 120도 개폐 선형 보간 처리
         const targetDoorRotation = doorOpen ? (Math.PI / 1.5) : 0;
-        
-        // 프레임 보간(Lerp)을 사용하여 문이 급격하게 튀지 않고 부드럽게 감속하며 열리도록 처리
         doorPivot.rotation.y += (targetDoorRotation - doorPivot.rotation.y) * 0.1;
 
         renderer.render(scene, camera);
@@ -391,7 +435,6 @@ window.onload = function() {
 
     animate();
 
-    // 반응형 브라우저 창 조절 대응
     window.addEventListener('resize', function() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
