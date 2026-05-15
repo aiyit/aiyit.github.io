@@ -12,16 +12,25 @@
         box-sizing: border-box;
     }
 
-    body {
+    body, html {
+        width: 100%;
+        height: 100%;
         overflow: hidden;
         background: #0b0f17;
         font-family: Arial, sans-serif;
     }
 
-    canvas {
-        display: block;
+    /* 3D 장면이 무조건 꽉 차게 그려지도록 공간 강제 확보 */
+    #canvas-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
     }
 
+    /* 컨트롤러 UI를 3D 화면보다 무조건 상위에 배치 */
     #ui {
         position: fixed;
         top: 20px;
@@ -34,6 +43,7 @@
         z-index: 100;
         backdrop-filter: blur(12px);
         box-shadow: 0 0 25px rgba(0,0,0,0.45);
+        pointer-events: auto; /* UI 클릭 정상 작동 보장 */
     }
 
     #ui h2 {
@@ -85,6 +95,9 @@
 
 <body>
 
+<!-- 3D 렌더링 전용 컨테이너 레이어 -->
+<div id="canvas-container"></div>
+
 <div id="ui">
     <h2>⚡ Smart Microwave</h2>
 
@@ -109,54 +122,61 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
 
+const container = document.getElementById('canvas-container');
+
+// 컨테이너 실제 픽셀 크기 계산 (0 일때를 대비해 하드코딩 방어막 구축)
+const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || window.innerHeight;
+
 ///////////////////////////////////////////////////////////
 // SCENE & RENDERER
 ///////////////////////////////////////////////////////////
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0b0f17);
 
-// 무대 안개 범위를 크게 확장하여 오브젝트가 암전 속에 가로막히는 현상 방지
-scene.fog = new THREE.Fog(0x0b0f17, 20, 100); 
+// 시야 방해 요소를 줄이기 위해 안개 일시 제거 (확인용)
+// scene.fog = new THREE.Fog(0x0b0f17, 20, 100); 
 
-// 초기 카메라 구도를 입체적인 사선 앵글로 배치
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(5, 4, 8); 
+const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+camera.position.set(6, 5, 8); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(width, height);
 renderer.shadowMap.enabled = true;
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.domElement.style.position = 'fixed';
-renderer.domElement.style.top = '0';
-renderer.domElement.style.left = '0';
-renderer.domElement.style.zIndex = '1';
-document.body.appendChild(renderer.domElement);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// 컨테이너 내부에 캔버스 삽입
+container.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.target.set(0, 1.5, 0);
 
 ///////////////////////////////////////////////////////////
-// LIGHTS
+// LIGHTS (조명 밝기 대폭 상향)
 ///////////////////////////////////////////////////////////
-const ambient = new THREE.AmbientLight(0xffffff, 1.8); // 기본 환경광을 밝게 세팅하여 음영 차단 해제
+const ambient = new THREE.AmbientLight(0xffffff, 2.0); 
 scene.add(ambient);
 
-const directional = new THREE.DirectionalLight(0xffffff, 2.0);
-directional.position.set(6, 12, 6);
+const directional = new THREE.DirectionalLight(0xffffff, 2.5);
+directional.position.set(10, 15, 10);
 directional.castShadow = true;
 scene.add(directional);
 
 ///////////////////////////////////////////////////////////
-// FLOOR
+// FLOOR (그리드 헬퍼 추가하여 공간감 확보)
 ///////////////////////////////////////////////////////////
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(60, 60),
-    new THREE.MeshStandardMaterial({ color: 0x161e27, roughness: 0.8 })
+    new THREE.MeshStandardMaterial({ color: 0x232d38, roughness: 0.6 })
 );
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
 scene.add(floor);
+
+const gridHelper = new THREE.GridHelper(20, 20, 0x00bfff, 0x1f3d5c);
+gridHelper.position.y = 0.01;
+scene.add(gridHelper);
 
 ///////////////////////////////////////////////////////////
 // MICROWAVE DIGITAL TWIN MODEL
@@ -164,15 +184,15 @@ scene.add(floor);
 const microwave = new THREE.Group();
 scene.add(microwave);
 
-// 외벽 바디 (내부 가시성을 확보한 실버 그레이 반투명 케이스)
+// 외벽 바디 (확연히 보이도록 반투명도를 낮추고 에메랄드 톤 실버 적용)
 const body = new THREE.Mesh(
     new THREE.BoxGeometry(6, 3.5, 4),
     new THREE.MeshStandardMaterial({
-        color: 0xaaaaaa,
-        metalness: 0.6,
+        color: 0xcccccc,
+        metalness: 0.5,
         roughness: 0.2,
         transparent: true,
-        opacity: 0.35 
+        opacity: 0.5 
     })
 );
 body.position.y = 1.75;
@@ -182,18 +202,18 @@ microwave.add(body);
 // 턴테이블 회전판
 const plate = new THREE.Mesh(
     new THREE.CylinderGeometry(1.4, 1.4, 0.08, 32),
-    new THREE.MeshStandardMaterial({ color: 0xe0f7ff, transparent: true, opacity: 0.7, roughness: 0.1 })
+    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1 })
 );
-plate.position.set(-0.5, 0.2, 0); 
+plate.position.set(-0.5, 0.15, 0); 
 plate.receiveShadow = true;
 microwave.add(plate);
 
 // 음식 오브젝트
 const food = new THREE.Mesh(
-    new THREE.SphereGeometry(0.35, 32, 32),
+    new THREE.SphereGeometry(0.4, 32, 32),
     new THREE.MeshStandardMaterial({
-        color: 0xffaa66,
-        emissive: 0xff4400,
+        color: 0xff7722,
+        emissive: 0xff3300,
         emissiveIntensity: 0.3
     })
 );
@@ -204,12 +224,12 @@ microwave.add(food);
 // 우측 기기 컨트롤 조작반
 const panel = new THREE.Mesh(
     new THREE.BoxGeometry(1.0, 3.3, 0.2),
-    new THREE.MeshStandardMaterial({ color: 0x1f3d5c, emissive: 0x0c1a2b, emissiveIntensity: 0.5 })
+    new THREE.MeshStandardMaterial({ color: 0x1a334d, emissive: 0x0b1621, emissiveIntensity: 0.4 })
 );
 panel.position.set(2.4, 1.75, 1.91);
 microwave.add(panel);
 
-// 정밀 문(Door) 회전 구동 축 레이어
+// 정밀 문(Door) 피벗 레이어
 const doorPivot = new THREE.Group();
 doorPivot.position.set(-3, 1.75, 2.01); 
 microwave.add(doorPivot);
@@ -217,10 +237,10 @@ microwave.add(doorPivot);
 const door = new THREE.Mesh(
     new THREE.BoxGeometry(4.8, 3.3, 0.08), 
     new THREE.MeshStandardMaterial({
-        color: 0x222222,
+        color: 0x111111,
         transparent: true,
-        opacity: 0.4,
-        metalness: 0.5,
+        opacity: 0.6,
+        metalness: 0.7,
         roughness: 0.1
     })
 );
@@ -276,7 +296,7 @@ document.getElementById('doorBtn').onclick = () => {
 };
 
 ///////////////////////////////////////////////////////////
-// RENDER LOOP & ANIMATION INTERPOLATION
+// RENDER LOOP
 ///////////////////////////////////////////////////////////
 const clock = new THREE.Clock();
 
@@ -285,18 +305,15 @@ function animate() {
     const t = clock.getElapsedTime();
     controls.update();
 
-    // 1. 가열 중 회전 동역학 알고리즘
     if (heating) {
-        const speed = Number(speedSlider.value) * 0.012;
+        const speed = Number(speedSlider.value) * 0.015;
         plate.rotation.y += speed;
         food.rotation.y += speed;
     }
 
-    // 2. 부드러운 문 개폐 연산 (Lerp 기법)
     const targetRotation = doorOpen ? -Math.PI / 1.7 : 0;
     doorPivot.rotation.y += (targetRotation - doorPivot.rotation.y) * 0.12;
 
-    // 3. 열 에너지 발광 시각화 역학
     if (heating) {
         const intensity = Number(powerSlider.value) * 0.25;
         food.material.emissiveIntensity = 0.6 + Math.sin(t * 12) * 0.5 + intensity;
@@ -304,7 +321,6 @@ function animate() {
         food.material.emissiveIntensity = 0.2;
     }
 
-    // 4. 전자파 웨이브 필드 연산
     waves.forEach((wave, index) => {
         if (heating) {
             wave.material.opacity = 0.25 + Math.sin(t * 6 + index) * 0.15;
@@ -315,7 +331,6 @@ function animate() {
         }
     });
 
-    // 5. 패널 디스플레이 활성화 이펙트
     panel.material.emissiveIntensity = heating ? 1.8 : 0.4;
 
     renderer.render(scene, camera);
@@ -327,9 +342,11 @@ animate();
 // RESIZE ADAPTER
 ///////////////////////////////////////////////////////////
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(w, h);
 });
 
 </script>
