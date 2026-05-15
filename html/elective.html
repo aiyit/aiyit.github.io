@@ -1,6 +1,256 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전자레인지 3D</title>
+
+<style>
+    body{
+        margin:0;
+        overflow:hidden;
+        background:#111;
+    }
+
+    canvas{
+        display:block;
+    }
+
+    #info{
+        position:absolute;
+        top:10px;
+        left:10px;
+        color:white;
+        font-family:Arial;
+        background:rgba(0,0,0,0.5);
+        padding:10px;
+        border-radius:10px;
+    }
+</style>
+</head>
+<body>
+
+<div id="info">
+    ⚡ 전자레인지 디지털 트윈<br>
+    마우스로 회전 가능
+</div>
+
+<script type="module">
+
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+/////////////////////////////////////////////////
+// Scene
+/////////////////////////////////////////////////
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x101820);
+
+/////////////////////////////////////////////////
+// Camera
+/////////////////////////////////////////////////
+
+const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+
+camera.position.set(8,5,8);
+
+/////////////////////////////////////////////////
+// Renderer
+/////////////////////////////////////////////////
+
+const renderer = new THREE.WebGLRenderer({
+    antialias:true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+/////////////////////////////////////////////////
+// Controls
+/////////////////////////////////////////////////
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+/////////////////////////////////////////////////
+// Light
+/////////////////////////////////////////////////
+
+const ambientLight = new THREE.AmbientLight(0xffffff,1.2);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff,2);
+directionalLight.position.set(10,20,10);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
+
+/////////////////////////////////////////////////
+// Floor
+/////////////////////////////////////////////////
+
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(50,50),
+    new THREE.MeshStandardMaterial({
+        color:0x333333
+    })
+);
+
+floor.rotation.x = -Math.PI/2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+/////////////////////////////////////////////////
+// Microwave Body
+/////////////////////////////////////////////////
+
+const body = new THREE.Mesh(
+    new THREE.BoxGeometry(6,3.5,4),
+    new THREE.MeshStandardMaterial({
+        color:0xd0d0d0,
+        metalness:0.8,
+        roughness:0.3
+    })
+);
+
+body.position.y = 2;
+body.castShadow = true;
+scene.add(body);
+
+/////////////////////////////////////////////////
+// Door
+/////////////////////////////////////////////////
+
+const door = new THREE.Mesh(
+    new THREE.BoxGeometry(5.8,3.1,0.1),
+    new THREE.MeshPhysicalMaterial({
+        color:0x222222,
+        transparent:true,
+        opacity:0.7,
+        transmission:0.5,
+        roughness:0.1
+    })
+);
+
+// 앞쪽으로 이동
+
+door.position.set(0,2,2.05);
+door.castShadow = true;
+scene.add(door);
+
+/////////////////////////////////////////////////
+// Plate
+/////////////////////////////////////////////////
+
+const plate = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.2,1.2,0.08,64),
+    new THREE.MeshPhysicalMaterial({
+        color:0x88ddff,
+        transparent:true,
+        opacity:0.8
+    })
+);
+
+plate.position.set(0,0.5,0);
+plate.castShadow = true;
+scene.add(plate);
+
+/////////////////////////////////////////////////
+// Food
+/////////////////////////////////////////////////
+
+const food = new THREE.Mesh(
+    new THREE.SphereGeometry(0.5,32,32),
+    new THREE.MeshStandardMaterial({
+        color:0xff8844,
+        emissive:0xff3300,
+        emissiveIntensity:0.5
+    })
+);
+
+food.position.set(0,1,0);
+food.castShadow = true;
+scene.add(food);
+
+/////////////////////////////////////////////////
+// Microwave Waves
+/////////////////////////////////////////////////
+
+const waveGroup = new THREE.Group();
+scene.add(waveGroup);
+
+for(let i=0;i<5;i++){
+
+    const wave = new THREE.Mesh(
+        new THREE.TorusGeometry(1.5 + i*0.2,0.03,16,100),
+        new THREE.MeshBasicMaterial({
+            color:0x00ccff,
+            transparent:true,
+            opacity:0.4
+        })
+    );
+
+    wave.rotation.x = Math.PI/2;
+    wave.position.y = 1.2;
+
+    waveGroup.add(wave);
+}
+
+/////////////////////////////////////////////////
+// Animation
+/////////////////////////////////////////////////
+
+function animate(){
+
+    requestAnimationFrame(animate);
+
+    controls.update();
+
+    // 접시 회전
+    plate.rotation.y += 0.02;
+
+    // 음식 회전
+    food.rotation.y += 0.02;
+
+    // 마이크로파 애니메이션
+    waveGroup.children.forEach((wave,index)=>{
+
+        wave.scale.x = 1 + Math.sin(Date.now()*0.002 + index)*0.1;
+        wave.scale.y = 1 + Math.sin(Date.now()*0.002 + index)*0.1;
+
+        wave.material.opacity =
+            0.2 + Math.abs(Math.sin(Date.now()*0.003 + index))*0.4;
+    });
+
+    renderer.render(scene,camera);
+}
+
+animate();
+
+/////////////////////////////////////////////////
+// Resize
+/////////////////////////////////////////////////
+
+window.addEventListener('resize',()=>{
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Three.js 전자레인지 디지털 트윈</title>
