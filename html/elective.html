@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⚡ Smart Microwave Digital Twin</title>
 
-<!-- 의존성 꼬임이 없는 단일 순정 라이브러리 방식 유지 -->
+<!-- 의존성 없는 단일 라이브러리 체계 유지 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
@@ -40,7 +40,7 @@
         width: 290px;
         padding: 22px;
         border-radius: 18px;
-        background: rgba(15, 23, 42, 0.9); /* 다크 모드 스타일 고대비 UI */
+        background: rgba(15, 23, 42, 0.9);
         color: #f8fafc;
         z-index: 100;
         backdrop-filter: blur(12px);
@@ -135,10 +135,10 @@ window.onload = function() {
     scene.background = new THREE.Color(0xd1d5db); 
     scene.fog = new THREE.Fog(0xd1d5db, 15, 40);
 
-    // 카메라 시점을 아이소메트릭 최적 구도로 하드코딩 고정
+    // 내부 회전판 구동이 가장 잘 내려다보이는 각도로 카메라 조절
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.set(5.5, 4.5, 7.5);
-    camera.lookAt(0, 0.2, 0);
+    camera.position.set(4.5, 4.0, 6.5);
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
@@ -146,7 +146,7 @@ window.onload = function() {
     container.appendChild(renderer.domElement);
 
     ///////////////////////////////////////////////////////////
-    // 입체 스튜디오 조명 시스템 (3-Point Light)
+    // LIGHTS SYSTEM
     ///////////////////////////////////////////////////////////
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
@@ -155,16 +155,12 @@ window.onload = function() {
     mainLight.position.set(6, 12, 6);
     scene.add(mainLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
     fillLight.position.set(-6, 4, -3);
     scene.add(fillLight);
 
-    const topLight = new THREE.HemisphereLight(0xffffff, 0x4b5563, 0.4);
-    topLight.position.set(0, 15, 0);
-    scene.add(topLight);
-
     ///////////////////////////////////////////////////////////
-    // FLOOR & GRID (스튜디오 공간감 확보)
+    // FLOOR & GRID
     ///////////////////////////////////////////////////////////
     const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(60, 60),
@@ -179,24 +175,24 @@ window.onload = function() {
     scene.add(grid);
 
     ///////////////////////////////////////////////////////////
-    // DIGITAL TWIN MICROWAVE MODEL
+    // DIGITAL TWIN MICROWAVE MODEL (공간 고정 유닛)
     ///////////////////////////////////////////////////////////
     const microwave = new THREE.Group();
     scene.add(microwave);
 
-    // 1. 외벽 바디 (리얼한 반사가 일어나는 다크 차콜 메탈 재질)
+    // 1. 외벽 바디 (고정)
     const bodyGeom = new THREE.BoxGeometry(4.6, 2.8, 3.2);
     const bodyMat = new THREE.MeshStandardMaterial({
         color: 0x222630,
-        metalness: 0.8,
-        roughness: 0.2,
+        metalness: 0.7,
+        roughness: 0.25,
         transparent: true,
-        opacity: 0.45 /* 내부 관측용 쉴드 투명도 */
+        opacity: 0.45
     });
     const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
     microwave.add(bodyMesh);
 
-    // 2. 내부 유리 턴테이블 (반투명 화이트 글라스)
+    // 2. 내부 유리 턴테이블 (가열 시 독립 회전체)
     const plateGeom = new THREE.CylinderGeometry(1.0, 1.0, 0.05, 32);
     const plateMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
@@ -208,7 +204,7 @@ window.onload = function() {
     plateMesh.position.set(-0.4, -1.1, 0);
     microwave.add(plateMesh);
 
-    // 3. 음식 피가열체 (다홍색 구체 무대)
+    // 3. 음식 피가열체 (가열 시 독립 회전체)
     const foodGeom = new THREE.SphereGeometry(0.28, 32, 32);
     const foodMat = new THREE.MeshStandardMaterial({
         color: 0xe11d48,
@@ -217,15 +213,16 @@ window.onload = function() {
         roughness: 0.4
     });
     const foodMesh = new THREE.Mesh(foodGeom, foodMat);
-    foodMesh.position.set(-0.4, -0.8, 0);
+    // 회전축을 원판 중심에서 바깥으로 살짝 오프셋 시켜 돌도록 배치
+    foodMesh.position.set(-0.4, -0.8, 0.4); 
     microwave.add(foodMesh);
 
-    // 4. 전면 도어 글라스 (반사율이 높은 틴팅 유리 윈도우)
+    // 4. 전면 도어 글라스 (고정)
     const doorGeom = new THREE.BoxGeometry(3.6, 2.6, 0.06);
     const doorMat = new THREE.MeshStandardMaterial({
         color: 0x0f172a,
-        metalness: 0.9,
-        roughness: 0.05,
+        metalness: 0.8,
+        roughness: 0.1,
         transparent: true,
         opacity: 0.55
     });
@@ -233,11 +230,11 @@ window.onload = function() {
     doorMesh.position.set(-0.4, 0, 1.61);
     microwave.add(doorMesh);
 
-    // 5. 전면 우측 스마트 컨트롤 패널 (유광 블랙 아크릴 바)
+    // 5. 전면 우측 스마트 컨트롤 패널 (고정)
     const panelGeom = new THREE.BoxGeometry(0.8, 2.6, 0.1);
     const panelMat = new THREE.MeshStandardMaterial({
         color: 0x090d16,
-        metalness: 0.9,
+        metalness: 0.8,
         roughness: 0.1,
         emissive: 0x020617,
         emissiveIntensity: 0.4
@@ -246,7 +243,7 @@ window.onload = function() {
     panelMesh.position.set(1.8, 0, 1.58);
     microwave.add(panelMesh);
 
-    // 6. 패널 상단 디지털 디스플레이 창 (LED 인디케이터 라인)
+    // 6. 패널 상단 디지털 디스플레이 창 (고정)
     const displayGeom = new THREE.BoxGeometry(0.6, 0.4, 0.02);
     const displayMat = new THREE.MeshStandardMaterial({
         color: 0x0284c7,
@@ -258,7 +255,7 @@ window.onload = function() {
     microwave.add(displayMesh);
 
     ///////////////////////////////////////////////////////////
-    // NEON MICRO WAVES EFFECT (고주파 특수 효과 고리)
+    // NEON MICRO WAVES EFFECT (고주파 파형 고리 - 고정)
     ///////////////////////////////////////////////////////////
     const waves = [];
     for (let i = 0; i < 3; i++) {
@@ -276,7 +273,7 @@ window.onload = function() {
     }
 
     ///////////////////////////////////////////////////////////
-    // CONTROL LOGIC & EVENTS
+    // CONTROL LOGIC & REAL-TIME INPUTS
     ///////////////////////////////////////////////////////////
     let heating = false;
 
@@ -301,45 +298,53 @@ window.onload = function() {
     };
 
     ///////////////////////////////////////////////////////////
-    // ANIMATION & KINETIC LOOP
+    // ANIMATION & REAL-TIME INTERACTION LOOP
     ///////////////////////////////////////////////////////////
     const clock = new THREE.Clock();
+
+    // 음식을 원판 중심 기준으로 공전시키기 위한 각도 변수
+    let foodAngle = 0;
 
     function animate() {
         requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
 
-        // 교수님과 학생들이 다각도로 관찰할 수 있도록 전체 시스템을 부드럽게 공전
-        microwave.rotation.y = t * 0.15;
+        // [교정] 본체 공전 제거: microwave.rotation.y 연산 전면 삭제 (기기 완벽 고정)
 
         if (heating) {
-            // 1. 설정값에 연동되는 턴테이블 및 음식 물리 회전
-            const currentSpeed = Number(speedSlider.value) * 0.015;
+            // 1. [교정] 회전 속도 제어 실시간 연동 (슬라이더 값 적용)
+            const currentSpeed = parseFloat(speedSlider.value) * 0.01;
+            
+            // 원판 자체 회전
             plateMesh.rotation.y += currentSpeed;
-            foodMesh.rotation.y += currentSpeed;
+            
+            // 음식의 공전 수식 연산 (원판 위에 고정되어 같이 도는 연출)
+            foodAngle += currentSpeed;
+            foodMesh.position.x = -0.4 + Math.sin(foodAngle) * 0.5;
+            foodMesh.position.z = 0 + Math.cos(foodAngle) * 0.5;
+            foodMesh.rotation.y += currentSpeed; // 자체 자전 효과 추가
 
-            // 2. 출력(Power) 수치에 따른 음식 열원 네온 발광 동적 연산
-            const powerIntensity = Number(powerSlider.value) * 0.35;
-            foodMesh.material.emissiveIntensity = 0.6 + Math.sin(t * 14) * 0.4 + powerIntensity;
+            // 2. [교정] 출력 세기 제어 실시간 연동 (슬라이더 값 적용)
+            const powerFactor = parseFloat(powerSlider.value) * 0.35;
+            foodMesh.material.emissiveIntensity = 0.5 + Math.sin(t * 15) * 0.3 + powerFactor;
 
-            // 3. 내부 챔버 마그네트론 고주파 파형 애니메이션
+            // 3. 고주파 특수 효과 파형 제어
             waves.forEach((wave, index) => {
                 wave.material.opacity = 0.35 + Math.sin(t * 8 + index) * 0.15;
                 const scaleFactor = 1 + Math.sin(t * 6 + index) * 0.04;
                 wave.scale.set(scaleFactor, scaleFactor, scaleFactor);
             });
 
-            // 4. 전면 제어반 활성화 임팩트
-            displayMesh.material.emissiveIntensity = 1.5 + Math.sin(t * 5) * 0.3;
+            displayMesh.material.emissiveIntensity = 1.6 + Math.sin(t * 6) * 0.4;
             panelMesh.material.emissiveIntensity = 0.9;
         } else {
-            // 정지 상태일 때 기본값 감쇠 제어
+            // 정지 상태 시 실시간 복귀 및 감쇠
             foodMesh.material.emissiveIntensity = 0.15;
             displayMesh.material.emissiveIntensity = 0.5;
             panelMesh.material.emissiveIntensity = 0.4;
             
             waves.forEach(wave => {
-                wave.material.opacity *= 0.85; // 자연스럽게 사라지는 페이드 아웃 효과
+                wave.material.opacity *= 0.85; 
             });
         }
 
@@ -348,7 +353,6 @@ window.onload = function() {
 
     animate();
 
-    // 해상도 다이내믹 리사이즈 대응
     window.addEventListener('resize', function() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
