@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ Smart Microwave Digital Twin</title>
+<title>⚡ Smart Microwave Digital Twin & Data Visualization</title>
 
-<!-- 단일 라이브러리 체계 유지 (추가 플러그인 없이 내장 드래그 로직 구현) -->
+<!-- 단일 라이브러리 및 마우스 드래그 관찰 체계 유지 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <style>
@@ -38,6 +38,7 @@
         cursor: grabbing;
     }
 
+    /* 좌측 메인 제어 패널 UI */
     #ui {
         position: fixed;
         top: 20px;
@@ -50,6 +51,47 @@
         z-index: 100;
         backdrop-filter: blur(12px);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    /* [신규 사양] 우측 하단 실시간 전력 분석 모니터 패널 UI */
+    #graph-panel {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 340px;
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.95);
+        color: #f8fafc;
+        z-index: 100;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .panel-title {
+        font-size: 14px;
+        font-weight: bold;
+        color: #38bdf8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    #current-watt {
+        font-size: 16px;
+        color: #4ade80;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    #powerGraph {
+        width: 100%;
+        height: 140px;
+        background: #020617;
+        border-radius: 10px;
+        display: block;
+        border: 1px solid rgba(255,255,255,0.05);
     }
 
     #ui h2 {
@@ -90,15 +132,9 @@
         transition: all 0.2s;
     }
 
-    #startBtn {
-        background: #0284c7;
-        margin-top: 16px;
-    }
+    #startBtn { background: #0284c7; margin-top: 16px; }
     #startBtn:hover { background: #0ea5e9; }
-
-    #doorBtn {
-        background: #475569;
-    }
+    #doorBtn { background: #475569; }
     #doorBtn:hover { background: #64748b; }
 
     #status {
@@ -115,22 +151,29 @@
 
 <div id="canvas-container"></div>
 
+<!-- 좌측 제어 컨트롤 가이드 -->
 <div id="ui">
     <h2>⚡ Smart Microwave</h2>
-
     <div class="control">
         <label>출력 세기 (Power)</label>
         <input type="range" id="power" min="1" max="10" value="5">
     </div>
-
     <div class="control">
         <label>회전 속도 (Speed)</label>
         <input type="range" id="speed" min="1" max="10" value="5">
     </div>
-
     <button id="startBtn">가열 시작</button>
     <button id="doorBtn">문 열기</button>
     <div id="status">대기중</div>
+</div>
+
+<!-- 우측 하단 데이터 시각화 모니터링 컴포넌트 -->
+<div id="graph-panel">
+    <div class="panel-title">
+        <span>📉 Real-time Power Consumption</span>
+        <span id="current-watt">15 W</span>
+    </div>
+    <canvas id="powerGraph" width="308" height="140"></canvas>
 </div>
 
 <script>
@@ -148,14 +191,13 @@ window.onload = function() {
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
     
-    // [교정] 초기 위치를 정면으로 잡되, 거리를 기존 6.5에서 8.5로 멀리 떨어뜨려 시야 확보
     let cameraRadius = 8.5; 
-    let cameraTheta = Math.PI / 2; // 좌우 회전각 (정면)
-    let cameraPhi = Math.PI / 2.2;  // 상하 회전각 (약간 내려다보는 앵글)
+    let cameraTheta = Math.PI / 2; 
+    let cameraPhi = Math.PI / 2.2;  
 
     function updateCameraPosition() {
         camera.position.x = cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
-        camera.position.y = cameraRadius * Math.cos(cameraPhi) + 0.8; // 기기 중심 높이 보정
+        camera.position.y = cameraRadius * Math.cos(cameraPhi) + 0.8; 
         camera.position.z = cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
         camera.lookAt(0, 0, 0);
     }
@@ -167,7 +209,7 @@ window.onload = function() {
     container.appendChild(renderer.domElement);
 
     ///////////////////////////////////////////////////////////
-    // MOUSE INTERACTION SYSTEM (3D 마우스 자유 관찰 제어기)
+    // MOUSE INTERACTION SYSTEM
     ///////////////////////////////////////////////////////////
     let isDragging = false;
     let previousMousePosition = { x: 0, y: 0 };
@@ -179,26 +221,16 @@ window.onload = function() {
 
     window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-
         const deltaX = e.clientX - previousMousePosition.x;
         const deltaY = e.clientY - previousMousePosition.y;
-
-        // 마우스 이동 변위량 계산 및 회전각 누적
         cameraTheta -= deltaX * 0.007;
         cameraPhi -= deltaY * 0.007;
-
-        // 화면이 뒤집히는 물리 현상을 막기 위한 상하 구동 제한 (임계 보정)
         cameraPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, cameraPhi));
-
         updateCameraPosition();
         previousMousePosition = { x: e.clientX, y: e.clientY };
     });
 
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
-
-    // 휠 줌인/줌아웃 기능 추가하여 관찰 자유도 보장
+    window.addEventListener('mouseup', () => { isDragging = false; });
     window.addEventListener('wheel', (e) => {
         cameraRadius += e.deltaY * 0.005;
         cameraRadius = Math.max(5.0, Math.min(15.0, cameraRadius));
@@ -219,9 +251,7 @@ window.onload = function() {
     internalLight.position.set(-0.4, 0, 0);
     scene.add(internalLight);
 
-    ///////////////////////////////////////////////////////////
-    // FLOOR & GRID
-    ///////////////////////////////////////////////////////////
+    // FLOOR
     const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(60, 60),
         new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.6 })
@@ -240,95 +270,58 @@ window.onload = function() {
     const microwave = new THREE.Group();
     scene.add(microwave);
 
-    // 1. [교정] 가전제품 전용 투명 플라스틱 외벽 바디 사양 변경
+    // 가전제품용 플라스틱 외벽 바디
     const bodyGeom = new THREE.BoxGeometry(4.6, 2.8, 3.2);
     const bodyMat = new THREE.MeshStandardMaterial({
-        color: 0x222630,
-        metalness: 0.0,          // 플라스틱 재질을 위해 금속성 제거
-        roughness: 0.2,          // 매끄러운 플라스틱 특유의 하이라이트 광택 유도
-        transparent: true,
-        opacity: 0.45            
+        color: 0x222630, metalness: 0.0, roughness: 0.2, transparent: true, opacity: 0.45            
     });
     const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
     microwave.add(bodyMesh);
 
-    // 2. [교정] 내부 턴테이블 메탈 원판 사양 변경 (실버 스테인리스 메탈)
-    const plateGeom = new THREE.CylinderGeometry(1.0, 1.0, 0.04, 40);
-    const plateMat = new THREE.MeshStandardMaterial({
-        color: 0xd1d5db,         // 은빛 메탈 베이스 컬러
-        metalness: 0.95,         // 강렬한 금속 반사율 설정
-        roughness: 0.25,         // 메탈 결의 은은한 거칠기 표현
-    });
+    // 최적화 크기의 메탈 턴테이블 원판
+    const plateGeom = new THREE.CylinderGeometry(0.85, 0.85, 0.04, 40);
+    const plateMat = new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.95, roughness: 0.25 });
     const plateMesh = new THREE.Mesh(plateGeom, plateMat);
     plateMesh.position.set(-0.4, -1.1, 0);
     microwave.add(plateMesh);
 
-    // 3. 음식 피가열체
-    const foodGeom = new THREE.SphereGeometry(0.26, 32, 32);
-    const foodMat = new THREE.MeshStandardMaterial({
-        color: 0xe11d48,
-        emissive: 0xff0000,
-        emissiveIntensity: 0.1,
-        roughness: 0.4
-    });
+    // 피가열체 음식
+    const foodGeom = new THREE.SphereGeometry(0.24, 32, 32);
+    const foodMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, emissive: 0xff0000, emissiveIntensity: 0.1, roughness: 0.4 });
     const foodMesh = new THREE.Mesh(foodGeom, foodMat);
-    foodMesh.position.set(-0.4, -0.84, 0.45); 
+    foodMesh.position.set(-0.4, -0.86, 0.38); 
     microwave.add(foodMesh);
 
-    // 4. 전면 우측 조작 패널
+    // 우측 패널 및 디스플레이
     const panelGeom = new THREE.BoxGeometry(0.8, 2.6, 0.1);
-    const panelMat = new THREE.MeshStandardMaterial({
-        color: 0x090d16,
-        metalness: 0.1,
-        roughness: 0.2,
-        emissive: 0x020617,
-        emissiveIntensity: 0.3
-    });
+    const panelMat = new THREE.MeshStandardMaterial({ color: 0x090d16, metalness: 0.1, roughness: 0.2, emissive: 0x020617, emissiveIntensity: 0.3 });
     const panelMesh = new THREE.Mesh(panelGeom, panelMat);
     panelMesh.position.set(1.8, 0, 1.58);
     microwave.add(panelMesh);
 
-    // 5. 패널 상단 디지털 디스플레이 창
     const displayGeom = new THREE.BoxGeometry(0.5, 0.35, 0.02);
-    const displayMat = new THREE.MeshStandardMaterial({
-        color: 0x0284c7,
-        emissive: 0x00dfff,
-        emissiveIntensity: 0.4
-    });
+    const displayMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x00dfff, emissiveIntensity: 0.4 });
     const displayMesh = new THREE.Mesh(displayGeom, displayMat);
     displayMesh.position.set(1.8, 0.9, 1.64);
     microwave.add(displayMesh);
 
-    ///////////////////////////////////////////////////////////
-    // 우측 경첩 기반 도어 피벗(Pivot) 시스템
-    ///////////////////////////////////////////////////////////
+    // 도어 시스템 피벗
     const doorPivot = new THREE.Group();
     doorPivot.position.set(1.4, 0, 1.61); 
     microwave.add(doorPivot);
 
     const doorGeom = new THREE.BoxGeometry(3.6, 2.6, 0.06);
-    const doorMat = new THREE.MeshStandardMaterial({
-        color: 0x0f172a,
-        metalness: 0.0,          // 전면 도어 프레임도 플라스틱 사양 적용
-        roughness: 0.2,
-        transparent: true,
-        opacity: 0.5
-    });
+    const doorMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.0, roughness: 0.2, transparent: true, opacity: 0.5 });
     const doorMesh = new THREE.Mesh(doorGeom, doorMat);
     doorMesh.position.set(-1.8, 0, 0); 
     doorPivot.add(doorMesh);
 
-    ///////////////////////////////////////////////////////////
-    // NEON MICRO WAVES EFFECT (고주파 파형 연출 고리)
-    ///////////////////////////////////////////////////////////
+    // 고주파 전파 파형 이펙트 무대
     const waves = [];
-    for (let i = 0; i < 3; i++) {
-        const waveGeom = new THREE.TorusGeometry(0.35 + i * 0.2, 0.012, 16, 60);
-        const waveMat = new THREE.MeshBasicMaterial({
-            color: 0x38bdf8,
-            transparent: true,
-            opacity: 0
-        });
+    const totalWaves = 4; 
+    for (let i = 0; i < totalWaves; i++) {
+        const waveGeom = new THREE.TorusGeometry(0.25 + i * 0.18, 0.012, 16, 60);
+        const waveMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0 });
         const waveMesh = new THREE.Mesh(waveGeom, waveMat);
         waveMesh.rotation.x = Math.PI / 2;
         waveMesh.position.set(-0.4, -0.2, 0);
@@ -337,7 +330,7 @@ window.onload = function() {
     }
 
     ///////////////////////////////////////////////////////////
-    // CONTROL LOGIC & INPUT INTERFACE
+    // INTERFACES & CONTROL LOGIC DATA
     ///////////////////////////////////////////////////////////
     let heating = false;
     let doorOpen = false;
@@ -347,6 +340,7 @@ window.onload = function() {
     const startBtn = document.getElementById('startBtn');
     const doorBtn = document.getElementById('doorBtn');
     const statusText = document.getElementById('status');
+    const wattText = document.getElementById('current-watt');
 
     startBtn.onclick = function() {
         if (doorOpen) {
@@ -385,48 +379,116 @@ window.onload = function() {
     };
 
     ///////////////////////////////////////////////////////////
+    // REAL-TIME POWER GRAPH SYSTEM (HTML5 Canvas 시계열 렌더러)
+    ///////////////////////////////////////////////////////////
+    const graphCanvas = document.getElementById('powerGraph');
+    const graphCtx = graphCanvas.getContext('2d');
+    const dataPoints = new Array(60).fill(15); // 그래프 가로 해상도 버퍼 배열(60프레임 축적)
+
+    function drawRealTimeGraph(targetWatt) {
+        // 배열 데이터 한 칸씩 밀어내며 타겟 전력 누적 (큐 파이프라인 구현)
+        dataPoints.push(targetWatt);
+        dataPoints.shift();
+
+        // 캔버스 잔상 지우기
+        graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+
+        // 뒷배경 모니터 격자 무늬(Grid) 작도
+        graphCtx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
+        graphCtx.lineWidth = 1;
+        for (let x = 0; x < graphCanvas.width; x += 20) {
+            graphCtx.beginPath(); graphCtx.moveTo(x, 0); graphCtx.lineTo(x, graphCanvas.height); graphCtx.stroke();
+        }
+        for (let y = 0; y < graphCanvas.height; y += 20) {
+            graphCtx.beginPath(); graphCtx.moveTo(0, y); graphCtx.lineTo(graphCanvas.width, y); graphCtx.stroke();
+        }
+
+        // 오실로스코프 형태의 선형 데이터 플롯 드로잉
+        graphCtx.beginPath();
+        graphCtx.lineWidth = 2.5;
+        graphCtx.strokeStyle = heating ? '#f43f5e' : '#4ade80'; // 상태별 선 색상 변경
+        
+        const stepX = graphCanvas.width / (dataPoints.length - 1);
+        
+        for (let i = 0; i < dataPoints.length; i++) {
+            // 최대 1300W를 차트 높이에 맞춤 정규화 사형 공식 적용
+            const ratio = dataPoints[i] / 1300; 
+            const x = i * stepX;
+            const y = graphCanvas.height - (ratio * (graphCanvas.height - 20)) - 10;
+
+            if (i === 0) graphCtx.moveTo(x, y);
+            else graphCtx.lineTo(x, y);
+        }
+        graphCtx.stroke();
+
+        // 파형 아랫부분 그라데이션 채우기 효과 (가시성 향상)
+        graphCtx.lineTo(graphCanvas.width, graphCanvas.height);
+        graphCtx.lineTo(0, graphCanvas.height);
+        graphCtx.closePath();
+        const fillGrad = graphCtx.createLinearGradient(0, 0, 0, graphCanvas.height);
+        fillGrad.addColorStop(0, heating ? 'rgba(244, 63, 94, 0.15)' : 'rgba(74, 222, 128, 0.1)');
+        fillGrad.addColorStop(1, 'rgba(2, 6, 23, 0)');
+        graphCtx.fillStyle = fillGrad;
+        graphCtx.fill();
+    }
+
+    ///////////////////////////////////////////////////////////
     // MAIN LOOP & PHYSICS ANIMATION
     ///////////////////////////////////////////////////////////
     const clock = new THREE.Clock();
     let foodAngle = 0;
+    let targetPowerWatt = 15;
 
     function animate() {
         requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
 
-        // 1. 가열 중 작동 제어 알고리즘
+        // 실시간 전력량 상태 트리거 분기 연산
         if (heating) {
             const currentSpeed = parseFloat(speedSlider.value) * 0.012;
-            
-            // 메탈 원판 회전 및 하이라이트 움직임 연출
             plateMesh.rotation.y += currentSpeed;
             
-            // 메탈 원판 위 피가열체 공전 궤도
             foodAngle += currentSpeed;
-            foodMesh.position.x = -0.4 + Math.sin(foodAngle) * 0.45;
-            foodMesh.position.z = 0 + Math.cos(foodAngle) * 0.45;
+            foodMesh.position.x = -0.4 + Math.sin(foodAngle) * 0.38;
+            foodMesh.position.z = 0 + Math.cos(foodAngle) * 0.38;
             foodMesh.rotation.y += currentSpeed;
 
-            // 출력 세기 실시간 광도 갱신
-            const powerFactor = parseFloat(powerSlider.value) * 0.35;
+            const powerVal = parseFloat(powerSlider.value); 
+            const powerFactor = powerVal * 0.35;
+            
             foodMesh.material.emissiveIntensity = 0.5 + Math.sin(t * 15) * 0.3 + powerFactor;
             internalLight.intensity = 1.0 + Math.sin(t * 10) * 0.2;
 
+            const waveSpeedFactor = 4.0 + (powerVal * 1.2); 
             waves.forEach((wave, index) => {
-                wave.material.opacity = 0.35 + Math.sin(t * 8 + index) * 0.15;
-                const scaleFactor = 1 + Math.sin(t * 6 + index) * 0.04;
-                wave.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                wave.material.opacity = 0.35 + Math.sin(t * waveSpeedFactor + index * 1.5) * 0.2;
+                const pulse = 1 + Math.sin(t * waveSpeedFactor + index) * (0.03 + (powerVal * 0.008));
+                wave.scale.set(pulse, pulse, pulse);
             });
 
             displayMesh.material.emissiveIntensity = 1.6 + Math.sin(t * 6) * 0.4;
+
+            // [출력 세기 수식 모델] 기본 120W * 단계 + 마그네트론 무작위 주파수 노이즈 결합
+            const microWaveNoise = (Math.random() - 0.5) * 28; 
+            targetPowerWatt = (powerVal * 120) + microWaveNoise;
+
         } else {
             foodMesh.material.emissiveIntensity = 0.1;
             internalLight.intensity = 0;
             displayMesh.material.emissiveIntensity = 0.4;
             waves.forEach(wave => wave.material.opacity *= 0.85);
+
+            // 대기모드 소모전력 시뮬레이션 (15W 근처에서 노이즈 잔류)
+            targetPowerWatt = 14 + (Math.random() - 0.5) * 2;
         }
 
-        // 2. 도어 120도 개폐 선형 보간 처리
+        // 상단 수치 텍스트 실시간 디스플레이 출력 정수형 바인딩
+        wattText.innerHTML = Math.round(targetPowerWatt) + " W";
+
+        // 우측 하단 차트 60fps 동기화 갱신
+        drawRealTimeGraph(targetPowerWatt);
+
+        // 도어 개폐 애니메이션
         const targetDoorRotation = doorOpen ? (Math.PI / 1.5) : 0;
         doorPivot.rotation.y += (targetDoorRotation - doorPivot.rotation.y) * 0.1;
 
