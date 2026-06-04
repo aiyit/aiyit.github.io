@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 자기장 시뮬레이션</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body { overflow: hidden; background: #000; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: sans-serif;
+            font-size: 13px;
+            z-index: 10;
+        }
+        #info h1 { font-size: 15px; margin-bottom: 6px; }
+        #info p { margin: 3px 0; }
+    </style>
+</head>
+<body>
+<div id="info">
+    <h1>3D 자기장 시뮬레이션</h1>
+    <p>좌클릭 드래그: 자석 이동</p>
+    <p>우클릭 드래그: 시점 회전</p>
+    <p>스크롤: 확대/축소</p>
+    <p style="margin-top:6px"><span style="color:#ff3333">■</span> N극 &nbsp;<span style="color:#3333ff">■</span> S극</p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function() {
+    // === Setup ===
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d1117);
+
+    const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 500);
+    camera.position.set(0, 20, 35);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dLight.position.set(5, 15, 10);
+    scene.add(dLight);
+
+    // Grid
+    scene.add(new THREE.GridHelper(50, 25, 0x333355, 0x222244));
+
+    // === Magnet (single rigid body) ===
+    const MAGNET_HALF = 4; // half-length
+    const MAGNET_R = 1.2;
+
+    const magnetGroup = new THREE.Group();
+
+    // N pole (top, red)
+    const nMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(MAGNET_R, MAGNET_R, MAGNET_HALF, 32),
+        new THREE.MeshPhongMaterial({ color: 0xff2222, shininess: 60 })
+    );
+    nMesh.position.y = MAGNET_HALF / 2;
+    magnetGroup.add(nMesh);
+
+    // S pole (bottom, blue)
+    const sMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(MAGNET_R, MAGNET_R, MAGNET_HALF, 32),
+        new THREE.MeshPhongMaterial({ color: 0x2244ff, shininess: 60 })
+    );
+    sMesh.position.y = -MAGNET_HALF / 2;
+    magnetGroup.add(sMesh);
+
+    // Divider ring
+    const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(MAGNET_R + 0.05, 0.12, 8, 32),
+        new THREE.MeshPhongMaterial({ color: 0xaaaaaa })
+    );
+    ring.rotation.x = Math.PI / 2;
+    magnetGroup.add(ring);
+
+    // Labels
+    function makeSprite(text) {
+        const c = document.createElement('canvas');
+        c.width = 64; c.height = 64;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 48px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 32, 32);
+        const tex = new THREE.CanvasTexture(c);
+        const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
+        s.scale.set(1.5, 1.5, 1);
+        return s;
+    }
+    const nLabel = makeSprite('N');
+    nLabel.position.y = MAGNET_HALF + 1;
+    magnetGroup.add(nLabel);
+    const sLabel = makeSprite('S');
+    sLabel.position.y = -MAGNET_HALF - 1;
+    magnetGroup.add(sLabel);
+
+    scene.add(magnetGroup);
+
+    // === Orbit Controls (right button) ===
+    const orbit = new THREE.OrbitControls(camera, renderer.domElement);
+    orbit.enableDamping = true;
+    orbit.mouseButtons = { LEFT: null, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
+
+    // === Drag logic (left button, on XZ plane) ===
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    let dragging = false;
+    let offset = new THREE.Vector3();
+
+    renderer.domElement.addEventListener('pointerdown', function(e) {
+        if (e.button !== 0) return;
+        mouse.x = (e.clientX / innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(magnetGroup.children, true);
+        if (hits.length > 0) {
+            dragging = true;
+            orbit.enabled = false;
+            const intersect = new THREE.Vector3();
+            raycaster.ray.intersectPlane(plane, intersect);
+            offset.subVectors(magnetGroup.position, intersect);
+            renderer.domElement.style.cursor = 'grabbing';
+        }
+    });
+
+    renderer.domElement.addEventListener('pointermove', function(e) {
+        if (!dragging) return;
+        mouse.x = (e.clientX / innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const intersect = new THREE.Vector3();
+        raycaster.ray.intersectPlane(plane, intersect);
+        magnetGroup.position.x = intersect.x + offset.x;
+        magnetGroup.position.z = intersect.z + offset.z;
+        magnetGroup.position.y = 0;
+        needsUpdate = true;
+    });
+
+    renderer.domElement.addEventListener('pointerup', function(e) {
+        if (e.button !== 0) return;
+        dragging = false;
+        orbit.enabled = true;
+        renderer.domElement.style.cursor = 'default';
+    });
+
+    // === Field Lines ===
+    let fieldGroup = new THREE.Group();
+    scene.add(fieldGroup);
+    let needsUpdate = true;
+
+    const LINE_COUNT = 20;
+    const STEPS = 100;
+    const DT = 0.3;
+    const STRENGTH = 30;
+
+    function getField(pos) {
+        // Dipole: two monopoles model
+        const nPos = new THREE.Vector3(
+            magnetGroup.position.x,
+            magnetGroup.position.y + MAGNET_HALF,
+            magnetGroup.position.z
+        );
+        const sPos = new THREE.Vector3(
+            magnetGroup.position.x,
+            magnetGroup.position.y - MAGNET_HALF,
+            magnetGroup.position.z
+        );
+
+        const rN = new THREE.Vector3().subVectors(pos, nPos);
+        const dN = rN.length();
+        const rS = new THREE.Vector3().subVectors(pos, sPos);
+        const dS = rS.length();
+
+        const field = new THREE.Vector3();
+        if (dN > 0.3) field.add(rN.normalize().multiplyScalar(STRENGTH / (dN * dN)));
+        if (dS > 0.3) field.add(rS.normalize().multiplyScalar(-STRENGTH / (dS * dS)));
+        return field;
+    }
+
+    function traceLine(startPos, direction) {
+        const pts = [startPos.clone()];
+        let cur = startPos.clone();
+        for (let i = 0; i < STEPS; i++) {
+            const f = getField(cur);
+            const mag = f.length();
+            if (mag < 0.001) break;
+            f.normalize().multiplyScalar(DT * direction);
+            cur = cur.clone().add(f);
+            pts.push(cur.clone());
+            if (cur.distanceTo(magnetGroup.position) > 30) break;
+            // Check if reached opposite pole
+            const sPos = new THREE.Vector3(magnetGroup.position.x, magnetGroup.position.y - MAGNET_HALF, magnetGroup.position.z);
+            const nPos = new THREE.Vector3(magnetGroup.position.x, magnetGroup.position.y + MAGNET_HALF, magnetGroup.position.z);
+            if (direction > 0 && cur.distanceTo(sPos) < 1.0) break;
+            if (direction < 0 && cur.distanceTo(nPos) < 1.0) break;
+        }
+        return pts;
+    }
+
+    function buildFieldLines() {
+        // Clear
+        while (fieldGroup.children.length > 0) {
+            const child = fieldGroup.children[0];
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+            fieldGroup.remove(child);
+        }
+
+        const nPos = new THREE.Vector3(
+            magnetGroup.position.x,
+            magnetGroup.position.y + MAGNET_HALF,
+            magnetGroup.position.z
+        );
+
+        for (let i = 0; i < LINE_COUNT; i++) {
+            const angle = (i / LINE_COUNT) * Math.PI * 2;
+            const r = MAGNET_R + 0.3;
+            const start = new THREE.Vector3(
+                nPos.x + Math.cos(angle) * r,
+                nPos.y + 0.2,
+                nPos.z + Math.sin(angle) * r
+            );
+
+            const pts = traceLine(start, 1);
+            if (pts.length < 3) continue;
+
+            // Smooth curve
+            const curve = new THREE.CatmullRomCurve3(pts);
+            const smoothPts = curve.getPoints(pts.length * 2);
+
+            // Color: gradient red -> yellow -> blue
+            const colors = [];
+            for (let k = 0; k < smoothPts.length; k++) {
+                const t = k / (smoothPts.length - 1);
+                if (t < 0.5) {
+                    colors.push(1, t * 2, 0); // red to yellow
+                } else {
+                    colors.push(1 - (t - 0.5) * 2, 1 - (t - 0.5) * 2, (t - 0.5) * 2); // yellow to blue
+                }
+            }
+
+            const geo = new THREE.BufferGeometry().setFromPoints(smoothPts);
+            geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            const mat = new THREE.LineBasicMaterial({ vertexColors: true, linewidth: 1 });
+            const line = new THREE.Line(geo, mat);
+            fieldGroup.add(line);
+
+            // Arrow at 1/3 point
+            if (smoothPts.length > 6) {
+                const idx = Math.floor(smoothPts.length / 3);
+                const dir = new THREE.Vector3().subVectors(smoothPts[idx + 1], smoothPts[idx]).normalize();
+                const arrow = new THREE.ArrowHelper(dir, smoothPts[idx], 0.8, 0xffff00, 0.5, 0.25);
+                fieldGroup.add(arrow);
+            }
+        }
+
+        // Also add some lines starting from different heights around the magnet
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const r = MAGNET_R + 0.5;
+            const start = new THREE.Vector3(
+                nPos.x + Math.cos(angle) * r * 2,
+                nPos.y - MAGNET_HALF, // middle of magnet
+                nPos.z + Math.sin(angle) * r * 2
+            );
+
+            const pts = traceLine(start, 1);
+            if (pts.length < 3) continue;
+            const curve = new THREE.CatmullRomCurve3(pts);
+            const smoothPts = curve.getPoints(pts.length * 2);
+
+            const colors = [];
+            for (let k = 0; k < smoothPts.length; k++) {
+                const t = k / (smoothPts.length - 1);
+                colors.push(0.3, 1 - t * 0.5, 0.3 + t * 0.7);
+            }
+
+            const geo = new THREE.BufferGeometry().setFromPoints(smoothPts);
+            geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            const mat = new THREE.LineBasicMaterial({ vertexColors: true });
+            fieldGroup.add(new THREE.Line(geo, mat));
+        }
+    }
+
+    // === Animation Loop ===
+    function animate() {
+        requestAnimationFrame(animate);
+        orbit.update();
+        if (needsUpdate) {
+            buildFieldLines();
+            needsUpdate = false;
+        }
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Initial build
+    needsUpdate = true;
+
+    // Resize
+    window.addEventListener('resize', function() {
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth, innerHeight);
+    });
+})();
+</script>
+</body>
+</html>
