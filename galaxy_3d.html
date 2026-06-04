@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 은하 시뮬레이션</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body { overflow: hidden; background: #000; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: sans-serif;
+            font-size: 13px;
+            z-index: 10;
+        }
+        #info h1 { font-size: 15px; margin-bottom: 6px; }
+        #info p { margin: 3px 0; }
+    </style>
+</head>
+<body>
+<div id="info">
+    <h1>3D 은하 시뮬레이션</h1>
+    <p>마우스 드래그: 시점 회전</p>
+    <p>스크롤: 확대/축소</p>
+    <p>은하가 천천히 회전합니다</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+(function() {
+    // Scene
+    var scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000005);
+
+    // Camera
+    var camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 3000);
+    camera.position.set(0, 150, 350);
+    camera.lookAt(0, 0, 0);
+
+    // Renderer
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    // Controls
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxDistance = 800;
+    controls.minDistance = 20;
+
+    // Galaxy container
+    var galaxyGroup = new THREE.Group();
+    scene.add(galaxyGroup);
+
+    // === Create Galaxy ===
+    var STAR_COUNT = 80000;
+    var BRANCHES = 4;
+    var RADIUS = 150;
+    var SPIN = 1.2;
+    var RANDOMNESS = 0.4;
+    var RAND_POWER = 3;
+
+    var positions = new Float32Array(STAR_COUNT * 3);
+    var colors = new Float32Array(STAR_COUNT * 3);
+    var sizes = new Float32Array(STAR_COUNT);
+
+    var innerColor = new THREE.Color(0xffaa33);
+    var outerColor = new THREE.Color(0x4466ff);
+
+    for (var i = 0; i < STAR_COUNT; i++) {
+        var i3 = i * 3;
+        var r = Math.random() * RADIUS;
+        var branchAngle = (i % BRANCHES) / BRANCHES * Math.PI * 2;
+        var spinAngle = r * SPIN;
+
+        var randX = Math.pow(Math.random(), RAND_POWER) * (Math.random() < 0.5 ? 1 : -1) * RANDOMNESS * r;
+        var randY = Math.pow(Math.random(), RAND_POWER) * (Math.random() < 0.5 ? 1 : -1) * RANDOMNESS * r * 0.08;
+        var randZ = Math.pow(Math.random(), RAND_POWER) * (Math.random() < 0.5 ? 1 : -1) * RANDOMNESS * r;
+
+        positions[i3] = Math.cos(branchAngle + spinAngle) * r + randX;
+        positions[i3 + 1] = randY;
+        positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * r + randZ;
+
+        var mixedColor = innerColor.clone();
+        mixedColor.lerp(outerColor, r / RADIUS);
+        colors[i3] = mixedColor.r;
+        colors[i3 + 1] = mixedColor.g;
+        colors[i3 + 2] = mixedColor.b;
+
+        sizes[i] = Math.random() * 2 + 0.5;
+    }
+
+    var galaxyGeo = new THREE.BufferGeometry();
+    galaxyGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    galaxyGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    var galaxyMat = new THREE.PointsMaterial({
+        size: 1.5,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.9
+    });
+
+    var galaxyPoints = new THREE.Points(galaxyGeo, galaxyMat);
+    galaxyGroup.add(galaxyPoints);
+
+    // === Galaxy Core Glow ===
+    var coreCount = 5000;
+    var corePositions = new Float32Array(coreCount * 3);
+    var coreColors = new Float32Array(coreCount * 3);
+    for (var i = 0; i < coreCount; i++) {
+        var i3 = i * 3;
+        var cr = Math.pow(Math.random(), 2) * 15;
+        var ctheta = Math.random() * Math.PI * 2;
+        var cphi = (Math.random() - 0.5) * 0.5;
+        corePositions[i3] = Math.cos(ctheta) * cr;
+        corePositions[i3 + 1] = cphi * cr * 0.3;
+        corePositions[i3 + 2] = Math.sin(ctheta) * cr;
+
+        var brightness = 1 - (cr / 15) * 0.5;
+        coreColors[i3] = 1.0 * brightness;
+        coreColors[i3 + 1] = 0.85 * brightness;
+        coreColors[i3 + 2] = 0.5 * brightness;
+    }
+    var coreGeo = new THREE.BufferGeometry();
+    coreGeo.setAttribute('position', new THREE.BufferAttribute(corePositions, 3));
+    coreGeo.setAttribute('color', new THREE.BufferAttribute(coreColors, 3));
+    var coreMat = new THREE.PointsMaterial({
+        size: 2.5,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8
+    });
+    var corePoints = new THREE.Points(coreGeo, coreMat);
+    galaxyGroup.add(corePoints);
+
+    // === Background Stars ===
+    var bgCount = 8000;
+    var bgPositions = new Float32Array(bgCount * 3);
+    var bgColors = new Float32Array(bgCount * 3);
+    for (var i = 0; i < bgCount; i++) {
+        var i3 = i * 3;
+        var br = 600 + Math.random() * 1000;
+        var btheta = Math.random() * Math.PI * 2;
+        var bphi = Math.acos(Math.random() * 2 - 1);
+        bgPositions[i3] = br * Math.sin(bphi) * Math.cos(btheta);
+        bgPositions[i3 + 1] = br * Math.sin(bphi) * Math.sin(btheta);
+        bgPositions[i3 + 2] = br * Math.cos(bphi);
+
+        var starBright = 0.5 + Math.random() * 0.5;
+        bgColors[i3] = starBright;
+        bgColors[i3 + 1] = starBright;
+        bgColors[i3 + 2] = starBright;
+    }
+    var bgGeo = new THREE.BufferGeometry();
+    bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPositions, 3));
+    bgGeo.setAttribute('color', new THREE.BufferAttribute(bgColors, 3));
+    var bgMat = new THREE.PointsMaterial({
+        size: 1.0,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.7
+    });
+    scene.add(new THREE.Points(bgGeo, bgMat));
+
+    // === Animation ===
+    function animate() {
+        requestAnimationFrame(animate);
+        galaxyGroup.rotation.y += 0.0008;
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', function() {
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth, innerHeight);
+    });
+})();
+</script>
+</body>
+</html>
