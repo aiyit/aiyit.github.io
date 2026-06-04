@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 모델 통합 뷰어</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0d1117;
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0,0,0,0.6);
+            border-bottom: 1px solid #333;
+        }
+        header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        header p {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 4px;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            gap: 4px;
+            padding: 4px;
+        }
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+        .panel-header {
+            padding: 8px 12px;
+            background: rgba(30,30,50,0.9);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+        .panel iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>3D 모델 통합 뷰어</h1>
+        <p>각 모델을 독립적으로 조작할 수 있습니다</p>
+    </header>
+    <div class="container">
+        <div class="panel">
+            <div class="panel-header">🧲 자기장 3D 시뮬레이션</div>
+            <iframe src="magnetic_field_3d.html"></iframe>
+        </div>
+        <div class="panel">
+            <div class="panel-header">🌌 은하계 3D 시뮬레이션</div>
+            <iframe src="galaxy_3d.html"></iframe>
+        </div>
+    </div>
+</body>
+</html>
