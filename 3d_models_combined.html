@@ -5,79 +5,334 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D 모델 통합 뷰어</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0d1117;
-            font-family: 'Segoe UI', sans-serif;
+        * { margin: 0; padding: 0; }
+        body { overflow: hidden; background: #000; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
             color: #fff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        header {
-            text-align: center;
-            padding: 12px;
-            background: rgba(0,0,0,0.6);
-            border-bottom: 1px solid #333;
-        }
-        header h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-        header p {
-            font-size: 13px;
-            color: #aaa;
-            margin-top: 4px;
-        }
-        .container {
-            display: flex;
-            flex: 1;
-            gap: 4px;
-            padding: 4px;
-        }
-        .panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #333;
+            padding: 12px 16px;
             border-radius: 8px;
-            overflow: hidden;
-            background: #000;
+            font-family: sans-serif;
+            font-size: 13px;
+            z-index: 10;
         }
-        .panel-header {
-            padding: 8px 12px;
-            background: rgba(30,30,50,0.9);
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            border-bottom: 1px solid #333;
-        }
-        .panel iframe {
-            flex: 1;
-            width: 100%;
-            border: none;
-        }
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-        }
+        #info h1 { font-size: 15px; margin-bottom: 6px; }
+        #info p { margin: 3px 0; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>3D 모델 통합 뷰어</h1>
-        <p>각 모델을 독립적으로 조작할 수 있습니다</p>
-    </header>
-    <div class="container">
-        <div class="panel">
-            <div class="panel-header">🧲 자기장 3D 시뮬레이션</div>
-            <iframe src="magnetic_field_3d.html"></iframe>
-        </div>
-        <div class="panel">
-            <div class="panel-header">🌌 은하계 3D 시뮬레이션</div>
-            <iframe src="galaxy_3d.html"></iframe>
-        </div>
-    </div>
+<div id="info">
+    <h1>3D 모델 통합 뷰어</h1>
+    <p>왼쪽: 🧲 자기장 시뮬레이션 | 오른쪽: 🌌 은하계</p>
+    <p>마우스 드래그: 시점 회전 | 스크롤: 확대/축소</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+(function() {
+    // === Scene Setup ===
+    var scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050510);
+
+    var camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 5000);
+    camera.position.set(0, 80, 250);
+    camera.lookAt(0, 0, 0);
+
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    var dLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dLight.position.set(5, 15, 10);
+    scene.add(dLight);
+
+    // === Divider line ===
+    var dividerGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, -100, 0),
+        new THREE.Vector3(0, 100, 0)
+    ]);
+    var dividerMat = new THREE.LineBasicMaterial({ color: 0x444466 });
+    scene.add(new THREE.Line(dividerGeo, dividerMat));
+
+    // === Labels ===
+    function makeLabel(text, x, y, z) {
+        var canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 128;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 48px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 256, 64);
+        var tex = new THREE.CanvasTexture(canvas);
+        var sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
+        sprite.position.set(x, y, z);
+        sprite.scale.set(40, 10, 1);
+        scene.add(sprite);
+    }
+    makeLabel('🧲 자기장 모델', -80, 55, 0);
+    makeLabel('🌌 은하계 모델', 80, 55, 0);
+
+    // ============================================
+    // LEFT SIDE: 자기장 모델 (offset x = -80)
+    // ============================================
+    var magnetGroup = new THREE.Group();
+    magnetGroup.position.set(-80, 0, 0);
+    scene.add(magnetGroup);
+
+    var MAGNET_HALF = 4;
+    var MAGNET_R = 1.2;
+
+    // N pole
+    var nMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(MAGNET_R, MAGNET_R, MAGNET_HALF, 32),
+        new THREE.MeshPhongMaterial({ color: 0xff2222, shininess: 60 })
+    );
+    nMesh.position.y = MAGNET_HALF / 2;
+    magnetGroup.add(nMesh);
+
+    // S pole
+    var sMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(MAGNET_R, MAGNET_R, MAGNET_HALF, 32),
+        new THREE.MeshPhongMaterial({ color: 0x2244ff, shininess: 60 })
+    );
+    sMesh.position.y = -MAGNET_HALF / 2;
+    magnetGroup.add(sMesh);
+
+    // Ring
+    var ring = new THREE.Mesh(
+        new THREE.TorusGeometry(MAGNET_R + 0.05, 0.12, 8, 32),
+        new THREE.MeshPhongMaterial({ color: 0xaaaaaa })
+    );
+    ring.rotation.x = Math.PI / 2;
+    magnetGroup.add(ring);
+
+    // N/S labels
+    function makePoleLabel(text, y) {
+        var c = document.createElement('canvas');
+        c.width = 64; c.height = 64;
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 48px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 32, 32);
+        var tex = new THREE.CanvasTexture(c);
+        var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
+        s.position.set(0, y, 0);
+        s.scale.set(1.5, 1.5, 1);
+        magnetGroup.add(s);
+    }
+    makePoleLabel('N', MAGNET_HALF + 1);
+    makePoleLabel('S', -MAGNET_HALF - 1);
+
+    // Field lines
+    var fieldGroup = new THREE.Group();
+    magnetGroup.add(fieldGroup);
+
+    var STRENGTH = 30;
+    var LINE_COUNT = 20;
+    var STEPS = 80;
+    var DT = 0.3;
+
+    function getField(pos) {
+        var nPos = new THREE.Vector3(0, MAGNET_HALF, 0);
+        var sPos = new THREE.Vector3(0, -MAGNET_HALF, 0);
+        var rN = new THREE.Vector3().subVectors(pos, nPos);
+        var dN = rN.length();
+        var rS = new THREE.Vector3().subVectors(pos, sPos);
+        var dS = rS.length();
+        var field = new THREE.Vector3();
+        if (dN > 0.3) field.add(rN.normalize().multiplyScalar(STRENGTH / (dN * dN)));
+        if (dS > 0.3) field.add(rS.normalize().multiplyScalar(-STRENGTH / (dS * dS)));
+        return field;
+    }
+
+    function buildFieldLines() {
+        var nPos = new THREE.Vector3(0, MAGNET_HALF, 0);
+        for (var i = 0; i < LINE_COUNT; i++) {
+            var angle = (i / LINE_COUNT) * Math.PI * 2;
+            var r = MAGNET_R + 0.3;
+            var start = new THREE.Vector3(
+                Math.cos(angle) * r,
+                nPos.y + 0.2,
+                Math.sin(angle) * r
+            );
+            var pts = [start.clone()];
+            var cur = start.clone();
+            for (var j = 0; j < STEPS; j++) {
+                var f = getField(cur);
+                if (f.length() < 0.001) break;
+                f.normalize().multiplyScalar(DT);
+                cur = cur.clone().add(f);
+                pts.push(cur.clone());
+                if (cur.length() > 30) break;
+                var sPos = new THREE.Vector3(0, -MAGNET_HALF, 0);
+                if (cur.distanceTo(sPos) < 1.0) break;
+            }
+            if (pts.length < 3) continue;
+            var curve = new THREE.CatmullRomCurve3(pts);
+            var smoothPts = curve.getPoints(pts.length * 2);
+            var colors = [];
+            for (var k = 0; k < smoothPts.length; k++) {
+                var t = k / (smoothPts.length - 1);
+                if (t < 0.5) { colors.push(1, t * 2, 0); }
+                else { colors.push(1 - (t-0.5)*2, 1-(t-0.5)*2, (t-0.5)*2); }
+            }
+            var geo = new THREE.BufferGeometry().setFromPoints(smoothPts);
+            geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            var mat = new THREE.LineBasicMaterial({ vertexColors: true });
+            fieldGroup.add(new THREE.Line(geo, mat));
+
+            // Arrow
+            if (smoothPts.length > 6) {
+                var idx = Math.floor(smoothPts.length / 3);
+                var dir = new THREE.Vector3().subVectors(smoothPts[idx+1], smoothPts[idx]).normalize();
+                var arrow = new THREE.ArrowHelper(dir, smoothPts[idx], 0.8, 0xffff00, 0.5, 0.25);
+                fieldGroup.add(arrow);
+            }
+        }
+    }
+    buildFieldLines();
+
+    // ============================================
+    // RIGHT SIDE: 은하계 모델 (offset x = +80)
+    // ============================================
+    var galaxyGroup = new THREE.Group();
+    galaxyGroup.position.set(80, 0, 0);
+    scene.add(galaxyGroup);
+
+    var STAR_COUNT = 60000;
+    var BRANCHES = 4;
+    var RADIUS = 40;
+    var SPIN = 1.2;
+    var RANDOMNESS = 0.4;
+    var RAND_POWER = 3;
+
+    var positions = new Float32Array(STAR_COUNT * 3);
+    var colors = new Float32Array(STAR_COUNT * 3);
+    var innerColor = new THREE.Color(0xffaa33);
+    var outerColor = new THREE.Color(0x4466ff);
+
+    for (var i = 0; i < STAR_COUNT; i++) {
+        var i3 = i * 3;
+        var r = Math.random() * RADIUS;
+        var branchAngle = (i % BRANCHES) / BRANCHES * Math.PI * 2;
+        var spinAngle = r * SPIN;
+        var randX = Math.pow(Math.random(), RAND_POWER) * (Math.random() < 0.5 ? 1 : -1) * RANDOMNESS * r;
+        var randY = Math.pow(Math.random(), RAND_POWER) * (Math.random() < 0.5 ? 1 : -1) * RANDOMNESS * r * 0.08;
+        var randZ = Math.pow(Math.random(), RAND_POWER) * (Math.random() < 0.5 ? 1 : -1) * RANDOMNESS * r;
+        positions[i3] = Math.cos(branchAngle + spinAngle) * r + randX;
+        positions[i3 + 1] = randY;
+        positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * r + randZ;
+        var mixedColor = innerColor.clone();
+        mixedColor.lerp(outerColor, r / RADIUS);
+        colors[i3] = mixedColor.r;
+        colors[i3 + 1] = mixedColor.g;
+        colors[i3 + 2] = mixedColor.b;
+    }
+
+    var galaxyGeo = new THREE.BufferGeometry();
+    galaxyGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    galaxyGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    var galaxyMat = new THREE.PointsMaterial({
+        size: 0.8,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.9
+    });
+    galaxyGroup.add(new THREE.Points(galaxyGeo, galaxyMat));
+
+    // Galaxy core
+    var coreCount = 3000;
+    var corePos = new Float32Array(coreCount * 3);
+    var coreCol = new Float32Array(coreCount * 3);
+    for (var i = 0; i < coreCount; i++) {
+        var i3 = i * 3;
+        var cr = Math.pow(Math.random(), 2) * 5;
+        var ctheta = Math.random() * Math.PI * 2;
+        corePos[i3] = Math.cos(ctheta) * cr;
+        corePos[i3 + 1] = (Math.random() - 0.5) * cr * 0.3;
+        corePos[i3 + 2] = Math.sin(ctheta) * cr;
+        var b = 1 - (cr / 5) * 0.5;
+        coreCol[i3] = b; coreCol[i3+1] = 0.85*b; coreCol[i3+2] = 0.5*b;
+    }
+    var coreGeo = new THREE.BufferGeometry();
+    coreGeo.setAttribute('position', new THREE.BufferAttribute(corePos, 3));
+    coreGeo.setAttribute('color', new THREE.BufferAttribute(coreCol, 3));
+    var coreMat = new THREE.PointsMaterial({
+        size: 1.5,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8
+    });
+    galaxyGroup.add(new THREE.Points(coreGeo, coreMat));
+
+    // === Background Stars ===
+    var bgCount = 5000;
+    var bgPos = new Float32Array(bgCount * 3);
+    for (var i = 0; i < bgCount; i++) {
+        var i3 = i * 3;
+        var br = 500 + Math.random() * 1000;
+        var btheta = Math.random() * Math.PI * 2;
+        var bphi = Math.acos(Math.random() * 2 - 1);
+        bgPos[i3] = br * Math.sin(bphi) * Math.cos(btheta);
+        bgPos[i3+1] = br * Math.sin(bphi) * Math.sin(btheta);
+        bgPos[i3+2] = br * Math.cos(bphi);
+    }
+    var bgGeo = new THREE.BufferGeometry();
+    bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+    var bgMat = new THREE.PointsMaterial({
+        size: 0.8,
+        color: 0xffffff,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        opacity: 0.5
+    });
+    scene.add(new THREE.Points(bgGeo, bgMat));
+
+    // === Grid ===
+    var grid = new THREE.GridHelper(200, 40, 0x222244, 0x111133);
+    grid.position.y = -20;
+    scene.add(grid);
+
+    // === Animation ===
+    function animate() {
+        requestAnimationFrame(animate);
+        galaxyGroup.rotation.y += 0.001;
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', function() {
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth, innerHeight);
+    });
+})();
+</script>
 </body>
 </html>
