@@ -41,8 +41,8 @@
     scene.background = new THREE.Color(0x050510);
 
     var camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 5000);
-    camera.position.set(80, 60, 150);
-    camera.lookAt(80, 0, 0);
+    camera.position.set(80, 2, 0);
+    camera.lookAt(80, 0, 40);
 
     var renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(innerWidth, innerHeight);
@@ -52,7 +52,7 @@
     var controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.target.set(80, 0, 0);
+    controls.target.set(80, 0, 40);
 
     // Lights
     scene.add(new THREE.AmbientLight(0xffffff, 0.5));
