@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Margin & Padding</title>
+<style>
+  body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; background: #f5f5f5; color: #333; }
+  h1   { font-size: 24px; border-bottom: 2px solid #333; padding-bottom: 8px; }
+  h2   { font-size: 16px; color: #555; margin-top: 32px; }
+
+  /* ── 박스 모델 다이어그램 ── */
+  .diagram {
+    display: inline-block;
+    background: #b0bec5; /* margin 영역 */
+    padding: 20px;
+    margin: 16px 0;
+  }
+  .diagram .border {
+    background: #78909c;
+    padding: 16px;
+    border: 4px solid #37474f;
+  }
+  .diagram .padding-area {
+    background: #a5d6a7; /* padding 영역 */
+    padding: 20px;
+  }
+  .diagram .content {
+    background: #fff9c4; /* content 영역 */
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0 24px; font-size: 13px; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 14px; height: 14px; border-radius: 2px; }
+
+  /* ── 예제 공통 ── */
+  .box { background: #90caf9; border: 2px solid #1565c0; font-size: 14px; text-align: center; }
+  .wrap { background: #e3f2fd; border: 1px dashed #90a4ae; padding: 0; display: inline-block; }
+
+  /* ── margin 예제 ── */
+  .m-none  { margin: 0; }
+  .m-all   { margin: 30px; }
+  .m-tb    { margin-top: 30px; margin-bottom: 30px; margin-left: 0; margin-right: 0; }
+  .m-auto  { width: 60%; margin: 0 auto; }
+
+  /* ── padding 예제 ── */
+  .p-none  { padding: 0; }
+  .p-all   { padding: 30px; }
+  .p-tb    { padding-top: 30px; padding-bottom: 30px; padding-left: 0; padding-right: 0; }
+  .p-lr    { padding-left: 40px; padding-right: 40px; padding-top: 0; padding-bottom: 0; }
+
+  /* ── 비교 ── */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+  th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+  th { background: #eceff1; }
+  code { background: #eceff1; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<h1>Margin &amp; Padding</h1>
+<p style="font-size:14px;color:#555;">CSS 박스 모델에서 <strong>margin</strong>은 요소 <em>바깥</em> 여백, <strong>padding</strong>은 요소 <em>안쪽</em> 여백입니다.</p>
+
+<!-- ── 박스 모델 다이어그램 ── -->
+<h2>박스 모델 구조</h2>
+<div class="diagram">
+  <div class="border">
+    <div class="padding-area">
+      <div class="content">Content</div>
+    </div>
+  </div>
+</div>
+<div class="legend">
+  <span><span class="dot" style="background:#b0bec5;border:1px solid #78909c;"></span>Margin (바깥 여백)</span>
+  <span><span class="dot" style="background:#37474f;"></span>Border (테두리)</span>
+  <span><span class="dot" style="background:#a5d6a7;"></span>Padding (안쪽 여백)</span>
+  <span><span class="dot" style="background:#fff9c4;border:1px solid #ccc;"></span>Content (내용)</span>
+</div>
+
+<!-- ── MARGIN ── -->
+<h2>▌ Margin 예제 — 요소 바깥 공간</h2>
+
+<p style="font-size:13px;color:#666;margin-bottom:6px;"><code>margin: 0</code> — 바깥 여백 없음</p>
+<div class="wrap"><div class="box m-none">margin: 0</div></div>
+
+<p style="font-size:13px;color:#666;margin:14px 0 6px;"><code>margin: 30px</code> — 4방향 동일</p>
+<div class="wrap"><div class="box m-all">margin: 30px</div></div>
+
+<p style="font-size:13px;color:#666;margin:14px 0 6px;"><code>margin-top / bottom: 30px</code> — 상하만</p>
+<div class="wrap"><div class="box m-tb">margin-top·bottom: 30px</div></div>
+
+<p style="font-size:13px;color:#666;margin:14px 0 6px;"><code>margin: 0 auto</code> — 가로 중앙 정렬 (width 필요)</p>
+<div class="wrap" style="width:100%;display:block;">
+  <div class="box m-auto" style="background:#ce93d8;border-color:#6a1b9a;">margin: 0 auto</div>
+</div>
+
+<!-- ── PADDING ── -->
+<h2>▌ Padding 예제 — 요소 안쪽 공간</h2>
+
+<p style="font-size:13px;color:#666;margin-bottom:6px;"><code>padding: 0</code> — 안쪽 여백 없음</p>
+<div class="wrap"><div class="box p-none">padding: 0</div></div>
+
+<p style="font-size:13px;color:#666;margin:14px 0 6px;"><code>padding: 30px</code> — 4방향 동일</p>
+<div class="wrap"><div class="box p-all">padding: 30px</div></div>
+
+<p style="font-size:13px;color:#666;margin:14px 0 6px;"><code>padding-top / bottom: 30px</code> — 상하만</p>
+<div class="wrap"><div class="box p-tb">padding-top·bottom: 30px</div></div>
+
+<p style="font-size:13px;color:#666;margin:14px 0 6px;"><code>padding-left / right: 40px</code> — 좌우만</p>
+<div class="wrap"><div class="box p-lr">padding-left·right: 40px</div></div>
+
+<!-- ── 단축 표기법 ── -->
+<h2>▌ 단축 표기법 (Shorthand)</h2>
+<table>
+  <tr><th>선언</th><th>적용 순서</th></tr>
+  <tr><td><code>margin: 10px</code></td><td>상·우·하·좌 모두 10px</td></tr>
+  <tr><td><code>margin: 10px 20px</code></td><td>상하 10px / 좌우 20px</td></tr>
+  <tr><td><code>margin: 10px 20px 30px</code></td><td>상 10px / 좌우 20px / 하 30px</td></tr>
+  <tr><td><code>margin: 10px 20px 30px 40px</code></td><td>상 / 우 / 하 / 좌 (시계 방향)</td></tr>
+</table>
+<p style="font-size:12px;color:#888;margin-top:4px;">padding도 동일한 규칙 적용</p>
+
+<!-- ── 비교 ── -->
+<h2>▌ Margin vs Padding 핵심 차이</h2>
+<table>
+  <tr><th>구분</th><th>Margin</th><th>Padding</th></tr>
+  <tr><td>위치</td><td>border 바깥</td><td>border 안쪽</td></tr>
+  <tr><td>배경색 적용</td><td>적용 안 됨</td><td>적용 됨</td></tr>
+  <tr><td>음수 값</td><td>가능</td><td>불가</td></tr>
+  <tr><td>auto 값</td><td>가능 (중앙 정렬)</td><td>불가</td></tr>
+  <tr><td>상하 겹침(collapse)</td><td>인접 요소 margin 겹침 발생</td><td>없음</td></tr>
+</table>
+
+</body>
+</html>
