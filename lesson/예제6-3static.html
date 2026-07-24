@@ -1,4 +1,37 @@
 <!DOCTYPE html>
+<!--
+=========================================
+CSS position 속성 핵심 요약
+=========================================
+
+■ static (기본값)
+- 일반 문서 흐름대로 배치
+- top, right, bottom, left 적용 안됨
+
+■ relative
+- 원래 위치를 기준으로 이동
+- 원래 공간은 그대로 유지
+
+■ absolute
+- 가장 가까운 position(relative, absolute, fixed) 부모 기준
+- 문서 흐름에서 제외됨(원래 공간 사라짐)
+
+■ fixed
+- 브라우저 화면(viewport) 기준으로 고정
+- 스크롤해도 위치 유지
+
+■ sticky
+- 평소에는 relative처럼 배치
+- 지정 위치(top 등)에 도달하면 fixed처럼 고정
+- top(또는 left/right/bottom) 지정 필요
+
+※ 핵심
+- static   : 기본 배치
+- relative : 원래 위치 기준 이동
+- absolute : 부모 기준 절대 위치
+- fixed    : 화면 기준 고정
+- sticky   : 스크롤 시 고정
+-->
 <html lang="ko">
 <head>
   <meta charset="utf-8">
