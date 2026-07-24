@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파이썬 파일 입출력(File I/O) 강좌</title>
+    <style>
+        :root {
+            --primary-color: #2b5b84;
+            --secondary-color: #3572A5;
+            --accent-color: #d9534f;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --code-bg: #282c34;
+            --code-color: #abb2bf;
+            --border-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-top: 40px;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 12px;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .concept-box {
+            background-color: #eef6fc;
+            border: 1px solid #b6d4fe;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+
+        .warn-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f1f3f5;
+            color: var(--accent-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f3f5;
+            color: var(--primary-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .assignment-list {
+            background-color: #fff8e6;
+            border: 1px solid #ffeba2;
+            border-radius: 8px;
+            padding: 20px 30px;
+        }
+
+        .assignment-list ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .assignment-list li {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .diagram {
+            font-family: monospace;
+            white-space: pre;
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 6px;
+            display: inline-block;
+            line-height: 1.3;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📂 파이썬 파일 입출력 (File Input / Output)</h1>
+
+    <!-- 1. 파일이란? -->
+    <h2>1. 파일(File)이란?</h2>
+    <p>파일(File)이란 데이터를 영구적으로 저장하는 공간입니다[cite: 2]. 프로그램이 종료되면 일반 변수는 모두 사라지지만, 파일에 저장한 데이터는 컴퓨터에 계속 남아 있습니다[cite: 2].</p>
+
+    <div class="concept-box">
+        <strong>📌 대표적인 활용 예시</strong>
+        <ul>
+            <li>학생 성적 저장[cite: 2]</li>
+            <li>회원 정보 저장[cite: 2]</li>
+            <li>시스템 로그 기록[cite: 2]</li>
+            <li>환경 설정값 저장[cite: 2]</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- 2. 파일 입출력 과정 -->
+    <h2>2. 파일 입출력 과정</h2>
+    <div class="diagram">
+   파일 열기 (open)
+          │
+          ▼
+읽기 (Read) 또는 쓰기 (Write)
+          │
+          ▼
+   파일 닫기 (close)
+    </div>[cite: 2]
+
+    <hr>
+
+    <!-- 3. open() 함수 -->
+    <h2>3. open() 함수</h2>
+    <p>파일을 열 때 사용하는 기본 함수입니다[cite: 2].</p>
+<pre><code># 파일객체 = open(파일명, 모드)
+f = open("student.txt", "r")</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 4. 파일 모드 -->
+    <h2>4. 주요 파일 모드(Mode)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>모드</th>
+                <th>의미</th>
+                <th>파일이 없을 경우</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>"r"</code></td>
+                <td>읽기 (Read)</td>
+                <td>오류 발생</td>
+            </tr>
+            <tr>
+                <td><code>"w"</code></td>
+                <td>쓰기 (Write)</td>
+                <td>새 파일 생성 (기존 내용 삭제)</td>
+            </tr>
+            <tr>
+                <td><code>"a"</code></td>
+                <td>추가 (Append)</td>
+                <td>새 파일 생성 (기존 내용 뒤에 이어 쓰기)</td>
+            </tr>
+            <tr>
+                <td><code>"x"</code></td>
+                <td>새 파일 생성 (Create)</td>
+                <td>이미 존재하면 오류 발생</td>
+            </tr>
+            <tr>
+                <td><code>"rb"</code></td>
+                <td>바이너리 읽기</td>
+                <td>이미지, 동영상 파일 등</td>
+            </tr>
+            <tr>
+                <td><code>"wb"</code></td>
+                <td>바이너리 쓰기</td>
+                <td>이미지, 동영상 파일 등</td>
+            </tr>
+        </tbody>
+    </table>[cite: 2]
+
+    <hr>
+
+    <!-- 5. 파일 쓰기 -->
+    <h2>5. 파일 쓰기 (write)</h2>
+<pre><code>f = open("output/hello.txt", "w")
+f.write("안녕하세요.")
+f.close()
+
+# output 폴더로 이동하여 hello.txt 생성 여부를 확인합니다.</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 6. 여러 줄 저장 -->
+    <h2>6. 여러 줄 저장</h2>
+<pre><code>f = open("output/student.txt", "w")
+
+f.write("홍길동\n")
+f.write("김철수\n")
+f.write("이영희\n")
+
+f.close()</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 7. 파일 읽기 -->
+    <h2>7. 파일 전체 읽기 (read)</h2>
+<pre><code>f = open("output/student.txt", "r")
+text = f.read()
+print(text)
+f.close()</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 8. 한 줄씩 읽기 -->
+    <h2>8. 한 줄씩 읽기 (readline)</h2>
+<pre><code>f = open("output/student.txt", "r")
+
+print(f.readline())
+print(f.readline())
+print(f.readline())
+
+f.close()</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 9. 모든 줄 읽기 -->
+    <h2>9. 모든 줄을 리스트로 읽기 (readlines)</h2>
+<pre><code>f = open("output/student.txt", "r")
+
+lines = f.readlines()
+print(lines)  # ['홍길동\n', '김철수\n', '이영희\n']
+
+f.close()</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 10. 반복문으로 읽기 -->
+    <h2>10. 반복문으로 읽기</h2>
+<pre><code>f = open("output/student.txt", "r")
+
+for line in f:
+    print(line.strip())  # strip()은 줄 끝의 \n(개행문자)을 제거
+
+f.close()</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 11. append() 모드 -->
+    <h2>11. 내용 추가하기 ("a" 모드)</h2>
+<pre><code>f = open("output/student.txt", "a")
+
+f.write("박민수\n")
+
+f.close()</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 12. with 문 -->
+    <h2>12. with 문 사용하기 (권장)</h2>
+    <p><code>with</code> 구문을 사용하면 블록이 끝날 때 <strong>자동으로 파일이 닫히므로</strong> <code>f.close()</code>를 명시하지 않아도 됩니다[cite: 2]. 실무에서 권장하는 방식입니다[cite: 2].</p>
+<pre><code>with open("output/student.txt", "r") as f:
+    text = f.read()
+    print(text)</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 13. UTF-8 인코딩 -->
+    <h2>13. UTF-8 인코딩 처리</h2>
+    <p>한글 데이터를 저장하거나 읽을 때는 인코딩을 <code>encoding="utf-8"</code>로 지정하는 것이 안전합니다[cite: 2].</p>
+<pre><code># 쓰기
+with open("output/student.txt", "w", encoding="utf-8") as f:
+    f.write("안녕하세요.")
+
+# 읽기
+with open("output/student.txt", "r", encoding="utf-8") as f:
+    print(f.read())</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 14. 학생 정보 입력 받아 저장 -->
+    <h2>14. 사용자 입력값 저장</h2>
+<pre><code>name = input("이름 : ")
+score = input("점수 : ")
+
+with open("output/student.txt", "a", encoding="utf-8") as f:
+    f.write(name + "," + score + "\n")</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 15. CSV 형태 저장 -->
+    <h2>15. CSV(Comma-Separated Values) 형태 저장</h2>
+    <p>쉼표로 데이터를 구분하는 CSV 파일 형식은 Excel 등에서 손쉽게 불러올 수 있습니다[cite: 2].</p>
+<pre><code>with open("output/score.csv", "w", encoding="utf-8") as f:
+    f.write("이름,Python,AI\n")
+    f.write("홍길동,95,90\n")
+    f.write("김철수,88,85\n")</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 16. 파일 복사 -->
+    <h2>16. 파일 복사 예제</h2>
+<pre><code>with open("output/student.txt", "r", encoding="utf-8") as source:
+    with open("output/copy.txt", "w", encoding="utf-8") as target:
+        target.write(source.read())</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 17. 학생 성적 관리 예제 -->
+    <h2>17. 학생 성적 데이터 관리</h2>
+<pre><code>students = [
+    "홍길동,95",
+    "김철수,88",
+    "이영희,100"
+]
+
+# 파일 저장
+with open("output/student.txt", "w", encoding="utf-8") as f:
+    for student in students:
+        f.write(student + "\n")
+
+# 파일 읽기 및 출력
+with open("output/student.txt", "r", encoding="utf-8") as f:
+    for line in f:
+        name, score = line.strip().split(",")
+        print(name, score)</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 18. 예외 처리 -->
+    <h2>18. 파일 읽기 예외 처리</h2>
+    <p>존재하지 않는 파일을 읽으려 할 때는 오류(FileNotFoundError)가 발생하므로 <code>try-except</code> 구문으로 예외 처리를 해줍니다[cite: 2].</p>
+<pre><code>try:
+    with open("output/test.txt", "r", encoding="utf-8") as f:
+        print(f.read())
+except FileNotFoundError:
+    print("파일이 없습니다.")</code></pre>[cite: 2]
+
+    <hr>
+
+    <!-- 19. 자주 발생하는 오류 -->
+    <h2>19. 자주 발생하는 오류 체크</h2>
+    <div class="warn-box">
+        <ul>
+            <li><strong>파일을 닫지 않음:</strong> <code>close()</code>를 누락하여 리소스가 낭비되는 경우. → <code>with open()</code> 사용 권장[cite: 2].</li>
+            <li><strong>잘못된 경로:</strong> 존재하지 않는 폴더 경로 지정 시 오류 발생 (예: <code>open("abc/test.txt")</code>)[cite: 2].</li>
+            <li><strong>인코딩 오류 (UnicodeDecodeError):</strong> 한글 깨짐 및 오류 방지를 위해 <code>encoding="utf-8"</code> 지정[cite: 2].</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- 20 & 21. open() 주요 메서드 요약 -->
+    <h2>20. open() 주요 메서드 요약</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>함수 / 메서드</th>
+                <th>설명</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>open()</code></td>
+                <td>파일 열기</td>
+            </tr>
+            <tr>
+                <td><code>read()</code></td>
+                <td>파일 내용 전체를 문자열로 읽기</td>
+            </tr>
+            <tr>
+                <td><code>readline()</code></td>
+                <td>파일에서 한 줄씩 읽기</td>
+            </tr>
+            <tr>
+                <td><code>readlines()</code></td>
+                <td>파일의 모든 줄을 읽어 리스트로 반환</td>
+            </tr>
+            <tr>
+                <td><code>write()</code></td>
+                <td>파일에 내용 쓰기</td>
+            </tr>
+            <tr>
+                <td><code>writelines()</code></td>
+                <td>문자열 리스트를 파일에 쓰기</td>
+            </tr>
+            <tr>
+                <td><code>close()</code></td>
+                <td>열린 파일 닫기</td>
+            </tr>
+        </tbody>
+    </table>[cite: 2]
+
+    <hr>
+
+    <!-- 실습 과제 -->
+    <h2>✏️ 실습 과제</h2>
+    <div class="assignment-list">
+        <ol>
+            <li><code>hello.txt</code> 파일을 생성하고 다음 두 줄을 저장하세요:
+                <br><code>Hello Python</code> / <code>I am AI Software</code>[cite: 2]
+            </li>
+            <li>학생 이름 5명을 입력받아 <code>student.txt</code>에 저장하세요[cite: 2].</li>
+            <li><code>student.txt</code>의 내용을 읽어 화면에 모두 출력하세요[cite: 2].</li>
+            <li>사용자의 이름과 나이를 입력받아 <code>member.txt</code>에 <code>홍길동,20</code> 형태로 저장하세요[cite: 2].</li>
+            <li><code>fruit.txt</code>(사과, 배, 포도, 복숭아)를 생성하고 반복문으로 출력하세요[cite: 2].</li>
+            <li>학생 점수 5개를 입력받아 파일에 저장한 후, 평균을 계산하여 출력하세요[cite: 2].</li>
+            <li>CSV 파일(<code>이름,Python,AI,Web</code> 헤더 포함)을 생성하세요[cite: 2].</li>
+            <li><code>source.txt</code>의 내용을 <code>backup.txt</code>로 복사하는 프로그램을 작성하세요[cite: 2].</li>
+            <li>존재하지 않는 파일을 읽을 때 예외 처리를 적용하여 <code>"파일이 존재하지 않습니다."</code>를 출력하세요[cite: 2].</li>
+            <li>학생 정보를 입력받아 저장하고, 저장된 내용을 다시 읽어 아래와 같은 표 형태로 출력하세요:
+<pre><code>========================================
+이름        점수
+========================================
+홍길동      95
+김철수      88
+이영희      100
+========================================</code></pre>[cite: 2]
+            </li>
+        </ol>
+    </div>
+</div>
+
+</body>
+</html>
