@@ -1,26 +1,55 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>함수(Function)</title>
-</head>
+<head><title>예제8-8연산자</title></head>
+<!-- 
+JavaScript 연산자 요약
+
+1. 산술 연산자
+   + 더하기, - 빼기, * 곱하기, / 나누기
+   ** 제곱, % 나머지, ++ 증가, -- 감소
+
+2. 대입 연산자
+   = 기본 대입
+   += 더하기 대입, %= 나머지 대입, *= 곱하기 대입
+
+3. 문자열 연산
+   + 문자열 연결 (문자+문자, 문자+숫자)
+
+4. 비교 연산자
+   == 값 비교, === 값+타입 비교
+   != 같지 않음, > 크다, < 작다
+
+5. 논리 연산자
+   && AND, || OR, ! NOT
+-->
+
 <body>
-<h1>JavaScript 함수(Function)</h1>
-<p id="first"></p>
-<p id="second"></p>
-<script> //함수 선언
-	function jsFunction(a1,a2){  //js함수
-		var a3;  //변수 선언
-		a3 = a1 + a2  //a1, a2 더하기 결과
-		document.write("a1 = "+a1+" a2 = "+a2+" = "+a3+"<br/>");//출력
-		return a3; 	
-	}
-//매개변수 5,6으로 jsFunction 함수 호출한 결과를 “first"에 나타냄
-document.getElementById("first").innerHTML = jsFunction(5,6);
-//매개변수 4,10으로 jsFunction 함수 호출한 결과를 “second"에 나타냄
-document.getElementById("second").innerHTML = jsFunction(4,10);
-</script>
+<h3>javaScript 연산자</h1>
+    <script>
+    document.write("--산술연산자--"+"<br/>");
+	var x = 10, y = 6;   	//  변수 x, y 값 대입
+	var z = x + y;     // 더하기 연산자(+)를 통해 변수 z에 x+y 값을 대입
+	document.write("더하기 연산자: x="+x+"+y="+y+"="+z+"<br/>");//결과출력
+	var a; var b ;var c;     
+	a = x-y ; b = x * y ; c = x / y ;// 빼기, 곱하기, 나누기 연산자 (-,*,/)
+    document.write("a=x-y"+a+"b=x*y"+b+"c=x/y"+c+"<br/>");//결과출력
+	document.write(" 빼기 연산자:- "+a+" X 연산자:* "+b+" 나누기 연산자:/ "+c+"<br/>");	
+	a = x**2; b=x%y; c=x++; z=z--; // 제곱, 나머지, 증감 연산자 (**,%,++,--)
+	document.write("제곱 연산자:** "+a+" 나머지 연산자:% "+b+" 증감연산자:++,-- "+c+" "+z+"<br/>");
+	document.write("--대입연산자--"+"<br/>");
+	a += 5; b %= 5; c *= 5;
+        document.write("더하기대입:+= "+a+" 나머지대입:%= "+b+" 곱하기 대입:*= "+c+"<br/>");	
+	document.write("--문자열 연산--"+"<br/>");
+	var txt1 = "AI", txt2 = " Software";
+	document.write("문자1+문자2, 문자+숫자"+txt1+txt2+"<br/>");
+	document.write("--비교연산자--"+"<br/>");
+	document.write("==, ===, !=, >,<"+"<br/>");
+	document.write("--논리연산자--"+"<br/>");
+	document.write("&&, ||, !"+"<br/>");
+	</script>
 </body>
 </html>
+
 
 
 

@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>예제8-13if 조건문</title>
-<script>
-	function time(){
-		var clock = new Date().getHours(); // 현재시간
-		document.getElementById("time").innerHTML=clock;
-		if(clock < 18) alert("좋은 하루!"); // 오후 6시이전이면 
-		else  alert("잘 쉬어요!"); // 오후 6시 이후이면
+	<title>예제8-12내장 함수</title>
+    <script>
+  	 function promptMsg() {
+               prompt("무엇이든지 물어보세요?" , "질문은 여기에");
 	}
-</Script>
+	 function confirmMsg() {
+                var result= confirm("계속 진행할까요?");
+		if(result){ }//예를 클릭한 경우 실행할까요
+		else {}// 아니로를 클릭한 경우 실행
+	}
+      function alertMsg() {
+              alert("실행할까요?");
+	}
+    </script>
 </head>
 <body>
-<h3>조건문 if else</h3>
-<h4>현재 시간 Date()의 시간에 따른 문자열 표시</h4>
-<p onclick="time();">현재시각:<b id="time"> </p>/*클릭 이벤트*/
+<h3>유용한 함수</h3>
+<h4>단추를 누르면 경고창이 나타납니다.</h4>
+<input type="button" value="prompt" onclick="promptMsg()">
+<input type="button" value="confirm" onclick="confirmMsg()"> 
+<input type="button" value="alert" onclick="alertMsg()">
 </body>
-</html>
+
 
 
 

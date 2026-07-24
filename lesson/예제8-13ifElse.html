@@ -1,30 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>예제8-14if 조건문</title>
-<Script>
-function time(){
-var clock = new Date().getHours(); // 현재시간
-document.getElementById("time").innerHTML=clock;
-	// 오전 6시 이전이면 
-	if(clock < 6) document.getElementById("cont").innerHTML="꿈나라 입니다."; 
-	//오전 10이전
-	else if(clock<10) document.getElementById("cont").innerHTML="좋은 아침입니다.";
-	else if(clock<13) document.getElementById("cont").innerHTML="점심시간입니다.";
-	else if(clock<16) document.getElementById("cont").innerHTML="좋은 오후 입니다.";
-	else if(clock<19) document.getElementById("cont").innerHTML="저녁시간입니다.";
-	// 오후 7시가 넘을 경우
-	else  document.getElementById("cont").innerHTML="잘 쉬세요.";
-}
+<title>예제8-13if 조건문</title>
+<script>
+	function time(){
+		var clock = new Date().getHours(); // 현재시간
+		document.getElementById("time").innerHTML=clock;
+		if(clock < 18) alert("좋은 하루!"); // 오후 6시이전이면 
+		else  alert("잘 쉬어요!"); // 오후 6시 이후이면
+	}
 </Script>
 </head>
 <body>
-<h3> else if 조건문</h3>
+<h3>조건문 if else</h3>
 <h4>현재 시간 Date()의 시간에 따른 문자열 표시</h4>
-<p onclick="time();">현재시각:<b id="time">클릭 </p>
-<p id="cont"></p>
+<p onclick="time();">현재시각:<b id="time"> </p>/*클릭 하세요*/
 </body>
 </html>
+
 
 
 

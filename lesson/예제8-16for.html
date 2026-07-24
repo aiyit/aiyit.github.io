@@ -1,23 +1,41 @@
+<!DOCTYPE html>
+<!-- 
+JavaScript for 반복문 요약
+
+1. 기본 문법
+   for (초기식; 조건식; 증감식) {
+       실행할 코드;
+   }
+
+2. 구성 요소
+   - 초기식(initialization): 반복 시작 시 변수 초기화 (예: var x = 0)
+   - 조건식(condition): 반복을 계속할지 여부 판단 (예: x < 1000)
+   - 증감식(increment/decrement): 반복마다 변수 값 변경 (예: x++)
+
+3. 실행 흐름
+   - 초기식 실행 → 조건식 검사 → 코드 실행 → 증감식 실행 → 조건식 검사 반복
+   - 조건식이 false가 되면 반복 종료
+
+4. 예제 설명
+   for (var x = 0; x < 1000; x++) {
+       document.write("for : " + x + "<br />");
+   }
+   → 0부터 999까지 출력
+-->
+
 <html>
 <head>
-    <title>예제 8-17 2차원 for 문</title>
+<title>예제8-16 for 반복문</title>
 </head>
 <body>
-<h3> 2차원 for를 이용한 구구단 </h3>
-   <table border="2">
-   <script>
-   for (var x = 1; x <= 9; x++) {  
-	document.write("<tr>");
-        document.write("<td> " + x+ "단" + "</td>");//세로축 값(1단~9단 표시)
-	  for (var y = 2; y <= 9; y++) { 
-            document.write("<td> " + x * y + "</td>");//가로축 값
-        }
-        document.write("</tr>");
-    }
-    </script>
-    </table>   
+<h3> for 반복문</h3>
+<Script>
+    for ( var x = 0; x < 1000; x++) {
+        document.write("for : " + x + "<br />");    }
+</Script>
 </body>
 </html>
+
 
 
 

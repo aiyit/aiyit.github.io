@@ -1,22 +1,54 @@
+<!-- 
+JavaScript 함수(Function) 핵심 요약
+
+1. 함수(Function)
+   - 특정 작업을 수행하는 코드 블록
+   - 코드 중복 감소, 유지보수 용이, 재사용성 높음
+   - 매개변수(Parameter)에 따라 다른 결과 반환 가능
+
+2. 함수 호출 경우
+   ① 이벤트 발생 시 (onclick, onload 등)
+   ② 자바스크립트 코드에서 직접 호출
+   ③ HTML 문서 로딩 시 자동 호출
+
+3. return 문
+   - 결과값 반환
+   - 실행 흐름을 제어 (중간 종료 가능)
+   - 반드시 필요한 것은 아님
+
+4. 이벤트(Event) 예시
+   - onchange : 요소 값 변경 시
+   - onclick : 요소 클릭 시
+   - onmouseover : 마우스가 요소 위로 이동 시
+   - onmouseout : 마우스가 요소에서 벗어날 때
+   - onkeydown : 키보드 입력 시
+   - onload : 문서 로딩 완료 시
+
+-->
 <!DOCTYPE html>
 <html>
 <head>
-<title>예제8-10이벤트함수(Function)</title>
-<script>
-function jsFunction(){
-	alert("눌렀군요!");
-	document.getElementById("first").innerHTML = "first"; //문자출력
-	document.getElementById("second").innerHTML ="second";//문자출력
-}
-</script>
+<title>예제8-9함수(Function)</title>
 </head>
 <body>
-<h1>JavaScript 이벤트함수(Function)</h1>
-	<button onclick="jsFunction()">눌러주세요</button> //버튼 클릭 이벤트
-	<p id="first"></p>
-	<p id="second"></p>
+<h1>JavaScript 함수(Function)</h1>
+<p id="first"></p>
+<p id="second"></p>
+<script> //함수 선언
+	function jsFunction(a1,a2){  //js함수
+		var a3;  //변수 선언
+		a3 = a1 + a2  //a1, a2 더하기 결과
+		document.write("a1 = "+a1+" a2 = "+a2+" = "+a3+"<br/>");//출력
+		return a3; 	
+	}
+//매개변수 5,6으로 jsFunction 함수 호출한 결과를 “first"에 나타냄
+document.getElementById("first").innerHTML = jsFunction(5,6);
+//매개변수 4,10으로 jsFunction 함수 호출한 결과를 “second"에 나타냄
+document.getElementById("second").innerHTML = jsFunction(4,10);
+</script>
 </body>
 </html>
+
 
 
 

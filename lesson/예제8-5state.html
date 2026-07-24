@@ -1,16 +1,29 @@
 <!DOCTYPE html>
+<!-- 
+자바스크립트 선언문 핵심 요소
+
+1. 변수(variable): 데이터를 저장하는 이름 있는 공간
+2. 연산자(operator): 값이나 변수에 연산을 수행하는 기호
+3. 표현식(expression): 하나의 결과값으로 평가되는 코드
+4. 키워드(keyword): 특별한 의미를 가진 예약어
+5. 설명문(comments): 코드 설명용, 실행에는 영향 없음
+-->
 <html>
 <head>
-	<title>예제8-6출력문</title>
+    <title>예제8-5 설명문</title>
 </head>
 <body>
-<h1>JavaScript Output</h1>
-<p id="output"></p>
+<h1>JavaScript 설명문</h1>
     <script>
-	document.write("outPut1:write");
-	document.getElementById("output").innerHTML = "outPut2:innerHTML";
-	window.alert("outPut3:alert");
-	console.log("outPut4:console");
+        var x, y, z;    // 변수 x, y, z 선언
+
+        x = 6;          // 변수 x에 6 대입
+        y = 6;          // 변수 y에 6 대입
+
+        z = x + y;      // x와 y를 더한 값을 z에 대입
+
+        document.write("x+y=", z); 
+        // "x+y=" 문자열과 z 값(12)을 함께 출력
     </script>
 </body>
 </html>
