@@ -1,4 +1,63 @@
 <!DOCTYPE html>
+<!-- =========================================================
+ [핵심요약] CSS3 애니메이션(Animation)
+-------------------------------------------------------------
+1. 애니메이션(Animation)
+   - 요소의 위치, 크기, 색상, 회전 등을 시간에 따라 변화시키는 기능
+   - JavaScript 없이 CSS만으로 구현 가능
+
+2. 프레임(Frame)
+   - 애니메이션을 구성하는 하나의 정지 화면
+
+3. 키 프레임(Key Frame)
+   - 사용자가 직접 지정하는 중요한 시점(시작, 중간, 끝)
+   - @keyframes 규칙으로 정의
+
+4. 중간 프레임(In-between)
+   - 브라우저가 키 프레임 사이를 자동 계산하여 생성
+   - 이를 인터폴레이션(Interpolation) 또는 트위닝(Tweening)이라 함
+
+5. 애니메이션 기본 구성
+   @keyframes 이름 {
+       from { 시작 상태 }
+       to   { 종료 상태 }
+   }
+
+6. animation 단축 속성
+   animation:
+       이름
+       지속시간
+       속도곡선
+       지연시간
+       반복횟수
+       방향
+       채움모드
+       실행상태;
+
+7. 주요 속성
+   @keyframes                 : 키 프레임 정의
+   animation                  : 모든 속성의 단축형
+   animation-name             : 사용할 키 프레임 이름
+   animation-duration         : 실행 시간
+   animation-delay            : 시작 지연 시간
+   animation-timing-function  : 속도 변화(ease, linear 등)
+   animation-iteration-count  : 반복 횟수(infinite 가능)
+   animation-direction        : 실행 방향(normal, reverse, alternate)
+   animation-fill-mode        : 종료 후 스타일 유지 여부
+   animation-play-state       : running / paused
+
+8. 기억하기
+   Transition → 상태 변화가 있을 때만 실행
+   Animation → 상태 변화 없이도 자동 실행 가능
+
+9. 애니메이션 흐름
+   시작(Key Frame)
+          ↓
+   중간 프레임(자동 생성)
+          ↓
+   종료(Key Frame)
+
+========================================================= -->
 <html>
 <head>
 <title>예제7-11 Color Animation</title>
