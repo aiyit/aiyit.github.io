@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2주차 · 자료형(Data Type) — AI소프트웨어과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<style>
+  :root{
+    --bg:#1e1e2e;
+    --panel:#242438;
+    --panel-2:#2a2a42;
+    --line:#3a3a54;
+    --text:#e6e4f0;
+    --muted:#8f8da8;
+    --blue:#5fa8e0;
+    --yellow:#ffd43b;
+    --green:#7fd88f;
+    --pink:#ff8fb1;
+    --purple:#b39bff;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Noto Sans KR', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: radial-gradient(1200px 600px at 80% -10%, #26263f 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.7;
+  }
+
+  .titlebar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:10px;
+    background:#17172a; border-bottom:1px solid var(--line);
+    padding:10px 18px;
+  }
+  .dots{display:flex; gap:7px; flex-shrink:0;}
+  .dot{width:12px; height:12px; border-radius:50%;}
+  .dot.r{background:#ff5f57;} .dot.y{background:#febc2e;} .dot.g{background:#28c840;}
+  .tab{
+    font-family:var(--mono); font-size:13px; color:var(--muted);
+    background:var(--panel); border:1px solid var(--line); border-bottom:none;
+    padding:6px 14px; border-radius:6px 6px 0 0; margin-left:8px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .tab .py-badge{color:var(--yellow); font-weight:700;}
+  .tab.active{color:var(--text); background:var(--panel-2);}
+  .tab.prev{opacity:.45;}
+
+  .shell{display:flex; max-width:1400px; margin:0 auto;}
+
+  .explorer{
+    width:250px; flex-shrink:0;
+    border-right:1px solid var(--line);
+    padding:22px 14px; position:sticky; top:53px;
+    height:calc(100vh - 53px); overflow-y:auto;
+  }
+  .explorer h4{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:12px; padding-left:6px;
+  }
+  .explorer a{
+    display:flex; gap:8px; align-items:baseline;
+    color:var(--muted); text-decoration:none; font-size:13.5px;
+    padding:6px 8px; border-radius:5px; transition:.15s;
+  }
+  .explorer a:hover{background:var(--panel); color:var(--text);}
+  .explorer a .num{color:var(--blue); font-family:var(--mono); font-size:11.5px; width:20px; flex-shrink:0;}
+  .explorer a.code-link .num{color:var(--yellow);}
+  .explorer a.hw-link .num{color:var(--pink);}
+
+  main{flex:1; min-width:0; padding:40px 48px 100px;}
+
+  .hero{margin-bottom:56px;}
+  .hero .kicker{
+    font-family:var(--mono); color:var(--yellow); font-size:13px; letter-spacing:.08em;
+  }
+  .hero h1{
+    font-size:clamp(28px,4vw,44px); font-weight:900; margin:10px 0 12px;
+    letter-spacing:-.01em;
+  }
+  .hero h1 .py{color:var(--blue);}
+  .hero h1 .dot-y{color:var(--yellow);}
+  .hero p{color:var(--muted); font-size:15.5px; max-width:640px;}
+
+  section{
+    padding-top:26px; margin-top:26px;
+    border-top:1px solid var(--line);
+    scroll-margin-top:70px;
+  }
+  section:first-of-type{border-top:none;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:16px;}
+  .sec-head .idx{
+    font-family:var(--mono); color:var(--blue); font-size:14px; font-weight:700;
+    background:var(--panel); border:1px solid var(--line); padding:2px 9px; border-radius:5px;
+  }
+  .sec-head h2{font-size:21px; font-weight:700;}
+  p.lead{color:#c8c6dc; margin-bottom:14px; font-size:15px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0 8px; font-size:14px;}
+  th,td{padding:10px 14px; border:1px solid var(--line); text-align:left; vertical-align:top;}
+  th{background:var(--panel); color:var(--yellow); font-weight:600; font-size:13px;}
+  td{background:#20203484;}
+  tr:hover td{background:#2b2b46;}
+  td:first-child{font-family:var(--mono); color:var(--green); white-space:nowrap;}
+
+  .example-box{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:10px; margin:16px 0 6px;
+  }
+  .example-box .item{
+    background:var(--panel); border:1px solid var(--line); border-radius:9px;
+    padding:13px 16px; position:relative;
+  }
+  .example-box .item::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--purple);}
+  .example-box .item .k{font-size:12.5px; color:var(--muted);}
+  .example-box .item .v{font-family:var(--mono); color:var(--green); font-size:14px; margin-top:3px;}
+  .example-box .item .t{font-family:var(--mono); color:var(--yellow); font-size:11px; margin-top:6px;}
+
+  pre{
+    background:#131322 !important; border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; overflow-x:auto; font-size:13px; line-height:1.65;
+    font-family:var(--mono);
+  }
+  code{font-family:var(--mono);}
+  .code-frame{
+    border:1px solid var(--line); border-radius:10px; overflow:hidden; margin:18px 0;
+  }
+  .code-frame .bar{
+    background:#17172a; padding:8px 14px; display:flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12px; color:var(--muted); border-bottom:1px solid var(--line);
+  }
+  .code-frame .bar .file-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .code-frame pre{border:none; border-radius:0; margin:0;}
+
+  .subhead{
+    font-family:var(--mono); color:var(--purple); font-size:13px; letter-spacing:.04em;
+    margin:22px 0 6px; text-transform:uppercase; display:flex; align-items:center; gap:8px;
+  }
+  .subhead::before{content:'//'; color:var(--muted);}
+
+  .warn-box{
+    display:flex; gap:10px; align-items:flex-start;
+    background:#3a2440; border:1px solid #5c3466; border-radius:9px;
+    padding:12px 16px; margin:14px 0; font-size:13.5px; color:#f0c9ff;
+  }
+  .warn-box .ico{font-size:16px; flex-shrink:0;}
+
+  .hw-grid{display:grid; gap:16px;}
+  .hw-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; position:relative; overflow:hidden;
+  }
+  .hw-card::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--pink);}
+  .hw-card .hw-title{
+    display:flex; align-items:center; gap:10px; margin-bottom:10px;
+  }
+  .hw-card .hw-num{
+    font-family:var(--mono); color:var(--pink); font-size:12px; font-weight:700;
+    background:#3a2030; border:1px solid #5c3040; padding:2px 9px; border-radius:5px;
+  }
+  .hw-card h4{font-size:15px; font-weight:700;}
+  .hw-card ul{list-style:none; padding-left:2px;}
+  .hw-card li{
+    font-size:13.5px; color:#c8c6dc; padding:5px 0 5px 18px; position:relative;
+  }
+  .hw-card li::before{content:'›'; position:absolute; left:0; color:var(--blue); font-weight:700;}
+  .hw-card .given{
+    font-family:var(--mono); font-size:12.5px; color:var(--green);
+    background:#131322; border:1px solid var(--line); border-radius:6px;
+    padding:6px 10px; margin-bottom:10px; display:inline-block;
+  }
+
+  footer{
+    text-align:center; color:var(--muted); font-size:12.5px; padding:40px 20px 60px;
+    border-top:1px solid var(--line); margin-top:60px; font-family:var(--mono);
+  }
+
+  @media (max-width: 900px){
+    .explorer{display:none;}
+    main{padding:28px 20px 80px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="tab prev">🐍 1w_basic.py</div>
+  <div class="tab active"><span class="py-badge">🐍</span> 2w_dataType.py</div>
+</div>
+
+<div class="shell">
+  <nav class="explorer">
+    <h4>Explorer · 목차</h4>
+    <a href="#s1"><span class="num">1</span>자료형이란?</a>
+    <a href="#s2"><span class="num">2</span>자료형 종류</a>
+    <a href="#s3" class="code-link"><span class="num">▶</span>실습 코드</a>
+    <a href="#s4" class="hw-link"><span class="num">✎</span>과제 1~5</a>
+    <a href="#s5" class="code-link"><span class="num">▶</span>고급 과제</a>
+    <a href="#s6" class="code-link"><span class="num">▶</span>사용자 입력</a>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <div class="kicker">AI소프트웨어과 · 2주차 강의노트</div>
+      <h1><span class="py">자료형</span><span class="dot-y">.</span> Data Type</h1>
+      <p>파이썬이 데이터를 저장·처리하는 8가지 자료형 — 정수, 실수, 문자열, 논리형부터 리스트·튜플·딕셔너리·집합까지 실습 코드와 함께 정리한 2주차 강의 자료입니다.</p>
+    </div>
+
+    <!-- 1. 자료형이란 -->
+    <section id="s1">
+      <div class="sec-head"><span class="idx">01</span><h2>자료형(Data Type)이란?</h2></div>
+      <p class="lead">
+        자료형(Data Type)이란 프로그램에서 데이터를 저장하고 처리하는 방식을 의미합니다.
+        컴퓨터는 모든 데이터를 0과 1의 이진수로 처리하지만, 프로그래밍 언어에서는 데이터를 효율적으로
+        다루기 위해 정수, 실수, 문자열, 논리값 등 다양한 자료형을 제공합니다.
+      </p>
+      <div class="example-box">
+        <div class="item"><div class="k">나이</div><div class="v">정수 (int)</div></div>
+        <div class="item"><div class="k">키</div><div class="v">실수 (float)</div></div>
+        <div class="item"><div class="k">이름</div><div class="v">문자열 (str)</div></div>
+        <div class="item"><div class="k">합격 여부</div><div class="v">논리형 (bool)</div></div>
+      </div>
+    </section>
+
+    <!-- 2. 자료형 종류 -->
+    <section id="s2">
+      <div class="sec-head"><span class="idx">02</span><h2>자료형 종류</h2></div>
+      <p class="lead">자료의 종류에 따라 적절한 자료형을 선택합니다.</p>
+      <table>
+        <tr><th>자료형</th><th>의미</th><th>예시</th></tr>
+        <tr><td>int</td><td>정수</td><td>10, -5, 1000</td></tr>
+        <tr><td>float</td><td>실수</td><td>3.14, -2.5</td></tr>
+        <tr><td>str</td><td>문자열</td><td>"Python", "AI"</td></tr>
+        <tr><td>bool</td><td>논리형</td><td>True, False</td></tr>
+        <tr><td>list</td><td>리스트</td><td>[10,20,30]</td></tr>
+        <tr><td>tuple</td><td>튜플</td><td>(10,20,30)</td></tr>
+        <tr><td>dict</td><td>딕셔너리</td><td>{"이름":"홍길동"}</td></tr>
+        <tr><td>set</td><td>집합</td><td>{1,2,3}</td></tr>
+      </table>
+    </section>
+
+    <!-- 3. 실습 코드 -->
+    <section id="s3">
+      <div class="sec-head"><span class="idx">▶</span><h2>실습 코드 — 자료형 다루기</h2></div>
+      <p class="lead">정수·실수 연산부터 문자열 슬라이싱, 리스트·튜플·딕셔너리·집합, 형변환까지 한 번에 실습합니다.</p>
+
+      <div class="subhead">정수형 &amp; 연산</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>number.py</div>
+        <pre><code class="language-python"># 정수형
+a = 100
+b = -25
+c = 0
+
+print(a)
+print(b)
+print(c)
+
+# 연산
+a = 20
+b = 7
+
+print(a+b)
+print(a-b)
+print(a*b)
+print(a/b)
+print(a//b)
+print(a%b)
+print(a**b)</code></pre>
+      </div>
+
+      <div class="subhead">실수</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>float.py</div>
+        <pre><code class="language-python"># 실수
+height = 175.3
+weight = 68.5
+
+print(height)
+print(weight)
+
+pi = 3.141592
+
+print(pi)
+print(round(pi,2))</code></pre>
+      </div>
+
+      <div class="subhead">문자열 — 반복 · 길이 · 인덱스 · 슬라이싱</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>string.py</div>
+        <pre><code class="language-python">print("*"*20)
+
+text="Python"
+print(len(text))
+
+word="Python"
+
+print(word[0])
+print(word[1])
+print(word[-1])
+print(word[0:3])
+print(word[2:])
+print(word[:4])</code></pre>
+      </div>
+
+      <div class="subhead">논리형</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>bool.py</div>
+        <pre><code class="language-python">a=10
+b=20
+
+print(a>b)
+print(a<b)
+print(a==b)</code></pre>
+      </div>
+
+      <div class="subhead">리스트 — 여러 개의 데이터를 저장하는 가장 많이 사용하는 자료형</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>list.py</div>
+        <pre><code class="language-python">score=[90,85,100,95]
+print(score)
+print(score[0])
+print(score[3])
+score[1]=88
+print(score)
+
+score.append(77)
+print(score)
+score.remove(95)
+print(score)</code></pre>
+      </div>
+
+      <div class="subhead">튜플 — 리스트와 비슷하지만 수정이 불가능</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>tuple.py</div>
+        <pre><code class="language-python">color=("red","green","blue")
+print(color)
+color[0]="black"  #에러 발생</code></pre>
+      </div>
+      <div class="warn-box"><span class="ico">⚠️</span> 튜플은 <b>수정이 불가능한(immutable)</b> 자료형이므로 <code style="color:var(--pink)">color[0]="black"</code>은 TypeError를 발생시킵니다.</div>
+
+      <div class="subhead">딕셔너리 — 키(Key)-값(Value) 형태</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>dict.py</div>
+        <pre><code class="language-python">student={
+    "이름":"홍길동",
+    "학년":1,
+    "평점":4.2
+}
+
+print(student)
+
+print(student["이름"])# 값 가져오기
+student["학과"]="AI" # 추가
+student["학년"]=2 # 수정</code></pre>
+      </div>
+
+      <div class="subhead">집합(Set) — 중복을 허용하지 않음</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>set.py</div>
+        <pre><code class="language-python">num={1,2,3,3,2,1}
+
+print(num)
+num.add(5) #추가
+num.remove(2) #삭제</code></pre>
+      </div>
+
+      <div class="subhead">자료형 확인 &amp; 변환</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>type_convert.py</div>
+        <pre><code class="language-python">#자료형 확인
+a=100
+b=3.14
+c="Python"
+d=True
+
+print(type(a))
+print(type(b))
+print(type(c))
+print(type(d))
+
+#자료형 변환
+a="100"
+print(int(a)+50)
+a=100
+print(str(a)+"점")
+print(float(100))
+print(int(3.99))</code></pre>
+      </div>
+
+      <div class="subhead">종합예제 — 학생 정보 출력</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>student_info.py</div>
+        <pre><code class="language-python">student={
+    "이름":"홍길동",
+    "학과":"AI소프트웨어과",
+    "학년":1,
+    "평점":4.35,
+    "과목":["Python","AI","Web"],
+    "장학금":True
+}
+
+print("="*35)
+print("학생 정보")
+print("="*35)
+print("이름 :",student["이름"])
+print("학과 :",student["학과"])
+print("학년 :",student["학년"])
+print("평점 :",student["평점"])
+print("과목 :",student["과목"])
+print("장학금 :",student["장학금"])
+print("="*35)</code></pre>
+      </div>
+    </section>
+
+    <!-- 4. 과제 -->
+    <section id="s4">
+      <div class="sec-head"><span class="idx">✎</span><h2>과제 1~5</h2></div>
+      <div class="hw-grid">
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 1</span><h4>기초 — 변수와 출력</h4></div>
+          <ul>
+            <li>이름, 나이, 키, 몸무게, 졸업여부(True/False)를 각각 변수에 저장하고 출력하세요.</li>
+          </ul>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 2</span><h4>문자열</h4></div>
+          <div class="given">text = "AI Software"</div>
+          <ul>
+            <li>첫 번째 문자 출력</li>
+            <li>마지막 문자 출력</li>
+            <li>"Software"만 슬라이싱하여 출력</li>
+            <li>문자열 길이 출력</li>
+          </ul>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 3</span><h4>리스트</h4></div>
+          <div class="given">score = [80, 90, 95, 88]</div>
+          <ul>
+            <li>첫 번째 점수 출력</li>
+            <li>마지막 점수 출력</li>
+            <li>점수 하나 추가</li>
+            <li>두 번째 점수 수정</li>
+            <li>평균 점수 출력 (sum()과 len() 활용)</li>
+          </ul>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 4</span><h4>튜플</h4></div>
+          <div class="given">fruit = ("사과", "배", "포도", "복숭아")</div>
+          <ul>
+            <li>첫 번째 과일 출력</li>
+            <li>마지막 과일 출력</li>
+            <li>튜플은 수정할 수 없는 이유를 설명</li>
+          </ul>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 5</span><h4>딕셔너리</h4></div>
+          <ul>
+            <li>이름, 학번, 학과, 학년, 평균평점을 저장하고 출력</li>
+            <li>추가로 "전화번호" 항목을 추가</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. 고급 과제 -->
+    <section id="s5">
+      <div class="sec-head"><span class="idx">▶</span><h2>고급 과제 — 학생 정보관리 프로그램</h2></div>
+      <p class="lead">딕셔너리·튜플·리스트·집합을 모두 활용해 한 학생의 정보를 종합적으로 관리·출력하는 프로그램입니다.</p>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>student_manager.py</div>
+        <pre><code class="language-python"># ============================================
+# 학생 정보관리 프로그램
+# 작성자 : AI소프트웨어과
+# ============================================
+
+# -----------------------------
+# 기본 정보
+# -----------------------------
+student = {
+    "학번": "20260001",
+    "이름": "홍길동",
+    "학과": "AI소프트웨어과",
+    "학년": 1,
+    "평점": 4.35,
+    "장학금": True
+}
+
+# -----------------------------
+# 튜플(생년월일)
+# -----------------------------
+birthday = (2007, 5, 12)
+
+# -----------------------------
+# 리스트(수강과목)
+# -----------------------------
+subjects = [
+    "Python",
+    "웹프로그래밍",
+    "인공지능개론",
+    "데이터분석"
+]
+
+# -----------------------------
+# 집합(동아리)
+# 중복 자동 제거
+# -----------------------------
+clubs = {
+    "AI",
+    "드론",
+    "AI",
+    "드론",
+    "축구"
+}
+
+# -----------------------------
+# 출력
+# -----------------------------
+print("="*45)
+print("         학생 정보 관리 시스템")
+print("="*45)
+
+print(f"학번      : {student['학번']}")
+print(f"이름      : {student['이름']}")
+print(f"학과      : {student['학과']}")
+print(f"학년      : {student['학년']}")
+print(f"평점      : {student['평점']:.2f}")
+print(f"장학금    : {student['장학금']}")
+
+print("-"*45)
+
+print(f"생년월일  : {birthday[0]}년 {birthday[1]}월 {birthday[2]}일")
+
+print("-"*45)
+
+print("수강 과목")
+
+for subject in subjects:
+    print("  ●", subject)
+
+print("-"*45)
+
+print("동아리")
+
+for club in clubs:
+    print("  ■", club)
+
+print("="*45)</code></pre>
+      </div>
+    </section>
+
+    <!-- 6. 사용자 입력 -->
+    <section id="s6">
+      <div class="sec-head"><span class="idx">▶</span><h2>사용자 입력 — input()</h2></div>
+      <p class="lead">키보드로 값을 입력받아 딕셔너리에 저장하고, <code style="color:var(--green); font-family:var(--mono)">.items()</code>로 전체를 순회하며 정렬 출력합니다.</p>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>input_student.py</div>
+        <pre><code class="language-python">#사용자 입력
+student = {}
+
+student["학번"] = input("학번 : ")
+student["이름"] = input("이름 : ")
+student["학과"] = input("학과 : ")
+student["학년"] = int(input("학년 : "))
+student["평점"] = float(input("평점 : "))
+
+print("\n" + "="*40)
+print("입력된 학생 정보")
+print("="*40)
+
+for key, value in student.items():
+    print(f"{key:8} : {value}")
+
+print("="*40)</code></pre>
+      </div>
+    </section>
+
+    <footer>2w_dataType.py — AI소프트웨어과 웹/파이썬 프로그래밍 강의자료</footer>
+  </main>
+</div>
+
+<script>hljs.highlightAll();</script>
+</body>
+</html>
