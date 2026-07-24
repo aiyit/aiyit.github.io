@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파이썬 클래스 & OOP 기초 강좌</title>
+    <style>
+        :root {
+            --primary-color: #3572A5;
+            --secondary-color: #2b5b84;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --code-bg: #282c34;
+            --code-color: #abb2bf;
+            --border-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-top: 40px;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 12px;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .concept-box {
+            background-color: #eef6fc;
+            border: 1px solid #b6d4fe;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-color);
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f1f3f5;
+            color: #d63384;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f3f5;
+            color: var(--secondary-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .assignment-list {
+            background-color: #fff8e6;
+            border: 1px solid #ffeba2;
+            border-radius: 8px;
+            padding: 20px 30px;
+        }
+
+        .assignment-list ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .assignment-list li {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .diagram {
+            font-family: monospace;
+            white-space: pre;
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 6px;
+            display: inline-block;
+            line-height: 1.2;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🐍 파이썬 클래스(Class) & 객체지향 프로그래밍</h1>
+
+    <!-- 1. 클래스란? -->
+    <h2>1. 클래스(Class)란?</h2>
+    <p>클래스(Class)는 객체(Object)를 만들기 위한 <strong>설계도(Template 또는 Blueprint)</strong>입니다.</p>
+    <p>현실 세계를 예로 들면, 자동차를 만들기 전에 자동차 설계도가 필요하듯이 프로그램에서도 객체를 만들기 위한 설계도가 클래스입니다.</p>
+
+    <div class="concept-box">
+        <ul>
+            <li><strong>클래스(Class)</strong> → 설계도 📐</li>
+            <li><strong>객체(Object)</strong> → 실제 만들어진 제품</li>
+            <li><strong>인스턴스(Instance)</strong> → 클래스로부터 생성된 객체</li>
+        </ul>
+    </div>
+
+    <p><strong>실생활 예시:</strong></p>
+    <div class="diagram">
+             자동차 설계도(Class)
+                    │
+      ┌─────────────┼─────────────┐
+      │             │             │
+      ▼             ▼             ▼
+   자동차1       자동차2       자동차3
+ (Object)      (Object)      (Object)
+    </div>
+    <p><code>학생(Student)</code> 클래스를 만들면, <strong>홍길동 학생</strong>, <strong>김철수 학생</strong>, <strong>이영희 학생</strong>을 각각 객체(인스턴스)로 생성할 수 있습니다.</p>
+
+    <hr>
+
+    <!-- 2. 객체지향 프로그래밍 -->
+    <h2>2. 객체지향 프로그래밍(OOP)</h2>
+    <p>객체지향 프로그래밍(Object-Oriented Programming)은 데이터를 객체 단위로 관리하는 프로그래밍 방법입니다.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>개념</th>
+                <th>설명</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>클래스(Class)</strong></td>
+                <td>객체를 만들기 위한 설계도</td>
+            </tr>
+            <tr>
+                <td><strong>객체(Object)</strong></td>
+                <td>클래스로 생성된 실제 데이터</td>
+            </tr>
+            <tr>
+                <td><strong>인스턴스(Instance)</strong></td>
+                <td>생성된 객체</td>
+            </tr>
+            <tr>
+                <td><strong>속성(Attribute)</strong></td>
+                <td>객체가 가지는 데이터</td>
+            </tr>
+            <tr>
+                <td><strong>메서드(Method)</strong></td>
+                <td>객체가 수행하는 기능(함수)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3. 클래스 만들기 -->
+    <h2>3. 클래스 만들기</h2>
+    <p>기본 구조 및 생성 예시:</p>
+<pre><code># class 클래스이름:
+#     def 메서드(self):
+#         실행문
+
+class Student:
+    def hello(self):
+        print("안녕하세요.")
+
+# 객체 생성
+s = Student()
+s.hello()</code></pre>
+
+    <hr>
+
+    <!-- 4. 생성자 -->
+    <h2>4. 생성자(Constructor)</h2>
+    <p>객체가 생성될 때 자동으로 실행되는 메서드를 생성자라고 하며, <code>__init__()</code> 메서드를 사용합니다.</p>
+<pre><code>class Student:
+    def __init__(self):
+        print("학생 객체 생성")
+
+# 객체 생성
+s = Student()</code></pre>
+
+    <hr>
+
+    <!-- 5. 속성 -->
+    <h2>5. 속성(Attribute)</h2>
+    <p>객체의 데이터를 저장하는 변수입니다.</p>
+<pre><code>class Student:
+    def __init__(self):
+        self.name = "홍길동"
+        self.score = 95
+
+student = Student()
+
+print(student.name)
+print(student.score)</code></pre>
+
+    <hr>
+
+    <!-- 6. 매개변수를 사용하는 생성자 -->
+    <h2>6. 매개변수를 사용하는 생성자</h2>
+<pre><code>class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+# 객체 생성
+s1 = Student("홍길동", 95)
+s2 = Student("김철수", 88)
+
+print(s1.name)
+print(s2.score)</code></pre>
+
+    <hr>
+
+    <!-- 7. 메서드 -->
+    <h2>7. 메서드(Method)</h2>
+    <p>클래스 안에 정의된 함수를 메서드(Method)라고 합니다.</p>
+<pre><code>class Student:
+    def __init__(self, name):
+        self.name = name
+
+    def hello(self):
+        print(self.name, "학생 안녕하세요.")
+
+student = Student("홍길동")
+student.hello()</code></pre>
+
+    <hr>
+
+    <!-- 8. self -->
+    <h2>8. self 키워드</h2>
+    <p><code>self</code>는 현재 객체 자신을 가리키는 참조 변수입니다.</p>
+<pre><code>class Student:
+    def __init__(self, name):
+        self.name = name
+
+s = Student("홍길동")
+# 여기서 self.name은 s.name과 같습니다.</code></pre>
+
+    <hr>
+
+    <!-- 9. 여러 개의 객체 생성 -->
+    <h2>9. 여러 개의 객체 생성</h2>
+<pre><code>class Student:
+    def __init__(self, name):
+        self.name = name
+
+students = [Student("홍길동"), Student("김철수"), Student("이영희")]
+
+for student in students:
+    print(student.name)</code></pre>
+
+    <hr>
+
+    <!-- 10. 학생 성적 클래스 -->
+    <h2>10. 학생 성적 클래스</h2>
+<pre><code>class Student:
+    def __init__(self, name, python, ai):
+        self.name = name
+        self.python = python
+        self.ai = ai
+
+    def average(self):
+        return (self.python + self.ai) / 2
+
+student = Student("홍길동", 95, 90)
+print(student.average())</code></pre>
+
+    <hr>
+
+    <!-- 11. 여러 메서드 -->
+    <h2>11. 여러 메서드를 가진 클래스</h2>
+<pre><code>class Calculator:
+    def add(self, a, b):
+        return a + b
+    def sub(self, a, b):
+        return a - b
+    def mul(self, a, b):
+        return a * b
+
+calc = Calculator()
+
+print(calc.add(10, 20))
+print(calc.sub(20, 10))</code></pre>
+
+    <hr>
+
+    <!-- 12. 클래스와 리스트 -->
+    <h2>12. 클래스와 리스트 활용</h2>
+<pre><code>students = []
+students.append(Student("홍길동", 95, 90))
+students.append(Student("김철수", 88, 80))
+students.append(Student("이영희", 100, 98))
+
+for student in students:
+    print(student.name, student.average())</code></pre>
+
+    <hr>
+
+    <!-- 13. 클래스 상속 -->
+    <h2>13. 클래스 상속(Inheritance)</h2>
+    <p>상속은 기존 클래스의 기능을 물려받아 재사용 및 확장하는 기능입니다.</p>
+<pre><code>class Person:
+    def hello(self):
+        print("안녕하세요.")
+
+# 상속
+class Student(Person):
+    pass
+
+student = Student()
+student.hello()</code></pre>
+
+    <hr>
+
+    <!-- 14. 메서드 오버라이딩 -->
+    <h2>14. 메서드 오버라이딩(Method Overriding)</h2>
+    <p>부모 클래스의 메서드를 자식 클래스에서 재정의하여 사용하는 것입니다.</p>
+<pre><code>class Animal:
+    def sound(self):
+        print("동물 소리")
+
+class Dog(Animal):
+    def sound(self):
+        print("멍멍")
+
+dog = Dog()
+dog.sound()</code></pre>
+
+    <hr>
+
+    <!-- 15. 클래스 다이어그램 -->
+    <h2>15. 클래스 다이어그램 (UML)</h2>
+    <div class="diagram">
++---------------------------+
+|         Student           |
++---------------------------+
+| - name : str              |
+| - python : int            |
+| - ai : int                |
++---------------------------+
+| + average() : float       |
+| + print_info() : void     |
++---------------------------+
+    </div>
+
+    <hr>
+
+    <!-- 16. 종합: 학생 관리 프로그램 -->
+    <h2>16. 종합 예제: 학생 관리 프로그램</h2>
+<pre><code>class Student:
+    def __init__(self, name, python, ai, web):
+        self.name = name
+        self.python = python
+        self.ai = ai
+        self.web = web
+
+    def average(self):
+        return (self.python + self.ai + self.web) / 3
+
+    def grade(self):
+        avg = self.average()
+        if avg >= 90:
+            return "A"
+        elif avg >= 80:
+            return "B"
+        elif avg >= 70:
+            return "C"
+        elif avg >= 60:
+            return "D"
+        else:
+            return "F"
+
+    def print_info(self):
+        print("=" * 40)
+        print("이름 :", self.name)
+        print("Python :", self.python)
+        print("AI :", self.ai)
+        print("Web :", self.web)
+        print("평균 :", round(self.average(), 2))
+        print("학점 :", self.grade())
+
+students = [
+    Student("홍길동", 95, 90, 88),
+    Student("김철수", 88, 84, 80),
+    Student("이영희", 100, 98, 99)
+]
+
+for student in students:
+    student.print_info()</code></pre>
+
+    <hr>
+
+    <!-- 17. 클래스와 딕셔너리 비교 -->
+    <h2>17. 클래스 vs 딕셔너리 비교</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>항목</th>
+                <th>딕셔너리</th>
+                <th>클래스</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>데이터 저장</td>
+                <td>가능</td>
+                <td>가능</td>
+            </tr>
+            <tr>
+                <td>함수 포함</td>
+                <td>불가능</td>
+                <td>가능 (메서드)</td>
+            </tr>
+            <tr>
+                <td>재사용성</td>
+                <td>낮음</td>
+                <td>높음</td>
+            </tr>
+            <tr>
+                <td>대규모 프로그램</td>
+                <td>부적합</td>
+                <td>적합</td>
+            </tr>
+            <tr>
+                <td>객체 생성</td>
+                <td>불가능</td>
+                <td>가능</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 실습 과제 -->
+    <h2>✏️ 실습 과제</h2>
+    <div class="assignment-list">
+        <ol>
+            <li><strong>Person 클래스 작성:</strong> 이름을 출력하는 <code>introduce()</code> 메서드를 구현하세요.</li>
+            <li><strong>Calculator 클래스 작성:</strong> 사칙연산을 수행하는 <code>add()</code>, <code>sub()</code>, <code>mul()</code>, <code>div()</code> 메서드를 구현하세요.</li>
+            <li><strong>Rectangle 클래스 작성:</strong> 가로와 세로를 입력받고 면적과 둘레를 계산하는 메서드를 구현하세요.</li>
+            <li><strong>Circle 클래스 작성:</strong> 반지름을 입력받고 원의 넓이와 둘레를 계산하세요.</li>
+            <li><strong>Car 클래스 작성:</strong> 속성(제조사, 모델명, 연식, 속도)과 메서드(<code>accelerate()</code>, <code>brake()</code>, <code>info()</code>)를 구현하세요.</li>
+            <li><strong>학생 성적 클래스 작성:</strong> 이름과 세 과목 점수를 저장하고 평균을 계산하는 클래스를 구현하세요.</li>
+            <li><strong>리스트 응용:</strong> 학생 5명의 객체를 리스트에 저장하고 평균이 높은 순으로 정렬하여 출력하세요.</li>
+            <li><strong>BankAccount 클래스 작성:</strong> 입금, 출금, 잔액조회 기능 메서드를 구현하세요.</li>
+            <li><strong>Book 클래스 작성:</strong> 속성(제목, 저자, 가격)과 정보 출력 메서드를 구현하세요.</li>
+            <li><strong>Animal 상속 클래스 작성:</strong> <code>Animal</code> 클래스를 부모 클래스로 만들고 <code>Dog</code>, <code>Cat</code>, <code>Bird</code> 클래스를 상속받아 각각 다른 울음소리를 출력하도록 구현하세요.</li>
+        </ol>
+    </div>
+</div>
+
+</body>
+</html>
