@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>파이썬 강의 자료 메인 인덱스</title>
+    <style>
+        :root {
+            --primary-color: #2b5b84;
+            --secondary-color: #3572A5;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e9ecef;
+            --hover-bg: #eef6fc;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--hover-bg);
+            border-color: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .tag {
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            background-color: #e9ecef;
+            color: #495057;
+            border-radius: 20px;
+            font-weight: normal;
+        }
+
+        .nav-link:hover .tag {
+            background-color: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🐍 파이썬 프로그래밍 강의 자료</h1>
+    <p class="subtitle">basic 폴더 내 주차별 HTML 학습 가이드 바로가기</p>
+
+    <ul class="nav-list">
+        <li class="nav-item">
+            <a href="basic/1w_basic.html" class="nav-link">
+                <span>1주차 - 파이썬 기초 (Basic)</span>
+                <span class="tag">1w_basic.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/2w_dataType.html" class="nav-link">
+                <span>2주차 - 데이터 타입 (Data Type)</span>
+                <span class="tag">2w_dataType.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/3w_if.html" class="nav-link">
+                <span>3주차 - 조건문 (if)</span>
+                <span class="tag">3w_if.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/4w_for.html" class="nav-link">
+                <span>4주차 - 반복문 (for)</span>
+                <span class="tag">4w_for.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/5w_function.html" class="nav-link">
+                <span>5주차 - 함수 (Function)</span>
+                <span class="tag">5w_function.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/6w_LTD.html" class="nav-link">
+                <span>6주차 - 리스트/튜플/딕셔너리 (LTD)</span>
+                <span class="tag">6w_LTD.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/7w_class.html" class="nav-link">
+                <span>7주차 - 클래스 & OOP (Class)</span>
+                <span class="tag">7w_class.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/9w_file.html" class="nav-link">
+                <span>9주차 - 파일 입출력 (File I/O)</span>
+                <span class="tag">9w_file.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/10w_module01.html" class="nav-link">
+                <span>10주차 - 파이썬 모듈 (Module)</span>
+                <span class="tag">10w_module01.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="basic/student.html" class="nav-link">
+                <span>보충 예제 - 학생 성적 모듈 (Student)</span>
+                <span class="tag">student.html</span>
+            </a>
+        </li>
+    </ul>
+
+    <footer>
+        <p>AI Software Department | Interactive Learning Material</p>
+    </footer>
+</div>
+
+</body>
+</html>
