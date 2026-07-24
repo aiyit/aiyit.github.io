@@ -1,24 +1,70 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>수직 메뉴 </title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-	ul { list-style-type: none;  margin: 0; padding: 0; width: 200px; }
-	li a { display: block; background-color: #aaaaff; 
-		 padding: 8px 16px; color :black ;  text-decoration: none; }
-	li a:hover { background-color: #444444; color: white; }
-</style>
+<head> 
+    <!-- 문서 제목과 문자 인코딩 설정 -->
+    <title>예제6-15 수평 메뉴</title>
+    <meta charset="utf-8">
+
+    <!-- 외부 CSS 파일(color.css) 연결 -->
+    <link type="text/css" rel="stylesheet" href="css/color.css">
+
+    <!-- 반응형 웹을 위한 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        /* ul 태그 스타일
+           list-style-type: 불릿 제거
+           margin: 기본 바깥 여백 제거
+           padding: 기본 안쪽 여백 제거
+           text-align: 가운데 정렬
+           overflow: hidden → 내부 요소가 넘치지 않도록 처리
+           background-color: 메뉴 배경색 (#222222)
+           padding-top/bottom: 위아래 여백 10px */
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            overflow: hidden;
+            background-color: #222222;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        /* li 태그 스타일
+           display: inline → 항목을 가로(수평)로 나열 */
+        li {
+            display: inline;
+        }
+
+        /* li 안의 a 태그 스타일
+           color: 글자색 흰색
+           text-align: 가운데 정렬
+           padding: 내부 여백 (위아래 14px, 좌우 16px)
+           text-decoration: none → 밑줄 제거 */
+        li a {
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        /* a 태그에 마우스를 올렸을 때 효과
+           background-color: 배경색을 회색으로 변경 */
+        li a:hover {
+            background-color: rgb(80, 79, 79);
+        }
+    </style>
 </head>
 <body>
-<h2 align="center">수직 메뉴</h2>
-<ul>
-  <li><a href="#">Home</a></li>
-  <li><a href="#">HTML</a></li>
-  <li><a href="#">CSS3</a></li>
-  <li><a href="#">javascirpt</a></li>
-</ul>
+    <!-- 수평 메뉴 영역 -->
+    <ul>
+        <!-- 각 메뉴 항목 -->
+        <li><a href="#">Home</a></li>
+        <li><a href="#">AI</a></li>
+        <li><a href="#">HTML5</a></li>
+        <li><a href="#">CSS3</a></li>
+    </ul>
 </body>
 </html>
 

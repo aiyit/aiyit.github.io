@@ -1,22 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제6-10투명성(Opacity)</title>
-<meta charset="utf-8">
-</head>
-<style>
-	div {  background-color: red;   padding: 10px; }
-	#first {  opacity: 0.2; } #second { opacity: 0.5; } #third {  opacity: 0.8 ; }
-</style>
+  <meta charset="utf-8">
+  <title>예제 6-9 z-Index</title>
+  <style>
+    /* body 기본 스타일 */
+    body {
+      position: relative;   /* 내부 요소의 absolute 위치 기준점 */
+      height: 200px;        /* 전체 높이 */
+      padding: 20px;        /* 내부 여백 */
+      font-family: sans-serif; /* 글꼴 */
+    }
+
+    /* 첫 번째 박스: z-index 20 (가장 위에 표시됨) */
+    #box1 {
+      position: absolute;   /* 절대 위치 지정 */
+      top: 0;               /* 위쪽 0px */
+      left: 0;              /* 왼쪽 0px */
+      width: 150px;         /* 너비 */
+      height: 50px;         /* 높이 */
+      background: red;      /* 배경색 빨강 */
+      color: white;         /* 글자색 흰색 */
+      z-index: 20;          /* 가장 높은 레이어 */
+      line-height: 50px;    /* 텍스트 수직 가운데 정렬 */
+      text-align: center;   /* 텍스트 가로 가운데 정렬 */
+    }
+
+    /* 두 번째 박스: z-index 10 (중간 레이어) */
+    #box2 {
+      position: absolute;
+      top: 30px;            /* 위쪽 30px */
+      left: 30px;           /* 왼쪽 30px */
+      width: 150px;
+      height: 50px;
+      background: blue;     /* 배경색 파랑 */
+      color: white;
+      z-index: 10;          /* 중간 레이어 */
+      line-height: 50px;
+      text-align: center;
+    }
+
+    /* 세 번째 박스: z-index 0 (가장 아래 레이어) */
+    #box3 {
+      position: absolute;
+      top: 60px;            /* 위쪽 60px */
+      left: 60px;           /* 왼쪽 60px */
+      width: 150px;
+      height: 50px;
+      background: green;    /* 배경색 초록 */
+      color: white;
+      z-index: 0;           /* 가장 낮은 레이어 */
+      line-height: 50px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<h3>투명 Box</h3>
-<div id="first"><p>opacity 0.2</p></div>
-<div id="second"><p>opacity 0.5</p></div>
-<div id="third"><p>opacity 0.8</p></div>
-<div><p>opacity 1 (기본값)</p></div>
+  <!-- z-index가 가장 높은 박스 (위에 표시됨) -->
+  <div id="box1">Number #1 Z-index=20</div>
+
+  <!-- 중간 레이어 박스 -->
+  <div id="box2">Number #2 Z-index=10</div>
+
+  <!-- 가장 아래 레이어 박스 -->
+  <div id="box3">Number #3 Z-index=0</div>
 </body>
 </html>
+
 
 
 

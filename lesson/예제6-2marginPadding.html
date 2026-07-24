@@ -1,24 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제6-3 위치설정(positioning):static</title>
-<meta charset="utf-8">
-<style>
-    #stt { position:static; width:250px; height:40px; background:green; }
-    #rlt { position:static; width:250px; height:40px; background:blue; }
-    #abs { position:static; width:250px; height:40px; background:red; }
-    #fxd { position:static; width:250px; height:40px; background:yellow; }
-    #stc { position:static; width:250px; height:40px; background:cyan; }
-</style>
+  <meta charset="utf-8">
+  <title>예제 6-2 마진(margin)과 패딩(padding)</title>
+  <style>
+    /* body 기본 스타일 */
+    body {
+      margin-top: 20px;        /* 위쪽 바깥 여백 */
+      margin-left: 140px;      /* 왼쪽 바깥 여백 */
+      padding: 20px;           /* 내부 여백 */
+      border: 1px solid cyan;  /* 외곽 테두리 */
+    }
+
+    /* 컨테이너 박스 */
+    #container {
+      border: 1px solid red;   /* 빨간색 테두리 */
+    }
+
+    /* margin 예시 박스 */
+    .box-margin {
+      width: 200px;            /* 박스 너비 */
+      height: 50px;            /* 박스 높이 */
+      background: #00ffff;     /* 배경색 하늘색 */
+      margin: 30px;            /* 바깥 여백 (주변과의 간격) */
+      box-shadow: 5px 5px 3px #888888; /* 그림자 효과 */
+    }
+
+    /* padding 예시 박스 */
+    .box-padding {
+      width: 200px;
+      height: 100px;
+      background: #ffff00;     /* 배경색 노랑 */
+      padding: 30px;           /* 내부 여백 (내용과 테두리 사이 간격) */
+      box-shadow: 5px 5px 3px #770000; /* 그림자 효과 */
+      border-radius: 20px;     /* 모서리 둥글게 처리 */
+    }
+  </style>
 </head>
 <body>
-    <p id="stt" style="top:50px;">position:static</p>
-    <div id="rlt" style="top:25px; left:50px;">position:static</div>
-    <p id="abs" style="right:150px;">position:static</p>
-    <div id="fxd" style="right:200px;">position:static</div>
-    <p id="stc" style="right:150px;">position:static</p>
+  <!-- 컨테이너 박스 -->
+  <div id="container">
+    <!-- body의 margin과 padding 설명 -->
+    <p>body { margin-top:20px; margin-left:140px; padding:20px; }</p>
+
+    <!-- margin 예시 박스 -->
+    <div class="box-margin">margin:30px;</div>
+
+    <!-- padding 예시 박스 -->
+    <div class="box-padding">padding:30px;</div>
+  </div>
 </body>
 </html>
+
 
 
 

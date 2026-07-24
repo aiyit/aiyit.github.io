@@ -1,19 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제6-5위치설정(positioning):absolute</title>
-	<meta charset="utf-8">
-	<link type="text/css" rel="stylesheet" href="color.css">
-    <style>
-    #stt { position:relative; width:200px;height:50px;background:#ffff00; }
-    #rlt { position:absolute; width:200px;height:50px;background:#11ffff;}
-    </style></head>
+  <meta charset="utf-8">
+  <title>예제 4-3 상대 위치 설정(positioning: relative)</title>
+  <style>
+    /* 공통 스타일: relative-box 클래스 */
+    .relative-box {
+      position: relative;   /* 자기 원래 위치 기준으로 이동 */
+      width: 250px;         /* 박스 너비 */
+      height: 40px;         /* 박스 높이 */
+      margin: 10px 0;       /* 위아래 여백 */
+      line-height: 40px;    /* 텍스트 수직 가운데 정렬 */
+      text-align: center;   /* 텍스트 가로 가운데 정렬 */
+      font-weight: bold;    /* 글자 굵게 */
+      color: white;         /* 기본 글자색 흰색 */
+    }
+
+    /* green 박스: 아래로 50px 이동 */
+    .green {
+      background: green;    /* 배경색 초록 */
+      top: 50px;            /* 원래 위치에서 아래로 50px 이동 */
+    }
+
+    /* blue 박스: 아래로 25px, 오른쪽으로 50px 이동 */
+    .blue {
+      background: blue;     /* 배경색 파랑 */
+      top: 25px;            /* 아래로 25px 이동 */
+      left: 50px;           /* 오른쪽으로 50px 이동 */
+    }
+
+    /* red 박스: 오른쪽으로 150px 이동 */
+    .red {
+      background: red;      /* 배경색 빨강 */
+      left: 150px;          /* 오른쪽으로 150px 이동 */
+    }
+
+    /* yellow 박스: 오른쪽으로 200px 이동, 글자색 검정 */
+    .yellow {
+      background: yellow;   /* 배경색 노랑 */
+      color: black;         /* 글자색 검정 */
+      left: 200px;          /* 오른쪽으로 200px 이동 */
+    }
+
+    /* cyan 박스: 오른쪽으로 150px 이동, 글자색 검정 */
+    .cyan {
+      background: cyan;     /* 배경색 하늘색 */
+      color: black;         /* 글자색 검정 */
+      left: 150px;          /* 오른쪽으로 150px 이동 */
+    }
+  </style>
+</head>
 <body>
-    <h4>절대 배치:absolute</h4>
-    <p id="stt">position:relative</p>
-    <div id="rlt" style="top:100px; left:50px;">position:absolute</div>
+  <h3>relative 상대 배치</h3>
+
+  <!-- 초록 박스: 아래로 50px 이동 -->
+  <div class="relative-box green">position: relative</div>
+
+  <!-- 파랑 박스: 아래로 25px, 오른쪽으로 50px 이동 -->
+  <div class="relative-box blue">position: relative</div>
+
+  <!-- 빨강 박스: 오른쪽으로 150px 이동 -->
+  <div class="relative-box red">position: relative</div>
+
+  <!-- 노랑 박스: 오른쪽으로 200px 이동 -->
+  <div class="relative-box yellow">position: relative</div>
+
+  <!-- 하늘색 박스: 오른쪽으로 150px 이동 -->
+  <div class="relative-box cyan">position: relative</div>
 </body>
 </html>
+
 
 
 

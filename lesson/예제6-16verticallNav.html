@@ -1,27 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>수직 메뉴 </title>
-	<meta charset="utf-8">
-	<link type="text/css" rel="stylesheet" href="css/color.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<style>
-	#dropdown { position:relative; }
-	#dropdownMenu { display: none;  position: absolute; top:20px; 
-		border :1px solid black; min-width: 160px; padding: 2px; z-index: 1; }
-	#dropdown:hover #dropdownMenu { display: block; }
-</style>
+    <!-- 문서 제목과 문자 인코딩 설정 -->
+    <title>예제6-16 수직 메뉴</title>
+    <meta charset="utf-8">
+    <!-- 반응형 웹을 위한 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        /* ul 태그 스타일
+           list-style-type: 불릿 제거
+           margin: 기본 바깥 여백 제거
+           padding: 기본 안쪽 여백 제거
+           width: 메뉴 전체 너비 200px */
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 200px;
+        }
+
+        /* li 안의 a 태그 스타일
+           display: block → 링크를 블록 요소로 만들어 세로 정렬
+           background-color: 메뉴 배경색 (짙은 남색 계열)
+           padding: 내부 여백 (위아래 8px, 좌우 16px)
+           color: 글자색 (밝은 회색)
+           text-decoration: none → 밑줄 제거 */
+        li a {
+            display: block;
+            background-color: #00000a;
+            padding: 8px 16px;
+            color: rgb(248, 246, 246);
+            text-decoration: none;
+        }
+
+        /* li 안의 a 태그에 마우스를 올렸을 때 효과
+           background-color: 배경색을 회색(#444444)으로 변경
+           color: 글자색을 흰색으로 변경 */
+        li a:hover {
+            background-color: #444444;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-<h2 align="center">Dropdown 메뉴</h2>
-<div id="dropdown">
-<h4>Dropdown 메뉴</h4>
-<div id="dropdownMenu">
-<a href=#">html 역사</a>
-<a href=#">html 태그</a>
-</div></div>
+    <!-- 수직 메뉴 영역 -->
+    <!-- align="center": 메뉴를 가운데 정렬 -->
+    <ul align="center">
+        <!-- 각 메뉴 항목 -->
+        <li><a href="#">Home</a></li>
+        <li><a href="#">AI</a></li>
+        <li><a href="#">HTML5</a></li>
+        <li><a href="#">CSS3</a></li>
+        <li><a href="#">javascript</a></li>
+    </ul>
 </body>
 </html>
+
 
 
 

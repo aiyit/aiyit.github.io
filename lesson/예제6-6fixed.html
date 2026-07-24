@@ -1,30 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제6-7위치설정(positioning):sticky</title>
-<meta charset="utf-8">
-    <style>
-    #rlt { position:absolute; width:200px;height:50px;background:#11ff00;}
-    #fxd { position:fixed; width:200px;height:50px;background:#ffff00;}
-    #stc { position:sticky; width:200px;height:50px;background:#ff11ff;}
-    </style>
+  <meta charset="utf-8">
+  <title>예제 6-6 위치 설정(positioning: fixed)</title>
+  <style>
+    /* position: relative (자기 위치 기준으로 이동 가능) */
+    .relative-box {
+      position: relative;     /* 자기 원래 위치 기준으로 이동 */
+      width: 200px;
+      height: 50px;
+      background: #ff00ff;    /* 보라색 배경 */
+      margin-bottom: 20px;    /* 아래쪽 여백 */
+      line-height: 50px;      /* 텍스트 수직 가운데 정렬 */
+      text-align: center;     /* 텍스트 가로 가운데 정렬 */
+      font-weight: bold;      /* 글자 굵게 */
+      color: white;           /* 글자색 흰색 */
+    }
+
+    /* position: absolute (부모 요소 기준으로 절대 위치) */
+    .absolute-box {
+      position: absolute;     /* body 기준으로 절대 위치 */
+      width: 200px;
+      height: 50px;
+      background: #ffff00;    /* 노란색 배경 */
+      top: 100px;             /* 위쪽에서 100px 떨어진 위치 */
+      left: 50px;             /* 왼쪽에서 50px 떨어진 위치 */
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+    }
+
+    /* position: fixed (화면 기준으로 고정, 스크롤해도 위치 유지) */
+    .fixed-box {
+      position: fixed;        /* 브라우저 화면 기준으로 고정 */
+      width: 200px;
+      height: 50px;
+      background: #11ffff;    /* 청록색 배경 */
+      top: 50px;              /* 화면 위쪽에서 50px 위치 */
+      right: 50px;            /* 화면 오른쪽에서 50px 위치 */
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+    }
+  </style>
 </head>
 <body>
-    <h4>고정 위치:sticky</h4>
-    <p id="stc" style="top:50px; left:50px;">position:sticky</p>
-    <p id="rlt" style="top:100px; left:50px;">position:absolute</p>
-	<p id="fxd" style="top:50px; right:50px;">position:fixed</p>
-	<pre>
-	.
-	.
-	.
-	.
-	.
-	.
-	.
-	</pre>
+  <h4>고정 위치: fixed</h4>
+
+  <!-- relative: 자기 위치 기준으로 이동 -->
+  <div class="relative-box">position: relative</div>
+
+  <!-- absolute: 부모(body) 기준으로 절대 위치 -->
+  <div class="absolute-box">position: absolute</div>
+
+  <!-- fixed: 화면 기준으로 고정 -->
+  <div class="fixed-box">position: fixed</div>
 </body>
 </html>
+
 
 
 

@@ -1,25 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-	<title>2D Transform</title> 
-	<meta charset="utf-8">
-	 <link type="text/css" rel="stylesheet" href="css/color.css">
-	<style> 
-	div#trnsXY {   width: 150px;   height: 80px;
-		background-color: red;   transform: translate(50px,50px); }
-	div#trnsX {   width: 150px;   height: 80px;
-		background-color: green ;  transform: translateX(150px); }
-	div#trnsY {   width: 150px;  height: 80px;
-		background-color: blue;  transform:translateY(50px); }
-</style>
+    <meta charset="utf-8">
+    <title>예제6-17 수직 메뉴</title>
+    <!-- 외부 CSS 파일(color.css) 연결 -->
+    <link rel="stylesheet" href="css/color.css">
+    <!-- 반응형 웹을 위한 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        /* 드롭다운 전체 컨테이너 */
+        #dropdown {
+            position: relative;   /* 내부 메뉴 위치 기준점 */
+            display: inline-block; /* 인라인 블록으로 표시 */
+        }
+
+        /* 드롭다운 제목 스타일 */
+        #dropdown h4 {
+            text-align: center;   /* 텍스트 가운데 정렬 */
+            margin: 0;            /* 기본 여백 제거 */
+            cursor: pointer;      /* 마우스 올리면 손 모양 표시 */
+        }
+
+        /* 드롭다운 메뉴 영역 */
+        #dropdownMenu {
+            display: none;        /* 기본적으로 숨김 */
+            position: absolute;   /* 부모 기준으로 절대 위치 */
+            background-color: #f9f9f9; /* 메뉴 배경색 */
+            min-width: 320px;     /* 최소 너비 */
+            z-index: 1;           /* 다른 요소보다 위에 표시 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 그림자 효과 */
+            padding: 0;           /* 내부 여백 없음 */
+            margin-top: 5px;      /* 제목과의 간격 */
+        }
+
+        /* 드롭다운에 마우스를 올리면 메뉴 표시 */
+        #dropdown:hover #dropdownMenu {
+            display: block;
+        }
+
+        /* 드롭다운 메뉴 항목 스타일 */
+        #dropdownMenu a {
+            display: block;       /* 블록 요소로 표시 (세로 정렬) */
+            padding: 10px 15px;   /* 내부 여백 */
+            color: black;         /* 글자색 */
+            text-decoration: none; /* 밑줄 제거 */
+        }
+
+        /* 메뉴 항목에 마우스를 올리면 배경색 변경 */
+        #dropdownMenu a:hover {
+            background-color: #ddd;
+        }
+    </style>
 </head>
 <body>
-<h1>Transform-translate()</h1>
-<div id="trnsXY">translate(100px, 200px)</div><br>
-<div id="trnsX">translateX(150px)</div><br>
-<div id="trnsY">translateY(300px)</div>
+    <!-- 드롭다운 메뉴 컨테이너 -->
+    <div id="dropdown">
+        <!-- 드롭다운 제목 -->
+        <h4>DropDown 메뉴</h4>
+
+        <!-- 실제 드롭다운 메뉴 항목 -->
+        <div id="dropdownMenu">
+            <a href="#">AI 역사</a>
+            <a href="#">html과 CSS3</a>
+        </div>
+    </div>
 </body>
 </html>
+
+
 
 
 

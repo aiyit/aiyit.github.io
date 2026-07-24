@@ -1,25 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제6-3 위치설정(positioning):relative</title>
-<meta charset="utf-8">
-<style>
-    #stt { position:relative; width:250px; height:40px; background:green; }
-    #rlt { position:relative; width:250px; height:40px; background:blue; }
-    #abs { position:relative; width:250px; height:40px; background:red; }
-    #fxd { position:relative; width:250px; height:40px; background:yellow; }
-    #stc { position:relative; width:250px; height:40px; background:cyan; }
-</style>
+  <meta charset="utf-8">
+  <title>예제 6-3 위치 설정(positioning): static</title>
+  <!-- 외부 CSS 파일 연결 -->
+  <link rel="stylesheet" href="color.css">
+  <style>
+    /* 공통 스타일: static-box 클래스 */
+    .static-box {
+      position: static;       /* 기본 위치 속성 (좌표 지정 불가) */
+      width: 200px;           /* 박스 너비 */
+      height: 50px;           /* 박스 높이 */
+      margin: 10px 0;         /* 위아래 여백 */
+      line-height: 50px;      /* 텍스트 수직 가운데 정렬 */
+      color: white;           /* 기본 글자색 흰색 */
+      text-align: center;     /* 텍스트 가로 가운데 정렬 */
+      font-weight: bold;      /* 글자 굵게 */
+    }
+
+    /* 색상별 박스 스타일 */
+    .box-red { background: #ff0000; }       /* 빨강 박스 */
+    .box-green { background: #11ff00; color: black; } /* 초록 박스, 글자 검정 */
+    .box-blue { background: #0000ff; }      /* 파랑 박스 */
+    .box-cyan { background: #00ffff; color: black; }  /* 하늘색 박스, 글자 검정 */
+    .box-yellow { background: #ffff00; color: black; }/* 노랑 박스, 글자 검정 */
+  </style>
 </head>
 <body>
-    <h3> relative 상대 배치 </h3>
-    <p id="stt" style="top:50px;">position:relative</p>
-    <div id="rlt" style="top:25px; left:50px;">position:relative</div>
-    <p id="abs" style="right:150px;">position:relative</p>
-    <div id="fxd" style="right:200px;">position:relative</div>
-    <p id="stc" style="right:150px;">position:relative</p>
+  <h3>static 정적 배치</h3>
+
+  <!-- static: 기본 위치, 좌표 지정 불가 -->
+  <div class="static-box box-red">position: static</div>
+  <div class="static-box box-green">position: static</div>
+  <div class="static-box box-blue">position: static</div>
+  <div class="static-box box-cyan">position: static</div>
+  <div class="static-box box-yellow">position: static</div>
 </body>
 </html>
+
 
 
 

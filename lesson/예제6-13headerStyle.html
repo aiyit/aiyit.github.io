@@ -1,26 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Header Style</title>
-	<meta charset="utf-8">
-	<link type="text/css" rel="stylesheet" href="css/color.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<style>	
-	/* navigation 항목 */
-     #nav { overflow: hidden;  border-top: 2px solid blue; 
-		border-bottom:2px solid blue;  text-align :center ; padding:15px;}
-     #nav a { padding:20px; text-align: center; text-decoration: none; color : black ;}
-     #nav a:hover {  font-weight: bold;  color : blue ; }/* 마우스 hover */
-</style>
+    <!-- 문서 제목과 문자 인코딩 설정 -->
+    <title>예제 6-13 Header Style</title>
+    <meta charset="utf-8">
+
+    <!-- 외부 CSS 파일(color.css) 연결 -->
+    <link type="text/css" rel="stylesheet" href="css/color.css">
+
+    <!-- 반응형 웹을 위한 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        /* 모든 요소에 box-sizing 적용
+           border-box: padding과 border를 width/height에 포함시켜 계산 */
+        * { box-sizing: border-box; }
+
+        /* body 기본 여백 제거 */
+        body { margin: 0; }
+
+        /* header 스타일 정의
+           margin: 바깥쪽 여백 5px
+           padding: 안쪽 여백 5px
+           text-align: 가운데 정렬
+           background-color: 파란색 배경 */
+        #header {
+            margin: 5px;
+            padding: 5px;
+            text-align: center;
+            background-color: blue;
+        }
+    </style>    
 </head>
 <body>
-  <nav  id="nav">
-  <a href="#">HTML5</a>
-  <a href="#">CSS3</a>
-  <a href="#">javascript</a>
-  </nav>
+    <!-- header 영역 -->
+    <header id="header">
+        <!-- 제목 텍스트 -->
+        <h2>AI 비서와 함께하는 웹호스팅</h2>
+    </header>
 </body>
 </html>
+
 
 
 

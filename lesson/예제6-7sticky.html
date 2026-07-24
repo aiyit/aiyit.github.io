@@ -1,24 +1,72 @@
 <!DOCTYPE html>
-<html><head>
-<title>예제6-8위치설정(positioning)</title>
-<meta charset="utf-8">
-    <style>
-    #stt { position:static; width:200px;height:50px;background:#ff0000; }
-    #rlt { position:relative; width:200px;height:50px;background:#11ffaa;}
-    #abs { position:absolute; width:200px;height:50px;background:#aa00ff}
-    #fxd { position:fixed; width:200px;height:50px;background:#00aaff} 
-    #stc { position: sticky; width:200px;height:50px;background:#333333;} 
-	</style>
-	</head>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>예제 6-7 위치 설정(positioning: sticky)</title>
+  <style>
+    /* body 기본 스타일 */
+    body {
+      height: 2000px; /* 스크롤 테스트용으로 긴 페이지 생성 */
+      padding: 20px;  /* 내부 여백 */
+    }
+
+    /* position: absolute (부모 요소 기준 절대 위치) */
+    .absolute-box {
+      position: absolute;   /* body 기준으로 절대 위치 */
+      width: 200px;
+      height: 50px;
+      background: #11ff00;  /* 연두색 배경 */
+      top: 100px;           /* 위쪽에서 100px 떨어진 위치 */
+      left: 50px;           /* 왼쪽에서 50px 떨어진 위치 */
+      line-height: 50px;    /* 텍스트 수직 가운데 정렬 */
+      text-align: center;   /* 텍스트 가로 가운데 정렬 */
+      font-weight: bold;    /* 글자 굵게 */
+      color: black;         /* 글자색 검정 */
+    }
+
+    /* position: fixed (브라우저 화면 기준으로 고정) */
+    .fixed-box {
+      position: fixed;      /* 화면 기준으로 고정, 스크롤해도 위치 유지 */
+      width: 200px;
+      height: 50px;
+      background: #ffff00;  /* 노란색 배경 */
+      top: 50px;            /* 화면 위쪽에서 50px 위치 */
+      right: 50px;          /* 화면 오른쪽에서 50px 위치 */
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+    }
+
+    /* position: sticky (스크롤 시 특정 위치에 고정) */
+    .sticky-box {
+      position: sticky;     /* 스크롤 시 top 위치에 고정 */
+      width: 200px;
+      height: 50px;
+      background: #ff11ff;  /* 분홍색 배경 */
+      top: 50px;            /* 스크롤 시 화면 위쪽 50px에 붙음 */
+      margin-bottom: 1000px;/* sticky 효과 확인용 긴 여백 */
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+    }
+  </style>
+</head>
 <body>
-    <h4>혼합 위치설정</h4>
-        <p id="stt" style="top:50px;">position:static</p>
-	<div id="rlt" style="top:25px; left:50px;">position:relative</div>
-	<p id="abs" style="right:100px;">position:absolute; </p>
-    	<div id="fxd" style="right:150px;">position:fixed; </div>
-	<p id="stc" style="top:0px;">position:sticky; </p>
-</body>   
+  <h4>위치 설정: sticky</h4>
+
+  <!-- sticky: 스크롤 시 화면 상단에 붙음 -->
+  <div class="sticky-box">position: sticky</div>
+
+  <!-- absolute: 부모(body) 기준으로 절대 위치 -->
+  <div class="absolute-box">position: absolute</div>
+
+  <!-- fixed: 화면 기준으로 고정 -->
+  <div class="fixed-box">position: fixed</div>
+</body>
 </html>
+
 
 
 

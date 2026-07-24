@@ -1,23 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Header Style</title>
-	<meta charset="utf-8">
-	<link type="text/css" rel="stylesheet" href="css/color.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<style>
-	* { box-sizing: border-box; }  /*전체 선택자 */
-	body {  margin: 0; }
-	/* header 스타일 */
-	#header { margin: 5px; padding: 10px; text-align: center ; }
-	</style>	
+  <meta charset="utf-8" />
+  <title>예제6-12 Float and Clear</title>
+  <link rel="stylesheet" href="css/color.css" />
+  <style>
+    /* float 속성 없음: 기본값 */
+    img#no {
+      float: none;          /* 이미지 주변에 텍스트가 흐르지 않음 */
+      margin-right: 10px;   /* 오른쪽 여백 */
+    }
+
+    /* 왼쪽 정렬: 텍스트가 오른쪽으로 흐름 */
+    img#left {
+      float: left;          /* 이미지를 왼쪽에 배치 */
+      margin-right: 10px;   /* 오른쪽 여백 */
+    }
+
+    /* 오른쪽 정렬: 텍스트가 왼쪽으로 흐름 */
+    img#right {
+      float: right;         /* 이미지를 오른쪽에 배치 */
+      margin-left: 10px;    /* 왼쪽 여백 */
+    }
+
+    /* clear 속성: float 해제 */
+    img#clr {
+      clear: right;         /* 오른쪽 float 해제 */
+      display: block;       /* 블록 요소로 표시 */
+      margin-top: 120px;    /* 위쪽 여백 */
+    }
+
+    /* p 태그: overflow hidden으로 float된 이미지 주변 텍스트 정상 표시 */
+    p {
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
-<header id="header">
-  <h2>AI 비서와 함께하는 웹호스팅</h2>
-</header>
+  <h3>float and clear</h3>
+
+  <!-- float:none 예시 -->
+  <p>
+    <img id="no" src="images/ai.png" alt="none" style="width:100px; height:100px;">
+    이미지 주변의 문자 float:none으로 이미지 주변에 표시되지 않는다. 기본값은 none이다.
+  </p>
+
+  <!-- float:left 예시 -->
+  <p>
+    <img id="left" src="img/Logo.png" alt="left" style="width:100px; height:100px;">
+    이미지 주변의 문자 float:left로 이미지 주변에 문자가 왼쪽에 물 흐르듯 표시된다.
+  </p>
+
+  <!-- float:right 예시 -->
+  <p>
+    <img id="right" src="img/Logo.png" alt="right" style="width:100px; height:100px;">
+    이미지 주변의 문자 float:right로 이미지 주변에 문자가 오른쪽에 물 흐르듯 표시된다.
+  </p>
+
+  <!-- clear:right 예시 -->
+  <p>
+    <img id="clr" src="img/Logo.png" alt="right" style="width:100px; height:100px;">
+    이미지 주변의 문자 clear:right로 right로 설정된 float 속성을 해제하며 float:none과 같다.
+  </p>
 </body>
 </html>
+
 
 
 

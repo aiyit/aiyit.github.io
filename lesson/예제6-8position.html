@@ -1,22 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제 6-9 z-Index</title>
-<meta charset="utf-8">
-   <style>
-        #box1 { position: absolute; width: 150px; height: 50px;
-			background: red; z-index: 20; }
-        #box2 { position: absolute; top: 30px; left: 30px;
-            		width: 150px; height: 50px;  background: blue; z-index: 10; }
-        #box3 { position: absolute; top: 60px; left: 60px;
-           		width: 150px; height: 50px;  background: green;  z-index: 0;}
-    </style>
+  <meta charset="utf-8">
+  <title>예제 6-8 혼합 위치 설정</title>
+  <style>
+    /* body 기본 스타일 */
+    body {
+      height: 1500px; /* 스크롤 테스트용으로 긴 페이지 생성 */
+      padding: 20px;  /* 내부 여백 */
+    }
+
+    /* position: static (기본값, 위치 지정 불가) */
+    .static-box {
+      position: static;       /* 기본 위치 속성 */
+      width: 200px;
+      height: 50px;
+      background: #ff0000;    /* 빨간색 배경 */
+      margin-bottom: 20px;    /* 아래쪽 여백 */
+      line-height: 50px;      /* 텍스트 수직 가운데 정렬 */
+      text-align: center;     /* 텍스트 가로 가운데 정렬 */
+      font-weight: bold;      /* 글자 굵게 */
+      color: white;           /* 글자색 흰색 */
+    }
+
+    /* position: relative (자기 자신 기준으로 이동 가능) */
+    .relative-box {
+      position: relative;     /* 자기 위치 기준으로 이동 */
+      width: 200px;
+      height: 50px;
+      background: #11ffaa;    /* 연한 초록색 배경 */
+      top: 25px;              /* 원래 위치에서 아래로 25px 이동 */
+      left: 50px;             /* 원래 위치에서 오른쪽으로 50px 이동 */
+      margin-bottom: 20px;
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: black;
+    }
+
+    /* position: absolute (부모 기준으로 절대 위치) */
+    .absolute-box {
+      position: absolute;     /* body 기준으로 절대 위치 */
+      width: 200px;
+      height: 50px;
+      background: #aa00ff;    /* 보라색 배경 */
+      right: 100px;           /* 오른쪽에서 100px 떨어진 위치 */
+      top: 200px;             /* 위쪽에서 200px 떨어진 위치 */
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+    }
+
+    /* position: fixed (화면 기준으로 고정, 스크롤해도 위치 유지) */
+    .fixed-box {
+      position: fixed;        /* 브라우저 화면 기준으로 고정 */
+      width: 200px;
+      height: 50px;
+      background: #00aaff;    /* 파란색 배경 */
+      right: 150px;           /* 오른쪽에서 150px 떨어진 위치 */
+      top: 50px;              /* 위쪽에서 50px 떨어진 위치 */
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+    }
+
+    /* position: sticky (스크롤 시 특정 위치에 고정) */
+    .sticky-box {
+      position: sticky;       /* 스크롤 시 top 위치에 고정 */
+      width: 200px;
+      height: 50px;
+      background: #333333;    /* 짙은 회색 배경 */
+      top: 0px;               /* 스크롤 시 화면 상단에 붙음 */
+      margin-bottom: 1000px;  /* sticky 효과 확인용 긴 여백 */
+      line-height: 50px;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-    <div id="box1">Number #1 Z-index=20</div>
-    <div id="box2">Number #2 Z-index=10</div>
-    <div id="box3">Number #3 Z-index=0</div>
+  <h4>혼합 위치 설정</h4>
+
+  <!-- sticky: 스크롤 시 화면 상단에 붙음 -->
+  <div class="sticky-box">position: sticky</div>
+
+  <!-- static: 기본 위치, 이동 불가 -->
+  <div class="static-box">position: static</div>
+
+  <!-- relative: 자기 위치 기준으로 이동 -->
+  <div class="relative-box">position: relative</div>
+
+  <!-- absolute: 부모(body) 기준으로 절대 위치 -->
+  <div class="absolute-box">position: absolute</div>
+
+  <!-- fixed: 화면 기준으로 고정 -->
+  <div class="fixed-box">position: fixed</div>
+</body>
 </html>
+
 
 
 
