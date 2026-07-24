@@ -1,4 +1,38 @@
 <!DOCTYPE html>
+<!--
+=========================================
+CSS 메뉴(Menu) 핵심 요약
+=========================================
+
+■ 웹 메뉴
+- 사용자가 사이트를 쉽게 탐색하도록 구성
+- 명확하고 접근성 높은 구조가 중요
+
+■ 메뉴 구성
+- <ul>, <li>를 사용하여 메뉴 생성
+- list-style: none;  → ● 제거
+- margin: 0; padding: 0; → 기본 여백 제거
+
+■ 수평 메뉴(Horizontal)
+- 메뉴를 가로 방향으로 배치
+- PC, 노트북 등 넓은 화면에 적합
+- display: inline; 또는 inline-block 사용
+
+예)
+ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+li{
+    display: inline;
+}
+
+※ 핵심
+- 메뉴는 <ul><li>로 구성
+- list-style:none으로 글머리 제거
+- display:inline으로 가로 메뉴 구현
+-->
 <html>
 <head> 
     <!-- 문서 제목과 문자 인코딩 설정 -->
