@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3주차 · 조건문(if) — AI소프트웨어과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<style>
+  :root{
+    --bg:#1e1e2e;
+    --panel:#242438;
+    --panel-2:#2a2a42;
+    --line:#3a3a54;
+    --text:#e6e4f0;
+    --muted:#8f8da8;
+    --blue:#5fa8e0;
+    --yellow:#ffd43b;
+    --green:#7fd88f;
+    --pink:#ff8fb1;
+    --purple:#b39bff;
+    --orange:#ff9f5b;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Noto Sans KR', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: radial-gradient(1200px 600px at 80% -10%, #26263f 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.7;
+  }
+
+  .titlebar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:10px;
+    background:#17172a; border-bottom:1px solid var(--line);
+    padding:10px 18px; overflow-x:auto;
+  }
+  .dots{display:flex; gap:7px; flex-shrink:0;}
+  .dot{width:12px; height:12px; border-radius:50%;}
+  .dot.r{background:#ff5f57;} .dot.y{background:#febc2e;} .dot.g{background:#28c840;}
+  .tab{
+    font-family:var(--mono); font-size:13px; color:var(--muted);
+    background:var(--panel); border:1px solid var(--line); border-bottom:none;
+    padding:6px 14px; border-radius:6px 6px 0 0; margin-left:8px; flex-shrink:0;
+    display:flex; align-items:center; gap:6px;
+  }
+  .tab .py-badge{color:var(--yellow); font-weight:700;}
+  .tab.active{color:var(--text); background:var(--panel-2);}
+  .tab.prev{opacity:.4;}
+
+  .shell{display:flex; max-width:1400px; margin:0 auto;}
+
+  .explorer{
+    width:250px; flex-shrink:0;
+    border-right:1px solid var(--line);
+    padding:22px 14px; position:sticky; top:53px;
+    height:calc(100vh - 53px); overflow-y:auto;
+  }
+  .explorer h4{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:12px; padding-left:6px;
+  }
+  .explorer a{
+    display:flex; gap:8px; align-items:baseline;
+    color:var(--muted); text-decoration:none; font-size:13.5px;
+    padding:6px 8px; border-radius:5px; transition:.15s;
+  }
+  .explorer a:hover{background:var(--panel); color:var(--text);}
+  .explorer a .num{color:var(--blue); font-family:var(--mono); font-size:11.5px; width:20px; flex-shrink:0;}
+  .explorer a.code-link .num{color:var(--yellow);}
+  .explorer a.hw-link .num{color:var(--pink);}
+
+  main{flex:1; min-width:0; padding:40px 48px 100px;}
+
+  .hero{margin-bottom:56px;}
+  .hero .kicker{
+    font-family:var(--mono); color:var(--yellow); font-size:13px; letter-spacing:.08em;
+  }
+  .hero h1{
+    font-size:clamp(28px,4vw,44px); font-weight:900; margin:10px 0 12px;
+    letter-spacing:-.01em;
+  }
+  .hero h1 .py{color:var(--blue);}
+  .hero h1 .dot-y{color:var(--yellow);}
+  .hero p{color:var(--muted); font-size:15.5px; max-width:640px;}
+
+  section{
+    padding-top:26px; margin-top:26px;
+    border-top:1px solid var(--line);
+    scroll-margin-top:70px;
+  }
+  section:first-of-type{border-top:none;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:16px;}
+  .sec-head .idx{
+    font-family:var(--mono); color:var(--blue); font-size:14px; font-weight:700;
+    background:var(--panel); border:1px solid var(--line); padding:2px 9px; border-radius:5px;
+  }
+  .sec-head h2{font-size:21px; font-weight:700;}
+  p.lead{color:#c8c6dc; margin-bottom:14px; font-size:15px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0 8px; font-size:14px;}
+  th,td{padding:10px 14px; border:1px solid var(--line); text-align:left; vertical-align:top;}
+  th{background:var(--panel); color:var(--yellow); font-weight:600; font-size:13px;}
+  td{background:#20203484;}
+  tr:hover td{background:#2b2b46;}
+  td:first-child{font-family:var(--mono); color:var(--green); white-space:nowrap;}
+
+  .scenario-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:10px; margin:16px 0 6px;
+  }
+  .scenario{
+    background:var(--panel); border:1px solid var(--line); border-radius:9px;
+    padding:13px 16px; font-size:13.5px; color:#c8c6dc; position:relative;
+    display:flex; align-items:center; gap:10px;
+  }
+  .scenario::before{content:'if'; font-family:var(--mono); color:var(--purple); font-weight:700; font-size:12px;
+    background:#1c1c30; border:1px solid var(--line); border-radius:5px; padding:2px 7px; flex-shrink:0;}
+
+  /* flow diagram for if/else */
+  .decision-flow{
+    display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; font-family:var(--mono); font-size:13px;
+  }
+  .df-cond{
+    background:#2a2440; border:1px solid var(--purple); color:var(--purple);
+    padding:10px 22px; border-radius:20px; text-align:center;
+  }
+  .df-arrow{color:var(--muted); font-size:13px; padding:5px 0;}
+  .df-branches{display:flex; gap:30px; margin-top:6px;}
+  .df-branch{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .df-branch .tag{font-size:11px; color:var(--muted);}
+  .df-branch .box{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 18px; color:var(--text);
+  }
+  .df-branch.yes .tag{color:var(--green);}
+  .df-branch.no .tag{color:var(--pink);}
+
+  pre{
+    background:#131322 !important; border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; overflow-x:auto; font-size:13px; line-height:1.65;
+    font-family:var(--mono);
+  }
+  code{font-family:var(--mono);}
+  .code-frame{
+    border:1px solid var(--line); border-radius:10px; overflow:hidden; margin:18px 0;
+  }
+  .code-frame .bar{
+    background:#17172a; padding:8px 14px; display:flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12px; color:var(--muted); border-bottom:1px solid var(--line);
+  }
+  .code-frame .bar .file-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .code-frame pre{border:none; border-radius:0; margin:0;}
+
+  .subhead{
+    font-family:var(--mono); color:var(--purple); font-size:13px; letter-spacing:.04em;
+    margin:22px 0 6px; text-transform:uppercase; display:flex; align-items:center; gap:8px;
+  }
+  .subhead::before{content:'//'; color:var(--muted);}
+
+  .hw-grid{display:grid; gap:16px;}
+  .hw-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; position:relative; overflow:hidden;
+  }
+  .hw-card::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--pink);}
+  .hw-card .hw-title{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .hw-card .hw-num{
+    font-family:var(--mono); color:var(--pink); font-size:12px; font-weight:700;
+    background:#3a2030; border:1px solid #5c3040; padding:2px 9px; border-radius:5px;
+  }
+  .hw-card h4{font-size:15px; font-weight:700;}
+  .hw-card p.desc{font-size:13.5px; color:#c8c6dc; margin-bottom:8px;}
+  .hw-card .hint{
+    font-size:12.5px; color:var(--orange); background:#332318; border:1px solid #533a22;
+    border-radius:6px; padding:7px 11px; margin-top:8px;
+  }
+  .hw-card .example{
+    font-family:var(--mono); font-size:12.5px; color:var(--green);
+    background:#131322; border:1px solid var(--line); border-radius:6px;
+    padding:8px 11px; margin-top:8px; white-space:pre-line;
+  }
+
+  footer{
+    text-align:center; color:var(--muted); font-size:12.5px; padding:40px 20px 60px;
+    border-top:1px solid var(--line); margin-top:60px; font-family:var(--mono);
+  }
+
+  @media (max-width: 900px){
+    .explorer{display:none;}
+    main{padding:28px 20px 80px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="tab prev">🐍 1w_basic.py</div>
+  <div class="tab prev">🐍 2w_dataType.py</div>
+  <div class="tab active"><span class="py-badge">🐍</span> 3w_if.py</div>
+</div>
+
+<div class="shell">
+  <nav class="explorer">
+    <h4>Explorer · 목차</h4>
+    <a href="#s1"><span class="num">1</span>조건문이란?</a>
+    <a href="#s2"><span class="num">2</span>조건문의 종류</a>
+    <a href="#s3" class="code-link"><span class="num">▶</span>들여쓰기</a>
+    <a href="#s4"><span class="num">4</span>비교 연산자</a>
+    <a href="#s5" class="code-link"><span class="num">▶</span>if 문법 3종</a>
+    <a href="#s6"><span class="num">6</span>논리 연산자</a>
+    <a href="#s7" class="code-link"><span class="num">▶</span>중첩 if</a>
+    <a href="#s8" class="code-link"><span class="num">▶</span>실전 실습 코드</a>
+    <a href="#s9" class="hw-link"><span class="num">✎</span>과제 1~5</a>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <div class="kicker">AI소프트웨어과 · 3주차 강의노트</div>
+      <h1><span class="py">조건문</span><span class="dot-y">.</span> if / elif / else</h1>
+      <p>주어진 조건의 참(True) · 거짓(False)에 따라 프로그램의 흐름을 결정하는 조건문 — 비교·논리 연산자부터 중첩 if, 실전 예제까지 정리한 3주차 강의 자료입니다.</p>
+    </div>
+
+    <!-- 1. 조건문이란 -->
+    <section id="s1">
+      <div class="sec-head"><span class="idx">01</span><h2>조건문이란?</h2></div>
+      <p class="lead">
+        조건문(Conditional Statement)은 주어진 조건의 참(True) 또는 거짓(False)에 따라
+        프로그램의 실행 흐름을 결정하는 문법입니다. 조건문은 비교 연산자와 논리 연산자를 이용하여
+        조건식을 만들고, 그 결과(True/False)에 따라 실행할 코드를 선택합니다.
+      </p>
+      <div class="scenario-grid">
+        <div class="scenario">시험 점수가 90점 이상이면 A학점</div>
+        <div class="scenario">나이가 19세 이상이면 성인</div>
+        <div class="scenario">비가 오면 우산을 가져간다</div>
+        <div class="scenario">로그인 정보가 맞으면 로그인 성공</div>
+      </div>
+    </section>
+
+    <!-- 2. 조건문 종류 -->
+    <section id="s2">
+      <div class="sec-head"><span class="idx">02</span><h2>조건문의 종류</h2></div>
+      <table>
+        <tr><th>조건문</th><th>설명</th></tr>
+        <tr><td>if</td><td>조건이 참이면 실행</td></tr>
+        <tr><td>if ~ else</td><td>참과 거짓을 모두 처리</td></tr>
+        <tr><td>if ~ elif ~ else</td><td>여러 조건 중 하나 선택</td></tr>
+        <tr><td>중첩 if</td><td>조건문 안에 조건문 사용</td></tr>
+      </table>
+    </section>
+
+    <!-- 3. 들여쓰기 -->
+    <section id="s3">
+      <div class="sec-head"><span class="idx">▶</span><h2>들여쓰기 (Indentation)</h2></div>
+      <p class="lead">파이썬은 중괄호(<code style="color:var(--pink); font-family:var(--mono)">{}</code>) 대신 <b>들여쓰기(보통 공백 4칸)</b>로 코드 블록을 구분합니다.</p>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>indent.py</div>
+        <pre><code class="language-python">score = 95
+
+if score >= 90:
+    print("A학점")
+
+print("프로그램 종료")</code></pre>
+      </div>
+    </section>
+
+    <!-- 4. 비교 연산자 -->
+    <section id="s4">
+      <div class="sec-head"><span class="idx">04</span><h2>비교 연산자</h2></div>
+      <table>
+        <tr><th>연산자</th><th>의미</th><th>예</th></tr>
+        <tr><td>==</td><td>같다</td><td>a == b</td></tr>
+        <tr><td>!=</td><td>다르다</td><td>a != b</td></tr>
+        <tr><td>&gt;</td><td>크다</td><td>a &gt; b</td></tr>
+        <tr><td>&lt;</td><td>작다</td><td>a &lt; b</td></tr>
+        <tr><td>&gt;=</td><td>크거나 같다</td><td>a &gt;= b</td></tr>
+        <tr><td>&lt;=</td><td>작거나 같다</td><td>a &lt;= b</td></tr>
+      </table>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>compare.py</div>
+        <pre><code class="language-python">a = 10
+b = 20
+
+print(a == b)
+print(a != b)
+print(a > b)
+print(a < b)</code></pre>
+      </div>
+    </section>
+
+    <!-- 5. if 문법 3종 -->
+    <section id="s5">
+      <div class="sec-head"><span class="idx">▶</span><h2>if / if-else / if-elif-else 문법</h2></div>
+
+      <div class="subhead">if 문법</div>
+      <div class="decision-flow">
+        <div class="df-cond">if 조건식:</div>
+        <div class="df-arrow">▼</div>
+        <div class="df-branch yes"><div class="tag">True</div><div class="box">실행문</div></div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>if_only.py</div>
+        <pre><code class="language-python">age = 20
+
+if age >= 19:
+    print("성인입니다.")</code></pre>
+      </div>
+
+      <div class="subhead">if ~ else 문법</div>
+      <div class="decision-flow">
+        <div class="df-cond">if 조건:</div>
+        <div class="df-arrow">▼</div>
+        <div class="df-branches">
+          <div class="df-branch yes"><div class="tag">True</div><div class="box">실행문1</div></div>
+          <div class="df-branch no"><div class="tag">False</div><div class="box">실행문2 (else)</div></div>
+        </div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>if_else.py</div>
+        <pre><code class="language-python">score = 85
+
+if score >= 60:
+    print("합격")
+else:
+    print("불합격")</code></pre>
+      </div>
+
+      <div class="subhead">if ~ elif ~ else 문법</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>if_elif_else.py</div>
+        <pre><code class="language-python">score = 87
+
+if score >= 90:
+    print("A")
+elif score >= 80:
+    print("B")
+elif score >= 70:
+    print("C")
+elif score >= 60:
+    print("D")
+else:
+    print("F")</code></pre>
+      </div>
+    </section>
+
+    <!-- 6. 논리 연산자 -->
+    <section id="s6">
+      <div class="sec-head"><span class="idx">06</span><h2>논리 연산자</h2></div>
+      <table>
+        <tr><th>연산자</th><th>의미</th></tr>
+        <tr><td>and</td><td>모두 참이어야 참</td></tr>
+        <tr><td>or</td><td>하나만 참이어도 참</td></tr>
+        <tr><td>not</td><td>참과 거짓을 반대로</td></tr>
+      </table>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>logic.py</div>
+        <pre><code class="language-python">age = 22
+member = True
+
+if age >= 20 and member:
+    print("입장 가능합니다.")
+
+password=input('password:')
+
+if password == "1234":
+    print("로그인 성공")
+else:
+    print("비밀번호 오류")</code></pre>
+      </div>
+    </section>
+
+    <!-- 7. 중첩 if -->
+    <section id="s7">
+      <div class="sec-head"><span class="idx">▶</span><h2>중첩 if &amp; 리스트 조건 검사</h2></div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>nested_if.py</div>
+        <pre><code class="language-python">#중첩 if
+age = 25
+member = True
+
+if age >= 20:
+    if member:
+        print("할인 적용")
+
+#리스트와 조건문
+subjects = ["Python","AI","Web"]
+
+if "Python" in subjects:
+    print("수강 중입니다.")</code></pre>
+      </div>
+    </section>
+
+    <!-- 8. 실전 실습 -->
+    <section id="s8">
+      <div class="sec-head"><span class="idx">▶</span><h2>실전 실습 코드</h2></div>
+
+      <div class="subhead">입력문과 조건문 — 합격 판정</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>pass_check.py</div>
+        <pre><code class="language-python">score = int(input("점수를 입력하세요 : "))
+
+if score >= 60:
+    print("합격")
+else:
+    print("불합격")</code></pre>
+      </div>
+
+      <div class="subhead">짝수 / 홀수 판별</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>even_odd.py</div>
+        <pre><code class="language-python">num = int(input("숫자 입력 : "))
+
+if num % 2 == 0:
+    print("짝수")
+else:
+    print("홀수")</code></pre>
+      </div>
+
+      <div class="subhead">로그인 검증</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>login.py</div>
+        <pre><code class="language-python">id = input("아이디 : ")
+pw = input("비밀번호 : ")
+
+if id == "admin" and pw == "1234":
+    print("로그인 성공")
+else:
+    print("로그인 실패")</code></pre>
+      </div>
+
+      <div class="subhead">성적 관리 — 종합예제</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>grade_manager.py</div>
+        <pre><code class="language-python">name = input("이름 : ")
+score = int(input("점수 : "))
+
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+elif score >= 60:
+    grade = "D"
+else:
+    grade = "F"
+
+print("=" * 35)
+print("학생 성적")
+print("=" * 35)
+print(f"이름 : {name}")
+print(f"점수 : {score}")
+print(f"학점 : {grade}")
+print("=" * 35)</code></pre>
+      </div>
+    </section>
+
+    <!-- 9. 과제 -->
+    <section id="s9">
+      <div class="sec-head"><span class="idx">✎</span><h2>실습 과제 1~5</h2></div>
+      <div class="hw-grid">
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 1</span><h4>기초 — 성인 판별</h4></div>
+          <p class="desc">사용자의 나이를 입력받아 다음과 같이 출력하세요.</p>
+          <div class="example">19세 이상 → 성인
+19세 미만 → 미성년자</div>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 2</span><h4>짝수 / 홀수</h4></div>
+          <p class="desc">정수를 입력받아 짝수인지 홀수인지 출력하세요.</p>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 3</span><h4>성적 등급</h4></div>
+          <p class="desc">점수를 입력받아 학점을 출력하세요.</p>
+          <table style="margin-top:10px;">
+            <tr><th>점수</th><th>학점</th></tr>
+            <tr><td>90~100</td><td>A</td></tr>
+            <tr><td>80~89</td><td>B</td></tr>
+            <tr><td>70~79</td><td>C</td></tr>
+            <tr><td>60~69</td><td>D</td></tr>
+            <tr><td>0~59</td><td>F</td></tr>
+          </table>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 4</span><h4>윤년 판별</h4></div>
+          <p class="desc">연도를 입력받아 윤년인지 판별하세요.</p>
+          <div class="hint">💡 힌트: 윤년은 4의 배수이면서 100의 배수가 아니거나, 400의 배수입니다.</div>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 5</span><h4>간이 계산기</h4></div>
+          <p class="desc">두 수와 연산자(+, -, *, /)를 입력받아 계산 결과를 출력하세요.</p>
+          <div class="example">첫 번째 수 : 20
+두 번째 수 : 5
+연산자 : *
+
+결과 : 100</div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>3w_if.py — AI소프트웨어과 웹/파이썬 프로그래밍 강의자료</footer>
+  </main>
+</div>
+
+<script>hljs.highlightAll();</script>
+</body>
+</html>
