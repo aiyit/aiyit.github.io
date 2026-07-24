@@ -1,4 +1,26 @@
 <!DOCTYPE html>
+<!--
+=========================================
+CSS z-index 핵심 요약
+=========================================
+
+■ z-index
+- 요소가 겹칠 때 앞뒤(쌓임 순서) 결정
+- 값이 클수록 앞(위), 작을수록 뒤(아래)
+
+■ 사용 조건
+- position: relative | absolute | fixed | sticky 에서만 적용
+- position: static 에서는 적용되지 않음
+
+■ 우선순위
+- 큰 값  → 앞쪽(위)
+- 작은 값 → 뒤쪽(아래)
+- 같은 값 → HTML 작성 순서가 늦은 요소가 위에 표시
+
+※ 핵심
+- position + z-index를 함께 사용해야 함
+- z-index 값이 클수록 화면 앞에 표시
+-->
 <html lang="ko">
 <head>
   <meta charset="utf-8">
