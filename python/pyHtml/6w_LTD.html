@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6주차 · List / Tuple / Dictionary — AI소프트웨어과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<style>
+  :root{
+    --bg:#1e1e2e;
+    --panel:#242438;
+    --panel-2:#2a2a42;
+    --line:#3a3a54;
+    --text:#e6e4f0;
+    --muted:#8f8da8;
+    --blue:#5fa8e0;
+    --yellow:#ffd43b;
+    --green:#7fd88f;
+    --pink:#ff8fb1;
+    --purple:#b39bff;
+    --orange:#ff9f5b;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Noto Sans KR', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: radial-gradient(1200px 600px at 80% -10%, #26263f 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.7;
+  }
+
+  .titlebar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:10px;
+    background:#17172a; border-bottom:1px solid var(--line);
+    padding:10px 18px; overflow-x:auto;
+  }
+  .dots{display:flex; gap:7px; flex-shrink:0;}
+  .dot{width:12px; height:12px; border-radius:50%;}
+  .dot.r{background:#ff5f57;} .dot.y{background:#febc2e;} .dot.g{background:#28c840;}
+  .tab{
+    font-family:var(--mono); font-size:13px; color:var(--muted);
+    background:var(--panel); border:1px solid var(--line); border-bottom:none;
+    padding:6px 14px; border-radius:6px 6px 0 0; margin-left:8px; flex-shrink:0;
+    display:flex; align-items:center; gap:6px;
+  }
+  .tab .py-badge{color:var(--yellow); font-weight:700;}
+  .tab.active{color:var(--text); background:var(--panel-2);}
+  .tab.prev{opacity:.4;}
+
+  .shell{display:flex; max-width:1400px; margin:0 auto;}
+
+  .explorer{
+    width:250px; flex-shrink:0;
+    border-right:1px solid var(--line);
+    padding:22px 14px; position:sticky; top:53px;
+    height:calc(100vh - 53px); overflow-y:auto;
+  }
+  .explorer h4{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em;
+    color:var(--muted); text-transform:uppercase; margin-bottom:12px; padding-left:6px;
+  }
+  .explorer a{
+    display:flex; gap:8px; align-items:baseline;
+    color:var(--muted); text-decoration:none; font-size:13.5px;
+    padding:6px 8px; border-radius:5px; transition:.15s;
+  }
+  .explorer a:hover{background:var(--panel); color:var(--text);}
+  .explorer a .num{color:var(--blue); font-family:var(--mono); font-size:11.5px; width:20px; flex-shrink:0;}
+  .explorer a.code-link .num{color:var(--yellow);}
+  .explorer a.hw-link .num{color:var(--pink);}
+
+  main{flex:1; min-width:0; padding:40px 48px 100px;}
+
+  .hero{margin-bottom:56px;}
+  .hero .kicker{
+    font-family:var(--mono); color:var(--yellow); font-size:13px; letter-spacing:.08em;
+  }
+  .hero h1{
+    font-size:clamp(28px,4vw,44px); font-weight:900; margin:10px 0 12px;
+    letter-spacing:-.01em;
+  }
+  .hero h1 .py{color:var(--blue);}
+  .hero h1 .dot-y{color:var(--yellow);}
+  .hero p{color:var(--muted); font-size:15.5px; max-width:640px;}
+
+  section{
+    padding-top:26px; margin-top:26px;
+    border-top:1px solid var(--line);
+    scroll-margin-top:70px;
+  }
+  section:first-of-type{border-top:none;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:16px;}
+  .sec-head .idx{
+    font-family:var(--mono); color:var(--blue); font-size:14px; font-weight:700;
+    background:var(--panel); border:1px solid var(--line); padding:2px 9px; border-radius:5px;
+  }
+  .sec-head h2{font-size:21px; font-weight:700;}
+  p.lead{color:#c8c6dc; margin-bottom:14px; font-size:15px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0 8px; font-size:14px;}
+  th,td{padding:10px 14px; border:1px solid var(--line); text-align:left; vertical-align:top;}
+  th{background:var(--panel); color:var(--yellow); font-weight:600; font-size:13px;}
+  td{background:#20203484;}
+  tr:hover td{background:#2b2b46;}
+  td:first-child{font-family:var(--mono); color:var(--green); white-space:nowrap;}
+
+  /* bad vs good comparison */
+  .vs-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0;}
+  .vs-card{border-radius:10px; padding:16px 18px; border:1px solid var(--line);}
+  .vs-card.bad{background:#341f22; border-color:#5c2c30;}
+  .vs-card.good{background:#1f3428; border-color:#2c5c3f;}
+  .vs-card .vs-label{font-family:var(--mono); font-size:12px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+  .vs-card.bad .vs-label{color:#ff8080;}
+  .vs-card.good .vs-label{color:var(--green);}
+  .vs-card pre{background:#131322 !important; margin-top:6px; font-size:12.5px; padding:12px 14px;}
+  @media (max-width:640px){.vs-grid{grid-template-columns:1fr;}}
+
+  /* collection type cards */
+  .type-cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:12px; margin:18px 0;}
+  .type-card{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px;}
+  .type-card h3{font-size:15px; margin-bottom:8px;}
+  .type-card.list h3{color:var(--blue);}
+  .type-card.tuple h3{color:var(--purple);}
+  .type-card.dict h3{color:var(--orange);}
+  .type-card .badges{display:flex; gap:6px; flex-wrap:wrap;}
+  .type-card .badge{
+    font-family:var(--mono); font-size:11px; padding:3px 8px; border-radius:20px;
+    border:1px solid var(--line); color:var(--muted);
+  }
+  .type-card .badge.on{color:var(--green); border-color:#2c5c3f;}
+  .type-card .badge.off{color:#ff8080; border-color:#5c2c30;}
+
+  pre{
+    background:#131322 !important; border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; overflow-x:auto; font-size:13px; line-height:1.65;
+    font-family:var(--mono);
+  }
+  code{font-family:var(--mono);}
+  .code-frame{
+    border:1px solid var(--line); border-radius:10px; overflow:hidden; margin:18px 0;
+  }
+  .code-frame .bar{
+    background:#17172a; padding:8px 14px; display:flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12px; color:var(--muted); border-bottom:1px solid var(--line);
+  }
+  .code-frame .bar .file-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .code-frame pre{border:none; border-radius:0; margin:0;}
+
+  .subhead{
+    font-family:var(--mono); color:var(--purple); font-size:13px; letter-spacing:.04em;
+    margin:22px 0 6px; text-transform:uppercase; display:flex; align-items:center; gap:8px;
+  }
+  .subhead::before{content:'//'; color:var(--muted);}
+
+  .warn-box{
+    display:flex; gap:10px; align-items:flex-start;
+    background:#3a2440; border:1px solid #5c3466; border-radius:9px;
+    padding:12px 16px; margin:14px 0; font-size:13.5px; color:#f0c9ff;
+  }
+  .warn-box .ico{font-size:16px; flex-shrink:0;}
+  .note-box{
+    display:flex; gap:10px; align-items:flex-start;
+    background:#182b3a; border:1px solid #234a63; border-radius:9px;
+    padding:12px 16px; margin:14px 0; font-size:13.5px; color:#bfe0ff;
+  }
+
+  .hw-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:14px;}
+  .hw-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; position:relative; overflow:hidden;
+  }
+  .hw-card::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--pink);}
+  .hw-card .hw-title{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+  .hw-card .hw-num{
+    font-family:var(--mono); color:var(--pink); font-size:12px; font-weight:700;
+    background:#3a2030; border:1px solid #5c3040; padding:2px 9px; border-radius:5px;
+  }
+  .hw-card h4{font-size:14.5px; font-weight:700;}
+  .hw-card p.desc{font-size:13px; color:#c8c6dc; margin-bottom:6px;}
+  .hw-card ul{list-style:none; padding-left:2px;}
+  .hw-card li{font-size:12.5px; color:#c8c6dc; padding:3px 0 3px 16px; position:relative;}
+  .hw-card li::before{content:'›'; position:absolute; left:0; color:var(--blue); font-weight:700;}
+  .hw-card .given{
+    font-family:var(--mono); font-size:12px; color:var(--green);
+    background:#131322; border:1px solid var(--line); border-radius:6px;
+    padding:7px 10px; margin-top:6px; white-space:pre;
+  }
+
+  footer{
+    text-align:center; color:var(--muted); font-size:12.5px; padding:40px 20px 60px;
+    border-top:1px solid var(--line); margin-top:60px; font-family:var(--mono);
+  }
+
+  @media (max-width: 900px){
+    .explorer{display:none;}
+    main{padding:28px 20px 80px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="tab prev">🐍 1w_basic.py</div>
+  <div class="tab prev">🐍 2w_dataType.py</div>
+  <div class="tab prev">🐍 3w_if.py</div>
+  <div class="tab prev">🐍 4w_for.py</div>
+  <div class="tab prev">🐍 5w_function.py</div>
+  <div class="tab active"><span class="py-badge">🐍</span> 6w_LTD.py</div>
+</div>
+
+<div class="shell">
+  <nav class="explorer">
+    <h4>Explorer · 목차</h4>
+    <a href="#s1"><span class="num">1</span>컬렉션이란?</a>
+    <a href="#s2" class="code-link"><span class="num">▶</span>리스트(List)</a>
+    <a href="#s3" class="code-link"><span class="num">▶</span>튜플(Tuple)</a>
+    <a href="#s4" class="code-link"><span class="num">▶</span>딕셔너리(Dict)</a>
+    <a href="#s5" class="code-link"><span class="num">▶</span>학생 정보 예제</a>
+    <a href="#s6" class="code-link"><span class="num">▶</span>리스트 안의 딕셔너리</a>
+    <a href="#s7" class="code-link"><span class="num">▶</span>딕셔너리 안의 리스트</a>
+    <a href="#s8" class="code-link"><span class="num">▶</span>함께 활용하기</a>
+    <a href="#s9" class="code-link"><span class="num">▶</span>학생 관리 프로그램</a>
+    <a href="#s10" class="hw-link"><span class="num">✎</span>과제 1~10</a>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <div class="kicker">AI소프트웨어과 · 6주차 강의노트</div>
+      <h1><span class="py">List · Tuple · Dict</span><span class="dot-y">.</span></h1>
+      <p>여러 개의 데이터를 하나의 변수로 다루는 컬렉션 자료형 — 리스트, 튜플, 딕셔너리의 생성·수정·활용부터 실무에서 가장 많이 쓰는 "리스트 안의 딕셔너리" 구조까지 정리한 6주차 강의 자료입니다.</p>
+    </div>
+
+    <!-- 1. 컬렉션이란 -->
+    <section id="s1">
+      <div class="sec-head"><span class="idx">01</span><h2>컬렉션(Collection)이란?</h2></div>
+      <p class="lead">컬렉션(Collection)이란 여러 개의 데이터를 하나의 변수에 저장하는 자료형입니다. 예를 들어 학생 30명의 이름을 저장하려면:</p>
+
+      <div class="vs-grid">
+        <div class="vs-card bad">
+          <div class="vs-label">❌ 변수 30개</div>
+          <pre><code class="language-python">name1 = "홍길동"
+name2 = "김철수"
+name3 = "이영희"
+...</code></pre>
+        </div>
+        <div class="vs-card good">
+          <div class="vs-label">⭕ 하나의 리스트</div>
+          <pre><code class="language-python">names = ["홍길동", "김철수", "이영희"]</code></pre>
+        </div>
+      </div>
+
+      <div class="type-cards">
+        <div class="type-card list">
+          <h3>List</h3>
+          <div class="badges">
+            <span class="badge on">순서 O</span>
+            <span class="badge on">수정 O</span>
+            <span class="badge on">중복 O</span>
+          </div>
+        </div>
+        <div class="type-card tuple">
+          <h3>Tuple</h3>
+          <div class="badges">
+            <span class="badge on">순서 O</span>
+            <span class="badge off">수정 X</span>
+            <span class="badge on">중복 O</span>
+          </div>
+        </div>
+        <div class="type-card dict">
+          <h3>Dictionary</h3>
+          <div class="badges">
+            <span class="badge on">Key-Value 저장</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 리스트 -->
+    <section id="s2">
+      <div class="sec-head"><span class="idx">▶</span><h2>리스트(List)</h2></div>
+      <p class="lead">리스트는 여러 개의 데이터를 순서대로 저장하는 가장 많이 사용하는 자료형입니다. 순서가 있고, 인덱스(Index)를 가지며, 수정·추가·삭제·중복 저장이 모두 가능합니다.</p>
+
+      <div class="subhead">생성</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>list_create.py</div>
+        <pre><code class="language-python">score = [90, 80, 100, 95]
+fruit = ["사과", "배", "포도"]
+mixed = [100, "Python", 3.14, True]
+
+print(score)</code></pre>
+      </div>
+
+      <div class="subhead">인덱스(Index) — 0부터 시작</div>
+      <table>
+        <tr><th>인덱스</th><th>값</th></tr>
+        <tr><td>0</td><td>90</td></tr>
+        <tr><td>1</td><td>80</td></tr>
+        <tr><td>2</td><td>100</td></tr>
+        <tr><td>3</td><td>95</td></tr>
+      </table>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>list_index.py</div>
+        <pre><code class="language-python">score = [90,80,100,95]
+
+print(score[0])
+print(score[2])
+print(score[-1])</code></pre>
+      </div>
+
+      <div class="subhead">수정 · 추가 · 삽입 · 삭제 · 길이</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>list_edit.py</div>
+        <pre><code class="language-python">#수정
+score = [90,80,100]
+score[1] = 85
+print(score)
+
+#추가
+score.append(95)
+print(score)
+
+#삽입
+score.insert(1,70)
+print(score)
+
+#삭제
+score.remove(70)
+del score[0]
+
+#길이
+print(len(score))</code></pre>
+      </div>
+
+      <div class="subhead">반복문 &amp; 평균</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>list_loop_avg.py</div>
+        <pre><code class="language-python">for s in score:
+    print(s)
+
+#평균
+average = sum(score)/len(score)
+print(average)</code></pre>
+      </div>
+    </section>
+
+    <!-- 3. 튜플 -->
+    <section id="s3">
+      <div class="sec-head"><span class="idx">▶</span><h2>튜플(Tuple)</h2></div>
+      <p class="lead">튜플은 리스트와 거의 같지만, 한 번 생성되면 <b>수정할 수 없는</b> 자료형입니다.</p>
+
+      <div class="subhead">생성 &amp; 접근</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>tuple_create.py</div>
+        <pre><code class="language-python">color = ("Red","Green","Blue")
+print(color)
+
+print(color[0])
+print(color[2])</code></pre>
+      </div>
+
+      <div class="warn-box"><span class="ico">⚠️</span> <code style="color:var(--pink); font-family:var(--mono)">color[0] = "Black"</code> → <b>TypeError</b> 발생 (튜플은 수정 불가)</div>
+
+      <div class="subhead">반복</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>tuple_loop.py</div>
+        <pre><code class="language-python">for c in color:
+    print(c)</code></pre>
+      </div>
+
+      <div class="note-box">💡 튜플을 사용하는 이유: <b>변경되면 안 되는 데이터</b>를 저장하기 위함입니다. 예) 주민등록번호, 생년월일, GPS 좌표, RGB 색상</div>
+
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>tuple_example.py</div>
+        <pre><code class="language-python">birthday = (2006,5,18)
+print(birthday)</code></pre>
+      </div>
+    </section>
+
+    <!-- 4. 딕셔너리 -->
+    <section id="s4">
+      <div class="sec-head"><span class="idx">▶</span><h2>딕셔너리(Dictionary)</h2></div>
+      <p class="lead">딕셔너리는 Key(키)와 Value(값)를 한 쌍으로 저장하는 자료형입니다. 실생활의 사전처럼 단어(Key)를 찾으면 값(Value)을 얻을 수 있습니다.</p>
+
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>dict_basic.py</div>
+        <pre><code class="language-python">#생성
+student = {
+    "이름":"홍길동",
+    "학과":"AI소프트웨어과",
+    "학년":1,
+    "평점":4.3
+}
+print(student)
+print(student["이름"])
+
+#추가
+student["전화"] = "010-1111-2222"
+#수정
+student["학년"] = 2
+#삭제
+del student["평점"]
+
+#모든 Key
+print(student.keys())
+#모든 Value
+print(student.values())
+
+#모두 출력
+for key, value in student.items():
+    print(key, value)</code></pre>
+      </div>
+    </section>
+
+    <!-- 5. 학생 정보 예제 -->
+    <section id="s5">
+      <div class="sec-head"><span class="idx">▶</span><h2>학생 정보 예제</h2></div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>student_dict.py</div>
+        <pre><code class="language-python">student = {
+    "학번":"20260001",
+    "이름":"홍길동",
+    "학과":"AI소프트웨어과",
+    "학년":1,
+    "평점":4.2
+}
+
+for key,value in student.items():
+    print(f"{key} : {value}")</code></pre>
+      </div>
+    </section>
+
+    <!-- 6. 리스트 안의 딕셔너리 -->
+    <section id="s6">
+      <div class="sec-head"><span class="idx">▶</span><h2>리스트 안의 딕셔너리</h2></div>
+      <p class="lead">실무에서 가장 많이 사용하는 구조입니다 — 여러 명의 학생 정보를 딕셔너리 목록으로 관리합니다.</p>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>list_of_dict.py</div>
+        <pre><code class="language-python">students = [
+    {"이름":"홍길동","점수":95},
+    {"이름":"김철수","점수":88},
+    {"이름":"이영희","점수":100}
+]
+for student in students:
+
+    print(student["이름"],student["점수"])</code></pre>
+      </div>
+    </section>
+
+    <!-- 7. 딕셔너리 안의 리스트 -->
+    <section id="s7">
+      <div class="sec-head"><span class="idx">▶</span><h2>딕셔너리 안의 리스트</h2></div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>dict_of_list.py</div>
+        <pre><code class="language-python">student = {
+    "이름":"홍길동",
+    "과목":["Python","AI","Web"]
+}
+print(student["과목"])</code></pre>
+      </div>
+    </section>
+
+    <!-- 8. 함께 활용 -->
+    <section id="s8">
+      <div class="sec-head"><span class="idx">▶</span><h2>리스트와 딕셔너리 함께 활용</h2></div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>list_dict_avg.py</div>
+        <pre><code class="language-python">students = [
+    {"이름":"홍길동","점수":95},
+    {"이름":"김철수","점수":88},
+    {"이름":"이영희","점수":76}
+]
+total = 0
+for student in students:
+    total += student["점수"]
+
+print(total/len(students))</code></pre>
+      </div>
+    </section>
+
+    <!-- 9. 학생 관리 프로그램 -->
+    <section id="s9">
+      <div class="sec-head"><span class="idx">▶</span><h2>학생 관리 프로그램 — 종합예제</h2></div>
+      <p class="lead">리스트 안의 딕셔너리 구조로 여러 학생의 과목별 점수를 저장하고, 각 학생의 평균을 계산해 출력합니다.</p>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>student_manager.py</div>
+        <pre><code class="language-python">students = [
+    {"이름":"홍길동","Python":95,"AI":90},
+    {"이름":"김철수","Python":88,"AI":84},
+    {"이름":"이영희","Python":100,"AI":98}
+]
+print("="*40)
+for student in students:
+    average = (student["Python"] + student["AI"]) / 2
+    print(student["이름"])
+    print("Python :",student["Python"])
+    print("AI :",student["AI"])
+    print("평균 :",average)
+    print("-"*40)</code></pre>
+      </div>
+    </section>
+
+    <!-- 10. 과제 -->
+    <section id="s10">
+      <div class="sec-head"><span class="idx">✎</span><h2>실습 과제 1~10</h2></div>
+      <div class="hw-grid">
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 1</span><h4>리스트 조작</h4></div>
+          <div class="given">["Python","AI","Web","Database"]</div>
+          <ul>
+            <li>첫 번째 과목 출력</li>
+            <li>마지막 과목 출력</li>
+            <li>"Java" 추가</li>
+            <li>"Web" 삭제</li>
+          </ul>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 2</span><h4>튜플 접근</h4></div>
+          <div class="given">(2006, 8, 15)</div>
+          <ul>
+            <li>년도 출력</li>
+            <li>월 출력</li>
+            <li>일 출력</li>
+          </ul>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 3</span><h4>학생 정보 딕셔너리</h4></div>
+          <p class="desc">학생 정보를 딕셔너리로 저장하세요.</p>
+          <ul>
+            <li>이름</li><li>학번</li><li>학과</li><li>학년</li><li>평균평점</li>
+          </ul>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 4</span><h4>리스트 평균</h4></div>
+          <div class="given">score = [95,88,100,75,82]</div>
+          <p class="desc">위 리스트의 평균을 구하세요.</p>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 5</span><h4>리스트 반복 출력</h4></div>
+          <div class="given">fruit = ["사과","배","포도","복숭아"]</div>
+          <p class="desc">반복문으로 출력하세요.</p>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 6</span><h4>Key / Value 출력</h4></div>
+          <div class="given">student = {"이름":"홍길동","학과":"AI","학년":1}</div>
+          <p class="desc">모든 Key와 Value를 출력하세요.</p>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 7</span><h4>리스트 안의 딕셔너리 저장</h4></div>
+          <table style="margin-top:8px;">
+            <tr><th>이름</th><th>Python</th><th>AI</th></tr>
+            <tr><td>홍길동</td><td>95</td><td>90</td></tr>
+            <tr><td>김철수</td><td>88</td><td>85</td></tr>
+            <tr><td>이영희</td><td>100</td><td>98</td></tr>
+          </table>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 8</span><h4>총점 / 평균 / 최고점 / 최저점</h4></div>
+          <p class="desc">학생 5명의 점수를 리스트에 저장한 후 총점, 평균, 최고점, 최저점을 출력하세요.</p>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 9</span><h4>딕셔너리 항목 추가</h4></div>
+          <div class="given">student = {"이름":"홍길동","학과":"AI"}</div>
+          <p class="desc">"전화번호"와 "이메일"을 추가하세요.</p>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 10</span><h4>평균 점수 계산</h4></div>
+          <div class="given">students = [
+  {"이름":"홍길동","점수":95},
+  {"이름":"김철수","점수":88},
+  {"이름":"이영희","점수":100}
+]</div>
+          <p class="desc">학생 3명의 정보를 저장하고 평균 점수를 계산하세요.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>6w_LTD.py — AI소프트웨어과 웹/파이썬 프로그래밍 강의자료</footer>
+  </main>
+</div>
+
+<script>hljs.highlightAll();</script>
+</body>
+</html>
