@@ -1,4 +1,32 @@
 <!DOCTYPE html>
+<!--
+=========================================
+블록 요소(Block) vs 인라인 요소(Inline)
+=========================================
+
+■ 블록 요소(Block)
+- 항상 새로운 줄에서 시작
+- 부모 너비(100%)를 기본으로 차지
+- width, height, margin, padding 설정 가능
+- 예) <div>, <p>, <h1>~<h6>, <section>, <article>, <ul>, <table>, <form>
+
+■ 인라인 요소(Inline)
+- 줄바꿈 없이 같은 줄에 배치
+- 내용 크기만큼만 공간 차지
+- width, height 설정 제한
+- 예) <span>, <a>, <strong>, <em>, <img>, <label>, <input>
+
+■ display 속성
+display: block;        → 인라인 요소를 블록 요소로 변경
+display: inline;       → 블록 요소를 인라인 요소로 변경
+display: inline-block; → 인라인 배치 + width/height 설정 가능
+display: none;         → 요소를 화면에서 숨김(렌더링 안됨)
+
+※ 핵심
+- Block : 한 줄 전체 사용
+- Inline : 내용 크기만 사용
+- Inline-block : 두 방식의 장점 결합
+-->
 <html>
 <head>
     <title>예제6-1 display 속성</title>
