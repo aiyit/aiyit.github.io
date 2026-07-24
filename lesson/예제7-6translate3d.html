@@ -1,4 +1,41 @@
 <!DOCTYPE html>
+<!--
+<!--
+=========================================
+CSS 3D Transform 핵심 요약
+=========================================
+
+■ 3D Transform
+- x, y, z축을 이용한 입체적인 변형
+- 원근감(Perspective) 표현 가능
+- 애니메이션과 함께 사용하면 역동적인 UI 구현
+
+■ 주요 속성
+- transform            : 2D/3D 변형 적용
+- transform-origin     : 변형 기준점 설정
+- transform-style      : 3D 렌더링 방식 지정
+- perspective          : 원근감(시점) 설정
+- perspective-origin   : 시점 위치 설정
+- backface-visibility  : 뒷면 표시 여부
+
+■ 주요 메소드
+- translate3d(x,y,z) : 3축 이동
+- translateX/Y/Z()   : 축별 이동
+- scale3d(x,y,z)     : 3축 확대/축소
+- scaleX/Y/Z()       : 축별 크기 변경
+- rotate3d(...)      : 3축 회전
+- rotateX()          : X축 회전
+- rotateY()          : Y축 회전
+- rotateZ()          : Z축 회전
+- perspective(n)     : 원근감 적용
+- matrix3d(...)      : 행렬 기반 3D 변형
+
+※ 핵심
+- 2D : x, y축 변형
+- 3D : x, y, z축 + 원근감(Perspective)
+- translate3d, rotate3d, scale3d를 사용하여 입체 효과 구현
+-->
+-->
 <html>
 <head>
     <title>3D Transform</title> 
