@@ -1,69 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>3D Transform</title> 
-<meta charset="utf-8">
-<style> 
-	div#trns01 {
-	  width: 150px;   height: 80px;   background-color: green;   
-	  transform: perspective(100px) translate3D(50px,20px,50px);
-	}
-	div#trns02 {
-	  width: 150px;   height: 80px;   background-color: orange ;  
-	  transform: perspective(200px) translate3D(50px,20px,0px);
-	}
-	div#trns03 {
-	  width: 150px;  height: 80px;   background-color: blue; 
-	  transform: perspective(300px) translate3D(50px,20px,-50px);
-	}
-	div#trns04 {
-	  width: 150px;  height: 80px;   background-color: red;  
-	  transform: perspective(300px) translate3D(50px,20px,50px);
-	}
-</style>
+    <title>2D Transform-matrix()</title> 
+    <meta charset="utf-8">
+    <style> 
+        /* matrix(a, b, c, d, e, f)
+           a, d → scale(확대/축소)
+           b, c → skew(기울임)
+           e, f → translate(이동) */
+        
+        /* scale + skew 효과 */
+        div#matrixScale {
+            width: 150px;
+            height: 80px;
+            background-color: red;              /* 빨강 박스 */
+            transform: matrix(1, 0.4, 0, 1, 0, 0);
+            /* a=1, d=1 → 원래 크기 유지
+               b=0.4 → Y축으로 기울임
+               e=0, f=0 → 이동 없음 */
+        }
+
+        /* skew + scale + translate 효과 */
+        div#matrixSkew {
+            width: 150px;
+            height: 80px;
+            background-color: blue;             /* 파랑 박스 */
+            transform: matrix(1, -0.4, 0, 1.2, 50, 0);
+            /* a=1 → X축 크기 유지
+               b=-0.4 → Y축으로 반대 방향 기울임
+               d=1.2 → Y축 120% 확대
+               e=50 → 오른쪽으로 50px 이동 */
+        }
+
+        /* scale + skew + translate 효과 */
+        div#matrixTranslate {
+            width: 150px;
+            height: 80px;
+            background-color: green;            /* 초록 박스 */
+            transform: matrix(1.5, 0.57, 0, 0.9, 100, 0);
+            /* a=1.5 → X축 150% 확대
+               b=0.57 → Y축 기울임
+               d=0.9 → Y축 90% 축소
+               e=100 → 오른쪽으로 100px 이동 */
+        }
+    </style>
 </head>
 <body>
-<h1>Transform3D-translate()</h1>
-<div id="trns01">transform: perspective(100px) </div><br>
-<div id="trns02"> transform: perspective(200px) </div><br>
-<div id="trns03">transform: perspective(300px) </div>
-<div id="trns04">transform: translate3D(200px,200px,50px);</div>
+    <div><h1>Transform - matrix()</h1></div>
+
+    <!-- skew 효과 포함 -->
+    <div id="matrixScale">matrix(1, 0.4, 0, 1, 0, 0)</div> 
+
+    <!-- skew + scale + translate -->
+    <div id="matrixSkew">matrix(1, -0.4, 0, 1.2, 50, 0)</div> 
+
+    <!-- scale + skew + translate -->
+    <div id="matrixTranslate">matrix(1.5, 0.57, 0, 0.9, 100, 0)</div> 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 

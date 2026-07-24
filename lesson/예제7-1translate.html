@@ -1,25 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>2D Transform-rotate()</title> 
-	<meta charset="utf-8">
-	<link type="text/css" rel="stylesheet" href="css/color.css">
-	<style> 
-	div#scaleXY {   width: 150px;   height: 80px;  background-color: blue; 
-		transform :scale(0.5, 0.5); }
-	div#scaleX {  width: 150px;   height: 80px; background-color: green;
-		 transform: scaleX(1.5); }
-	div#scaleY { width: 150px;  height: 80px;  background-color: red;
-		transform:scaleY(1.5);  }
-</style>
+    <title>예제7-1 translate</title> 
+    <meta charset="utf-8">
+    <!-- 외부 CSS 파일 연결 -->
+    <link type="text/css" rel="stylesheet" href="css/color.css">
+    <style> 
+        /* translate(X, Y): X축과 Y축으로 동시에 이동 */
+        div#trnsXY {
+            width: 150px;
+            height: 80px;
+            background-color: red;              /* 빨강 박스 */
+            transform: translate(100px, 200px); /* 오른쪽 100px, 아래쪽 200px 이동 */
+        }
+
+        /* translateX(): X축으로만 이동 */
+        div#trnsX {
+            width: 150px;
+            height: 80px;
+            background-color: green;            /* 초록 박스 */
+            transform: translateX(150px);       /* 오른쪽으로 150px 이동 */
+        }
+
+        /* translateY(): Y축으로만 이동 */
+        div#trnsY {
+            width: 150px;
+            height: 80px;
+            background-color: blue;             /* 파랑 박스 */
+            transform: translateY(-50px);       /* 위쪽으로 50px 이동 (음수 값) */
+        }
+    </style>
 </head>
 <body>
-<h1>Transform-scale()</h1>
-<div id="scaleXY">scaleXY(0.5, 0.5)</div><br>
-<div id="scaleX">scaleX(1.5)</div><br>
-<div id="scaleY">scaleY(1.5)</div>
+    <h1>Transform - translate()</h1>
+
+    <!-- X축 100px, Y축 200px 이동 -->
+    <div id="trnsXY">translate(100px, 200px)</div><br>
+
+    <!-- X축 150px 이동 -->
+    <div id="trnsX">translateX(150px)</div><br>
+
+    <!-- Y축 -50px 이동 -->
+    <div id="trnsY">translateY(-50px)</div>
 </body>
 </html>
+
 
 
 

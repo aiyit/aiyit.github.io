@@ -1,27 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>예제7-12이동 Animation</title>
+<title>예제7-11 Color Animation</title>
 <style> 
-	div {  width: 100px;   height: 50px;   
-		background: blue;   position: relative;
-		animation-name : color ; animation-duration : 5s ;  }
-	@keyframes color{
-	0% {border:2px dotted red ;left:0px; top:0px;}
-	25% {border:5px dashed green ;left:200px; top:0px;}
-	50%  {border:15px groove blue ;left:200px; top:200px;}
-	75%   {border:5px inset cyan ;left:0px; top:200px;}
-	100%  {border:2px solid orange ;left:0px; top:0px;}
-	} 
+  /* 박스 기본 스타일 */
+  .box {
+    width: 200px;                  /* 박스 너비 */
+    height: 200px;                 /* 박스 높이 */
+    border: 5px solid red;         /* 기본 테두리 */
+    animation: borderColorChange 4s infinite; 
+    /* animation: 지정된 keyframes 애니메이션 실행
+       - borderColorChange: 애니메이션 이름
+       - 4s: 4초 동안 실행
+       - infinite: 무한 반복 */
+    margin: 100px auto;            /* 화면 가운데 배치 */
+  }
+
+  /* 마우스를 올리면 박스 크기 확대 */
+  div:hover {
+    width: 400px;                  /* 가로 크기 400px로 확대 */
+  }
+
+  /* keyframes 정의: 테두리 스타일과 색상 변화 */
+  @keyframes borderColorChange {
+    0%   { border: 2px dotted red; }      /* 시작: 빨강 점선 */
+    25%  { border: 5px dashed blue; }     /* 25%: 파랑 파선 */
+    50%  { border: 15px groove green; }   /* 50%: 초록 입체 groove */
+    75%  { border: 5px inset orange; }    /* 75%: 주황색 안쪽 inset */
+    100% { border: 2px solid cyan; }      /* 끝: 청록색 실선 */
+  }
 </style>
 </head>
 <body>
-<div>
-<h4 style="color:gray;">translation Animation</h4>
-</div>
+  <!-- 박스: 애니메이션 적용 -->
+  <div class="box"><h4>Color Animation</h4></div>
 </body>
-</html>
-
 </html>
 
 

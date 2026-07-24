@@ -1,23 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>2D Transform-rotate()</title> 
-<meta charset="utf-8">
-<style> 
-div#rotate01 {
-  width: 150px;   height: 80px;  background-color: red; 
-  transform :rotate(-45deg); }
-div#rotate02 {
-  width: 150px;   height: 80px;  background-color: blue; 
-  transform :rotate(60deg);  }
-</style>
+    <title>예제7-3 Transform-skew()</title> 
+    <meta charset="utf-8">
+    <style>
+        /* 공통 박스 스타일 */
+        .box {
+            width: 120px;            /* 박스 너비 */
+            height: 80px;            /* 박스 높이 */
+            margin: 10px;            /* 바깥 여백 */
+            background-color: lightblue; /* 기본 배경색 */
+            line-height: 80px;       /* 텍스트 수직 가운데 정렬 */
+            text-align: center;      /* 텍스트 가로 가운데 정렬 */
+            font-weight: bold;       /* 글자 굵게 */
+            display: inline-block;   /* 가로로 나란히 배치 */
+        }
+
+        /* X축으로만 기울이기 */
+        .skewX {
+            transform: skew(20deg, 0); /* X축 방향으로 20도 기울임 */
+        }
+
+        /* Y축으로만 기울이기 */
+        .skewY {
+            transform: skew(0, 20deg); /* Y축 방향으로 20도 기울임 */
+        }
+
+        /* X축과 Y축 동시에 기울이기 */
+        .skewXY {
+            transform: skew(20deg, 20deg); /* X축 20도, Y축 20도 기울임 */
+        }
+    </style>
 </head>
 <body>
-<h1>Transform-rotate()</h1>
-<div id="rotate01">rotate(45deg)</div><br>
-<div id="rotate02">rotate(60deg)</div><br>
+    <h1>Transform - skew()</h1>
+
+    <!-- X축 방향으로만 기울임 -->
+    <div class="box skewX">Skew X skew(20deg, 0)</div>
+
+    <!-- Y축 방향으로만 기울임 -->
+    <div class="box skewY">Skew Y skew(0, 20deg)</div>
+
+    <!-- X축과 Y축 동시에 기울임 -->
+    <div class="box skewXY">Skew XY skew(20deg, 20deg)</div>
 </body>
 </html>
+
 
 
 

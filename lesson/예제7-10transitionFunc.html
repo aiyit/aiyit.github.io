@@ -2,26 +2,62 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>예제7-9transition 예제</title>
+  <title>예제7-10 transition-timing-function</title>
   <style>
-    .btn {
-      background-color: #3498db;
-      color: white;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      transition: background-color 2s, transform 2s;
-      cursor: pointer;
+    /* 공통 박스 스타일 */
+    .box {
+      width: 100px;                 /* 박스 너비 */
+      height: 20px;                 /* 박스 높이 */
+      background-color: tomato;     /* 배경색 */
+      margin: 10px;                 /* 바깥 여백 */
+      transition: transform 1s;     /* transform 속성 1초 동안 변화 */
     }
-    .btn:hover {      background-color: #2ecc71;       transform: scale(1.1);     }
+
+    /* 마우스를 container 위에 올리면 모든 박스가 오른쪽으로 이동 */
+    .container:hover .linear { transform: translateX(300px); }
+    .container:hover .ease { transform: translateX(300px); }
+    .container:hover .ease-in { transform: translateX(300px); }
+    .container:hover .ease-out { transform: translateX(300px); }
+    .container:hover .ease-in-out { transform: translateX(300px); }
+
+    /* timing-function 별 차이 */
+    .linear { transition-timing-function: linear; }
+    /* 일정한 속도로 이동 */
+
+    .ease { transition-timing-function: ease; }
+    /* 천천히 시작 → 빠르게 → 다시 천천히 끝 */
+
+    .ease-in { transition-timing-function: ease-in; }
+    /* 느리게 시작 → 점점 빨라짐 */
+
+    .ease-out { transition-timing-function: ease-out; }
+    /* 빠르게 시작 → 점점 느려짐 */
+
+    .ease-in-out { transition-timing-function: ease-in-out; }
+    /* 느리게 시작 → 빨라짐 → 다시 느려짐 */
   </style>
 </head>
 <body>
-  <h2>Transition 효과 버튼</h2>
-  <button class="btn">마우스를 올리면 물체가 변합니다.</button>
+  <h3>마우스를 아래 박스 위에 올려보세요</h3>
+  <div class="container">
+    <!-- 일정한 속도 -->
+    <div class="box linear">linear</div>
+
+    <!-- 천천히 시작 → 빠르게 → 천천히 끝 -->
+    <div class="box ease">ease</div>
+
+    <!-- 느리게 시작 → 점점 빨라짐 -->
+    <div class="box ease-in">ease-in</div>
+
+    <!-- 빠르게 시작 → 점점 느려짐 -->
+    <div class="box ease-out">ease-out</div>
+
+    <!-- 느리게 시작 → 빨라짐 → 다시 느려짐 -->
+    <div class="box ease-in-out">ease-in-out</div>
+  </div>
 </body>
 </html>
+
 
 
 

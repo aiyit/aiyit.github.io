@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>2D Transform-matrix()</title> 
-<meta charset="utf-8">
-<style> 
-	div#matrixScale {
-	  width: 150px;   height: 80px;  background-color: red; 
-	  transform :matrix(1, 0.4, 0, 1, 0, 0);
-	}
-	div#matrixSkew {
-	  width: 150px;   height: 80px;  background-color: blue; 
-	  transform :matrix(1, -0.4, 0, 1.2, 50, 0); 
-	}
-	div#matrixTranslate {
-	  width: 150px;   height: 80px;  background-color: green; 
-	  transform :matrix(1.5, 0.57, 0, 0.9, 100, 0);  
-	}
-</style>
+    <title>예제7-4 Transform-rotate()</title> 
+    <meta charset="utf-8">
+    <style> 
+        /* 첫 번째 박스: -15도 회전 */
+        div#rotate01 {
+            width: 150px;              /* 박스 너비 */
+            height: 80px;              /* 박스 높이 */
+            background-color: red;     /* 빨강 배경 */
+            transform: rotate(-15deg); /* 시계 반대 방향으로 15도 회전 */
+        }
+
+        /* 두 번째 박스: 30도 회전 */
+        div#rotate02 {
+            width: 150px;
+            height: 80px;
+            background-color: green;   /* 초록 배경 */
+            transform: rotate(30deg);  /* 시계 방향으로 30도 회전 */
+        }
+    </style>
 </head>
 <body>
-<div><h1>Transform-matrix()</h1></div>
-<div id="matrixScale">matrix(1, 0.4, 0, 1, 0, 0)</div> 
-<div id="matrixSkew">matrix(1, -0.4, 0, 1.2, 50, 0)</div> 
-<div id="matrixTranslate">matrix(1.5, 0.57, 0, 0.9, 100, 0);</div> 
+    <h1>Transform - rotate()</h1>
+
+    <!-- -15도 회전 -->
+    <div id="rotate01">rotate(-15deg)</div><br>
+
+    <!-- 30도 회전 -->
+    <div id="rotate02">rotate(30deg)</div><br>
 </body>
 </html>
->
+
 
 
 

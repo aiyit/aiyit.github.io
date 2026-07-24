@@ -1,88 +1,66 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>예제7-7scale3d()</title>
-  <style>
-    .container {
-      perspective: 500px;      margin: 50px;
-    }
+    <title>3D Transform</title> 
+    <meta charset="utf-8">
+    <style> 
+        /* trns01: 가까운 원근(perspective 100px) + Z축 이동 */
+        div#trns01 {
+            width: 150px;
+            height: 80px;
+            background-color: green;   
+            transform: perspective(100px) translate3D(50px, 20px, 50px);
+            /* perspective(100px): 깊이감이 크게 보임 (근접 원근)
+               translate3D(X=50px, Y=20px, Z=50px): 오른쪽 50px, 아래 20px, 화면 앞으로 50px 이동 */
+        }
 
-    .box {
-      width: 100px;
-      height: 100px;
-      margin: 30px;
-      display: inline-block;
-      line-height: 100px;
-      text-align: center;
-      color: white;
-      font-weight: bold;
-      transition: transform 0.5s;
-    }
+        /* trns02: 중간 원근(perspective 200px) + Z축 이동 없음 */
+        div#trns02 {
+            width: 150px;
+            height: 80px;
+            background-color: orange;  
+            transform: perspective(200px) translate3D(50px, 20px, 0px);
+            /* perspective(200px): 원근 효과 중간
+               translate3D(X=50px, Y=20px, Z=0px): 오른쪽 50px, 아래 20px, Z축 이동 없음 */
+        }
 
-    .box1 {
-      background-color: red;
-      transform: scale3d(0.5, 0.5, 1);
-    }
+        /* trns03: 넓은 원근(perspective 300px) + Z축 뒤로 이동 */
+        div#trns03 {
+            width: 150px;
+            height: 80px;
+            background-color: blue; 
+            transform: perspective(300px) translate3D(50px, 20px, -50px);
+            /* perspective(300px): 원근 효과가 완만
+               translate3D(X=50px, Y=20px, Z=-50px): 오른쪽 50px, 아래 20px, 화면 뒤로 50px 이동 */
+        }
 
-    .box2 {
-      background-color: green;
-      transform: scale3d(1.5, 1, 1);
-    }
-
-    .box3 {
-      background-color: blue;
-      transform: scale3d(1, 1.5, 1);
-    }
-
-    .box4 {
-      background-color: purple;
-      transform: scale3d(1, 1, 2);
-    }
-  </style>
+        /* trns04: 넓은 원근 + Z축 앞으로 이동 */
+        div#trns04 {
+            width: 150px;
+            height: 80px;
+            background-color: red;  
+            transform: perspective(300px) translate3D(50px, 20px, 50px);
+            /* perspective(300px): 원근 효과 완만
+               translate3D(X=50px, Y=20px, Z=50px): 오른쪽 50px, 아래 20px, 화면 앞으로 50px 이동 */
+        }
+    </style>
 </head>
 <body>
-  <h2>scale3d() 3차원 크기 조절 예제</h2>
-  <div class="container">
-    <div class="box box1">0.5x, 0.5y</div>
-    <div class="box box2">1.5x</div>
-    <div class="box box3">1.5y</div>
-    <div class="box box4">z=2</div>
-  </div>
+    <h1>Transform3D - translate()</h1>
+
+    <!-- 가까운 원근 + 앞으로 이동 -->
+    <div id="trns01">transform: perspective(100px)</div>
+
+    <!-- 중간 원근 + Z축 이동 없음 -->
+    <div id="trns02">transform: perspective(200px)</div>
+
+    <!-- 넓은 원근 + 뒤로 이동 -->
+    <div id="trns03">transform: perspective(300px)</div>
+
+    <!-- 넓은 원근 + 앞으로 이동 -->
+    <div id="trns04">transform: translate3D(50px,20px,50px)</div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

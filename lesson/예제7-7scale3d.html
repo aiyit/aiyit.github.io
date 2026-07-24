@@ -2,72 +2,69 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>rotate3d() 예제</title>
+  <title>예제7-7 scale3d()</title>
   <style>
+    /* 컨테이너: 3D 원근감 설정 */
     .container {
-      perspective: 600px;
-      margin: 50px;
-      display: flex;
-      gap: 30px;
+      perspective: 500px;   /* 원근감(깊이감) 설정 */
+      margin: 50px;         /* 바깥 여백 */
     }
 
+    /* 공통 박스 스타일 */
     .box {
-      width: 100px;
-      height: 100px;
-      background-color: #3498db;
-      color: white;
-      text-align: center;
-      line-height: 100px;
-      font-weight: bold;
-      transition: transform 0.6s;
+      width: 100px;         /* 박스 너비 */
+      height: 100px;        /* 박스 높이 */
+      margin: 30px;         /* 바깥 여백 */
+      display: inline-block;/* 가로로 나란히 배치 */
+      line-height: 100px;   /* 텍스트 수직 가운데 정렬 */
+      text-align: center;   /* 텍스트 가로 가운데 정렬 */
+      color: white;         /* 글자색 흰색 */
+      font-weight: bold;    /* 글자 굵게 */
+      transition: transform 0.5s; /* 변환 시 애니메이션 효과 */
     }
 
-    .x-rotate {
-      transform: rotate3d(1, 0, 0, 45deg);
+    /* X, Y축 모두 50% 축소 */
+    .box1 {
+      background-color: red; 
+      transform: scale3d(0.5, 0.5, 1); /* 가로·세로 50% 축소, Z축 변화 없음 */
     }
 
-    .y-rotate {
-      transform: rotate3d(0, 1, 0, 45deg);
+    /* X축 150% 확대 */
+    .box2 {
+      background-color: green;
+      transform: scale3d(1.5, 1, 1);   /* 가로 150% 확대, 세로·Z축 변화 없음 */
     }
 
-    .z-rotate {
-      transform: rotate3d(0, 0, 1, 45deg);
+    /* Y축 150% 확대 */
+    .box3 {
+      background-color: blue;
+      transform: scale3d(1, 1.5, 1);   /* 세로 150% 확대, 가로·Z축 변화 없음 */
     }
 
-    .xy-rotate {
-      transform: rotate3d(1, 1, 0, 60deg);
+    /* Z축 200% 확대 (깊이 방향) */
+    .box4 {
+      background-color: purple;
+      transform: scale3d(1, 1, 2);     /* Z축 200% 확대 → 원근감에서 두드러짐 */
     }
   </style>
 </head>
 <body>
-  <h2>rotate3d() 3차원 회전 예제</h2>
+  <h2>scale3d() 3차원 크기 조절 예제</h2>
   <div class="container">
-    <div class="box x-rotate">X축</div>
-    <div class="box y-rotate">Y축</div>
-    <div class="box z-rotate">Z축</div>
-    <div class="box xy-rotate">XY축</div>
+    <!-- X, Y축 모두 50% 축소 -->
+    <div class="box box1">0.5x, 0.5y</div>
+
+    <!-- X축 150% 확대 -->
+    <div class="box box2">1.5x</div>
+
+    <!-- Y축 150% 확대 -->
+    <div class="box box3">1.5y</div>
+
+    <!-- Z축 200% 확대 -->
+    <div class="box box4">z=2</div>
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

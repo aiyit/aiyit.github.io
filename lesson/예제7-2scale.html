@@ -1,27 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>2D Transform-skew()</title> 
-<meta charset="utf-8">
-<<style>
-    .box {
-      width: 120px;       height: 80px;
-      margin: 10px;       background-color: lightblue;
-      line-height: 80px;  text-align: center;
-      font-weight: bold;  display: inline-block;
-    }
-    .skewX { transform: skew(20deg, 0); }
-    .skewY { transform: skew(0, 20deg); }
-    .skewXY { transform: skew(20deg, 20deg); }
-  </style>
+    <title>2D Transform-scale()</title> 
+    <meta charset="utf-8">
+    <!-- 외부 CSS 파일 연결 -->
+    <link type="text/css" rel="stylesheet" href="css/color.css">
+    <style> 
+        /* scale(X, Y): 가로와 세로 크기를 동시에 조정 */
+        div#scaleXY {
+            width: 150px;
+            height: 80px;
+            background-color: blue;          /* 파랑 박스 */
+            transform: scale(0.5, 0.5);      /* 가로·세로 모두 50% 축소 */
+        }
+
+        /* scaleX(): 가로 크기만 조정 */
+        div#scaleX {
+            width: 150px;
+            height: 80px;
+            background-color: green;         /* 초록 박스 */
+            transform: scaleX(1.5);          /* 가로 크기 150% 확대 */
+        }
+
+        /* scaleY(): 세로 크기만 조정 */
+        div#scaleY {
+            width: 150px;
+            height: 80px;
+            background-color: red;           /* 빨강 박스 */
+            transform: scaleY(1.5);          /* 세로 크기 150% 확대 */
+        }
+    </style>
 </head>
 <body>
-<h1>Transform-skew()</h1>
-<div class="box skewX">Skew X</div>
-<div class="box skewY">Skew Y</div>
-<div class="box skewXY">Skew XY</div>
+    <h1>Transform - scale()</h1>
+
+    <!-- 가로·세로 모두 50% 축소 -->
+    <div id="scaleXY">scaleXY(0.5, 0.5)</div><br>
+
+    <!-- 가로 크기 150% 확대 -->
+    <div id="scaleX">scaleX(1.5)</div><br>
+
+    <!-- 세로 크기 150% 확대 -->
+    <div id="scaleY">scaleY(1.5)</div>
 </body>
 </html>
+
 
 
 
