@@ -1,0 +1,1048 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>배전반 원리 시뮬레이터 | 전기과 캡스톤 디자인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+  :root{
+    --bg:#1e1e1e;
+    --bg-panel:#252526;
+    --bg-elevated:#2d2d30;
+    --bg-input:#3c3c3c;
+    --border:#3e3e42;
+    --text:#d4d4d4;
+    --text-bright:#ffffff;
+    --text-dim:#858585;
+    --blue:#4fc1ff;
+    --green:#89d185;
+    --yellow:#dcdcaa;
+    --red:#f14c4c;
+    --orange:#ce9178;
+    --copper:#d38b5d;
+    --mono:'JetBrains Mono', 'Consolas', monospace;
+    --sans:'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.7;
+  }
+  ::selection{background:var(--blue); color:#000;}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky; top:0; z-index:100;
+    display:flex; align-items:center; gap:4px;
+    background:rgba(37,37,38,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:0 24px;
+    height:52px;
+    overflow-x:auto;
+  }
+  nav .brand{
+    font-family:var(--mono); font-weight:700; font-size:13px;
+    color:var(--blue); letter-spacing:0.5px; margin-right:20px;
+    white-space:nowrap;
+  }
+  nav .brand span{color:var(--text-dim);}
+  nav a{
+    color:var(--text-dim); text-decoration:none; font-size:13.5px;
+    font-family:var(--mono); padding:8px 12px; border-radius:4px;
+    white-space:nowrap; transition:all .15s;
+    border-bottom:2px solid transparent;
+  }
+  nav a:hover{color:var(--text-bright); background:var(--bg-elevated);}
+  nav a.active{color:var(--yellow); border-bottom:2px solid var(--yellow);}
+
+  /* ---------- hero ---------- */
+  header.hero{
+    padding:64px 24px 40px;
+    max-width:980px; margin:0 auto;
+    border-bottom:1px solid var(--border);
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; color:var(--green);
+    letter-spacing:2px; text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:'●'; color:var(--green); font-size:9px;}
+  h1.title{
+    font-size:clamp(28px,4.5vw,44px); font-weight:900; color:var(--text-bright);
+    letter-spacing:-0.5px; margin-bottom:14px;
+  }
+  h1.title .accent{color:var(--copper);}
+  .subtitle{color:var(--text-dim); font-size:16px; max-width:640px;}
+  .hero-tags{display:flex; gap:8px; margin-top:22px; flex-wrap:wrap;}
+  .hero-tags span{
+    font-family:var(--mono); font-size:11.5px; color:var(--text);
+    background:var(--bg-elevated); border:1px solid var(--border);
+    padding:5px 10px; border-radius:4px;
+  }
+
+  section{max-width:1180px; margin:0 auto; padding:56px 24px;}
+  section h2{
+    font-size:26px; font-weight:900; color:var(--text-bright);
+    margin-bottom:8px; display:flex; align-items:baseline; gap:10px;
+  }
+  section h2 .num{font-family:var(--mono); color:var(--copper); font-size:16px;}
+  section .lead{color:var(--text-dim); margin-bottom:28px; max-width:760px;}
+
+  /* ---------- overview cards ---------- */
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media(max-width:860px){.grid3{grid-template-columns:1fr;}}
+  .card{
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:8px;
+    padding:20px; transition:border-color .15s;
+  }
+  .card:hover{border-color:var(--blue);}
+  .card .icon{font-size:22px; margin-bottom:10px;}
+  .card h3{font-size:15px; color:var(--text-bright); margin-bottom:8px;}
+  .card p{font-size:13.5px; color:var(--text-dim);}
+
+  /* ---------- simulator layout ---------- */
+  .sim-wrap{
+    display:grid; grid-template-columns:260px 1fr 280px; gap:14px;
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:10px;
+    padding:14px; margin-top:8px;
+  }
+  @media(max-width:1080px){.sim-wrap{grid-template-columns:1fr;}}
+
+  .panel-box{
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px;
+    padding:14px;
+  }
+  .panel-title{
+    font-family:var(--mono); font-size:11px; color:var(--text-dim);
+    letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+
+  #canvas-col{display:flex; flex-direction:column; gap:10px; min-width:0;}
+  #canvas-container{
+    position:relative; width:100%; aspect-ratio:16/11; background:#141414;
+    border-radius:8px; overflow:hidden; border:1px solid var(--border);
+  }
+  #canvas-container canvas{display:block; width:100%; height:100%;}
+  .cam-btns{position:absolute; top:10px; right:10px; display:flex; gap:6px; z-index:5;}
+  .cam-btns button{
+    background:rgba(30,30,30,0.85); border:1px solid var(--border); color:var(--text);
+    font-family:var(--mono); font-size:11px; padding:5px 9px; border-radius:4px; cursor:pointer;
+  }
+  .cam-btns button:hover{border-color:var(--blue); color:var(--blue);}
+  .hint{position:absolute; bottom:8px; left:10px; font-family:var(--mono); font-size:10.5px; color:var(--text-dim); background:rgba(0,0,0,0.4); padding:3px 7px; border-radius:4px;}
+
+  #info-card{
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px;
+    padding:16px 18px; min-height:88px;
+  }
+  #info-card .ic-title{font-family:var(--mono); font-size:14px; color:var(--yellow); margin-bottom:6px; font-weight:700;}
+  #info-card .ic-body{font-size:13.5px; color:var(--text); line-height:1.65;}
+  #info-card .ic-placeholder{color:var(--text-dim); font-size:13px;}
+
+  /* left control panel */
+  .main-toggle{
+    width:100%; padding:12px; border-radius:6px; border:1px solid var(--border);
+    font-family:var(--mono); font-weight:700; font-size:13px; cursor:pointer;
+    background:var(--bg-input); color:var(--text); transition:all .15s; margin-bottom:14px;
+  }
+  .main-toggle.on{background:rgba(137,209,133,0.15); border-color:var(--green); color:var(--green);}
+  .main-toggle.tripped{background:rgba(241,76,76,0.15); border-color:var(--red); color:var(--red); animation:blink 1s infinite;}
+  @keyframes blink{50%{opacity:0.55;}}
+
+  .branch{
+    border:1px solid var(--border); border-radius:6px; padding:10px; margin-bottom:10px;
+    background:var(--bg-panel);
+  }
+  .branch-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+  .branch-name{font-size:12.5px; color:var(--text-bright); font-weight:700;}
+  .branch-badge{font-family:var(--mono); font-size:9.5px; padding:2px 6px; border-radius:3px; border:1px solid var(--border); color:var(--text-dim);}
+  .branch-badge.elb{color:var(--blue); border-color:var(--blue);}
+  .branch-status{font-family:var(--mono); font-size:10px; margin-bottom:6px;}
+  .status-normal{color:var(--green);}
+  .status-warn{color:var(--yellow);}
+  .status-trip{color:var(--red);}
+  .status-off{color:var(--text-dim);}
+  .branch input[type=range]{width:100%; accent-color:var(--blue); margin-bottom:4px;}
+  .branch-meta{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10.5px; color:var(--text-dim); margin-bottom:6px;}
+  .branch-btns{display:flex; gap:5px;}
+  .branch-btns button{
+    flex:1; font-family:var(--mono); font-size:9.5px; padding:5px 2px; border-radius:4px;
+    border:1px solid var(--border); background:var(--bg-input); color:var(--text-dim); cursor:pointer;
+  }
+  .branch-btns button:hover{color:var(--text-bright); border-color:var(--text-dim);}
+  .branch-btns button.reset{color:var(--green); border-color:var(--green); opacity:0.35; pointer-events:none;}
+  .branch-btns button.reset.active{opacity:1; pointer-events:auto;}
+  .branch-btns button.fault{color:var(--red);}
+  .branch-btns button.leak{color:var(--blue);}
+
+  /* right meters */
+  .meter{margin-bottom:16px;}
+  .meter-label{display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; color:var(--text-dim); margin-bottom:5px;}
+  .meter-value{color:var(--text-bright); font-weight:700;}
+  .meter-bar{height:7px; background:var(--bg-input); border-radius:4px; overflow:hidden;}
+  .meter-fill{height:100%; border-radius:4px; transition:width .25s, background .25s;}
+
+  svg#oneline{width:100%; height:auto; display:block;}
+  svg#oneline text{font-family:var(--mono); fill:var(--text-dim);}
+  svg#oneline line, svg#oneline path{transition:stroke .2s;}
+
+  /* ---------- principle accordion ---------- */
+  .acc{border:1px solid var(--border); border-radius:8px; margin-bottom:10px; overflow:hidden; background:var(--bg-panel);}
+  .acc-head{
+    display:flex; justify-content:space-between; align-items:center; cursor:pointer;
+    padding:16px 18px; user-select:none;
+  }
+  .acc-head:hover{background:var(--bg-elevated);}
+  .acc-head h4{font-size:14.5px; color:var(--text-bright); display:flex; align-items:center; gap:10px;}
+  .acc-head h4 .tag{font-family:var(--mono); font-size:10px; color:var(--copper); border:1px solid var(--copper); padding:2px 6px; border-radius:3px;}
+  .acc-arrow{font-family:var(--mono); color:var(--text-dim); transition:transform .2s;}
+  .acc.open .acc-arrow{transform:rotate(90deg); color:var(--blue);}
+  .acc-body{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .acc.open .acc-body{max-height:600px;}
+  .acc-body-inner{padding:0 18px 20px; font-size:14px; color:var(--text); display:grid; grid-template-columns:1.3fr 1fr; gap:20px;}
+  @media(max-width:760px){.acc-body-inner{grid-template-columns:1fr;}}
+  .acc-body-inner p{margin-bottom:10px; color:var(--text-dim);}
+  .acc-diagram{background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:14px; display:flex; align-items:center; justify-content:center;}
+
+  /* ---------- usage steps ---------- */
+  .steps{border-left:2px solid var(--border); margin-left:14px; padding-left:24px;}
+  .step{position:relative; padding-bottom:28px;}
+  .step:last-child{padding-bottom:0;}
+  .step::before{
+    content:attr(data-n); position:absolute; left:-35px; top:0;
+    width:26px; height:26px; border-radius:50%; background:var(--bg-elevated);
+    border:1px solid var(--copper); color:var(--copper); font-family:var(--mono);
+    font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+  .step h4{font-size:14.5px; color:var(--text-bright); margin-bottom:5px;}
+  .step p{font-size:13.5px; color:var(--text-dim);}
+  .step .warn{color:var(--yellow); font-size:12.5px; margin-top:4px; font-family:var(--mono);}
+
+  .usage-grid{display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:12px;}
+  @media(max-width:860px){.usage-grid{grid-template-columns:1fr;}}
+
+  footer{
+    text-align:center; padding:40px 24px; color:var(--text-dim); font-size:12px;
+    font-family:var(--mono); border-top:1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">⏚ <span>SWITCHBOARD</span>/SIM</div>
+  <a href="#overview">01 개요</a>
+  <a href="#simulator">02 3D 시뮬레이터</a>
+  <a href="#principle">03 동작원리</a>
+  <a href="#usage">04 사용법</a>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">전기과 캡스톤 디자인 · 3D 인터랙티브 학습자료</div>
+  <h1 class="title">배전반 <span class="accent">원리</span> 시뮬레이터</h1>
+  <p class="subtitle">전류가 메인 차단기에서 부스바를 거쳐 각 분기 회로로 흐르는 과정과, 과부하·단락·누전 상황에서 차단기가 동작하는 원리를 3D로 직접 조작하며 학습합니다.</p>
+  <div class="hero-tags">
+    <span>MCCB / MCB</span><span>ELB(누전차단기)</span><span>열동형 트립</span><span>전자식 순시트립</span><span>단상 220V 기준</span>
+  </div>
+</header>
+
+<section id="overview">
+  <h2><span class="num">01</span> 배전반이란</h2>
+  <p class="lead">전력을 안전하게 분배하고, 이상 전류(과부하·단락·누전)로부터 회로와 사람을 보호하는 장치의 집합입니다. 이 시뮬레이터는 하나의 배전반 내부를 단순화해 구성했습니다.</p>
+  <div class="grid3">
+    <div class="card"><div class="icon">🔌</div><h3>메인 차단기 (MCCB)</h3><p>인입 전원 전체를 담당하며, 배전반 전체를 보호하는 최상위 차단기입니다. 하위 분기 차단기보다 정격과 트립 시간이 커야 협조가 이루어집니다.</p></div>
+    <div class="card"><div class="icon">▭</div><h3>부스바 (Bus Bar)</h3><p>구리로 된 도체 막대로, 메인에서 들어온 전력을 여러 분기 회로에 나누어 공급하는 공용 통로 역할을 합니다.</p></div>
+    <div class="card"><div class="icon">🛡️</div><h3>분기 차단기 (MCB/ELB)</h3><p>각 부하별로 설치되어 해당 회로만 개별 차단합니다. 콘센트 계열은 감전 보호를 위해 누전차단기(ELB)를 사용합니다.</p></div>
+  </div>
+</section>
+
+<section id="simulator">
+  <h2><span class="num">02</span> 3D 시뮬레이터</h2>
+  <p class="lead">부하율 슬라이더로 각 회로의 전류를 조절하고, 단락·누전 버튼으로 사고 상황을 재현해 보세요. 3D 모델의 차단기·부스바·접지를 클릭하면 설명이 표시됩니다.</p>
+
+  <div class="sim-wrap">
+    <!-- LEFT: controls -->
+    <div class="panel-box">
+      <div class="panel-title">회로 제어</div>
+      <button id="mainToggle" class="main-toggle">⏻ 메인 전원 투입</button>
+      <div id="branchList"></div>
+    </div>
+
+    <!-- CENTER: 3D canvas + info -->
+    <div id="canvas-col">
+      <div id="canvas-container">
+        <div class="cam-btns">
+          <button data-view="front">정면</button>
+          <button data-view="iso">입체</button>
+          <button data-view="top">위</button>
+        </div>
+        <div class="hint">드래그: 회전 · 휠: 확대/축소 · 부품 클릭: 설명 보기</div>
+      </div>
+      <div id="info-card">
+        <div class="ic-title" id="icTitle">부품을 선택하세요</div>
+        <div class="ic-body ic-placeholder" id="icBody">3D 모델에서 메인 차단기, 부스바, 분기 차단기, 접지선 등을 클릭하면 원리와 역할이 여기에 표시됩니다.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: meters + one-line -->
+    <div class="panel-box">
+      <div class="panel-title">계측</div>
+      <div class="meter">
+        <div class="meter-label"><span>전체 전류</span><span class="meter-value" id="mTotalCurrent">0.0 A</span></div>
+        <div class="meter-bar"><div class="meter-fill" id="mTotalFill" style="width:0%; background:var(--green);"></div></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>메인 차단기 부하율</span><span class="meter-value" id="mMainPct">0 %</span></div>
+        <div class="meter-bar"><div class="meter-fill" id="mMainFill" style="width:0%; background:var(--green);"></div></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>메인 열축적(트립 임박도)</span><span class="meter-value" id="mHeat">0 %</span></div>
+        <div class="meter-bar"><div class="meter-fill" id="mHeatFill" style="width:0%; background:var(--yellow);"></div></div>
+      </div>
+      <div class="panel-title" style="margin-top:18px;">단선 결선도</div>
+      <svg id="oneline" viewBox="0 0 260 300"></svg>
+    </div>
+  </div>
+</section>
+
+<section id="principle">
+  <h2><span class="num">03</span> 동작 원리</h2>
+  <p class="lead">차단기가 실제로 어떤 물리 원리로 회로를 끊는지 4가지 핵심 메커니즘을 정리했습니다.</p>
+
+  <div class="acc open" data-acc>
+    <div class="acc-head" onclick="toggleAcc(this)">
+      <h4><span class="tag">열동형</span> 과부하 보호 — 바이메탈 트립</h4>
+      <span class="acc-arrow">▶</span>
+    </div>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div>
+        <p>정격을 초과하는 전류가 일정 시간 이상 흐르면, 차단기 내부의 <b>바이메탈(두 금속판)</b>이 전류의 발열로 서서히 가열되어 휘어집니다.</p>
+        <p>바이메탈이 일정 각도 이상 휘면 내부 걸쇠(래치)를 밀어 트립시켜 회로를 차단합니다. 전류가 클수록, 초과 시간이 짧을수록 빨리 동작하는 <b>반한시(反限時) 특성</b>을 가집니다.</p>
+        <p>시뮬레이터의 부하율을 100%보다 높게 올리면 우측 계측기의 열축적 값이 서서히 쌓이다가 임계치에서 트립되는 것으로 이 특성을 표현했습니다.</p>
+      </div>
+      <div class="acc-diagram"><svg width="180" height="140" viewBox="0 0 180 140">
+        <rect x="10" y="10" width="160" height="120" rx="6" fill="none" stroke="#3e3e42"/>
+        <path d="M40 30 Q 70 30 70 60 Q 70 90 40 90" stroke="#ce9178" stroke-width="6" fill="none"/>
+        <path d="M50 30 Q 85 30 85 60 Q 85 90 50 90" stroke="#858585" stroke-width="6" fill="none"/>
+        <text x="20" y="20" font-size="9" fill="#858585">가열 전 (직선)</text>
+        <path d="M100 100 L 130 100 L 130 40" stroke="#f14c4c" stroke-width="3" fill="none" stroke-dasharray="4 3"/>
+        <text x="95" y="115" font-size="9" fill="#f14c4c">휨 → 래치 밀어냄 → 트립</text>
+      </svg></div>
+    </div></div>
+  </div>
+
+  <div class="acc" data-acc>
+    <div class="acc-head" onclick="toggleAcc(this)">
+      <h4><span class="tag">전자식</span> 단락 보호 — 순시 트립</h4>
+      <span class="acc-arrow">▶</span>
+    </div>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div>
+        <p>단락(합선)처럼 매우 큰 전류가 순간적으로 흐르면, 차단기 내부의 <b>전자석(솔레노이드) 코일</b>이 강한 자기력을 만들어 플런저를 즉시 끌어당깁니다.</p>
+        <p>이 힘이 직접 트립 기구를 작동시키므로 열이 쌓일 시간 없이 <b>수 밀리초(ms) 이내</b>에 회로를 차단합니다 — 화재·설비 손상을 막는 순간 보호입니다.</p>
+        <p>시뮬레이터의 "단락" 버튼을 누르면 부하가 순간적으로 정격의 수 배로 치솟아 지연 없이 즉시 트립되는 모습을 확인할 수 있습니다.</p>
+      </div>
+      <div class="acc-diagram"><svg width="180" height="140" viewBox="0 0 180 140">
+        <rect x="10" y="10" width="160" height="120" rx="6" fill="none" stroke="#3e3e42"/>
+        <rect x="55" y="40" width="70" height="34" fill="none" stroke="#4fc1ff" stroke-width="3"/>
+        <line x1="55" y1="46" x2="125" y2="46" stroke="#4fc1ff" stroke-width="2"/>
+        <line x1="55" y1="52" x2="125" y2="52" stroke="#4fc1ff" stroke-width="2"/>
+        <line x1="55" y1="58" x2="125" y2="58" stroke="#4fc1ff" stroke-width="2"/>
+        <circle cx="90" cy="95" r="8" fill="#f14c4c"/>
+        <line x1="90" y1="74" x2="90" y2="87" stroke="#f14c4c" stroke-width="3"/>
+        <text x="30" y="120" font-size="9" fill="#858585">순간 자기력 → 플런저 흡인 → 즉시 차단</text>
+      </svg></div>
+    </div></div>
+  </div>
+
+  <div class="acc" data-acc>
+    <div class="acc-head" onclick="toggleAcc(this)">
+      <h4><span class="tag">ELB</span> 누전차단기 — 영상변류기(ZCT)</h4>
+      <span class="acc-arrow">▶</span>
+    </div>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div>
+        <p>정상 상태에서는 왕복하는 전류(들어가는 전류 = 나가는 전류)가 항상 같아, 두 도체를 함께 감은 <b>영상변류기(ZCT)</b>에서 발생하는 자속이 서로 상쇄되어 0입니다.</p>
+        <p>인체 감전 등으로 전류 일부가 접지로 새면 두 전류에 차이(누설전류)가 생기고, ZCT가 이 미세한 불평형을 감지해 <b>트립 코일</b>을 작동시켜 통상 30mA 이하에서 순식간에 차단합니다.</p>
+        <p>시뮬레이터의 콘센트 회로(ELB 배지 표시)에서 "누전" 버튼을 눌러 이 동작을 재현해 보세요.</p>
+      </div>
+      <div class="acc-diagram"><svg width="180" height="140" viewBox="0 0 180 140">
+        <rect x="10" y="10" width="160" height="120" rx="6" fill="none" stroke="#3e3e42"/>
+        <ellipse cx="90" cy="60" rx="42" ry="30" fill="none" stroke="#4fc1ff" stroke-width="3"/>
+        <line x1="48" y1="50" x2="132" y2="50" stroke="#dcdcaa" stroke-width="3"/>
+        <line x1="48" y1="70" x2="132" y2="70" stroke="#dcdcaa" stroke-width="3"/>
+        <path d="M132 70 L 150 100" stroke="#f14c4c" stroke-width="2" stroke-dasharray="3 2"/>
+        <text x="152" y="105" font-size="9" fill="#f14c4c">누설</text>
+        <text x="25" y="118" font-size="9" fill="#858585">왕복전류 불평형 감지 → 트립코일 동작</text>
+      </svg></div>
+    </div></div>
+  </div>
+
+  <div class="acc" data-acc>
+    <div class="acc-head" onclick="toggleAcc(this)">
+      <h4><span class="tag">협조</span> 보호 협조 — 선택 차단</h4>
+      <span class="acc-arrow">▶</span>
+    </div>
+    <div class="acc-body"><div class="acc-body-inner">
+      <div>
+        <p>분기 회로에서 사고가 나면 <b>분기 차단기만</b> 트립되고 메인 차단기는 살아있어야, 다른 정상 회로들이 정전되지 않습니다. 이를 <b>보호 협조(선택 차단)</b>라 합니다.</p>
+        <p>이를 위해 상위(메인) 차단기의 정격전류와 트립 시간을 하위(분기) 차단기보다 여유 있게 설정합니다. 시뮬레이터에서도 분기 과부하는 먼저 해당 분기만 트립되고, 여러 회로가 동시에 과부하 상태로 오래 지속될 때만 메인이 트립되도록 구현했습니다.</p>
+      </div>
+      <div class="acc-diagram"><svg width="180" height="140" viewBox="0 0 180 140">
+        <rect x="10" y="10" width="160" height="120" rx="6" fill="none" stroke="#3e3e42"/>
+        <rect x="75" y="18" width="30" height="16" fill="none" stroke="#89d185" stroke-width="2"/>
+        <text x="60" y="16" font-size="8" fill="#89d185">MAIN (정상)</text>
+        <line x1="90" y1="34" x2="90" y2="50" stroke="#89d185" stroke-width="2"/>
+        <line x1="40" y1="50" x2="140" y2="50" stroke="#89d185" stroke-width="2"/>
+        <line x1="55" y1="50" x2="55" y2="65" stroke="#89d185" stroke-width="2"/>
+        <rect x="42" y="65" width="26" height="14" fill="none" stroke="#89d185" stroke-width="2"/>
+        <line x1="125" y1="50" x2="125" y2="65" stroke="#f14c4c" stroke-width="2"/>
+        <rect x="112" y="65" width="26" height="14" fill="none" stroke="#f14c4c" stroke-width="2"/>
+        <text x="95" y="76" font-size="8" fill="#f14c4c">분기만 트립</text>
+      </svg></div>
+    </div></div>
+  </div>
+</section>
+
+<section id="usage">
+  <h2><span class="num">04</span> 사용법 — 조작 · 점검 · 복구</h2>
+  <p class="lead">실제 배전반을 다룰 때도 아래 순서를 지켜야 안전합니다. 시뮬레이터에서 동일한 순서로 조작해 보세요.</p>
+  <div class="usage-grid">
+    <div>
+      <h3 style="color:var(--text-bright); font-size:15px; margin-bottom:16px;">투입 · 차단 순서</h3>
+      <div class="steps">
+        <div class="step" data-n="1"><h4>메인 차단기 투입</h4><p>먼저 모든 분기 차단기가 OFF인지 확인한 뒤 메인을 투입합니다. 부스바 전체에 전압이 걸립니다.</p></div>
+        <div class="step" data-n="2"><h4>분기 차단기 순차 투입</h4><p>부하가 큰 회로부터 한 번에 몰아 넣지 않고 하나씩 투입해 돌입전류가 겹치지 않도록 합니다.</p></div>
+        <div class="step" data-n="3"><h4>차단은 역순으로</h4><p>차단할 때는 분기 → 메인 순서로, 부하 있는 상태에서 메인을 먼저 내리지 않습니다.</p><div class="warn">⚠ 부하 상태에서 메인부터 차단하면 아크가 크게 발생할 수 있습니다.</div></div>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:var(--text-bright); font-size:15px; margin-bottom:16px;">점검 · 트립 복구</h3>
+      <div class="steps">
+        <div class="step" data-n="1"><h4>외관 · 발열 점검</h4><p>차단기 표면 변색, 이취(異臭), 렌치·단자부 이완 여부를 정기적으로 확인합니다.</p></div>
+        <div class="step" data-n="2"><h4>ELB 테스트 버튼 점검</h4><p>매월 1회 이상 테스트(T) 버튼을 눌러 실제로 트립되는지 확인해 누전차단기의 건전성을 검증합니다.</p></div>
+        <div class="step" data-n="3"><h4>트립 후 복구 절차</h4><p>원인(과부하·단락·누전)을 먼저 제거한 뒤, 레버를 완전히 OFF 위치로 내렸다가 다시 ON으로 올립니다. 시뮬레이터의 "복구" 버튼이 이 과정을 의미합니다.</p><div class="warn">⚠ 원인 파악 없이 재투입을 반복하면 사고가 확대될 수 있습니다.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>SWITCHBOARD PRINCIPLE SIMULATOR · 전기과 캡스톤 디자인 학습자료 · Three.js 기반 단일 HTML</footer>
+
+<script>
+/* ============================================================
+   0. DATA / STATE
+   ============================================================ */
+const BRANCHES = [
+  {id:0, name:'조명 회로',   type:'lighting', rated:20, breakerType:'MCB', color:0xdcdcaa, x:-4.4},
+  {id:1, name:'콘센트 회로', type:'outlet',   rated:20, breakerType:'ELB', color:0x4fc1ff, x:-2.2},
+  {id:2, name:'에어컨 회로', type:'aircon',   rated:30, breakerType:'MCB', color:0x89d185, x:0},
+  {id:3, name:'모터 회로',   type:'motor',    rated:30, breakerType:'MCB', color:0xce9178, x:2.2},
+  {id:4, name:'예비 회로',   type:'spare',    rated:20, breakerType:'MCB', color:0x858585, x:4.4},
+];
+const MAIN_RATED = 100; // A
+const HEAT_TRIP_THRESHOLD = 100;
+const HEAT_RATE = 55;      // heat gain rate factor while overloaded
+const HEAT_DECAY = 30;     // heat decay rate while normal
+const INSTANT_TRIP_PCT = 300; // % load that causes instantaneous trip (short circuit)
+
+const state = {
+  mainOn:false,
+  mainTripped:false,
+  mainHeat:0,
+  branches:BRANCHES.map(b=>({
+    ...b, loadPct:35, on:true, tripped:false, heat:0, faultPulse:0, leakPulse:0
+  })),
+};
+
+const INFO = {
+  main:{title:'메인 차단기 (MCCB)', body:'배전반으로 들어오는 전원 전체를 담당하는 상위 차단기입니다. 열동형(과부하)과 전자식(단락) 트립 기구를 함께 갖추고 있으며, 하위 분기 차단기보다 정격과 트립 시간을 크게 잡아 분기 사고 시에는 분기만 트립되도록 보호 협조를 이룹니다.'},
+  busbar:{title:'부스바 (Bus Bar)', body:'구리로 만든 판형 도체로, 메인 차단기에서 들어온 전력을 여러 분기 회로에 공동으로 분배하는 통로입니다. 전류 용량이 커서 발열·저항이 적고, 각 분기는 이 부스바에서 전력을 탭(분기)해 갑니다.'},
+  ground:{title:'접지 (Grounding)', body:'배전반 외함과 각 부하의 금속 케이스를 대지와 연결해, 절연 파괴로 인한 누전 시 사람 대신 전류가 대지로 흐르게 해 감전을 방지합니다. 누전차단기(ELB)의 누설전류 감지 기준점이기도 합니다.'},
+};
+BRANCHES.forEach(b=>{
+  const isElb = b.breakerType==='ELB';
+  INFO['branch'+b.id] = {
+    title:`${b.name} 분기 차단기 (${b.breakerType}, ${b.rated}A)`,
+    body: isElb
+      ? '콘센트·습한 장소 등 감전 위험이 있는 회로에는 누전차단기(ELB)를 사용합니다. 과부하·단락 보호 기능에 더해, 영상변류기(ZCT)로 누설전류를 감지해 인체 감전을 예방합니다.'
+      : `${b.name}을(를) 개별적으로 보호하는 배선용 차단기(MCB)입니다. 정격전류 ${b.rated}A를 초과하는 과부하가 지속되면 열동형 기구로, 단락처럼 매우 큰 전류가 순간 흐르면 전자식 기구로 즉시 트립됩니다.`
+  };
+});
+
+/* ============================================================
+   1. THREE.JS SCENE SETUP
+   ============================================================ */
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x141414);
+scene.fog = new THREE.Fog(0x141414, 18, 40);
+
+const camera = new THREE.PerspectiveCamera(42, container.clientWidth/container.clientHeight, 0.1, 100);
+camera.position.set(9, 6, 13);
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(container.clientWidth, container.clientHeight);
+container.appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0,1.5,0);
+controls.minDistance = 6;
+controls.maxDistance = 26;
+controls.maxPolarAngle = Math.PI*0.53;
+
+scene.add(new THREE.AmbientLight(0x8899aa, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 0.9);
+key.position.set(8,12,8); scene.add(key);
+const fill = new THREE.DirectionalLight(0x4fc1ff, 0.25);
+fill.position.set(-8,4,-6); scene.add(fill);
+const rim = new THREE.PointLight(0xce9178, 0.4, 30);
+rim.position.set(0,2,10); scene.add(rim);
+
+// ground grid
+const grid = new THREE.GridHelper(40, 40, 0x333333, 0x2a2a2a);
+grid.position.y = -6.4;
+scene.add(grid);
+
+/* ---------- materials ---------- */
+const matPanel   = new THREE.MeshStandardMaterial({color:0x2b2b2e, metalness:0.4, roughness:0.6});
+const matCabinet = new THREE.MeshStandardMaterial({color:0x1a1a1c, metalness:0.5, roughness:0.5, transparent:true, opacity:0.28, side:THREE.DoubleSide});
+const matCopper  = new THREE.MeshStandardMaterial({color:0xd38b5d, metalness:0.85, roughness:0.35});
+const matBody    = new THREE.MeshStandardMaterial({color:0x3a3a3d, metalness:0.3, roughness:0.55});
+const matWire    = new THREE.MeshStandardMaterial({color:0x555555, metalness:0.2, roughness:0.6});
+const matGround  = new THREE.MeshStandardMaterial({color:0x6a6a6a, metalness:0.6, roughness:0.4});
+
+const root = new THREE.Group();
+scene.add(root);
+
+/* ---------- mounting panel + outer cabinet ---------- */
+const panel = new THREE.Mesh(new THREE.BoxGeometry(11.6, 13.2, 0.3), matPanel);
+panel.position.set(0, 1.4, -0.3);
+root.add(panel);
+
+const cabinet = new THREE.Mesh(new THREE.BoxGeometry(12.4, 14, 2.4), matCabinet);
+cabinet.position.set(0, 1.4, 0.4);
+root.add(cabinet);
+const cabEdges = new THREE.LineSegments(new THREE.EdgesGeometry(cabinet.geometry), new THREE.LineBasicMaterial({color:0x555555}));
+cabEdges.position.copy(cabinet.position);
+root.add(cabEdges);
+
+/* ---------- label sprite helper ---------- */
+function makeLabel(text, color='#d4d4d4', size=64){
+  const c = document.createElement('canvas'); const ctx = c.getContext('2d');
+  c.width = 256; c.height = 64;
+  ctx.font = '700 30px JetBrains Mono, monospace';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle = color;
+  ctx.fillText(text, 128, 32);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false});
+  const spr = new THREE.Sprite(mat);
+  spr.scale.set(1.8, 0.45, 1);
+  return spr;
+}
+
+/* ---------- interactive registry ---------- */
+const pickables = []; // {mesh, key, leverGroup, flagMesh, bodyMesh}
+
+/* ---------- breaker builder ---------- */
+function buildBreaker(w,h,d, colorAccent){
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), matBody);
+  g.add(body);
+  // small colored status window
+  const win = new THREE.Mesh(new THREE.BoxGeometry(w*0.28,h*0.18,0.03), new THREE.MeshStandardMaterial({color:colorAccent, emissive:colorAccent, emissiveIntensity:0.6}));
+  win.position.set(0, h*0.22, d/2+0.02);
+  g.add(win);
+  // lever pivot
+  const pivot = new THREE.Group();
+  pivot.position.set(0, -h*0.05, d/2+0.02);
+  const lever = new THREE.Mesh(new THREE.BoxGeometry(w*0.22,h*0.55,0.12), new THREE.MeshStandardMaterial({color:0xbbbbbb, metalness:0.5, roughness:0.4}));
+  lever.position.set(0, h*0.24, 0.06);
+  pivot.add(lever);
+  g.add(pivot);
+  // trip flag (hidden by default)
+  const flag = new THREE.Mesh(new THREE.BoxGeometry(w*0.5,h*0.22,0.04), new THREE.MeshStandardMaterial({color:0xf14c4c, emissive:0xf14c4c, emissiveIntensity:0.5}));
+  flag.position.set(0, h*0.62, d/2+0.02);
+  flag.visible = false;
+  g.add(flag);
+  return {group:g, win, pivot, flag, body};
+}
+
+/* ---------- main breaker ---------- */
+const mainB = buildBreaker(2.0, 1.3, 0.7, 0x555555);
+mainB.group.position.set(0, 5.4, 0.35+0.35);
+root.add(mainB.group);
+const mainLabel = makeLabel('MAIN 100A', '#ffffff'); mainLabel.position.set(0, 6.4, 0.5); root.add(mainLabel);
+pickables.push({mesh:mainB.group, key:'main'});
+
+/* ---------- busbars (Hot / Neutral) ---------- */
+const busHot = new THREE.Mesh(new THREE.BoxGeometry(9.6,0.16,0.16), matCopper);
+busHot.position.set(0, 3.9, 0.55);
+root.add(busHot);
+const busN = new THREE.Mesh(new THREE.BoxGeometry(9.6,0.1,0.1), matWire);
+busN.position.set(0, 3.6, 0.55);
+root.add(busN);
+const busLabel = makeLabel('BUS BAR', '#d38b5d'); busLabel.scale.set(1.3,0.32,1); busLabel.position.set(-4.9, 3.9, 0.6); root.add(busLabel);
+pickables.push({mesh:busHot, key:'busbar'});
+
+/* main -> bus wire */
+function tube(p0,p1,p2,color=0x666666, r=0.045){
+  const curve = new THREE.CatmullRomCurve3([p0,p1,p2].filter(Boolean));
+  const geo = new THREE.TubeGeometry(curve, 20, r, 8, false);
+  const mat = new THREE.MeshStandardMaterial({color, metalness:0.2, roughness:0.6});
+  return {mesh:new THREE.Mesh(geo, mat), curve};
+}
+const mainToBus = tube(new THREE.Vector3(0,4.75,0.55), null, new THREE.Vector3(0,3.9,0.55));
+root.add(mainToBus.mesh);
+
+/* ---------- branch breakers + loads + wires + particle paths ---------- */
+const loadIcons = {
+  lighting:'💡', outlet:'🔌', aircon:'❄️', motor:'⚙️', spare:'▢'
+};
+const branchObjs = {};
+const busY = 3.9, branchY = 1.9, loadY = -2.4;
+
+BRANCHES.forEach(cfg=>{
+  const grp = new THREE.Group();
+  const brk = buildBreaker(1.5, 1.0, 0.55, cfg.breakerType==='ELB'?0x4fc1ff:0x89d185);
+  brk.group.position.set(cfg.x, branchY, 0.35+0.28);
+  root.add(brk.group);
+  pickables.push({mesh:brk.group, key:'branch'+cfg.id});
+
+  // badge label
+  const lbl = makeLabel((cfg.breakerType)+' '+cfg.rated+'A', cfg.breakerType==='ELB'?'#4fc1ff':'#89d185');
+  lbl.scale.set(1.15,0.3,1);
+  lbl.position.set(cfg.x, branchY+0.85, 0.5);
+  root.add(lbl);
+
+  // bus -> branch wire
+  const tapPt = new THREE.Vector3(cfg.x, busY, 0.55);
+  const b2br = tube(tapPt, new THREE.Vector3(cfg.x, (busY+branchY)/2+0.4, 0.5), new THREE.Vector3(cfg.x, branchY+0.55, 0.5-0.05));
+  root.add(b2br.mesh);
+
+  // load box
+  const loadMat = new THREE.MeshStandardMaterial({color:cfg.color, metalness:0.2, roughness:0.5, emissive:cfg.color, emissiveIntensity:0.12});
+  const load = new THREE.Mesh(new THREE.BoxGeometry(0.9,0.9,0.5), loadMat);
+  load.position.set(cfg.x, loadY, 0.5);
+  root.add(load);
+  const loadLbl = makeLabel(cfg.name.replace(' 회로',''), '#ffffff');
+  loadLbl.scale.set(1.3,0.32,1);
+  loadLbl.position.set(cfg.x, loadY-0.75, 0.5);
+  root.add(loadLbl);
+
+  // branch -> load wire
+  const br2load = tube(new THREE.Vector3(cfg.x, branchY-0.5, 0.5-0.05), new THREE.Vector3(cfg.x, (branchY+loadY)/2, 0.45), new THREE.Vector3(cfg.x, loadY+0.45, 0.5));
+
+  root.add(br2load.mesh);
+
+  branchObjs[cfg.id] = {cfg, brk, b2br, br2load, load, loadMat};
+});
+
+/* ---------- ground ---------- */
+const groundBar = new THREE.Mesh(new THREE.BoxGeometry(9.6,0.12,0.12), matGround);
+groundBar.position.set(0, -5.6, 0.55);
+root.add(groundBar);
+const groundLbl = makeLabel('GROUND', '#89d185'); groundLbl.scale.set(1.2,0.3,1); groundLbl.position.set(-4.9,-5.9,0.6); root.add(groundLbl);
+pickables.push({mesh:groundBar, key:'ground'});
+// earth symbol (decreasing bars)
+const earthGrp = new THREE.Group();
+[0.5,0.35,0.2].forEach((w,i)=>{
+  const bar = new THREE.Mesh(new THREE.BoxGeometry(w,0.06,0.06), matGround);
+  bar.position.set(-5.2, -6.0 - i*0.28, 0.55);
+  earthGrp.add(bar);
+});
+const earthStem = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.5,8), matGround);
+earthStem.position.set(-5.2,-5.85,0.55);
+earthGrp.add(earthStem);
+root.add(earthGrp);
+
+/* ============================================================
+   2. CURRENT-FLOW PARTICLE SYSTEM
+   ============================================================ */
+class FlowPath{
+  constructor(curve, color, count=5){
+    this.curve = curve;
+    this.speedMul = 1;
+    this.energized = false;
+    this.particles = [];
+    const geo = new THREE.SphereGeometry(0.065, 8, 8);
+    const mat = new THREE.MeshStandardMaterial({color, emissive:color, emissiveIntensity:1.4});
+    for(let i=0;i<count;i++){
+      const m = new THREE.Mesh(geo, mat);
+      m.userData.t = i/count;
+      m.visible = false;
+      root.add(m);
+      this.particles.push(m);
+    }
+  }
+  update(dt){
+    const spd = 0.35 * this.speedMul;
+    this.particles.forEach(p=>{
+      p.visible = this.energized;
+      if(!this.energized) return;
+      p.userData.t = (p.userData.t + dt*spd) % 1;
+      const pos = this.curve.getPoint(p.userData.t);
+      p.position.copy(pos);
+    });
+  }
+}
+const flowMainToBus = new FlowPath(mainToBus.curve, 0xdcdcaa, 8);
+const branchFlows = {};
+BRANCHES.forEach(cfg=>{
+  branchFlows[cfg.id] = {
+    toBranch: new FlowPath(branchObjs[cfg.id].b2br.curve, cfg.color, 4),
+    toLoad:   new FlowPath(branchObjs[cfg.id].br2load.curve, cfg.color, 4),
+  };
+});
+
+/* ============================================================
+   3. ARC FLASH FX (on trip)
+   ============================================================ */
+const fxGroup = new THREE.Group(); scene.add(fxGroup);
+function spawnArc(position, color=0xffcc66){
+  const N = 26;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(N*3);
+  const vel = [];
+  for(let i=0;i<N;i++){
+    pos[i*3]=position.x; pos[i*3+1]=position.y; pos[i*3+2]=position.z;
+    const dir = new THREE.Vector3((Math.random()-0.5),(Math.random()-0.2),(Math.random()-0.5)).normalize().multiplyScalar(2+Math.random()*3);
+    vel.push(dir);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const mat = new THREE.PointsMaterial({color, size:0.14, transparent:true, opacity:1, blending:THREE.AdditiveBlending, depthWrite:false});
+  const pts = new THREE.Points(geo, mat);
+  pts.userData = {vel, life:0, maxLife:0.5};
+  fxGroup.add(pts);
+}
+function updateArcs(dt){
+  for(let i=fxGroup.children.length-1;i>=0;i--){
+    const pts = fxGroup.children[i];
+    pts.userData.life += dt;
+    const arr = pts.geometry.attributes.position.array;
+    for(let j=0;j<pts.userData.vel.length;j++){
+      arr[j*3]   += pts.userData.vel[j].x*dt;
+      arr[j*3+1] += pts.userData.vel[j].y*dt;
+      arr[j*3+2] += pts.userData.vel[j].z*dt;
+    }
+    pts.geometry.attributes.position.needsUpdate = true;
+    pts.material.opacity = 1 - pts.userData.life/pts.userData.maxLife;
+    if(pts.userData.life > pts.userData.maxLife){ fxGroup.remove(pts); pts.geometry.dispose(); pts.material.dispose(); }
+  }
+}
+
+/* ============================================================
+   4. RAYCAST PICKING
+   ============================================================ */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+renderer.domElement.addEventListener('click', (e)=>{
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX-rect.left)/rect.width)*2-1;
+  mouse.y = -((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouse, camera);
+  for(const p of pickables){
+    const hits = raycaster.intersectObject(p.mesh, true);
+    if(hits.length){ showInfo(p.key); return; }
+  }
+});
+function showInfo(key){
+  const d = INFO[key]; if(!d) return;
+  document.getElementById('icTitle').textContent = d.title;
+  const body = document.getElementById('icBody');
+  body.textContent = d.body;
+  body.classList.remove('ic-placeholder');
+}
+
+/* ============================================================
+   5. UI BUILD — branch controls
+   ============================================================ */
+const branchListEl = document.getElementById('branchList');
+state.branches.forEach(b=>{
+  const el = document.createElement('div');
+  el.className = 'branch';
+  el.innerHTML = `
+    <div class="branch-head">
+      <span class="branch-name">${b.name}</span>
+      <span class="branch-badge ${b.breakerType==='ELB'?'elb':''}">${b.breakerType}</span>
+    </div>
+    <div class="branch-status status-normal" id="bstat-${b.id}">정상 · ON</div>
+    <input type="range" min="0" max="150" value="${b.loadPct}" id="bslider-${b.id}">
+    <div class="branch-meta"><span id="bcur-${b.id}">0.0 A</span><span id="bpct-${b.id}">${b.loadPct}%</span></div>
+    <div class="branch-btns">
+      <button class="fault" id="bfault-${b.id}" title="단락 시뮬레이션">⚡ 단락</button>
+      ${b.breakerType==='ELB' ? `<button class="leak" id="bleak-${b.id}" title="누전 시뮬레이션">💧 누전</button>` : ''}
+      <button class="reset" id="breset-${b.id}" title="트립 복구">↺ 복구</button>
+    </div>
+  `;
+  branchListEl.appendChild(el);
+
+  document.getElementById(`bslider-${b.id}`).addEventListener('input', (e)=>{
+    b.loadPct = +e.target.value;
+    document.getElementById(`bpct-${b.id}`).textContent = b.loadPct+'%';
+  });
+  document.getElementById(`bfault-${b.id}`).addEventListener('click', ()=>{
+    if(!state.mainOn || state.mainTripped || !b.on || b.tripped) return;
+    b.faultPulse = 0.15; // triggers instantaneous trip in update loop
+  });
+  const leakBtn = document.getElementById(`bleak-${b.id}`);
+  if(leakBtn) leakBtn.addEventListener('click', ()=>{
+    if(!state.mainOn || state.mainTripped || !b.on || b.tripped) return;
+    b.leakPulse = 0.15;
+  });
+  document.getElementById(`breset-${b.id}`).addEventListener('click', ()=>{
+    if(!b.tripped) return;
+    b.tripped = false; b.heat = 0; b.faultPulse = 0; b.leakPulse = 0;
+  });
+});
+
+document.getElementById('mainToggle').addEventListener('click', ()=>{
+  if(state.mainTripped){
+    // reset procedure
+    state.mainTripped = false; state.mainHeat = 0;
+    state.mainOn = false;
+    return;
+  }
+  state.mainOn = !state.mainOn;
+});
+
+/* camera preset views */
+document.querySelectorAll('.cam-btns button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const v = btn.dataset.view;
+    const targets = {
+      front:{pos:[0,1.6,15], tgt:[0,1.4,0]},
+      iso:{pos:[9,6,13], tgt:[0,1.5,0]},
+      top:{pos:[0.1,17,0.1], tgt:[0,1,0]},
+    };
+    const t = targets[v];
+    animateCamera(t.pos, t.tgt);
+  });
+});
+function animateCamera(pos, tgt){
+  const startPos = camera.position.clone();
+  const startTgt = controls.target.clone();
+  const endPos = new THREE.Vector3(...pos);
+  const endTgt = new THREE.Vector3(...tgt);
+  let t0 = null;
+  function step(ts){
+    if(!t0) t0 = ts;
+    const k = Math.min((ts-t0)/600, 1);
+    const ease = 1 - Math.pow(1-k, 3);
+    camera.position.lerpVectors(startPos, endPos, ease);
+    controls.target.lerpVectors(startTgt, endTgt, ease);
+    if(k<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ============================================================
+   6. ONE-LINE DIAGRAM (SVG) SYNC
+   ============================================================ */
+const svg = document.getElementById('oneline');
+svg.innerHTML = `
+  <rect x="105" y="8" width="50" height="20" rx="3" fill="none" id="ol-main" stroke="#858585" stroke-width="2"/>
+  <text x="130" y="21" font-size="9" text-anchor="middle" fill="#d4d4d4">MAIN</text>
+  <line x1="130" y1="28" x2="130" y2="44" id="ol-mainwire" stroke="#858585" stroke-width="2"/>
+  <line x1="20" y1="44" x2="240" y2="44" id="ol-bus" stroke="#858585" stroke-width="3"/>
+  <text x="20" y="38" font-size="8" fill="#d38b5d">BUS</text>
+  ${BRANCHES.map((b,i)=>{
+    const x = 30 + i*48;
+    return `
+    <line x1="${x}" y1="44" x2="${x}" y2="62" id="ol-tap${b.id}" stroke="#858585" stroke-width="2"/>
+    <rect x="${x-14}" y="62" width="28" height="16" rx="2" fill="none" id="ol-brk${b.id}" stroke="#858585" stroke-width="2"/>
+    <line x1="${x}" y1="78" x2="${x}" y2="100" id="ol-load${b.id}" stroke="#858585" stroke-width="2"/>
+    <circle cx="${x}" cy="106" r="6" fill="none" id="ol-loadc${b.id}" stroke="#858585" stroke-width="2"/>
+    <text x="${x}" y="122" font-size="7" text-anchor="middle" fill="#858585" transform="rotate(0)">${b.name.replace(' 회로','')}</text>
+  `}).join('')}
+`;
+
+/* ============================================================
+   7. MAIN UPDATE LOOP
+   ============================================================ */
+let lastT = performance.now();
+function computeBranchCurrent(b){
+  return b.rated * (b.loadPct/100);
+}
+
+function updateSim(dt){
+  // instantaneous fault pulses -> trip immediately
+  state.branches.forEach(b=>{
+    if(!b.on) return;
+    if(b.faultPulse>0 && !b.tripped){
+      b.tripped = true; b.faultPulse = 0; b.heat = 0;
+      const world = new THREE.Vector3(); branchObjs[b.id].brk.group.getWorldPosition(world);
+      spawnArc(world, 0xffcc66);
+    }
+    if(b.leakPulse>0 && !b.tripped){
+      b.tripped = true; b.leakPulse = 0; b.heat = 0;
+      const world = new THREE.Vector3(); branchObjs[b.id].brk.group.getWorldPosition(world);
+      spawnArc(world, 0x4fc1ff);
+    }
+  });
+
+  const mainEnergized = state.mainOn && !state.mainTripped;
+  let totalCurrent = 0;
+
+  state.branches.forEach(b=>{
+    const energized = mainEnergized && b.on && !b.tripped;
+    // thermal accumulation (inverse-time-ish)
+    if(energized && b.loadPct > 100){
+      b.heat += dt * HEAT_RATE * ((b.loadPct-100)/100 + 0.15);
+    } else {
+      b.heat = Math.max(0, b.heat - dt*HEAT_DECAY);
+    }
+    if(energized && b.heat >= HEAT_TRIP_THRESHOLD){
+      b.tripped = true;
+      const world = new THREE.Vector3(); branchObjs[b.id].brk.group.getWorldPosition(world);
+      spawnArc(world, 0xf14c4c);
+    }
+    const cur = (mainEnergized && b.on && !b.tripped) ? computeBranchCurrent(b) : 0;
+    totalCurrent += cur;
+
+    // ----- visuals: breaker lever / flag / status window -----
+    const obj = branchObjs[b.id];
+    const bad = b.tripped;
+    const targetRot = (!b.on || bad) ? -0.55 : 0;
+    obj.brk.pivot.rotation.x += (targetRot - obj.brk.pivot.rotation.x)*0.2;
+    obj.brk.flag.visible = bad;
+    const winColor = bad ? 0xf14c4c : (energized ? (b.loadPct>100?0xdcdcaa:0x89d185) : 0x444444);
+    obj.brk.win.material.color.setHex(winColor);
+    obj.brk.win.material.emissive.setHex(winColor);
+    obj.loadMat.emissiveIntensity = energized ? 0.35 : 0.05;
+
+    // flow paths
+    branchFlows[b.id].toBranch.energized = mainEnergized && b.on && !b.tripped;
+    branchFlows[b.id].toBranch.speedMul = 0.4 + (b.loadPct/100);
+    branchFlows[b.id].toLoad.energized = branchFlows[b.id].toBranch.energized;
+    branchFlows[b.id].toLoad.speedMul = branchFlows[b.id].toBranch.speedMul;
+
+    // UI text
+    const statEl = document.getElementById(`bstat-${b.id}`);
+    const curEl = document.getElementById(`bcur-${b.id}`);
+    curEl.textContent = cur.toFixed(1)+' A';
+    const resetBtn = document.getElementById(`breset-${b.id}`);
+    if(bad){
+      statEl.textContent = '⛔ 트립됨'; statEl.className='branch-status status-trip';
+      resetBtn.classList.add('active');
+    } else if(!mainEnergized || !b.on){
+      statEl.textContent = '○ 대기(전원없음)'; statEl.className='branch-status status-off';
+      resetBtn.classList.remove('active');
+    } else if(b.loadPct>100){
+      statEl.textContent = `⚠ 과부하 (열축적 ${b.heat.toFixed(0)}%)`; statEl.className='branch-status status-warn';
+      resetBtn.classList.remove('active');
+    } else {
+      statEl.textContent = '● 정상'; statEl.className='branch-status status-normal';
+      resetBtn.classList.remove('active');
+    }
+
+    // one-line svg
+    const c = energized ? (b.loadPct>100?'#dcdcaa':'#89d185') : (bad?'#f14c4c':'#555555');
+    ['ol-tap'+b.id,'ol-brk'+b.id,'ol-load'+b.id,'ol-loadc'+b.id].forEach(id=>{
+      const n = document.getElementById(id); if(n) n.setAttribute('stroke', c);
+    });
+  });
+
+  // main breaker thermal (based on total current vs rated)
+  const mainPct = (totalCurrent / MAIN_RATED) * 100;
+  if(mainEnergized && mainPct > 100){
+    state.mainHeat += dt * HEAT_RATE*0.6 * ((mainPct-100)/100 + 0.1);
+  } else {
+    state.mainHeat = Math.max(0, state.mainHeat - dt*HEAT_DECAY);
+  }
+  if(mainEnergized && state.mainHeat >= HEAT_TRIP_THRESHOLD){
+    state.mainTripped = true;
+    const world = new THREE.Vector3(); mainB.group.getWorldPosition(world);
+    spawnArc(world, 0xf14c4c);
+  }
+
+  // main visuals
+  const mainTargetRot = (!state.mainOn || state.mainTripped) ? -0.55 : 0;
+  mainB.pivot.rotation.x += (mainTargetRot - mainB.pivot.rotation.x)*0.2;
+  mainB.flag.visible = state.mainTripped;
+  const mainWinColor = state.mainTripped ? 0xf14c4c : (mainEnergized ? (mainPct>100?0xdcdcaa:0x89d185) : 0x444444);
+  mainB.win.material.color.setHex(mainWinColor);
+  mainB.win.material.emissive.setHex(mainWinColor);
+
+  flowMainToBus.energized = mainEnergized;
+  flowMainToBus.speedMul = 0.5 + Math.min(mainPct/100, 2);
+
+  // busbar color tint
+  const busColor = mainEnergized ? 0xd38b5d : 0x8a6248;
+  busHot.material.emissive?.setHex(0);
+  busHot.material.color.setHex(mainEnergized ? 0xd38b5d : 0x6b4b34);
+
+  // main toggle button UI
+  const mainBtn = document.getElementById('mainToggle');
+  mainBtn.classList.toggle('on', mainEnergized);
+  mainBtn.classList.toggle('tripped', state.mainTripped);
+  mainBtn.textContent = state.mainTripped ? '⛔ 메인 트립됨 — 클릭하여 리셋' : (mainEnergized ? '⏻ 메인 전원 차단' : '⏻ 메인 전원 투입');
+
+  // main one-line svg
+  const olMainColor = state.mainTripped ? '#f14c4c' : (mainEnergized ? '#89d185':'#555555');
+  ['ol-main','ol-mainwire','ol-bus'].forEach(id=>document.getElementById(id).setAttribute('stroke', olMainColor));
+
+  // meters
+  document.getElementById('mTotalCurrent').textContent = totalCurrent.toFixed(1)+' A';
+  document.getElementById('mTotalFill').style.width = Math.min(mainPct,100)+'%';
+  document.getElementById('mTotalFill').style.background = mainPct>90 ? 'var(--red)' : (mainPct>70?'var(--yellow)':'var(--green)');
+  document.getElementById('mMainPct').textContent = mainPct.toFixed(0)+' %';
+  document.getElementById('mMainFill').style.width = Math.min(mainPct,100)+'%';
+  document.getElementById('mMainFill').style.background = mainPct>90 ? 'var(--red)' : (mainPct>70?'var(--yellow)':'var(--green)');
+  document.getElementById('mHeat').textContent = state.mainHeat.toFixed(0)+' %';
+  document.getElementById('mHeatFill').style.width = Math.min(state.mainHeat,100)+'%';
+  document.getElementById('mHeatFill').style.background = state.mainHeat>75 ? 'var(--red)' : 'var(--yellow)';
+
+  // particle flows
+  flowMainToBus.update(dt);
+  Object.values(branchFlows).forEach(f=>{ f.toBranch.update(dt); f.toLoad.update(dt); });
+  updateArcs(dt);
+}
+
+function animate(now){
+  requestAnimationFrame(animate);
+  const dt = Math.min((now-lastT)/1000, 0.05);
+  lastT = now;
+  controls.update();
+  updateSim(dt);
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(animate);
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = container.clientWidth/container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+});
+
+/* ============================================================
+   8. ACCORDION + NAV ACTIVE STATE
+   ============================================================ */
+function toggleAcc(headEl){
+  const acc = headEl.parentElement;
+  acc.classList.toggle('open');
+}
+const navLinks = document.querySelectorAll('nav a');
+const sections = [...navLinks].map(a=>document.querySelector(a.getAttribute('href')));
+window.addEventListener('scroll', ()=>{
+  let idx = 0;
+  sections.forEach((s,i)=>{ if(s && s.getBoundingClientRect().top < 120) idx = i; });
+  navLinks.forEach((a,i)=>a.classList.toggle('active', i===idx));
+});
+</script>
+</body>
+</html>
