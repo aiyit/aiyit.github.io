@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반도체 8대 공정 | 3D 인터랙티브 학습</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg:#090c11;
+    --panel:#11161f;
+    --panel-2:#161c27;
+    --line:#232b38;
+    --cyan:#5ec8ea;
+    --amber:#f2a541;
+    --text:#e9eef3;
+    --muted:#7c8a99;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%; background:var(--bg); color:var(--text);
+    font-family:'Pretendard', -apple-system, sans-serif;
+    overflow:hidden;
+  }
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  #app{
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    height:100vh;
+  }
+
+  /* ---------- Header / Process Track ---------- */
+  header{
+    padding:18px 24px 14px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #0c1017, #090c11);
+  }
+  .titlebar{
+    display:flex; align-items:baseline; gap:12px; margin-bottom:14px;
+  }
+  .titlebar h1{
+    font-size:19px; font-weight:700; letter-spacing:-0.01em;
+  }
+  .titlebar span{
+    font-size:12px; color:var(--muted); font-family:'JetBrains Mono', monospace;
+  }
+  .track{
+    display:flex; align-items:center; gap:0;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .track::-webkit-scrollbar{display:none;}
+  .node{
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    cursor:pointer; flex:1; min-width:74px; padding:2px 4px;
+    background:none; border:none; color:inherit;
+  }
+  .node .dot{
+    width:11px; height:11px; border-radius:50%;
+    background:var(--panel-2); border:1.5px solid var(--line);
+    transition:all .25s ease;
+  }
+  .node.active .dot{
+    background:var(--cyan); border-color:var(--cyan);
+    box-shadow:0 0 10px 2px rgba(94,200,234,.55);
+  }
+  .node.done .dot{ background:var(--muted); border-color:var(--muted); }
+  .node .num{
+    font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--muted);
+  }
+  .node.active .num{ color:var(--cyan); }
+  .node .label{
+    font-size:11px; color:var(--muted); text-align:center; line-height:1.3;
+    white-space:nowrap;
+  }
+  .node.active .label{ color:var(--text); font-weight:600; }
+  .connector{
+    flex:0 0 20px; height:1.5px; background:var(--line); margin-bottom:20px;
+  }
+  .connector.done{ background:var(--muted); }
+
+  /* ---------- Main ---------- */
+  main{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    overflow:hidden;
+  }
+  #info{
+    background:var(--panel);
+    border-right:1px solid var(--line);
+    padding:24px 22px;
+    overflow-y:auto;
+  }
+  #info .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--cyan);
+    letter-spacing:.08em; margin-bottom:8px;
+  }
+  #info h2{
+    font-size:22px; font-weight:700; margin-bottom:4px; letter-spacing:-0.01em;
+  }
+  #info .subtitle{
+    font-size:13px; color:var(--muted); margin-bottom:18px;
+  }
+  #info p{
+    font-size:13.5px; line-height:1.75; color:#c6d0da;
+  }
+  .param-block{
+    margin-top:26px; padding-top:20px; border-top:1px solid var(--line);
+  }
+  .param-block.hidden{ display:none; }
+
+  .substeps{
+    margin-top:22px; padding-top:18px; border-top:1px solid var(--line);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .substeps.hidden{ display:none; }
+
+  .toggle-block{
+    margin-top:22px; padding-top:18px; border-top:1px solid var(--line);
+  }
+  .toggle-block.hidden{ display:none; }
+  .toggle-block .tlabel{
+    font-size:12px; color:var(--muted); margin-bottom:10px;
+  }
+  .toggle-group{ display:flex; gap:8px; }
+  .toggle-btn{
+    flex:1; padding:9px 10px; border-radius:7px; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--muted); font-size:12.5px; cursor:pointer;
+    font-family:'Pretendard'; transition:all .15s;
+  }
+  .toggle-btn.active{
+    background:rgba(94,200,234,.12); border-color:var(--cyan); color:var(--cyan); font-weight:600;
+  }
+  .toggle-btn:hover:not(.active){ border-color:#3a4557; }
+  .substep{
+    display:flex; align-items:flex-start; gap:10px;
+    font-size:12.5px; color:var(--muted); line-height:1.5;
+    transition:color .2s;
+  }
+  .substep .sidx{
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted);
+    border:1px solid var(--line); border-radius:50%; width:18px; height:18px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:all .2s;
+  }
+  .substep.active{ color:var(--text); font-weight:600; }
+  .substep.active .sidx{ color:var(--bg); background:var(--cyan); border-color:var(--cyan); }
+  .param-row label{
+    display:flex; justify-content:space-between; font-size:12px; color:var(--muted);
+    margin-bottom:8px;
+  }
+  .param-row label .val{ color:var(--amber); font-family:'JetBrains Mono', monospace; }
+  input[type=range]{
+    width:100%; accent-color:var(--amber);
+  }
+  #viewport{
+    position:relative;
+    background:radial-gradient(ellipse at 50% 30%, #0f1420, #06080c 75%);
+  }
+  #canvasHolder{ position:absolute; inset:0; }
+  .loading{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted);
+    pointer-events:none; opacity:0; transition:opacity .2s;
+  }
+  .loading.show{ opacity:1; }
+  .hint{
+    position:absolute; bottom:14px; left:16px;
+    font-size:11px; color:var(--muted); font-family:'JetBrains Mono', monospace;
+    background:rgba(9,12,17,.6); padding:6px 10px; border-radius:6px;
+    border:1px solid var(--line);
+  }
+
+  /* ---------- Footer nav ---------- */
+  footer{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; border-top:1px solid var(--line); background:#0c1017;
+  }
+  .navbtn{
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    padding:10px 18px; border-radius:8px; cursor:pointer; font-size:13px;
+    font-family:'Pretendard'; transition:all .15s;
+  }
+  .navbtn:hover:not(:disabled){ border-color:var(--cyan); color:var(--cyan); }
+  .navbtn:disabled{ opacity:.35; cursor:default; }
+  .navbtn:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+  .counter{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted);
+  }
+  .counter b{ color:var(--text); }
+
+  @media (max-width:760px){
+    main{ grid-template-columns:1fr; grid-template-rows:auto 1fr; }
+    #info{ border-right:none; border-bottom:1px solid var(--line); max-height:38vh; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="titlebar">
+      <h1>반도체 8대 공정</h1>
+      <span>SEMICONDUCTOR FABRICATION — 3D INTERACTIVE</span>
+    </div>
+    <div class="track" id="track"></div>
+  </header>
+
+  <main>
+    <section id="info">
+      <div class="eyebrow" id="eyebrow">STEP 01</div>
+      <h2 id="stageTitle"></h2>
+      <div class="subtitle" id="stageSubtitle"></div>
+      <p id="stageDesc"></p>
+
+      <div class="param-block hidden" id="paramBlock">
+        <div class="param-row">
+          <label><span id="paramLabel"></span><span class="val mono" id="paramVal"></span></label>
+          <input type="range" id="paramSlider" min="0" max="100" value="0">
+        </div>
+      </div>
+
+      <div class="toggle-block hidden" id="toggleBlock">
+        <div class="tlabel" id="toggleLabel"></div>
+        <div class="toggle-group" id="toggleGroup"></div>
+      </div>
+
+      <div class="substeps hidden" id="substeps"></div>
+    </section>
+
+    <section id="viewport">
+      <div id="canvasHolder"></div>
+      <div class="loading" id="loading">LOADING SCENE…</div>
+      <div class="hint">드래그: 회전 · 휠: 확대/축소</div>
+    </section>
+  </main>
+
+  <footer>
+    <button class="navbtn" id="prevBtn">← 이전 공정</button>
+    <div class="counter" id="counter"><b>01</b> / 08</div>
+    <button class="navbtn" id="nextBtn">다음 공정 →</button>
+  </footer>
+</div>
+
+<script>
+/* =========================================================
+   반도체 8대 공정 — 3D 인터랙션 프레임
+   메모리 절약 원칙: 씬(Scene)에는 stageGroup 하나만 두고,
+   공정을 전환할 때 이전 공정의 geometry/material/mesh를
+   모두 dispose() 한 뒤 다음 공정을 새로 생성한다.
+   ========================================================= */
+
+/* ---------- 기본 Three.js 셋업 (공정 전환 시에도 유지) ---------- */
+const holder = document.getElementById('canvasHolder');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, holder.clientWidth/holder.clientHeight, 0.1, 200);
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(holder.clientWidth, holder.clientHeight);
+holder.appendChild(renderer.domElement);
+
+const keyLight = new THREE.DirectionalLight(0xbfe6ff, 1.1);
+keyLight.position.set(4,6,5);
+scene.add(keyLight);
+const rimLight = new THREE.DirectionalLight(0xf2a541, 0.5);
+rimLight.position.set(-5,-2,-4);
+scene.add(rimLight);
+scene.add(new THREE.AmbientLight(0x445566, 0.6));
+
+const stageGroup = new THREE.Group();
+scene.add(stageGroup);
+
+/* 간단한 수동 오빗 컨트롤 (드래그 회전 + 휠 줌) */
+let camAngleX = 0.5, camAngleY = 0.6, camDist = 9;
+let dragging = false, lastX=0, lastY=0;
+function updateCamera(){
+  camera.position.set(
+    camDist*Math.sin(camAngleY)*Math.cos(camAngleX),
+    camDist*Math.sin(camAngleX),
+    camDist*Math.cos(camAngleY)*Math.cos(camAngleX)
+  );
+  camera.lookAt(0,0,0);
+}
+renderer.domElement.addEventListener('pointerdown', e=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; });
+window.addEventListener('pointerup', ()=> dragging=false);
+window.addEventListener('pointermove', e=>{
+  if(!dragging) return;
+  camAngleY += (e.clientX-lastX)*0.005;
+  camAngleX = Math.max(-1.2, Math.min(1.2, camAngleX + (e.clientY-lastY)*0.005));
+  lastX=e.clientX; lastY=e.clientY;
+});
+renderer.domElement.addEventListener('wheel', e=>{
+  e.preventDefault();
+  camDist = Math.max(3, Math.min(20, camDist + e.deltaY*0.01));
+}, { passive:false });
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = holder.clientWidth/holder.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(holder.clientWidth, holder.clientHeight);
+});
+
+/* ---------- 메모리 정리 유틸 ---------- */
+function disposeObject(obj){
+  obj.traverse(child=>{
+    if(child.geometry) child.geometry.dispose();
+    if(child.material){
+      const mats = Array.isArray(child.material) ? child.material : [child.material];
+      mats.forEach(m=>{
+        Object.values(m).forEach(v=>{ if(v && v.isTexture) v.dispose(); });
+        m.dispose();
+      });
+    }
+  });
+}
+function clearStage(){
+  while(stageGroup.children.length){
+    const obj = stageGroup.children.pop();
+    disposeObject(obj);
+  }
+}
+
+/* =========================================================
+   8개 공정 정의
+   각 stage: { title, subtitle, desc, param(optional), build(group)->update(t) }
+   ========================================================= */
+const MAT = {
+  silicon: ()=> new THREE.MeshStandardMaterial({ color:0x8a94a3, metalness:.4, roughness:.5 }),
+  wafer:   ()=> new THREE.MeshStandardMaterial({ color:0x9fb4c2, metalness:.6, roughness:.25 }),
+  oxide:   ()=> new THREE.MeshStandardMaterial({ color:0x5ec8ea, transparent:true, opacity:.35, roughness:.2 }),
+  metal:   ()=> new THREE.MeshStandardMaterial({ color:0xf2a541, metalness:.8, roughness:.3 }),
+  resist:  ()=> new THREE.MeshStandardMaterial({ color:0x6de08a, transparent:true, opacity:.55 }),
+  bad:     ()=> new THREE.MeshStandardMaterial({ color:0xe15b5b, emissive:0x330000 }),
+  mask:    ()=> new THREE.MeshStandardMaterial({ color:0x232b38, metalness:.2, roughness:.8 }),
+};
+
+const stages = [
+/* 1 ---------------------------------------------------- */
+{
+  title:'웨이퍼 제조', subtitle:'잉곳 절단 및 표면 연마',
+  desc:'고순도 실리콘을 원기둥 형태의 잉곳(Ingot)으로 성장시킨 뒤, 다이아몬드 톱으로 얇게 절단하여 웨이퍼를 만듭니다. 절단된 웨이퍼는 연마(폴리싱) 과정을 거쳐 거울처럼 매끄러운 표면을 갖게 됩니다. 슬라이더를 움직여 공정을 단계별로 살펴보세요.',
+  param:{ label:'공정 진행', unit:'%', min:0, max:100, def:0 },
+  subSteps:['잉곳 고정 및 정렬', '다이아몬드 톱 절단 · 웨이퍼 분리', '표면 연마(폴리싱)'],
+  subStepThresholds:[0.15, 0.85],
+  build(g){
+    const SLOTS = 6;
+
+    const ingot = new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,4,48), MAT.silicon());
+    ingot.rotation.z = Math.PI/2; ingot.position.x = -2.4;
+    g.add(ingot);
+
+    // 결정 방향 표시용 플랫(잉곳/웨이퍼 측면 평평한 노치) — 실제 웨이퍼 특징을 살짝 반영
+    const flat = new THREE.Mesh(new THREE.BoxGeometry(0.06,4,0.35), MAT.mask());
+    flat.position.set(-2.4, 0, 1.08);
+    g.add(flat);
+
+    const saw = new THREE.Mesh(new THREE.CylinderGeometry(1.65,1.65,0.035,48), MAT.metal());
+    saw.rotation.z = Math.PI/2;
+    saw.position.x = -2.4;
+    g.add(saw);
+
+    const wafers = [];
+    for(let i=0;i<SLOTS;i++){
+      const w = new THREE.Mesh(new THREE.CylinderGeometry(1.05,1.05,0.07,48), MAT.wafer());
+      w.rotation.z = Math.PI/2;
+      w.position.x = -0.2; // 절단 직후 위치(뒤에서 이동)
+      w.visible = false;
+      w.userData.settleX = 2.0 + i*0.16;
+      g.add(w); wafers.push(w);
+    }
+
+    // 연마(폴리싱) 표시용 하이라이트 링 — 마지막 웨이퍼 표면에서 빛나는 효과
+    const polishGlow = new THREE.Mesh(
+      new THREE.RingGeometry(0.3,1.05,48),
+      new THREE.MeshBasicMaterial({ color:0xffffff, transparent:true, opacity:0, side:THREE.DoubleSide })
+    );
+    polishGlow.rotation.y = Math.PI/2;
+    g.add(polishGlow);
+
+    let spin = 0;
+    return (dt, paramT)=>{
+      const p = paramT ?? 0; // 0..1 전체 진행도
+      spin += dt;
+      ingot.rotation.x = spin*0.25;
+
+      // 구간 정의: 0~0.15 고정/정렬, 0.15~0.85 절단·분리, 0.85~1 연마
+      const sliceP = Math.max(0, Math.min(1, (p-0.15)/0.7));
+      const polishP = Math.max(0, Math.min(1, (p-0.85)/0.15));
+
+      saw.position.x = -2.4 + sliceP*4.6;
+      saw.rotation.x = spin*22;
+      saw.visible = p > 0.15 && p < 0.87;
+
+      const revealCount = Math.min(SLOTS, Math.floor(sliceP*SLOTS + 0.0001));
+      wafers.forEach((w,i)=>{
+        if(i < revealCount){
+          w.visible = true;
+          const local = Math.min(1, (sliceP*SLOTS - i));
+          w.position.x = -0.2 + (w.userData.settleX - (-0.2)) * Math.min(1, local*1.4);
+        } else {
+          w.visible = false;
+        }
+      });
+
+      // 연마: 마지막으로 분리된 웨이퍼가 광택을 얻는 연출
+      if(revealCount > 0){
+        const lastWafer = wafers[revealCount-1];
+        polishGlow.visible = polishP > 0;
+        polishGlow.position.x = lastWafer.position.x;
+        polishGlow.material.opacity = Math.sin(polishP*Math.PI) * 0.5;
+        polishGlow.rotation.z = spin*3;
+        lastWafer.material.roughness = 0.25 - polishP*0.2;
+      } else {
+        polishGlow.visible = false;
+      }
+    };
+  }
+},
+/* 2 ---------------------------------------------------- */
+{
+  title:'산화', subtitle:'표면 절연막(SiO₂) 형성',
+  desc:'웨이퍼를 세정한 뒤 고온의 산화로(Furnace)에 투입하여 산소 또는 수증기 분위기에서 표면에 이산화규소(SiO₂) 막을 성장시킵니다. 산화막은 두께에 따라 빛 간섭으로 색이 달라지며, 실제 현장에서는 이 색으로 두께를 가늠하기도 합니다.',
+  param:{ label:'산화 진행', unit:'%', min:0, max:100, def:45 },
+  subSteps:['웨이퍼 세정', '산화로(Furnace) 투입', 'SiO₂ 박막 성장'],
+  subStepThresholds:[0.12, 0.32],
+  build(g){
+    // 산화로(튜브) — 반투명 유리관 + 히터 코일
+    const furnace = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.1,2.1,3.2,32,1,true),
+      new THREE.MeshStandardMaterial({ color:0x2a3140, transparent:true, opacity:.25, side:THREE.DoubleSide, roughness:.4 })
+    );
+    furnace.rotation.z = Math.PI/2;
+    g.add(furnace);
+    const coils = [];
+    for(let i=-1.3;i<=1.3;i+=0.55){
+      const coil = new THREE.Mesh(new THREE.TorusGeometry(2.15,0.045,8,32), MAT.metal());
+      coil.rotation.y = Math.PI/2; coil.position.x = i;
+      g.add(coil); coils.push(coil);
+    }
+
+    const wafer = new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,0.15,64), MAT.wafer());
+    g.add(wafer);
+    const shell = new THREE.Mesh(new THREE.CylinderGeometry(1.61,1.61,0.16,64), MAT.oxide());
+    g.add(shell);
+
+    // 가스/열 입자 (성장 단계에서만 표시)
+    const gasCount = 220;
+    const gasPos = new Float32Array(gasCount*3);
+    for(let i=0;i<gasCount;i++){
+      const a = Math.random()*Math.PI*2, r = 1.2 + Math.random()*0.8;
+      gasPos[i*3] = (Math.random()-0.5)*3;
+      gasPos[i*3+1] = Math.cos(a)*r;
+      gasPos[i*3+2] = Math.sin(a)*r;
+    }
+    const gasGeo = new THREE.BufferGeometry();
+    gasGeo.setAttribute('position', new THREE.BufferAttribute(gasPos,3));
+    const gas = new THREE.Points(gasGeo, new THREE.PointsMaterial({ color:0xf2a541, size:0.035, transparent:true, opacity:0 }));
+    g.add(gas);
+
+    // 두께별 간섭색 차트(대략적인 SiO2 색상 변화를 축약 표현)
+    const colorStops = [0x9fb4c2, 0x8a6a3d, 0x5ec8ea, 0x8a5ecf, 0x5ecf9e, 0xe8c25e].map(c=>new THREE.Color(c));
+    function interferenceColor(t){
+      const scaled = t*(colorStops.length-1);
+      const i = Math.min(colorStops.length-2, Math.floor(scaled));
+      const f = scaled - i;
+      return colorStops[i].clone().lerp(colorStops[i+1], f);
+    }
+
+    let spin=0;
+    return (dt, paramT)=>{
+      const p = paramT ?? 0.45;
+      spin += dt;
+
+      const insertP = Math.max(0, Math.min(1, (p-0.12)/0.20));   // 세정→투입
+      const growP   = Math.max(0, Math.min(1, (p-0.32)/0.68));   // 투입→성장
+
+      const startX = -4.2, endX = 0;
+      const x = startX + (endX-startX)*insertP;
+      wafer.position.x = x; shell.position.x = x;
+
+      const scale = 1 + growP*0.32;
+      shell.scale.set(scale, 1 + growP*0.55, scale);
+      shell.material.opacity = 0.18 + growP*0.5;
+      shell.material.color.copy(interferenceColor(growP));
+
+      wafer.rotation.y += dt*0.15;
+      shell.rotation.y += dt*0.15;
+
+      const gasActive = p > 0.32;
+      gas.material.opacity = gasActive ? 0.5 : 0;
+      if(gasActive){
+        const pos = gasGeo.attributes.position;
+        for(let i=0;i<gasCount;i++){
+          pos.setX(i, pos.getX(i) + Math.sin(spin*2+i)*0.002);
+        }
+        pos.needsUpdate = true;
+      }
+      coils.forEach(c=> c.material.emissive.setHex(gasActive ? 0x552200 : 0x000000));
+    };
+  }
+},
+/* 3 ---------------------------------------------------- */
+{
+  title:'포토(포토리소그래피)', subtitle:'회로 패턴 전사',
+  desc:'감광액(포토레지스트)을 웨이퍼에 도포한 후, 회로 패턴이 새겨진 마스크를 정렬하고 자외선(UV)을 조사합니다. 노광된 부분은 현상(Development) 과정에서 선택적으로 제거되어 웨이퍼 위에 회로 패턴이 남습니다.',
+  param:{ label:'공정 진행', unit:'%', min:0, max:100, def:55 },
+  subSteps:['감광액 도포(스핀 코팅)', '마스크 정렬', '자외선(UV) 노광', '현상(Development)'],
+  subStepThresholds:[0.15, 0.35, 0.75],
+  build(g){
+    const wafer = new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,0.15,64), MAT.wafer());
+    g.add(wafer);
+
+    const resistMat = MAT.resist();
+    resistMat.emissive = new THREE.Color(0x000000);
+    const resist = new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,0.05,64), resistMat);
+    resist.position.y = 0.1;
+    resist.scale.y = 0.001;
+    g.add(resist);
+
+    const maskGroup = new THREE.Group();
+    const mask = new THREE.Mesh(new THREE.BoxGeometry(3.4,0.08,3.4), MAT.mask());
+    maskGroup.add(mask);
+    const holeCoords = [];
+    for(let i=-2;i<=2;i++){
+      for(let j=-2;j<=2;j++){
+        if((i+j)%2===0) continue;
+        const hole = new THREE.Mesh(new THREE.BoxGeometry(0.35,0.1,0.35), MAT.metal());
+        hole.position.set(i*0.55, 0, j*0.55);
+        maskGroup.add(hole);
+        holeCoords.push([i,j]);
+      }
+    }
+    maskGroup.position.y = 4.5; // 대기 위치(위)
+    g.add(maskGroup);
+
+    const beamGeo = new THREE.CylinderGeometry(1.55,1.55,2.2,48,1,true);
+    const beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({ color:0xf2f7ff, transparent:true, opacity:0, side:THREE.DoubleSide }));
+    beam.position.y = 1.3;
+    g.add(beam);
+
+    // 현상 후 드러나는 패턴 웰(현상액에 씻겨 나간 부분)
+    const wells = holeCoords.map(([i,j])=>{
+      const well = new THREE.Mesh(new THREE.BoxGeometry(0.35,0.05,0.35), MAT.wafer());
+      well.position.set(i*0.55, 0.1, j*0.55);
+      well.scale.y = 0;
+      g.add(well);
+      return well;
+    });
+
+    let spin=0;
+    return (dt, paramT)=>{
+      const p = paramT ?? 0.55;
+      spin += dt;
+
+      const coatP   = Math.max(0, Math.min(1, p/0.15));
+      const alignP  = Math.max(0, Math.min(1, (p-0.15)/0.20));
+      const expP    = Math.max(0, Math.min(1, (p-0.35)/0.40));
+      const devP    = Math.max(0, Math.min(1, (p-0.75)/0.25));
+
+      resist.scale.y = Math.max(0.001, coatP);
+      if(coatP>0 && coatP<1) wafer.rotation.y += dt*(8*(1-coatP)+1); // 스핀 코팅 회전
+      else wafer.rotation.y += dt*0.1;
+
+      maskGroup.position.y = 4.5 - alignP*2.1; // 4.5 -> 2.4
+      beam.material.opacity = expP>0 ? (0.08 + Math.sin(spin*4)*0.05) : 0;
+      resistMat.emissive.setRGB(0.15*expP, 0.35*expP, 0.1*expP);
+
+      wells.forEach(w=> w.scale.y = devP);
+      resist.material.opacity = 0.55 - devP*0.15;
+    };
+  }
+},
+/* 4 ---------------------------------------------------- */
+{
+  title:'식각', subtitle:'불필요한 부분 제거 (에칭)',
+  desc:'노광·현상된 패턴을 따라 화학 약품(습식 식각) 또는 플라즈마(건식 식각)를 이용해 불필요한 부분을 제거합니다. 습식은 옆으로도 깎여 나가는 등방성(Isotropic) 식각이고, 건식은 수직으로만 깎이는 이방성(Anisotropic) 식각이라 훨씬 정밀한 패턴을 만들 수 있습니다.',
+  param:{ label:'식각 진행', unit:'%', min:0, max:100, def:55 },
+  toggle:{ label:'식각 방식', options:['습식(Wet) · 등방성','건식(Dry) · 이방성'], def:1 },
+  subSteps:['식각액 · 플라즈마 반응 시작', '패턴 깊이 형성', '감광막 제거(스트리핑)'],
+  subStepThresholds:[0.15, 0.85],
+  build(g){
+    const wafer = new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,0.3,64), MAT.wafer());
+    g.add(wafer);
+
+    const holeCoords = [], fillCoords = [];
+    for(let i=-2;i<=2;i++){
+      for(let j=-2;j<=2;j++){
+        if((i+j)%2===0) fillCoords.push([i,j]); else holeCoords.push([i,j]);
+      }
+    }
+    // 남아있는 감광막(PR)이 보호하는 영역
+    const prBoxes = fillCoords.map(([i,j])=>{
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.35,0.08,0.35), MAT.resist());
+      b.position.set(i*0.55, 0.19, j*0.55);
+      g.add(b);
+      return b;
+    });
+    // 식각되어 파여 들어가는 그루브
+    const grooves = holeCoords.map(([i,j])=>{
+      const b = new THREE.Mesh(new THREE.BoxGeometry(0.35,0.3,0.35), MAT.resist());
+      b.position.set(i*0.55, 0.16, j*0.55);
+      g.add(b);
+      return b;
+    });
+
+    return (dt, paramT, mode)=>{
+      const p = paramT ?? 0.55;
+      const isWet = (mode ?? 1) === 0;
+
+      const reactP = Math.max(0, Math.min(1, (p-0.15)/0.70));
+      const stripP = Math.max(0, Math.min(1, (p-0.85)/0.15));
+
+      const widthScale = isWet ? 1 + reactP*0.55 : 1;
+      grooves.forEach(gr=>{
+        gr.position.y = 0.16 - reactP*0.28;
+        gr.scale.y = Math.max(0.05, 1 - reactP*0.9);
+        gr.scale.x = widthScale;
+        gr.scale.z = widthScale;
+      });
+
+      prBoxes.forEach(b=>{
+        b.scale.y = Math.max(0.02, 1 - stripP);
+        b.material.opacity = 1 - stripP*0.9;
+      });
+
+      wafer.rotation.y += dt*0.1;
+    };
+  }
+},
+/* 5 ---------------------------------------------------- */
+{
+  title:'박막 증착', subtitle:'CVD / PVD 박막 형성',
+  desc:'화학기상증착(CVD) 또는 물리기상증착(PVD) 방식으로 웨이퍼 표면에 얇은 막을 쌓아 올립니다. CVD는 반응 가스가 사방에서 표면을 감싸며 반응해 요철에도 고르게 덮이는 반면, PVD는 타겟에서 튕겨 나온 입자가 한 방향으로 날아가 도포되어 방향성이 강합니다.',
+  param:{ label:'박막 진행', unit:'%', min:0, max:100, def:55 },
+  toggle:{ label:'증착 방식', options:['CVD(화학기상증착)','PVD(물리기상증착)'], def:0 },
+  subSteps:['소스 준비 · 챔버 진공화', '박막 증착 진행', '두께 균일화'],
+  subStepThresholds:[0.1, 0.9],
+  build(g){
+    const wafer = new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,0.15,64), MAT.wafer());
+    g.add(wafer);
+
+    // PVD 스퍼터링 타겟 (CVD 모드에서는 숨김)
+    const target = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,0.15,24), MAT.metal());
+    target.rotation.z = Math.PI/2;
+    target.position.set(-2.4, 2.6, 0);
+    g.add(target);
+
+    const count = 700;
+    const positions = new Float32Array(count*3);
+    const speeds = new Float32Array(count);
+    function resetParticle(i, isPVD){
+      if(isPVD){
+        positions[i*3]   = -2.4 + (Math.random()-0.5)*0.4;
+        positions[i*3+1] = 2.6 + (Math.random()-0.5)*0.4;
+        positions[i*3+2] = (Math.random()-0.5)*0.4;
+      } else {
+        const r = Math.random()*1.5, a = Math.random()*Math.PI*2;
+        positions[i*3]   = Math.cos(a)*r;
+        positions[i*3+1] = 2 + Math.random()*3;
+        positions[i*3+2] = Math.sin(a)*r;
+      }
+      speeds[i] = 0.6 + Math.random()*0.8;
+    }
+    for(let i=0;i<count;i++) resetParticle(i, false);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    const points = new THREE.Points(geo, new THREE.PointsMaterial({ color:0x5ec8ea, size:0.05, transparent:true, opacity:.85 }));
+    g.add(points);
+
+    const filmLayers = [];
+    for(let i=0;i<4;i++){
+      const layer = new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,0.03,64), MAT.oxide());
+      layer.position.y = 0.09 + i*0.001;
+      layer.scale.set(1,0,1);
+      g.add(layer); filmLayers.push(layer);
+    }
+
+    let prevMode = 0;
+    return (dt, paramT, mode)=>{
+      const p = paramT ?? 0.55;
+      const isPVD = (mode ?? 0) === 1;
+      target.visible = isPVD;
+
+      // 모드 전환 시 입자를 해당 방식의 시작 위치로 재배치
+      if(isPVD !== (prevMode===1)){
+        for(let i=0;i<count;i++) resetParticle(i, isPVD);
+        prevMode = isPVD ? 1 : 0;
+      }
+
+      const growP = Math.max(0, Math.min(1, (p-0.1)/0.8));
+      const active = p > 0.1 && p < 0.98;
+
+      const pos = geo.attributes.position;
+      for(let i=0;i<count;i++){
+        if(!active) continue;
+        let x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+        if(isPVD){
+          // 타겟에서 웨이퍼 중심 방향으로 직진성 있게 이동
+          x += (0 - target.position.x)*0.012*speeds[i];
+          z += (0 - target.position.z)*0.012*speeds[i];
+          y -= speeds[i]*dt*1.4;
+        } else {
+          y -= speeds[i]*dt;
+        }
+        if(y < 0.1){ resetParticle(i, isPVD); y = pos.getY(i); x = pos.getX(i); z = pos.getZ(i); }
+        pos.setX(i,x); pos.setY(i,y); pos.setZ(i,z);
+      }
+      pos.needsUpdate = true;
+      points.material.opacity = active ? 0.85 : 0;
+
+      filmLayers.forEach(l=> l.scale.y = growP);
+    };
+  }
+},
+/* 6 ---------------------------------------------------- */
+{
+  title:'금속 배선', subtitle:'회로 간 전기적 연결 (메탈라이제이션)',
+  desc:'금속을 증착·패터닝하여 트랜지스터와 소자를 전기적으로 연결하는 배선층을 형성합니다. 알루미늄(Al)은 금속막을 먼저 덮고 식각으로 배선을 남기는 방식이고, 구리(Cu)는 절연층에 미리 홈(트렌치)을 파고 금속을 채운 뒤 표면을 연마(CMP)하는 다마신(Damascene) 공정을 사용합니다.',
+  param:{ label:'배선 진행', unit:'%', min:0, max:100, def:60 },
+  toggle:{ label:'배선 금속 · 공정', options:['알루미늄(Al) · 식각 방식','구리(Cu) · 다마신 공정'], def:0 },
+  subSteps:['절연층 패터닝(트렌치/비아)', '금속 증착 · 충전', '패터닝 · 평탄화(식각/CMP)'],
+  subStepThresholds:[0.15, 0.7],
+  build(g){
+    const insulator = new THREE.Mesh(new THREE.BoxGeometry(2.6,0.3,2.6), MAT.oxide());
+    insulator.position.y = -0.15;
+    g.add(insulator);
+
+    const linesX = [-0.9,-0.3,0.3,0.9];
+    const trenchDepth = 0.12, overfill = 0.06, alHeight = 0.18;
+
+    // 구리 다마신용 트렌치(홈) — Al 모드에서는 숨김
+    const trenches = linesX.map(x=>{
+      const t = new THREE.Mesh(new THREE.BoxGeometry(0.32,trenchDepth,2.6), MAT.mask());
+      t.position.set(x, -trenchDepth/2, 0);
+      g.add(t);
+      return t;
+    });
+
+    // 배선 라인(공용 지오메트리, 모드에 따라 위치·색·투명도만 변경)
+    const lineMat = new THREE.MeshStandardMaterial({ metalness:.85, roughness:.25 });
+    const alColor = new THREE.Color(0xcdd6de), cuColor = new THREE.Color(0xdd7a3a);
+    const lines = linesX.map(x=>{
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.32,1,2.6), lineMat.clone());
+      m.position.x = x;
+      g.add(m);
+      return m;
+    });
+
+    // Al 블랭킷(식각 전 금속 전면 증착 상태)
+    const blanket = new THREE.Mesh(new THREE.BoxGeometry(2.6,1,2.6), lineMat.clone());
+    g.add(blanket);
+
+    return (dt, paramT, mode)=>{
+      const p = paramT ?? 0.6;
+      const isCu = (mode ?? 0) === 1;
+
+      const depositP = Math.max(0, Math.min(1, (p-0.15)/0.55));
+      const finishP  = Math.max(0, Math.min(1, (p-0.7)/0.30));
+
+      trenches.forEach(t=> t.visible = isCu);
+
+      if(isCu){
+        blanket.visible = false;
+        const rawH = depositP * (trenchDepth+overfill);
+        const h = finishP>0 ? THREE.MathUtils.lerp(trenchDepth+overfill, trenchDepth, finishP) : rawH;
+        lines.forEach(l=>{
+          l.visible = true;
+          l.material.color.copy(cuColor);
+          l.material.opacity = 1; l.material.transparent=false;
+          l.scale.y = Math.max(0.01, h);
+          l.position.y = -trenchDepth + l.scale.y/2;
+        });
+      } else {
+        blanket.visible = true;
+        blanket.material.color.copy(alColor);
+        blanket.scale.y = Math.max(0.001, depositP*alHeight);
+        blanket.position.y = blanket.scale.y/2;
+        blanket.material.transparent = true;
+        blanket.material.opacity = (1-finishP)*0.95;
+
+        lines.forEach(l=>{
+          l.visible = true;
+          l.material.color.copy(alColor);
+          l.material.transparent = true;
+          l.material.opacity = finishP*0.98;
+          l.scale.y = Math.max(0.01, depositP*alHeight);
+          l.position.y = l.scale.y/2;
+        });
+      }
+
+      g.rotation.y = 0.3 + Math.sin(performance.now()*0.00015)*0.25;
+    };
+  }
+},
+/* 7 ---------------------------------------------------- */
+{
+  title:'EDS 검사', subtitle:'전기적 특성 검사 (Electrical Die Sorting)',
+  desc:'웨이퍼 위의 각 칩(다이)에 프로브 카드를 접촉시켜 전기적 특성을 검사합니다. 정상 동작하는 양품과 결함이 있는 불량품을 구분하고, 불량 다이에는 잉크로 표시(마킹)하여 이후 패키징 공정에서 제외합니다.',
+  param:{ label:'검사 진행', unit:'%', min:0, max:100, def:60 },
+  subSteps:['웨이퍼 · 프로브카드 정렬', '다이별 전기 특성 검사', '양품 · 불량 판정 완료'],
+  subStepThresholds:[0.1, 0.9],
+  build(g){
+    const badSet = new Set([3, 11, 18]);
+    const dies = [];
+    let idx=0;
+    for(let i=-2;i<=2;i++){
+      for(let j=-2;j<=2;j++){
+        if(i*i+j*j > 6) { idx++; continue; }
+        const isBad = badSet.has(idx);
+        const die = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.12,0.5), isBad ? MAT.bad() : MAT.wafer());
+        die.position.set(i*0.58, 0, j*0.58);
+        g.add(die);
+        const entry = { mesh:die, bad:isBad, x:i*0.58, z:j*0.58, mark:null };
+        if(isBad){
+          const dot = new THREE.Mesh(new THREE.SphereGeometry(0.07,12,12), new THREE.MeshStandardMaterial({ color:0x111111 }));
+          dot.position.set(entry.x, 0.14, entry.z);
+          dot.visible = false;
+          g.add(dot);
+          entry.mark = dot;
+        }
+        dies.push(entry);
+        idx++;
+      }
+    }
+
+    const probe = new THREE.Mesh(new THREE.ConeGeometry(0.08,0.5,16), MAT.metal());
+    probe.rotation.x = Math.PI;
+    probe.position.set(0,3,0);
+    g.add(probe);
+
+    let curX=0, curY=3, curZ=0;
+    return (dt, paramT)=>{
+      const p = paramT ?? 0.6;
+      const alignP = Math.max(0, Math.min(1, p/0.1));
+      const testP  = Math.max(0, Math.min(1, (p-0.1)/0.8));
+      const finishP = Math.max(0, Math.min(1, (p-0.9)/0.1));
+
+      const activeIndex = Math.min(dies.length-1, Math.floor(testP*dies.length));
+      const testActive = p > 0.1 && p < 0.9;
+      const done = p >= 0.9;
+
+      let tx=0, tz=0, ty = 3 - 2.4*alignP;
+      if(testActive){ const d = dies[activeIndex]; tx=d.x; tz=d.z; ty=0.4; }
+      else if(done){ const d = dies[dies.length-1]; tx=d.x; tz=d.z; ty=1.3; }
+
+      const k = Math.min(1, dt*6);
+      curX += (tx-curX)*k; curY += (ty-curY)*k; curZ += (tz-curZ)*k;
+      probe.position.set(curX, curY, curZ);
+
+      dies.forEach((d,i)=>{
+        const tested = done || (testActive && i<=activeIndex);
+        if(!d.bad){
+          d.mesh.material.emissive.setHex(tested ? 0x113322 : 0x000000);
+        }
+        if(d.mark) d.mark.visible = finishP>0 && tested;
+      });
+    };
+  }
+},
+/* 8 ---------------------------------------------------- */
+{
+  title:'패키징', subtitle:'다이싱 · 다이 본딩 · 와이어 본딩 · 몰딩',
+  desc:'검사를 통과한 웨이퍼를 낱개 칩으로 절단(다이싱)한 뒤 리드프레임에 접착(다이 본딩)하고, 금속선으로 연결(와이어 본딩)한 다음, 에폭시 수지로 몰딩하여 완성된 반도체 패키지를 만듭니다.',
+  param:{ label:'패키징 진행', unit:'%', min:0, max:100, def:65 },
+  subSteps:['다이싱(개별 칩 분리)', '다이 본딩(리드프레임 부착)', '와이어 본딩(금속선 연결)', '몰딩(EMC 봉지)'],
+  subStepThresholds:[0.15, 0.4, 0.7],
+  build(g){
+    const base = new THREE.Mesh(new THREE.BoxGeometry(2.6,0.15,2.6), MAT.metal());
+    base.position.y = -0.6;
+    g.add(base);
+
+    // 다이싱 미니 씬 — 절단 전 다이 4개가 붙어있는 웨이퍼 조각
+    const dicingGroup = new THREE.Group();
+    dicingGroup.position.y = 1.7;
+    const miniDies = [];
+    [[-0.28,-0.28],[0.28,-0.28],[-0.28,0.28],[0.28,0.28]].forEach(([x,z])=>{
+      const md = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.1,0.5), MAT.wafer());
+      md.userData.baseX=x; md.userData.baseZ=z;
+      md.position.set(x,0,z);
+      dicingGroup.add(md); miniDies.push(md);
+    });
+    const sawBlade = new THREE.Mesh(new THREE.BoxGeometry(1.3,0.14,0.02), MAT.metal());
+    dicingGroup.add(sawBlade);
+    g.add(dicingGroup);
+
+    const die = new THREE.Mesh(new THREE.BoxGeometry(1,0.2,1), MAT.wafer());
+    die.material.transparent = true;
+    g.add(die);
+
+    const wirePairs = [[-0.5,-0.5,-1.2,-1.2],[0.5,-0.5,1.2,-1.2],[-0.5,0.5,-1.2,1.2],[0.5,0.5,1.2,1.2]];
+    const wires = wirePairs.map(([x1,z1,x2,z2])=>{
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(x1,-0.25,z1),
+        new THREE.Vector3((x1+x2)/2, 0.3, (z1+z2)/2),
+        new THREE.Vector3(x2,-0.5,z2),
+      ]);
+      const mat = MAT.metal(); mat.transparent = true; mat.opacity = 0;
+      const tube = new THREE.Mesh(new THREE.TubeGeometry(curve,20,0.015,6), mat);
+      g.add(tube);
+      return tube;
+    });
+
+    const mold = new THREE.Mesh(new THREE.BoxGeometry(2.6,1.6,2.6), new THREE.MeshStandardMaterial({ color:0x1c2430, transparent:true, opacity:0, roughness:.6 }));
+    mold.position.y = 0.2;
+    g.add(mold);
+
+    return (dt, paramT)=>{
+      const p = paramT ?? 0.65;
+      const diceP = Math.max(0, Math.min(1, p/0.15));
+      const bondP = Math.max(0, Math.min(1, (p-0.15)/0.25));
+      const wireP = Math.max(0, Math.min(1, (p-0.4)/0.30));
+      const moldP = Math.max(0, Math.min(1, (p-0.7)/0.30));
+
+      // 다이싱: 톱날이 좌우로 지나가며 4개 다이가 서서히 벌어짐
+      dicingGroup.visible = diceP < 1 && bondP < 0.5;
+      sawBlade.position.x = Math.sin(diceP*Math.PI*3)*0.7;
+      miniDies.forEach(md=>{
+        md.position.x = md.userData.baseX*(1+diceP*0.6);
+        md.position.z = md.userData.baseZ*(1+diceP*0.6);
+      });
+      dicingGroup.scale.setScalar(1 - Math.max(0,bondP-0.5)*2);
+
+      // 다이 본딩: 낱개 다이가 리드프레임 위로 내려와 부착
+      die.position.y = THREE.MathUtils.lerp(1.2, -0.35, bondP);
+      die.material.opacity = bondP;
+
+      // 와이어 본딩: 4개 와이어가 순차적으로 나타남
+      wires.forEach((w,i)=>{
+        const local = Math.max(0, Math.min(1, wireP*4 - i));
+        w.material.opacity = local;
+      });
+
+      // 몰딩: EMC 수지로 봉지
+      mold.material.opacity = moldP*0.92;
+      mold.scale.y = 0.3 + moldP*0.7;
+    };
+  }
+},
+];
+
+/* =========================================================
+   내비게이션 / 상태 관리
+   ========================================================= */
+let current = 0;
+let stageUpdate = null;
+let lastTime = performance.now();
+
+const trackEl = document.getElementById('track');
+stages.forEach((s,i)=>{
+  if(i>0){
+    const c = document.createElement('div');
+    c.className='connector'; c.dataset.idx=i;
+    trackEl.appendChild(c);
+  }
+  const btn = document.createElement('button');
+  btn.className='node';
+  btn.innerHTML = `<span class="dot"></span><span class="num mono">${String(i+1).padStart(2,'0')}</span><span class="label">${s.title}</span>`;
+  btn.addEventListener('click', ()=> goToStage(i));
+  trackEl.appendChild(btn);
+});
+
+const paramBlock = document.getElementById('paramBlock');
+const paramSlider = document.getElementById('paramSlider');
+const paramLabel = document.getElementById('paramLabel');
+const paramVal = document.getElementById('paramVal');
+const substepsEl = document.getElementById('substeps');
+const toggleBlock = document.getElementById('toggleBlock');
+const toggleLabel = document.getElementById('toggleLabel');
+const toggleGroup = document.getElementById('toggleGroup');
+let paramNorm = 0.3; // 0~1 정규화 값, update 콜백에 전달
+let toggleIndex = 0; // 공정별 선택 옵션(예: 습식/건식) 인덱스
+
+function renderToggle(){
+  const s = stages[current];
+  if(!s.toggle){ toggleBlock.classList.add('hidden'); return; }
+  toggleBlock.classList.remove('hidden');
+  toggleLabel.textContent = s.toggle.label;
+  toggleGroup.innerHTML = s.toggle.options.map((opt,i)=>
+    `<button class="toggle-btn${i===toggleIndex?' active':''}" data-i="${i}">${opt}</button>`
+  ).join('');
+  toggleGroup.querySelectorAll('.toggle-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      toggleIndex = parseInt(btn.dataset.i);
+      toggleGroup.querySelectorAll('.toggle-btn').forEach(b=> b.classList.toggle('active', b===btn));
+    });
+  });
+}
+
+function activeSubStepIndex(stage, norm){
+  const th = stage.subStepThresholds || stage.subSteps.map((_,i)=>(i)/stage.subSteps.length).slice(1);
+  let idx = 0;
+  for(let i=0;i<th.length;i++){ if(norm >= th[i]) idx = i+1; }
+  return idx;
+}
+function highlightSubSteps(){
+  const s = stages[current];
+  if(!s.subSteps) return;
+  const active = activeSubStepIndex(s, paramNorm);
+  substepsEl.querySelectorAll('.substep').forEach((el,i)=>{
+    el.classList.toggle('active', i===active);
+  });
+}
+
+function renderTrack(){
+  const nodes = trackEl.querySelectorAll('.node');
+  const connectors = trackEl.querySelectorAll('.connector');
+  nodes.forEach((n,i)=>{
+    n.classList.toggle('active', i===current);
+    n.classList.toggle('done', i<current);
+  });
+  connectors.forEach(c=> c.classList.toggle('done', parseInt(c.dataset.idx) <= current));
+}
+
+function loadStage(i){
+  const loading = document.getElementById('loading');
+  loading.classList.add('show');
+
+  clearStage();
+  const s = stages[i];
+
+  document.getElementById('eyebrow').textContent = `STEP ${String(i+1).padStart(2,'0')} / 08`;
+  document.getElementById('stageTitle').textContent = s.title;
+  document.getElementById('stageSubtitle').textContent = s.subtitle;
+  document.getElementById('stageDesc').textContent = s.desc;
+  document.getElementById('counter').innerHTML = `<b>${String(i+1).padStart(2,'0')}</b> / 08`;
+
+  if(s.param){
+    paramBlock.classList.remove('hidden');
+    paramLabel.textContent = s.param.label;
+    paramSlider.min = s.param.min; paramSlider.max = s.param.max; paramSlider.value = s.param.def;
+    paramVal.textContent = `${s.param.def}${s.param.unit}`;
+    paramNorm = (s.param.def - s.param.min)/(s.param.max - s.param.min);
+  } else {
+    paramBlock.classList.add('hidden');
+    paramNorm = 0;
+  }
+
+  toggleIndex = s.toggle ? s.toggle.def : 0;
+  renderToggle();
+
+  if(s.subSteps){
+    substepsEl.classList.remove('hidden');
+    substepsEl.innerHTML = s.subSteps.map((label,idx)=>
+      `<div class="substep"><span class="sidx mono">${idx+1}</span><span>${label}</span></div>`
+    ).join('');
+    highlightSubSteps();
+  } else {
+    substepsEl.classList.add('hidden');
+    substepsEl.innerHTML = '';
+  }
+
+  const localGroup = new THREE.Group();
+  stageGroup.add(localGroup);
+  const updateFn = s.build(localGroup);
+  stageUpdate = updateFn;
+
+  document.getElementById('prevBtn').disabled = i===0;
+  document.getElementById('nextBtn').disabled = i===stages.length-1;
+
+  renderTrack();
+  requestAnimationFrame(()=> loading.classList.remove('show'));
+}
+
+function goToStage(i){
+  if(i<0 || i>=stages.length || i===current) return;
+  current = i;
+  loadStage(current);
+}
+
+document.getElementById('prevBtn').addEventListener('click', ()=> goToStage(current-1));
+document.getElementById('nextBtn').addEventListener('click', ()=> goToStage(current+1));
+paramSlider.addEventListener('input', e=>{
+  const s = stages[current];
+  const v = parseFloat(e.target.value);
+  paramNorm = (v - s.param.min)/(s.param.max - s.param.min);
+  paramVal.textContent = `${v}${s.param.unit}`;
+  highlightSubSteps();
+});
+
+/* 키보드 좌우 화살표 내비게이션 */
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') goToStage(current+1);
+  if(e.key==='ArrowLeft') goToStage(current-1);
+});
+
+/* ---------- 렌더 루프 ---------- */
+function animate(){
+  requestAnimationFrame(animate);
+  const now = performance.now();
+  const dt = Math.min(0.05,(now-lastTime)/1000);
+  lastTime = now;
+  updateCamera();
+  if(stageUpdate) stageUpdate(dt, paramNorm, toggleIndex);
+  renderer.render(scene, camera);
+}
+
+loadStage(0);
+animate();
+</script>
+</body>
+</html>
