@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<!--
+=========================================
+Margin(바깥 여백) vs Padding(안쪽 여백)
+=========================================
+
+■ margin
+- 요소 바깥쪽 여백
+- 요소와 요소 사이의 간격 설정
+
+■ padding
+- 요소 안쪽 여백
+- 콘텐츠와 테두리(border) 사이의 간격 설정
+
+■ 방향별 속성
+- Top    : margin-top,    padding-top
+- Right  : margin-right,  padding-right
+- Bottom : margin-bottom, padding-bottom
+- Left   : margin-left,   padding-left
+
+※ 핵심
+- Margin  = 요소 밖의 간격
+- Padding = 요소 안의 여백
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>예제 6-2 마진(margin)과 패딩(padding)</title>
+  <style>
+    /* body 기본 스타일 */
+    body {
+      margin-top: 20px;        /* 위쪽 바깥 여백 */
+      margin-left: 140px;      /* 왼쪽 바깥 여백 */
+      padding: 20px;           /* 내부 여백 */
+      border: 1px solid cyan;  /* 외곽 테두리 */
+    }
+
+    /* 컨테이너 박스 */
+    #container {
+      border: 1px solid red;   /* 빨간색 테두리 */
+    }
+
+    /* margin 예시 박스 */
+    .box-margin {
+      width: 200px;            /* 박스 너비 */
+      height: 50px;            /* 박스 높이 */
+      background: #00ffff;     /* 배경색 하늘색 */
+      margin: 30px;            /* 바깥 여백 (주변과의 간격) */
+      box-shadow: 5px 5px 3px #888888; /* 그림자 효과 */
+    }
+
+    /* padding 예시 박스 */
+    .box-padding {
+      width: 200px;
+      height: 100px;
+      background: #ffff00;     /* 배경색 노랑 */
+      padding: 30px;           /* 내부 여백 (내용과 테두리 사이 간격) */
+      box-shadow: 5px 5px 3px #770000; /* 그림자 효과 */
+      border-radius: 20px;     /* 모서리 둥글게 처리 */
+    }
+  </style>
+</head>
+<body>
+  <!-- 컨테이너 박스 -->
+  <div id="container">
+    <!-- body의 margin과 padding 설명 -->
+    <p>body { margin-top:20px; margin-left:140px; padding:20px; }</p>
+
+    <!-- margin 예시 박스 -->
+    <div class="box-margin">margin:30px;</div>
+
+    <!-- padding 예시 박스 -->
+    <div class="box-padding">padding:30px;</div>
+  </div>
+</body>
+</html>
