@@ -3,10 +3,10 @@
 // pc/vr 인터페이스를 조립하기만 하는 "조립 전용" 파일로 유지 (로직은 각 모듈에 위임).
 
 import * as THREE from "three";
-import { createEnvironment, ENV_CONSTANTS } from "../modules/environment.js";
-import { createButterflies } from "../modules/butterfly.js";
-import { PCController } from "../pc/pc-controller.js";
-import { CardboardVR } from "../vr/cardboard.js";
+import { createEnvironment, ENV_CONSTANTS } from "environment.js";
+import { createButterflies } from "butterfly.js";
+import { PCController } from "pc-controller.js";
+import { CardboardVR } from "cardboard.js";
 
 const canvas = document.getElementById("scene-canvas");
 const loadingEl = document.getElementById("loading");
