@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이썬 내장 메소드의 종류와 사용법</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --bg:#1a1b26;
+    --surface:#20222f;
+    --surface-2:#262838;
+    --border:#33364a;
+    --text:#c8ccdb;
+    --text-dim:#7a7e97;
+    --keyword:#bb9af7;
+    --func:#7aa2f7;
+    --string:#9ece6a;
+    --num:#ff9e64;
+    --tag:#f7768e;
+    --gold:#e0af68;
+    --code-font:'JetBrains Mono', monospace;
+    --ui-font:'Pretendard', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--ui-font);
+    line-height:1.75;
+    font-size:16px;
+  }
+  a{color:inherit;}
+
+  .shell{
+    display:grid;
+    grid-template-columns:272px minmax(0,1fr);
+    max-width:1180px;
+    margin:0 auto;
+  }
+  aside{
+    position:sticky;
+    top:0;
+    align-self:start;
+    height:100vh;
+    overflow-y:auto;
+    padding:32px 20px 40px 28px;
+    border-right:1px solid var(--border);
+    scrollbar-width:thin;
+  }
+  aside::-webkit-scrollbar{width:6px;}
+  aside::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+  .brand{
+    font-family:var(--code-font);
+    font-size:13px;
+    color:var(--gold);
+    letter-spacing:0.02em;
+    margin-bottom:4px;
+  }
+  .brand-title{
+    font-size:19px;
+    font-weight:700;
+    color:#e8eaf5;
+    margin:0 0 28px 0;
+    line-height:1.4;
+  }
+  .nav-group{margin-bottom:22px;}
+  .nav-group h4{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--text-dim);
+    margin:0 0 8px 2px;
+  }
+  .nav-group a{
+    display:block;
+    text-decoration:none;
+    font-size:14.5px;
+    color:var(--text);
+    padding:6px 10px;
+    border-radius:6px;
+    margin-bottom:1px;
+    border-left:2px solid transparent;
+    transition:background .15s ease, color .15s ease;
+  }
+  .nav-group a:hover{background:var(--surface-2);}
+  .nav-group a.active{
+    color:#fff;
+    background:var(--surface-2);
+    border-left:2px solid var(--gold);
+    font-weight:500;
+  }
+
+  main{padding:48px 56px 120px 56px; min-width:0;}
+  .doc-header{margin-bottom:56px;}
+  .doc-eyebrow{
+    font-family:var(--code-font);
+    font-size:13px;
+    color:var(--func);
+    margin-bottom:14px;
+  }
+  h1.doc-title{
+    font-size:34px;
+    line-height:1.35;
+    margin:0 0 16px 0;
+    color:#f1f2f8;
+    font-weight:700;
+  }
+  .doc-sub{
+    color:var(--text-dim);
+    font-size:16px;
+    max-width:660px;
+    margin:0;
+  }
+
+  section.chunk{
+    margin-bottom:64px;
+    scroll-margin-top:28px;
+    max-width:780px;
+  }
+  section.chunk h2{
+    font-size:23px;
+    color:#eef0f8;
+    margin:0 0 6px 0;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+  }
+  section.chunk .sec-desc{
+    color:var(--text-dim);
+    font-size:15px;
+    margin:14px 0 22px 0;
+  }
+  section.chunk h3{
+    font-size:17px;
+    color:#dfe1ef;
+    margin:34px 0 10px 0;
+  }
+  section.chunk h3 .type-tag{
+    font-family:var(--code-font);
+    font-size:12.5px;
+    color:var(--text-dim);
+    font-weight:400;
+    margin-left:8px;
+  }
+  p{margin:0 0 14px 0;}
+  ul, ol{margin:0 0 16px 0; padding-left:22px;}
+  li{margin-bottom:6px;}
+  code.inline{
+    font-family:var(--code-font);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    padding:1px 6px;
+    border-radius:5px;
+    font-size:0.87em;
+    color:var(--gold);
+  }
+
+  .code-block{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    margin:16px 0 22px 0;
+    overflow:hidden;
+  }
+  .code-block .code-label{
+    font-family:var(--code-font);
+    font-size:12px;
+    color:var(--text-dim);
+    padding:9px 14px;
+    border-bottom:1px solid var(--border);
+    background:var(--surface-2);
+  }
+  .code-block pre{
+    margin:0;
+    padding:16px 18px;
+    overflow-x:auto;
+  }
+  .code-block code{
+    font-family:var(--code-font);
+    font-size:13.5px;
+    line-height:1.65;
+    background:transparent !important;
+  }
+  .hljs{background:transparent !important;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:16px 0 24px 0;
+    font-size:14px;
+  }
+  th, td{
+    text-align:left;
+    padding:9px 12px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  th{
+    color:var(--text-dim);
+    font-weight:600;
+    font-size:12.5px;
+    background:var(--surface);
+  }
+  td code.inline{white-space:nowrap;}
+
+  .callout{
+    border:1px solid var(--border);
+    border-left:3px solid var(--func);
+    background:var(--surface);
+    border-radius:6px;
+    padding:14px 18px;
+    margin:18px 0 24px 0;
+    font-size:14.5px;
+    color:var(--text);
+  }
+  .callout.warn{border-left-color:var(--tag);}
+  .callout strong{color:#eef0f8;}
+
+  .badge-row{
+    display:flex;
+    gap:8px;
+    margin:0 0 18px 0;
+    flex-wrap:wrap;
+  }
+  .badge{
+    font-family:var(--code-font);
+    font-size:12px;
+    padding:4px 10px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+  .badge.mutable{color:var(--tag); border-color:#4a2f3a;}
+  .badge.immutable{color:var(--string); border-color:#2f3f2a;}
+
+  footer{
+    max-width:780px;
+    padding-top:28px;
+    border-top:1px solid var(--border);
+    color:var(--text-dim);
+    font-size:13.5px;
+  }
+
+  @media (max-width: 880px){
+    .shell{grid-template-columns:1fr;}
+    aside{position:relative; height:auto; border-right:none; border-bottom:1px solid var(--border);}
+    main{padding:36px 22px 90px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside>
+    <div class="brand">AI소프트웨어과 · Python</div>
+    <p class="brand-title">내장 메소드의<br>종류와 사용법</p>
+
+    <div class="nav-group">
+      <h4>시작하기</h4>
+      <a href="#intro">내장 메소드란</a>
+      <a href="#mutable-immutable">가변 vs 불변</a>
+    </div>
+
+    <div class="nav-group">
+      <h4>문자열 · str</h4>
+      <a href="#str-case">대소문자 · 공백</a>
+      <a href="#str-search">검색 · 치환</a>
+      <a href="#str-split">분리 · 결합</a>
+      <a href="#str-check">판별 메소드</a>
+    </div>
+
+    <div class="nav-group">
+      <h4>리스트 · list</h4>
+      <a href="#list-add">추가</a>
+      <a href="#list-remove">삭제</a>
+      <a href="#list-order">정렬 · 순서</a>
+      <a href="#list-etc">탐색 · 복사</a>
+    </div>
+
+    <div class="nav-group">
+      <h4>튜플 · tuple</h4>
+      <a href="#tuple-method">튜플 메소드</a>
+    </div>
+
+    <div class="nav-group">
+      <h4>딕셔너리 · dict</h4>
+      <a href="#dict-read">조회</a>
+      <a href="#dict-write">추가 · 수정 · 삭제</a>
+    </div>
+
+    <div class="nav-group">
+      <h4>세트 · set</h4>
+      <a href="#set-op">집합 연산</a>
+      <a href="#set-edit">추가 · 삭제</a>
+    </div>
+
+    <div class="nav-group">
+      <h4>숫자형</h4>
+      <a href="#num-method">int · float 메소드</a>
+    </div>
+
+    <div class="nav-group">
+      <h4>정리</h4>
+      <a href="#summary">한눈에 정리</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="doc-header">
+      <div class="doc-eyebrow">python · built-in methods</div>
+      <h1 class="doc-title">파이썬 내장 메소드의 종류와 사용법</h1>
+      <p class="doc-sub">
+        문자열, 리스트, 튜플, 딕셔너리, 세트, 숫자형까지 — 파이썬이 기본으로 제공하는
+        자료형별 내장 메소드를 실행 예제와 함께 자세히 정리합니다.
+      </p>
+    </div>
+
+    <!-- 개요 -->
+    <section class="chunk" id="intro">
+      <h2>내장 메소드란</h2>
+      <p class="sec-desc">별도로 클래스를 정의하지 않아도, 자료형 자체가 이미 갖추고 있는 메소드입니다.</p>
+      <p>
+        <code class="inline">"hello".upper()</code>처럼 값 뒤에 점(.)을 찍고 호출하는 모든 동작이 내장 메소드입니다.
+        각 자료형(str, list, tuple, dict, set, int, float 등)은 그 자료형의 성질에 맞춰 서로 다른 메소드 집합을 가지고 있습니다.
+      </p>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">s = "python"
+l = [1, 2, 3]
+d = {"a": 1}
+
+print(type(s), s.upper())     # <class 'str'> PYTHON
+print(type(l), l.append(4))   # <class 'list'> None (l은 [1,2,3,4]로 변경됨)
+print(type(d), d.get("a"))    # <class 'dict'> 1
+
+# 자료형이 다르면 사용할 수 있는 메소드도 다르다
+# s.append(1)  -> 오류! str에는 append가 없음</code></pre>
+      </div>
+      <p>
+        어떤 메소드를 쓸 수 있는지 궁금할 때는 내장 함수 <code class="inline">dir(객체)</code>로 목록을 확인하거나,
+        <code class="inline">help(str.upper)</code>처럼 <code class="inline">help()</code>로 설명을 볼 수 있습니다.
+      </p>
+    </section>
+
+    <!-- 가변/불변 -->
+    <section class="chunk" id="mutable-immutable">
+      <h2>가변(mutable) 자료형과 불변(immutable) 자료형</h2>
+      <p class="sec-desc">이 구분이 메소드의 동작 방식(원본 변경 여부)을 결정합니다.</p>
+
+      <div class="badge-row">
+        <span class="badge immutable">불변 — str, tuple, frozenset</span>
+        <span class="badge mutable">가변 — list, dict, set</span>
+      </div>
+
+      <p>
+        <strong>불변 자료형</strong>의 메소드는 원본을 절대 바꾸지 못하고, 항상 <em>새로운 값</em>을 반환합니다.
+        <strong>가변 자료형</strong>의 메소드는 대부분 원본을 직접 수정하며 <code class="inline">None</code>을 반환하는 경우가 많습니다.
+      </p>
+
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">s = "abc"
+s.upper()          # 새 문자열 "ABC"를 만들 뿐, s 자신은 그대로 "abc"
+print(s)            # abc
+
+l = [3, 1, 2]
+l.sort()            # 원본 l 자체를 정렬함
+print(l)            # [1, 2, 3]</code></pre>
+      </div>
+
+      <div class="callout warn">
+        <strong>흔한 실수</strong><br>
+        <code class="inline">s = s.upper()</code>처럼 <em>재할당</em>해야 불변 객체의 변경 결과를 반영할 수 있습니다.
+        반대로 <code class="inline">l = l.sort()</code>는 <code class="inline">l</code>을 <code class="inline">None</code>으로 만들어버리는 실수이니 주의하세요.
+      </div>
+    </section>
+
+    <!-- 문자열: 대소문자/공백 -->
+    <section class="chunk" id="str-case">
+      <h2>문자열 메소드 — 대소문자 · 공백 처리<span class="type-tag">str</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">upper()</code></td><td>모두 대문자로</td></tr>
+        <tr><td><code class="inline">lower()</code></td><td>모두 소문자로</td></tr>
+        <tr><td><code class="inline">capitalize()</code></td><td>첫 글자만 대문자, 나머지 소문자</td></tr>
+        <tr><td><code class="inline">title()</code></td><td>단어마다 첫 글자를 대문자로</td></tr>
+        <tr><td><code class="inline">swapcase()</code></td><td>대소문자를 서로 반전</td></tr>
+        <tr><td><code class="inline">strip([chars])</code></td><td>양쪽 공백(또는 지정 문자) 제거</td></tr>
+        <tr><td><code class="inline">lstrip() / rstrip()</code></td><td>왼쪽 / 오른쪽만 제거</td></tr>
+        <tr><td><code class="inline">zfill(width)</code></td><td>왼쪽을 0으로 채워 길이를 맞춤</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">title = "python programming"
+print(title.title())        # Python Programming
+
+score = "7"
+print(score.zfill(3))       # 007
+
+raw = "   note   "
+print(raw.strip())          # "note"</code></pre>
+      </div>
+    </section>
+
+    <!-- 문자열: 검색/치환 -->
+    <section class="chunk" id="str-search">
+      <h2>문자열 메소드 — 검색 · 치환<span class="type-tag">str</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">find(sub)</code></td><td>위치 반환, 없으면 -1</td></tr>
+        <tr><td><code class="inline">index(sub)</code></td><td>위치 반환, 없으면 예외 발생</td></tr>
+        <tr><td><code class="inline">count(sub)</code></td><td>등장 횟수</td></tr>
+        <tr><td><code class="inline">replace(old, new)</code></td><td>부분 문자열 치환</td></tr>
+        <tr><td><code class="inline">startswith(sub) / endswith(sub)</code></td><td>접두 / 접미 여부</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">log = "2026-09-09 ERROR: connection lost"
+
+print(log.find("ERROR"))            # 11
+print(log.count("o"))               # 3
+print(log.replace("ERROR", "INFO")) # 2026-09-09 INFO: connection lost
+print(log.startswith("2026"))       # True</code></pre>
+      </div>
+    </section>
+
+    <!-- 문자열: 분리/결합 -->
+    <section class="chunk" id="str-split">
+      <h2>문자열 메소드 — 분리 · 결합<span class="type-tag">str</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">split(sep)</code></td><td>구분자로 나눠 리스트 반환</td></tr>
+        <tr><td><code class="inline">rsplit(sep, n)</code></td><td>오른쪽부터 n번만 분리</td></tr>
+        <tr><td><code class="inline">splitlines()</code></td><td>줄바꿈 기준으로 분리</td></tr>
+        <tr><td><code class="inline">join(iterable)</code></td><td>리스트 등을 구분자로 이어붙임</td></tr>
+        <tr><td><code class="inline">partition(sep)</code></td><td>구분자를 기준으로 (앞, 구분자, 뒤) 3분할</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">csv_line = "지훈,22,AI소프트웨어과"
+fields = csv_line.split(",")            # ['지훈', '22', 'AI소프트웨어과']
+
+rebuilt = " / ".join(fields)             # "지훈 / 22 / AI소프트웨어과"
+
+path = "config.backup.json"
+name, dot, ext = path.partition(".")     # ("config", ".", "backup.json")</code></pre>
+      </div>
+    </section>
+
+    <!-- 문자열: 판별 -->
+    <section class="chunk" id="str-check">
+      <h2>문자열 메소드 — 판별(is___)<span class="type-tag">str</span></h2>
+      <p class="sec-desc">문자열의 성격을 True/False로 검사하는 메소드로, 입력값 검증에 자주 쓰입니다.</p>
+      <table>
+        <tr><th>메소드</th><th>True가 되는 조건</th></tr>
+        <tr><td><code class="inline">isdigit()</code></td><td>모든 문자가 숫자</td></tr>
+        <tr><td><code class="inline">isalpha()</code></td><td>모든 문자가 알파벳(문자)</td></tr>
+        <tr><td><code class="inline">isalnum()</code></td><td>모든 문자가 문자 또는 숫자</td></tr>
+        <tr><td><code class="inline">isspace()</code></td><td>모든 문자가 공백</td></tr>
+        <tr><td><code class="inline">isupper() / islower()</code></td><td>전부 대문자 / 전부 소문자</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">def get_age(text):
+    if not text.isdigit():
+        raise ValueError("숫자만 입력하세요")
+    return int(text)
+
+print(get_age("22"))     # 22
+# get_age("스물둘")      # ValueError 발생</code></pre>
+      </div>
+    </section>
+
+    <!-- 리스트: 추가 -->
+    <section class="chunk" id="list-add">
+      <h2>리스트 메소드 — 요소 추가<span class="type-tag">list · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">append(x)</code></td><td>맨 끝에 요소 하나 추가</td></tr>
+        <tr><td><code class="inline">extend(iterable)</code></td><td>다른 반복 가능 객체의 요소들을 이어붙임</td></tr>
+        <tr><td><code class="inline">insert(i, x)</code></td><td>i번째 위치에 삽입</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">tasks = ["설계"]
+tasks.append("구현")            # ['설계', '구현']
+tasks.extend(["테스트", "배포"]) # ['설계', '구현', '테스트', '배포']
+tasks.insert(1, "검토")          # ['설계', '검토', '구현', '테스트', '배포']</code></pre>
+      </div>
+      <div class="callout">
+        <strong>append vs extend</strong><br>
+        <code class="inline">append([1,2])</code>는 리스트 <em>자체</em>를 하나의 요소로 추가하지만,
+        <code class="inline">extend([1,2])</code>는 그 안의 요소 1, 2를 각각 풀어서 추가합니다.
+      </div>
+    </section>
+
+    <!-- 리스트: 삭제 -->
+    <section class="chunk" id="list-remove">
+      <h2>리스트 메소드 — 요소 삭제<span class="type-tag">list · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">pop(i)</code></td><td>i번째 요소 제거 후 반환 (기본값: 마지막)</td></tr>
+        <tr><td><code class="inline">remove(x)</code></td><td>값이 x인 첫 요소 제거 (없으면 예외)</td></tr>
+        <tr><td><code class="inline">clear()</code></td><td>모든 요소 제거</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">queue = ["A", "B", "C"]
+
+first = queue.pop(0)     # first = "A", queue = ['B', 'C']
+queue.remove("C")         # queue = ['B']
+queue.clear()             # queue = []</code></pre>
+      </div>
+    </section>
+
+    <!-- 리스트: 정렬/순서 -->
+    <section class="chunk" id="list-order">
+      <h2>리스트 메소드 — 정렬 · 순서<span class="type-tag">list · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">sort(key=None, reverse=False)</code></td><td>원본을 오름차순(기본) 정렬</td></tr>
+        <tr><td><code class="inline">reverse()</code></td><td>순서를 완전히 뒤집음</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">members = [("지훈", 22), ("서연", 20), ("민재", 25)]
+
+members.sort(key=lambda m: m[1])          # 나이 기준 오름차순
+print(members)   # [('서연', 20), ('지훈', 22), ('민재', 25)]
+
+members.sort(key=lambda m: m[1], reverse=True)  # 내림차순</code></pre>
+      </div>
+      <div class="callout warn">
+        <strong>sort()는 None을 반환합니다</strong><br>
+        원본을 유지한 채 정렬된 새 리스트가 필요하면 메소드가 아닌 내장 함수 <code class="inline">sorted(members)</code>를 사용하세요.
+      </div>
+    </section>
+
+    <!-- 리스트: 탐색/복사 -->
+    <section class="chunk" id="list-etc">
+      <h2>리스트 메소드 — 탐색 · 복사<span class="type-tag">list · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">index(x)</code></td><td>값 x의 위치 반환 (없으면 예외)</td></tr>
+        <tr><td><code class="inline">count(x)</code></td><td>값 x의 등장 횟수</td></tr>
+        <tr><td><code class="inline">copy()</code></td><td>얕은 복사본 생성</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">grades = [90, 85, 90, 70]
+print(grades.index(90))   # 0
+print(grades.count(90))   # 2
+
+backup = grades.copy()    # 원본과 독립된 새 리스트
+backup.append(100)
+print(grades, backup)     # [90, 85, 90, 70] [90, 85, 90, 70, 100]</code></pre>
+      </div>
+    </section>
+
+    <!-- 튜플 -->
+    <section class="chunk" id="tuple-method">
+      <h2>튜플 메소드<span class="type-tag">tuple · immutable</span></h2>
+      <p class="sec-desc">튜플은 불변이므로 요소를 추가·삭제하는 메소드가 없고, 조회용 메소드 단 두 개만 제공합니다.</p>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">count(x)</code></td><td>값 x의 등장 횟수</td></tr>
+        <tr><td><code class="inline">index(x)</code></td><td>값 x의 위치 반환</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">rgb = (255, 0, 0, 0, 255)
+print(rgb.count(0))    # 2
+print(rgb.index(255))  # 0
+
+# rgb.append(10)  -> 오류! 튜플은 append를 지원하지 않음</code></pre>
+      </div>
+      <div class="callout">
+        <strong>왜 튜플을 쓰는가</strong><br>
+        메소드가 적어 불편해 보이지만, 값이 실수로 바뀌지 않아야 하는 좌표·설정값 등을 안전하게 담을 때 유용합니다.
+        딕셔너리의 키로도 사용할 수 있다는 점(리스트는 불가능)도 불변성 덕분입니다.
+      </div>
+    </section>
+
+    <!-- 딕셔너리: 조회 -->
+    <section class="chunk" id="dict-read">
+      <h2>딕셔너리 메소드 — 조회<span class="type-tag">dict · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">get(key, default)</code></td><td>키가 없어도 예외 없이 default 반환</td></tr>
+        <tr><td><code class="inline">keys()</code></td><td>키만 모은 뷰(view) 반환</td></tr>
+        <tr><td><code class="inline">values()</code></td><td>값만 모은 뷰 반환</td></tr>
+        <tr><td><code class="inline">items()</code></td><td>(키, 값) 쌍의 뷰 반환</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">panel = {"code": "A-101", "voltage": 220}
+
+print(panel.get("voltage"))        # 220
+print(panel.get("current", 0))     # 0  (없는 키 -> 기본값)
+
+for key, value in panel.items():
+    print(f"{key} = {value}")</code></pre>
+      </div>
+    </section>
+
+    <!-- 딕셔너리: 쓰기 -->
+    <section class="chunk" id="dict-write">
+      <h2>딕셔너리 메소드 — 추가 · 수정 · 삭제<span class="type-tag">dict · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">update(other)</code></td><td>다른 딕셔너리 내용으로 갱신·추가</td></tr>
+        <tr><td><code class="inline">setdefault(key, default)</code></td><td>키가 없으면 default로 설정 후 반환</td></tr>
+        <tr><td><code class="inline">pop(key)</code></td><td>키 제거 후 값 반환</td></tr>
+        <tr><td><code class="inline">popitem()</code></td><td>마지막에 추가된 (키,값) 쌍 제거·반환</td></tr>
+        <tr><td><code class="inline">clear()</code></td><td>모든 항목 제거</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">settings = {"volume": 50}
+
+settings.update({"volume": 80, "brightness": 70})
+settings.setdefault("mode", "auto")     # 키 없을 때만 추가
+
+removed = settings.pop("brightness")     # 70
+print(settings)   # {'volume': 80, 'mode': 'auto'}</code></pre>
+      </div>
+    </section>
+
+    <!-- 세트: 연산 -->
+    <section class="chunk" id="set-op">
+      <h2>세트 메소드 — 집합 연산<span class="type-tag">set · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>연산자</th><th>기능</th></tr>
+        <tr><td><code class="inline">union()</code></td><td><code class="inline">|</code></td><td>합집합</td></tr>
+        <tr><td><code class="inline">intersection()</code></td><td><code class="inline">&amp;</code></td><td>교집합</td></tr>
+        <tr><td><code class="inline">difference()</code></td><td><code class="inline">-</code></td><td>차집합</td></tr>
+        <tr><td><code class="inline">symmetric_difference()</code></td><td><code class="inline">^</code></td><td>둘 중 하나에만 있는 요소</td></tr>
+        <tr><td><code class="inline">issubset() / issuperset()</code></td><td>-</td><td>부분집합 / 상위집합 여부</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">python_class = {"지훈", "서연", "민재"}
+ai_class = {"서연", "하은"}
+
+print(python_class & ai_class)     # {'서연'}  두 수업 모두 듣는 학생
+print(python_class | ai_class)     # 합집합
+print(python_class - ai_class)     # 파이썬 수업만 듣는 학생</code></pre>
+      </div>
+    </section>
+
+    <!-- 세트: 수정 -->
+    <section class="chunk" id="set-edit">
+      <h2>세트 메소드 — 추가 · 삭제<span class="type-tag">set · mutable</span></h2>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">add(x)</code></td><td>요소 하나 추가 (이미 있으면 무시)</td></tr>
+        <tr><td><code class="inline">remove(x)</code></td><td>요소 제거, 없으면 예외 발생</td></tr>
+        <tr><td><code class="inline">discard(x)</code></td><td>요소 제거, 없어도 예외 없음</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">tags = {"python", "ai"}
+tags.add("python")       # 중복 -> 변화 없음, {'python', 'ai'}
+tags.discard("java")      # 없는 값이어도 에러 없음</code></pre>
+      </div>
+    </section>
+
+    <!-- 숫자형 -->
+    <section class="chunk" id="num-method">
+      <h2>숫자형 메소드<span class="type-tag">int · float</span></h2>
+      <p class="sec-desc">숫자형은 메소드보다 연산자 사용이 많지만, 몇 가지 유용한 내장 메소드가 있습니다.</p>
+      <table>
+        <tr><th>메소드</th><th>기능</th></tr>
+        <tr><td><code class="inline">is_integer()</code></td><td>float 값이 정수와 같은 값인지 판별</td></tr>
+        <tr><td><code class="inline">bit_length()</code></td><td>정수를 이진수로 표현했을 때 필요한 비트 수</td></tr>
+        <tr><td><code class="inline">as_integer_ratio()</code></td><td>분수 형태 (분자, 분모)로 반환</td></tr>
+      </table>
+      <div class="code-block">
+        <div class="code-label">python</div>
+        <pre><code class="language-python">voltage = 220.0
+print(voltage.is_integer())   # True
+
+value = 37
+print(value.bit_length())     # 6  (100101 -> 6비트)</code></pre>
+      </div>
+    </section>
+
+    <!-- 정리 -->
+    <section class="chunk" id="summary">
+      <h2>한눈에 정리</h2>
+      <table>
+        <tr><th>자료형</th><th>성격</th><th>대표 메소드</th></tr>
+        <tr><td>str</td><td>불변</td><td>upper, split, join, find, replace</td></tr>
+        <tr><td>list</td><td>가변</td><td>append, extend, pop, sort, remove</td></tr>
+        <tr><td>tuple</td><td>불변</td><td>count, index</td></tr>
+        <tr><td>dict</td><td>가변</td><td>get, keys, items, update, pop</td></tr>
+        <tr><td>set</td><td>가변</td><td>union, intersection, add, discard</td></tr>
+        <tr><td>int / float</td><td>불변</td><td>is_integer, bit_length</td></tr>
+      </table>
+      <p>
+        내장 메소드를 고를 때는 먼저 <strong>다루려는 값의 자료형</strong>과, <strong>원본을 바꿔야 하는지 새 값이 필요한지</strong>
+        두 가지만 확인하면 됩니다. 불변 자료형은 항상 새 값을 반환하고, 가변 자료형은 대부분 원본을 직접 수정합니다.
+      </p>
+    </section>
+
+    <footer>
+      AI소프트웨어과 · Python 강의자료
+    </footer>
+  </main>
+</div>
+
+<script>
+  hljs.highlightAll();
+
+  const sections = document.querySelectorAll('section.chunk');
+  const navLinks = document.querySelectorAll('.nav-group a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.getAttribute('id');
+      const link = document.querySelector(`.nav-group a[href="#${id}"]`);
+      if (!link) return;
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(sec => observer.observe(sec));
+</script>
+
+</body>
+</html>
