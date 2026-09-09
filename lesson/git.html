@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git 명령어 &amp; 옵션 가이드</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#11141a;
+    --bg-soft:#161a21;
+    --surface:#1b1f28;
+    --surface-2:#20242f;
+    --border:#282e3a;
+    --border-soft:#1f2430;
+    --text:#e8ebf1;
+    --text-dim:#9aa2b3;
+    --text-faint:#616a7d;
+    --mint:#4fd1a5;
+    --mint-dim:#2c6b56;
+    --amber:#eb9d4e;
+    --danger:#e2645c;
+    --blue:#5b9bd9;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --sans:'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  /* ---------- Layout ---------- */
+  .app{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    min-height:100vh;
+  }
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{position:relative; height:auto; border-right:none; border-bottom:1px solid var(--border);}
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    background:var(--bg-soft);
+    border-right:1px solid var(--border);
+    padding:22px 16px 40px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:4px 8px 18px;
+    border-bottom:1px solid var(--border-soft);
+    margin-bottom:16px;
+  }
+  .brand svg{flex:none;}
+  .brand-text{font-family:var(--mono); font-size:14px; font-weight:700; letter-spacing:.2px;}
+  .brand-text span{color:var(--mint);}
+
+  .search-box{
+    position:relative;
+    margin-bottom:18px;
+  }
+  .search-box input{
+    width:100%;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:13.5px;
+    padding:9px 12px 9px 32px;
+    border-radius:7px;
+    outline:none;
+  }
+  .search-box input:focus{border-color:var(--mint-dim);}
+  .search-box input::placeholder{color:var(--text-faint);}
+  .search-box svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.55;}
+
+  .nav-group{margin-bottom:6px;}
+  .nav-group-label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-faint);
+    padding:10px 10px 6px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .nav-group-label .dot{width:6px;height:6px;border-radius:50%;background:var(--cat-color,var(--mint));}
+  .nav-item{
+    display:block;
+    padding:6px 10px 6px 22px;
+    font-size:13.5px;
+    color:var(--text-dim);
+    border-radius:6px;
+    text-decoration:none;
+    border-left:2px solid transparent;
+    cursor:pointer;
+  }
+  .nav-item:hover{color:var(--text); background:var(--surface);}
+  .nav-item.active{color:var(--text); border-left-color:var(--cat-color,var(--mint)); background:var(--surface);}
+  .nav-item code{font-family:var(--mono); font-size:12.5px;}
+
+  /* ---------- Main ---------- */
+  .main{padding:48px 56px 120px; max-width:920px;}
+  @media (max-width:860px){.main{padding:32px 20px 90px;}}
+
+  .hero{
+    margin-bottom:56px;
+    padding-bottom:36px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .hero-graph{margin-bottom:22px;}
+  .hero h1{
+    font-size:32px;
+    font-weight:700;
+    margin:0 0 12px;
+    letter-spacing:-0.3px;
+  }
+  .hero p{
+    color:var(--text-dim);
+    font-size:15.5px;
+    max-width:640px;
+    margin:0;
+  }
+  .hero .meta{
+    margin-top:18px;
+    display:flex;
+    gap:18px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text-faint);
+  }
+
+  .category-section{margin-bottom:64px; scroll-margin-top:24px;}
+  .category-header{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:6px;
+  }
+  .category-header .index{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--cat-color);
+    font-weight:600;
+  }
+  .category-header h2{
+    font-size:21px;
+    margin:0;
+    font-weight:700;
+  }
+  .category-desc{color:var(--text-dim); font-size:14px; margin:0 0 26px;}
+
+  .cmd-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--cat-color, var(--mint));
+    border-radius:8px;
+    padding:22px 24px;
+    margin-bottom:18px;
+    scroll-margin-top:24px;
+  }
+  .cmd-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .cmd-name{
+    font-family:var(--mono);
+    font-size:16px;
+    font-weight:700;
+    color:var(--text);
+  }
+  .cmd-tag{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--text-faint);
+    border:1px solid var(--border);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+  .cmd-desc{color:var(--text-dim); font-size:14px; margin:0 0 14px;}
+
+  .syntax{
+    background:var(--bg);
+    border:1px solid var(--border-soft);
+    border-radius:6px;
+    padding:12px 14px;
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--mint);
+    margin-bottom:16px;
+    overflow-x:auto;
+    white-space:pre;
+  }
+
+  .opt-table{width:100%; border-collapse:collapse; margin-bottom:16px;}
+  .opt-table th{
+    text-align:left;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-faint);
+    font-weight:600;
+    padding:0 10px 8px 0;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .opt-table td{
+    padding:8px 10px 8px 0;
+    font-size:13.5px;
+    color:var(--text-dim);
+    border-bottom:1px solid var(--border-soft);
+    vertical-align:top;
+  }
+  .opt-table tr:last-child td{border-bottom:none;}
+  .opt-table code{
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--amber);
+    white-space:nowrap;
+  }
+
+  .example{margin-top:14px;}
+  .example-label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-faint);
+    margin-bottom:6px;
+  }
+  .example pre{
+    background:var(--bg);
+    border:1px solid var(--border-soft);
+    border-radius:6px;
+    padding:12px 14px;
+    font-family:var(--mono);
+    font-size:12.8px;
+    color:var(--text-dim);
+    margin:0 0 8px;
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .example pre .cmt{color:var(--text-faint);}
+  .example pre .prompt{color:var(--blue);}
+
+  .danger-note{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    background:rgba(226,100,92,.08);
+    border:1px solid rgba(226,100,92,.28);
+    border-radius:6px;
+    padding:10px 12px;
+    font-size:13px;
+    color:#f0a29c;
+    margin-top:14px;
+  }
+
+  .empty-state{
+    display:none;
+    text-align:center;
+    padding:80px 20px;
+    color:var(--text-faint);
+    font-family:var(--mono);
+    font-size:13px;
+  }
+
+  footer{
+    border-top:1px solid var(--border-soft);
+    padding-top:24px;
+    margin-top:12px;
+    color:var(--text-faint);
+    font-size:12.5px;
+    font-family:var(--mono);
+  }
+
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:#2a3040; border-radius:6px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="6" cy="6" r="2.4" stroke="#4fd1a5" stroke-width="1.6"/>
+        <circle cx="6" cy="18" r="2.4" stroke="#4fd1a5" stroke-width="1.6"/>
+        <circle cx="18" cy="12" r="2.4" stroke="#eb9d4e" stroke-width="1.6"/>
+        <path d="M6 8.4V15.6" stroke="#4fd1a5" stroke-width="1.6"/>
+        <path d="M8.4 12H15.6" stroke="#5b9bd9" stroke-width="1.6"/>
+        <path d="M6 15.6C6 15.6 6 10.8 9.5 10.8H15.6" stroke="#5b9bd9" stroke-width="1.6" fill="none"/>
+      </svg>
+      <div class="brand-text">git<span>--guide</span></div>
+    </div>
+
+    <div class="search-box">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9aa2b3" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="명령어 또는 옵션 검색 (예: rebase, -m)">
+    </div>
+
+    <nav id="navList"></nav>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <svg class="hero-graph" width="100%" height="72" viewBox="0 0 600 72" preserveAspectRatio="xMinYMid meet">
+        <line x1="20" y1="36" x2="580" y2="36" stroke="#282e3a" stroke-width="1.5"/>
+        <path d="M120 36 C150 36 150 14 190 14 L300 14" stroke="#4fd1a5" stroke-width="2" fill="none"/>
+        <path d="M300 14 C330 14 330 36 360 36" stroke="#4fd1a5" stroke-width="2" fill="none"/>
+        <path d="M220 36 C250 36 250 58 290 58 L420 58" stroke="#eb9d4e" stroke-width="2" fill="none"/>
+        <path d="M420 58 C450 58 450 36 480 36" stroke="#eb9d4e" stroke-width="2" fill="none"/>
+        <circle cx="20" cy="36" r="4.5" fill="#5b9bd9"/>
+        <circle cx="120" cy="36" r="4.5" fill="#5b9bd9"/>
+        <circle cx="190" cy="14" r="4.5" fill="#4fd1a5"/>
+        <circle cx="300" cy="14" r="4.5" fill="#4fd1a5"/>
+        <circle cx="220" cy="36" r="4.5" fill="#5b9bd9"/>
+        <circle cx="290" cy="58" r="4.5" fill="#eb9d4e"/>
+        <circle cx="420" cy="58" r="4.5" fill="#eb9d4e"/>
+        <circle cx="360" cy="36" r="4.5" fill="#5b9bd9"/>
+        <circle cx="480" cy="36" r="4.5" fill="#5b9bd9"/>
+        <circle cx="580" cy="36" r="4.5" fill="#5b9bd9"/>
+      </svg>
+      <h1>Git 명령어 &amp; 옵션 가이드</h1>
+      <p>버전 관리를 위한 핵심 Git 명령어와 주요 옵션을 카테고리별로 정리했습니다. 왼쪽에서 항목을 찾거나 검색창에 명령어를 입력해 보세요.</p>
+      <div class="meta">
+        <span>총 <span id="cmdCount">0</span>개 명령어</span>
+        <span>9개 카테고리</span>
+      </div>
+    </section>
+
+    <div id="content"></div>
+    <div class="empty-state" id="emptyState">검색 결과가 없습니다.</div>
+
+    <footer>AI소프트웨어과 · 버전 관리 실습 자료</footer>
+  </main>
+</div>
+
+<script>
+const CAT_COLORS = ['#4fd1a5','#5b9bd9','#eb9d4e','#c792ea','#4fd1a5','#5b9bd9','#e2645c','#eb9d4e','#5b9bd9'];
+
+const data = [
+  {
+    title: "환경 설정",
+    desc: "Git을 처음 사용하기 전에 사용자 정보와 동작 방식을 설정합니다.",
+    commands: [
+      {
+        name: "git config",
+        tag: "설정",
+        desc: "사용자 이름, 이메일, 편집기 등 Git의 동작 환경을 설정합니다.",
+        syntax: "git config [--global | --local] <key> <value>",
+        options: [
+          ["--global", "모든 저장소에 공통 적용되는 전역 설정 (~/.gitconfig)"],
+          ["--local", "현재 저장소에만 적용 (기본값)"],
+          ["--list", "현재 적용된 설정 목록 출력"],
+          ["--unset", "지정한 설정 값을 삭제"]
+        ],
+        examples: [
+          ["git config --global user.name \"Hong Gildong\"", "사용자 이름 설정"],
+          ["git config --global user.email \"gildong@yit.ac.kr\"", "사용자 이메일 설정"],
+          ["git config --list", "현재 설정 전체 확인"]
+        ]
+      },
+      {
+        name: "git init",
+        tag: "저장소",
+        desc: "현재 디렉터리를 새로운 Git 저장소로 초기화합니다. .git 폴더가 생성됩니다.",
+        syntax: "git init [디렉터리명]",
+        options: [
+          ["--bare", "작업 디렉터리 없이 저장소 데이터만 저장 (서버용)"],
+          ["-q, --quiet", "초기화 메시지 출력 생략"]
+        ],
+        examples: [
+          ["git init", "현재 폴더를 Git 저장소로 초기화"],
+          ["git init my-project", "my-project 폴더를 새로 만들며 초기화"]
+        ]
+      }
+    ]
+  },
+  {
+    title: "저장소 복제 &amp; 원격",
+    desc: "원격 저장소를 로컬로 가져오거나, 원격 저장소 정보를 관리합니다.",
+    commands: [
+      {
+        name: "git clone",
+        tag: "원격",
+        desc: "원격 저장소 전체(히스토리 포함)를 로컬에 복제합니다.",
+        syntax: "git clone [옵션] <저장소 URL> [디렉터리명]",
+        options: [
+          ["--branch, -b", "지정한 브랜치만 체크아웃하여 복제"],
+          ["--depth &lt;n&gt;", "최근 n개의 커밋만 가져오는 얕은 복제(shallow clone)"],
+          ["--single-branch", "지정한 브랜치의 히스토리만 가져옴"],
+          ["--recurse-submodules", "서브모듈까지 함께 복제"]
+        ],
+        examples: [
+          ["git clone https://github.com/aiyit/aiyit.github.io.git", "저장소를 현재 위치에 복제"],
+          ["git clone --depth 1 &lt;URL&gt;", "최신 커밋 1개만 가져와 빠르게 복제"]
+        ]
+      },
+      {
+        name: "git remote",
+        tag: "원격",
+        desc: "원격 저장소 목록을 확인하고, 추가·삭제·이름 변경을 관리합니다.",
+        syntax: "git remote [add|remove|rename|-v] ...",
+        options: [
+          ["-v, --verbose", "등록된 원격 저장소의 URL을 함께 출력"],
+          ["add &lt;name&gt; &lt;url&gt;", "새로운 원격 저장소 등록"],
+          ["remove &lt;name&gt;", "등록된 원격 저장소 삭제"],
+          ["rename &lt;old&gt; &lt;new&gt;", "원격 저장소 이름 변경"]
+        ],
+        examples: [
+          ["git remote -v", "등록된 원격 저장소 목록과 URL 확인"],
+          ["git remote add origin https://github.com/user/repo.git", "origin이라는 이름으로 원격 저장소 추가"]
+        ]
+      }
+    ]
+  },
+  {
+    title: "변경사항 기록",
+    desc: "작업한 내용을 스테이징하고 커밋으로 저장하는 핵심 흐름입니다.",
+    commands: [
+      {
+        name: "git status",
+        tag: "확인",
+        desc: "작업 디렉터리와 스테이징 영역의 현재 상태를 보여줍니다.",
+        syntax: "git status [옵션]",
+        options: [
+          ["-s, --short", "간략한 한 줄 요약 형식으로 출력"],
+          ["-b, --branch", "짧은 형식에 브랜치 정보도 함께 표시"]
+        ],
+        examples: [
+          ["git status", "변경/추가/삭제된 파일 전체 목록 확인"],
+          ["git status -sb", "브랜치명과 함께 간략히 확인"]
+        ]
+      },
+      {
+        name: "git add",
+        tag: "스테이징",
+        desc: "변경된 파일을 스테이징 영역(커밋 대기 상태)에 추가합니다.",
+        syntax: "git add &lt;파일 | 디렉터리 | 패턴&gt;",
+        options: [
+          ["-A, --all", "삭제·수정·추가된 모든 변경사항을 스테이징"],
+          [".", "현재 디렉터리 이하의 모든 변경사항을 스테이징"],
+          ["-p, --patch", "변경 내용을 조각(hunk) 단위로 선택하며 스테이징"],
+          ["-u, --update", "이미 추적 중인 파일의 변경사항만 스테이징"]
+        ],
+        examples: [
+          ["git add index.html", "특정 파일만 스테이징"],
+          ["git add .", "현재 폴더의 모든 변경사항 스테이징"],
+          ["git add -p", "변경 내용을 하나씩 확인하며 선택적으로 스테이징"]
+        ]
+      },
+      {
+        name: "git commit",
+        tag: "커밋",
+        desc: "스테이징된 변경사항을 하나의 스냅샷(커밋)으로 저장소 히스토리에 기록합니다.",
+        syntax: "git commit [옵션]",
+        options: [
+          ["-m &lt;메시지&gt;", "커밋 메시지를 바로 입력하여 커밋"],
+          ["-a", "추적 중인 파일의 변경사항을 add 없이 바로 커밋"],
+          ["--amend", "가장 최근 커밋의 내용이나 메시지를 수정"],
+          ["-v, --verbose", "커밋 메시지 작성 시 변경 diff를 함께 표시"]
+        ],
+        examples: [
+          ["git commit -m \"로그인 기능 추가\"", "메시지와 함께 커밋 생성"],
+          ["git commit -am \"오타 수정\"", "스테이징 없이 추적 파일 전체 커밋"],
+          ["git commit --amend -m \"수정된 메시지\"", "직전 커밋 메시지 수정"]
+        ],
+        danger: "--amend는 이미 원격에 push한 커밋에 사용하면 히스토리가 어긋날 수 있습니다."
+      },
+      {
+        name: "git diff",
+        tag: "확인",
+        desc: "작업 디렉터리, 스테이징 영역, 커밋 간의 변경 내용을 비교하여 보여줍니다.",
+        syntax: "git diff [옵션] [커밋1] [커밋2]",
+        options: [
+          ["--staged, --cached", "스테이징된 변경사항과 마지막 커밋을 비교"],
+          ["&lt;커밋1&gt;..&lt;커밋2&gt;", "두 커밋 사이의 차이를 비교"],
+          ["--stat", "변경된 파일명과 라인 수 요약만 표시"]
+        ],
+        examples: [
+          ["git diff", "아직 스테이징하지 않은 변경사항 확인"],
+          ["git diff --staged", "스테이징된 변경사항과 최근 커밋 비교"]
+        ]
+      }
+    ]
+  },
+  {
+    title: "히스토리 확인",
+    desc: "지금까지의 커밋 기록과 각 시점의 내용을 조회합니다.",
+    commands: [
+      {
+        name: "git log",
+        tag: "히스토리",
+        desc: "커밋 히스토리를 최신순으로 출력합니다.",
+        syntax: "git log [옵션]",
+        options: [
+          ["--oneline", "각 커밋을 해시와 메시지 한 줄로 요약 출력"],
+          ["--graph", "브랜치와 병합 구조를 그래프 형태로 시각화"],
+          ["-n &lt;숫자&gt;", "최근 n개의 커밋만 출력"],
+          ["--author=&lt;이름&gt;", "특정 작성자의 커밋만 필터링"],
+          ["-p, --patch", "각 커밋의 상세 diff 내용까지 함께 출력"]
+        ],
+        examples: [
+          ["git log --oneline --graph --all", "전체 브랜치 히스토리를 그래프로 확인"],
+          ["git log -n 5", "가장 최근 커밋 5개만 확인"]
+        ]
+      },
+      {
+        name: "git show",
+        tag: "히스토리",
+        desc: "특정 커밋의 상세 정보(메시지, 작성자, 변경 diff)를 보여줍니다.",
+        syntax: "git show &lt;커밋 해시&gt;",
+        options: [
+          ["--stat", "변경된 파일 목록과 통계만 요약 출력"],
+          ["HEAD~n", "현재 브랜치 기준 n번째 이전 커밋을 지정"]
+        ],
+        examples: [
+          ["git show a1b2c3d", "해당 해시의 커밋 상세 내용 확인"],
+          ["git show HEAD~2", "두 번째 이전 커밋 확인"]
+        ]
+      },
+      {
+        name: "git blame",
+        tag: "히스토리",
+        desc: "파일의 각 줄이 마지막으로 어떤 커밋과 작성자에 의해 수정되었는지 추적합니다.",
+        syntax: "git blame &lt;파일명&gt;",
+        options: [
+          ["-L &lt;시작,끝&gt;", "지정한 줄 범위만 출력"],
+          ["-w", "공백 변경은 무시하고 추적"]
+        ],
+        examples: [
+          ["git blame script.js", "파일 전체의 줄별 작성자 확인"],
+          ["git blame -L 10,20 script.js", "10~20번째 줄만 확인"]
+        ]
+      }
+    ]
+  },
+  {
+    title: "브랜치 &amp; 병합",
+    desc: "독립적인 작업 흐름을 만들고(branch), 다시 합치는(merge) 작업입니다.",
+    commands: [
+      {
+        name: "git branch",
+        tag: "브랜치",
+        desc: "브랜치를 생성, 조회, 삭제합니다.",
+        syntax: "git branch [옵션] [브랜치명]",
+        options: [
+          ["-a, --all", "로컬과 원격 브랜치를 모두 출력"],
+          ["-d &lt;이름&gt;", "병합이 완료된 브랜치 삭제"],
+          ["-D &lt;이름&gt;", "병합 여부와 상관없이 강제 삭제"],
+          ["-m &lt;새 이름&gt;", "현재 브랜치의 이름 변경"]
+        ],
+        examples: [
+          ["git branch feature-login", "feature-login 브랜치 생성"],
+          ["git branch -a", "모든 로컬/원격 브랜치 목록 확인"],
+          ["git branch -d feature-login", "작업이 끝난 브랜치 삭제"]
+        ]
+      },
+      {
+        name: "git switch",
+        tag: "브랜치",
+        desc: "작업 중인 브랜치를 전환합니다. (checkout의 브랜치 전환 기능을 대체하는 최신 명령)",
+        syntax: "git switch [옵션] &lt;브랜치명&gt;",
+        options: [
+          ["-c &lt;이름&gt;", "새 브랜치를 생성함과 동시에 전환"],
+          ["-", "바로 이전 브랜치로 돌아가기"]
+        ],
+        examples: [
+          ["git switch main", "main 브랜치로 전환"],
+          ["git switch -c feature-signup", "새 브랜치 생성 후 바로 전환"]
+        ]
+      },
+      {
+        name: "git checkout",
+        tag: "브랜치",
+        desc: "브랜치 전환, 특정 커밋 상태로 이동, 파일 복원 등 여러 용도로 쓰이는 다목적 명령입니다.",
+        syntax: "git checkout &lt;브랜치 | 커밋 | -- 파일&gt;",
+        options: [
+          ["-b &lt;이름&gt;", "새 브랜치를 만들면서 전환 (switch -c와 동일)"],
+          ["-- &lt;파일명&gt;", "해당 파일을 마지막 커밋 상태로 되돌림"]
+        ],
+        examples: [
+          ["git checkout develop", "develop 브랜치로 전환"],
+          ["git checkout -- index.html", "index.html을 수정 전 상태로 복원"]
+        ]
+      },
+      {
+        name: "git merge",
+        tag: "병합",
+        desc: "다른 브랜치의 변경사항을 현재 브랜치로 합칩니다.",
+        syntax: "git merge &lt;브랜치명&gt;",
+        options: [
+          ["--no-ff", "fast-forward가 가능해도 병합 커밋을 별도로 생성"],
+          ["--squash", "여러 커밋을 하나로 합쳐서 병합 준비"],
+          ["--abort", "충돌 발생 시 병합을 취소하고 이전 상태로 복귀"]
+        ],
+        examples: [
+          ["git merge feature-login", "feature-login 브랜치를 현재 브랜치에 병합"],
+          ["git merge --no-ff feature-login", "병합 이력을 명확히 남기며 병합"]
+        ],
+        danger: "병합 충돌(conflict)이 발생하면 파일을 직접 수정한 뒤 git add와 git commit으로 완료해야 합니다."
+      },
+      {
+        name: "git rebase",
+        tag: "병합",
+        desc: "현재 브랜치의 커밋들을 다른 브랜치 위로 재배치하여 히스토리를 일직선으로 정리합니다.",
+        syntax: "git rebase &lt;브랜치명&gt;",
+        options: [
+          ["-i, --interactive", "커밋 순서 변경, 합치기(squash), 메시지 수정 등을 대화형으로 진행"],
+          ["--continue", "충돌 해결 후 리베이스 이어서 진행"],
+          ["--abort", "리베이스를 취소하고 원래 상태로 복귀"]
+        ],
+        examples: [
+          ["git rebase main", "현재 브랜치를 main 브랜치 기준으로 재배치"],
+          ["git rebase -i HEAD~3", "최근 3개 커밋을 대화형으로 정리"]
+        ],
+        danger: "이미 원격 저장소에 공유된 커밋을 rebase하면 협업 중인 다른 사람의 히스토리와 충돌할 수 있습니다."
+      },
+      {
+        name: "git cherry-pick",
+        tag: "병합",
+        desc: "다른 브랜치의 특정 커밋 하나만 골라 현재 브랜치에 적용합니다.",
+        syntax: "git cherry-pick &lt;커밋 해시&gt;",
+        options: [
+          ["-n, --no-commit", "적용만 하고 자동 커밋은 생성하지 않음"],
+          ["--abort", "충돌 발생 시 작업 취소"]
+        ],
+        examples: [
+          ["git cherry-pick a1b2c3d", "지정한 커밋 하나만 현재 브랜치에 적용"]
+        ]
+      }
+    ]
+  },
+  {
+    title: "원격 작업",
+    desc: "로컬 저장소와 원격 저장소 간에 커밋을 주고받습니다.",
+    commands: [
+      {
+        name: "git fetch",
+        tag: "원격",
+        desc: "원격 저장소의 변경사항을 가져오되, 현재 작업 브랜치에는 자동으로 반영하지 않습니다.",
+        syntax: "git fetch [원격이름]",
+        options: [
+          ["--all", "등록된 모든 원격 저장소의 정보를 가져옴"],
+          ["--prune", "원격에서 삭제된 브랜치를 로컬 참조에서도 정리"]
+        ],
+        examples: [
+          ["git fetch origin", "origin 저장소의 최신 정보 가져오기"],
+          ["git fetch --prune", "원격에서 삭제된 브랜치 정리와 함께 가져오기"]
+        ]
+      },
+      {
+        name: "git pull",
+        tag: "원격",
+        desc: "원격 저장소의 변경사항을 가져온 뒤(fetch), 현재 브랜치에 자동으로 병합(merge)합니다.",
+        syntax: "git pull [원격이름] [브랜치명]",
+        options: [
+          ["--rebase", "merge 대신 rebase 방식으로 반영하여 히스토리를 깔끔하게 유지"],
+          ["--ff-only", "fast-forward 병합이 가능한 경우에만 진행"]
+        ],
+        examples: [
+          ["git pull origin main", "원격 main 브랜치 내용을 가져와 병합"],
+          ["git pull --rebase", "rebase 방식으로 최신 내용 반영"]
+        ]
+      },
+      {
+        name: "git push",
+        tag: "원격",
+        desc: "로컬 저장소의 커밋을 원격 저장소로 전송합니다.",
+        syntax: "git push [원격이름] [브랜치명]",
+        options: [
+          ["-u, --set-upstream", "로컬 브랜치와 원격 브랜치를 연결하여 이후 push/pull 시 이름 생략 가능"],
+          ["--force, -f", "원격 히스토리를 로컬 기준으로 강제 덮어씀"],
+          ["--force-with-lease", "다른 사람의 작업을 덮어쓰지 않는지 확인 후 강제 push"],
+          ["--tags", "로컬에 생성된 태그도 함께 전송"]
+        ],
+        examples: [
+          ["git push -u origin main", "최초 push 시 브랜치 연결까지 함께 설정"],
+          ["git push", "연결된 원격 브랜치로 커밋 전송"]
+        ],
+        danger: "--force는 원격 저장소의 커밋을 되돌릴 수 없이 덮어쓸 수 있으므로, 공용 브랜치에서는 --force-with-lease 사용을 권장합니다."
+      }
+    ]
+  },
+  {
+    title: "되돌리기 &amp; 임시 저장",
+    desc: "실수를 바로잡거나, 작업 중인 내용을 잠시 미뤄두는 명령입니다.",
+    commands: [
+      {
+        name: "git reset",
+        tag: "되돌리기",
+        desc: "현재 브랜치의 HEAD 위치를 이동시켜 커밋을 취소하거나 스테이징을 해제합니다.",
+        syntax: "git reset [옵션] &lt;커밋&gt;",
+        options: [
+          ["--soft", "커밋만 취소하고 변경 내용은 스테이징 상태로 유지"],
+          ["--mixed (기본값)", "커밋과 스테이징을 취소하고 변경 내용은 작업 디렉터리에 유지"],
+          ["--hard", "커밋, 스테이징, 작업 디렉터리 변경사항까지 모두 삭제"]
+        ],
+        examples: [
+          ["git reset --soft HEAD~1", "가장 최근 커밋만 취소, 변경 내용은 스테이징 상태 유지"],
+          ["git reset HEAD 파일명", "스테이징된 특정 파일만 스테이징 해제"]
+        ],
+        danger: "--hard 옵션은 커밋되지 않은 작업 내용을 영구적으로 삭제하므로 사용 전 반드시 확인이 필요합니다."
+      },
+      {
+        name: "git revert",
+        tag: "되돌리기",
+        desc: "기존 커밋 히스토리는 유지한 채, 특정 커밋의 변경사항을 취소하는 새로운 커밋을 생성합니다.",
+        syntax: "git revert &lt;커밋 해시&gt;",
+        options: [
+          ["-n, --no-commit", "되돌리는 작업만 적용하고 커밋은 별도로 생성"],
+          ["--continue", "충돌 해결 후 revert 이어서 진행"]
+        ],
+        examples: [
+          ["git revert a1b2c3d", "해당 커밋의 변경사항을 취소하는 새 커밋 생성"]
+        ]
+      },
+      {
+        name: "git clean",
+        tag: "되돌리기",
+        desc: "Git이 추적하지 않는(untracked) 파일과 디렉터리를 삭제합니다.",
+        syntax: "git clean [옵션]",
+        options: [
+          ["-n, --dry-run", "실제로 삭제하지 않고 삭제될 대상만 미리 확인"],
+          ["-f, --force", "실제로 파일 삭제 실행"],
+          ["-d", "추적되지 않는 디렉터리도 함께 삭제"]
+        ],
+        examples: [
+          ["git clean -n", "삭제될 파일 목록만 미리 확인"],
+          ["git clean -fd", "추적되지 않는 파일과 디렉터리를 실제로 삭제"]
+        ],
+        danger: "-f로 삭제된 파일은 복구할 수 없으므로 반드시 -n으로 먼저 확인하세요."
+      },
+      {
+        name: "git stash",
+        tag: "임시저장",
+        desc: "현재 작업 중인 변경사항을 임시로 저장해두고, 작업 디렉터리를 깨끗한 상태로 되돌립니다.",
+        syntax: "git stash [push|pop|list|drop]",
+        options: [
+          ["push -m &lt;메시지&gt;", "메시지와 함께 현재 변경사항을 임시 저장"],
+          ["pop", "가장 최근 저장된 stash를 적용하고 목록에서 제거"],
+          ["list", "임시 저장된 stash 목록 확인"],
+          ["drop", "특정 stash를 목록에서 삭제"]
+        ],
+        examples: [
+          ["git stash", "현재 변경사항을 임시 저장"],
+          ["git stash pop", "가장 최근 stash 내용을 다시 적용"]
+        ]
+      }
+    ]
+  },
+  {
+    title: "태그",
+    desc: "릴리즈 시점 등 특정 커밋에 이름표를 붙여 표시합니다.",
+    commands: [
+      {
+        name: "git tag",
+        tag: "태그",
+        desc: "특정 커밋에 버전 이름 등의 태그를 부여합니다.",
+        syntax: "git tag [옵션] &lt;태그명&gt; [커밋]",
+        options: [
+          ["-a &lt;이름&gt; -m &lt;메시지&gt;", "메시지가 포함된 주석 태그 생성"],
+          ["-d &lt;이름&gt;", "로컬 태그 삭제"],
+          ["-l, --list", "생성된 태그 목록 확인"]
+        ],
+        examples: [
+          ["git tag -a v1.0 -m \"첫 정식 릴리즈\"", "v1.0 태그 생성"],
+          ["git push origin v1.0", "생성한 태그를 원격 저장소로 전송"]
+        ]
+      }
+    ]
+  },
+  {
+    title: "기타 유용한 설정",
+    desc: "실습 및 협업 과정에서 자주 함께 쓰이는 보조 기능입니다.",
+    commands: [
+      {
+        name: ".gitignore",
+        tag: "설정파일",
+        desc: "Git이 추적하지 않아야 할 파일이나 폴더 패턴을 지정하는 설정 파일입니다.",
+        syntax: "프로젝트 루트에 .gitignore 파일 생성 후 패턴 작성",
+        options: [
+          ["node_modules/", "폴더 전체를 추적 제외"],
+          ["*.log", "확장자가 .log인 모든 파일 제외"],
+          ["!important.log", "제외 패턴 중 예외로 다시 포함시키고 싶을 때"]
+        ],
+        examples: [
+          ["echo \"node_modules/\" &gt;&gt; .gitignore", "node_modules 폴더를 추적 대상에서 제외"]
+        ]
+      },
+      {
+        name: "git alias",
+        tag: "설정",
+        desc: "자주 쓰는 긴 명령어를 짧은 별칭으로 등록하여 편리하게 사용합니다.",
+        syntax: "git config --global alias.&lt;별칭&gt; '&lt;원본 명령어&gt;'",
+        options: [
+          ["alias.co", "checkout의 별칭으로 자주 설정"],
+          ["alias.st", "status의 별칭으로 자주 설정"],
+          ["alias.lg", "log --oneline --graph 등 조합 명령의 별칭으로 활용"]
+        ],
+        examples: [
+          ["git config --global alias.co checkout", "git co 로 checkout 실행 가능"],
+          ["git config --global alias.st status", "git st 로 status 실행 가능"]
+        ]
+      }
+    ]
+  }
+];
+
+/* ---------------- render ---------------- */
+const contentEl = document.getElementById('content');
+const navEl = document.getElementById('navList');
+const emptyState = document.getElementById('emptyState');
+let totalCmdCount = 0;
+
+function esc(s){ return s; } // content authored as trusted static data
+
+data.forEach((cat, ci) => {
+  const color = CAT_COLORS[ci % CAT_COLORS.length];
+  const catId = 'cat-' + ci;
+
+  // nav group
+  const navGroup = document.createElement('div');
+  navGroup.className = 'nav-group';
+  navGroup.style.setProperty('--cat-color', color);
+  const label = document.createElement('div');
+  label.className = 'nav-group-label';
+  label.innerHTML = '<span class="dot"></span>' + cat.title;
+  navGroup.appendChild(label);
+
+  cat.commands.forEach((cmd, mi) => {
+    totalCmdCount++;
+    const cmdId = catId + '-cmd-' + mi;
+    cmd._id = cmdId;
+    cmd._searchText = (cmd.name + ' ' + cmd.desc + ' ' + cmd.options.map(o=>o[0]+' '+o[1]).join(' ')).toLowerCase();
+
+    const navItem = document.createElement('a');
+    navItem.className = 'nav-item';
+    navItem.href = '#' + cmdId;
+    navItem.innerHTML = '<code>' + cmd.name + '</code>';
+    navGroup.appendChild(navItem);
+  });
+  navEl.appendChild(navGroup);
+
+  // section
+  const section = document.createElement('section');
+  section.className = 'category-section';
+  section.id = catId;
+  section.style.setProperty('--cat-color', color);
+
+  const header = document.createElement('div');
+  header.className = 'category-header';
+  header.innerHTML = '<span class="index">' + String(ci+1).padStart(2,'0') + '</span><h2>' + cat.title + '</h2>';
+  section.appendChild(header);
+
+  const desc = document.createElement('p');
+  desc.className = 'category-desc';
+  desc.textContent = cat.desc.replace(/&amp;/g,'&');
+  section.appendChild(desc);
+
+  cat.commands.forEach(cmd => {
+    const card = document.createElement('div');
+    card.className = 'cmd-card';
+    card.id = cmd._id;
+    card.style.setProperty('--cat-color', color);
+
+    let optRows = cmd.options.map(o => '<tr><td><code>' + o[0] + '</code></td><td>' + o[1] + '</td></tr>').join('');
+    let exBlocks = cmd.examples.map(e => '<div class="example"><div class="example-label">예시</div><pre><span class="prompt">$</span> ' + e[0] + '  <span class="cmt"># ' + e[1] + '</span></pre></div>').join('');
+    let dangerBlock = cmd.danger ? '<div class="danger-note">⚠ ' + cmd.danger + '</div>' : '';
+
+    card.innerHTML = `
+      <div class="cmd-head">
+        <span class="cmd-name">${cmd.name}</span>
+        <span class="cmd-tag">${cmd.tag}</span>
+      </div>
+      <p class="cmd-desc">${cmd.desc}</p>
+      <div class="syntax">${cmd.syntax}</div>
+      <table class="opt-table">
+        <thead><tr><th>옵션</th><th>설명</th></tr></thead>
+        <tbody>${optRows}</tbody>
+      </table>
+      ${exBlocks}
+      ${dangerBlock}
+    `;
+    section.appendChild(card);
+  });
+
+  contentEl.appendChild(section);
+});
+
+document.getElementById('cmdCount').textContent = totalCmdCount;
+
+/* ---------------- active nav on scroll ---------------- */
+const navItems = Array.from(document.querySelectorAll('.nav-item'));
+const cards = Array.from(document.querySelectorAll('.cmd-card'));
+function setActive(id){
+  navItems.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+}
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) setActive(entry.target.id);
+  });
+}, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+cards.forEach(c => observer.observe(c));
+
+/* ---------------- search filter ---------------- */
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  let visibleCount = 0;
+
+  data.forEach((cat, ci) => {
+    let catHasVisible = false;
+    cat.commands.forEach(cmd => {
+      const card = document.getElementById(cmd._id);
+      const match = q === '' || cmd._searchText.includes(q);
+      card.style.display = match ? '' : 'none';
+      const navA = navEl.querySelector('a[href="#' + cmd._id + '"]');
+      if (navA) navA.style.display = match ? '' : 'none';
+      if (match) { catHasVisible = true; visibleCount++; }
+    });
+    const sectionEl = document.getElementById('cat-' + ci);
+    sectionEl.style.display = catHasVisible ? '' : 'none';
+    const navGroups = navEl.querySelectorAll('.nav-group');
+    if (navGroups[ci]) navGroups[ci].style.display = catHasVisible ? '' : 'none';
+  });
+
+  emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+});
+</script>
+</body>
+</html>
