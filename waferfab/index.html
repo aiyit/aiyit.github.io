@@ -1,1 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>반도체 웨이퍼 제조공정 디지털 트윈</title>
+<link rel="stylesheet" href="css/style.css" />
 
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene-canvas"></canvas>
+
+    <div id="overlay">
+      <div id="loading">3D 콘텐츠 불러오는 중...</div>
+
+      <div id="title-panel" class="hidden">
+        <h1>반도체 웨이퍼 제조공정</h1>
+        <p>Wafer Manufacturing Process · Digital Twin</p>
+      </div>
+
+      <div id="process-rail" class="hidden">
+        <span class="step">① 단결정 성장</span><span class="arrow">›</span>
+        <span class="step">② 잉곳 가공</span><span class="arrow">›</span>
+        <span class="step">③ Wafer 절단</span><span class="arrow">›</span>
+        <span class="step">④ CMP 연마</span><span class="arrow">›</span>
+        <span class="step">⑤ 세정</span><span class="arrow">›</span>
+        <span class="step">⑥ 검사</span>
+      </div>
+
+      <div id="hud" class="hidden">
+        <p class="hint pc-hint">화면을 클릭하면 마우스 시점 이동이 활성화됩니다 · WASD로 이동</p>
+        <p class="hint vr-hint hidden">기기를 움직여 360° 공정 현장을 둘러보세요</p>
+      </div>
+
+      <button id="vr-button" class="hidden">📱 VR 모드 (Cardboard)</button>
+      <button id="exit-vr-button" class="hidden">✕ VR 종료</button>
+
+      <div id="orientation-warning" class="hidden">
+        VR 모드는 기기를 가로로 돌려주세요 📱↔️
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
