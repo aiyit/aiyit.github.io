@@ -10,11 +10,23 @@
 		else  alert("잘 쉬어요!"); // 오후 6시 이후이면
 	}
 </Script>
+	<script>
+	function year(){
+	var year = parseInt(prompt("연도를 입력하세요:"));
+
+// 윤년 조건식
+if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
+    console.log(year + "년은 윤년입니다.");
+} else {
+    console.log(year + "년은 평년입니다.");
+} 
+	}</script>
 </head>
 <body>
 <h3>조건문 if else</h3>
 <h4>현재 시간 Date()의 시간에 따른 문자열 표시</h4>
 <p onclick="time();">현재시각:<b id="time"> </p>/*클릭 하세요*/
+	<p onclick="year();">현재시각:<b id="time"> </p>/*클릭 하세요*/
 </body>
 </html>
 
