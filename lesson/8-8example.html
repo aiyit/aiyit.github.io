@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript 연산자 테스트</title>
+</head>
+<body>
+    <h3>JavaScript 연산자 테스트</h3>
+
+    <!-- 1. 산술 연산자 -->
+    <h4>-- 산술연산자 --</h4>
+    <button onclick="testArithmetic()">산술 연산자 실행</button>
+    <div id="arithmeticResult"></div>
+
+    <br/>
+
+    <!-- 2. 대입 연산자 -->
+    <h4>-- 대입연산자 --</h4>
+    <button onclick="testAssignment()">대입 연산자 실행</button>
+    <div id="assignmentResult"></div>
+
+    <br/>
+
+    <!-- 3. 문자열 연산자 -->
+    <h4>-- 문자열 연산 --</h4>
+    <button onclick="testString()">문자열 연산 실행</button>
+    <div id="stringResult"></div>
+
+    <br/>
+
+    <!-- 4. 비교 연산자 -->
+    <h4>-- 비교연산자 --</h4>
+    <button onclick="testComparison()">비교 연산자 실행</button>
+    <div id="comparisonResult"></div>
+
+    <br/>
+
+    <!-- 5. 논리 연산자 -->
+    <h4>-- 논리연산자 --</h4>
+    <button onclick="testLogical()">논리 연산자 실행</button>
+    <div id="logicalResult"></div>
+
+    <script>
+        // 1. 산술 연산자 테스트
+        function testArithmetic() {
+            var x = 10, y = 6;
+            var z = x + y;
+            
+            var a = x - y;
+            var b = x * y;
+            var c = x / y;
+            
+            var sq = x ** 2;
+            var mod = x % y;
+            var inc = x++;
+            var dec = z--;
+
+            var res = "더하기 연산자: x=10 + y=6 = " + (x-1 + y) + "<br/>" +
+                      "빼기 연산자: - (" + a + ") | X 연산자: * (" + b + ") | 나누기 연산자: / (" + c + ")<br/>" +
+                      "제곱 연산자: ** (" + sq + ") | 나머지 연산자: % (" + mod + ") | 증감연산자: ++, -- (" + inc + ", " + dec + ")";
+            
+            document.getElementById("arithmeticResult").innerHTML = res;
+        }
+
+        // 2. 대입 연산자 테스트
+        function testAssignment() {
+            var a = 100;
+            var b = 9;
+            var c = 10;
+
+            a += 5; // 105
+            b %= 5; // 4
+            c *= 5; // 50
+
+            var res = "더하기대입: += (" + a + ") | 나머지대입: %= (" + b + ") | 곱하기대입: *= (" + c + ")";
+            document.getElementById("assignmentResult").innerHTML = res;
+        }
+
+        // 3. 문자열 연산 테스트
+        function testString() {
+            var txt1 = "AI", txt2 = " Software";
+            var res = "문자1 + 문자2: " + txt1 + txt2;
+            document.getElementById("stringResult").innerHTML = res;
+        }
+
+        // 4. 비교 연산자 테스트
+        function testComparison() {
+            var res = "10 == '10': " + (10 == '10') + "<br/>" +
+                      "10 === '10': " + (10 === '10') + "<br/>" +
+                      "10 != 6: " + (10 != 6) + "<br/>" +
+                      "10 > 6: " + (10 > 6) + "<br/>" +
+                      "10 < 6: " + (10 < 6);
+            document.getElementById("comparisonResult").innerHTML = res;
+        }
+
+        // 5. 논리 연산자 테스트
+        function testLogical() {
+            var res = "(10 > 5) && (6 > 10) [AND]: " + ((10 > 5) && (6 > 10)) + "<br/>" +
+                      "(10 > 5) || (6 > 10) [OR]: " + ((10 > 5) || (6 > 10)) + "<br/>" +
+                      "!(10 > 5) [NOT]: " + (!(10 > 5));
+            document.getElementById("logicalResult").innerHTML = res;
+        }
+    </script>
+</body>
+</html>
