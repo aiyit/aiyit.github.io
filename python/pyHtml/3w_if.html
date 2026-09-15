@@ -434,7 +434,7 @@ else:
     print("로그인 실패")</code></pre>
       </div>
 
-      <div class="subhead">성적 관리 — 종합예제</div>
+      <div class="subhead">성적 관리 — 종합예제1</div>
       <div class="code-frame">
         <div class="bar"><span class="file-dot"></span>grade_manager.py</div>
         <pre><code class="language-python">name = input("이름 : ")
@@ -458,6 +458,38 @@ print(f"이름 : {name}")
 print(f"점수 : {score}")
 print(f"학점 : {grade}")
 print("=" * 35)</code></pre>
+      </div>
+    </section>
+   <div class="subhead">비 관리 — 종합예제2</div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>grade_manager.py</div>
+        <pre><code class="language-python">height_cm = float(input("키를 입력하세요 (cm): "))
+weight_kg = float(input("체중을 입력하세요 (kg): "))
+
+# 1. 입력 데이터 유효성 검사 (Data Validation)
+if height_cm <= 0 or weight_kg <= 0:
+    print("오류: 키와 체중은 0보다 큰 양수여야 합니다.")
+elif height_cm > 250 or weight_kg > 300:
+    print("오류: 입력값이 정상 수치 범위를 벗어났습니다.")
+else:
+    # 2. BMI 계산 (m 단위 변환 필요)
+    height_m = height_cm / 100
+    bmi = weight_kg / (height_m ** 2)
+    
+    # 3. BMI 판정
+    if bmi < 18.5:
+        category = "저체중"
+    elif 18.5 <= bmi < 23.0:
+        category = "정상"
+    elif 23.0 <= bmi < 25.0:
+        category = "과체중 (비만 전단계)"
+    elif 25.0 <= bmi < 30.0:
+        category = "1단계 비만"
+    else:
+        category = "2단계 이상 고도비만"
+        
+    print(f"\n계산된 BMI: {bmi:.2f}")
+    print(f"판정 결과: [{category}] 입니다.")</code></pre>
       </div>
     </section>
 
