@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>onmousedown 예제</title>
+    <style>
+        #box {
+            width: 200px;
+            height: 100px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            font-weight: bold;
+            user-select: none; /* 텍스트 드래그 방지 */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>onmousedown / onmouseup 실습</h2>
+
+    <div id="box" 
+         onmousedown="handleMouseDown(this)" 
+         onmouseup="handleMouseUp(this)">
+        마우스로 눌러보세요
+    </div>
+
+    <script>
+        // 마우스 버튼을 누르는 순간 실행
+        function handleMouseDown(element) {
+            element.style.backgroundColor = "#e74c3c";
+            element.innerText = "눌렀습니다! (MouseDown)";
+        }
+
+        // 마우스 버튼을 떼는 순간 실행
+        function handleMouseUp(element) {
+            element.style.backgroundColor = "#3498db";
+            element.innerText = "손을 뗐습니다! (MouseUp)";
+        }
+    </script>
+</body>
+</html>
