@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>자바스크립트 연산자 출력 (if문 없음)</title>
+</head>
+<body>
+    <h1>두 숫자의 연산자별 계산 결과</h1>
+
+    <label>첫 번째 숫자: <input type="number" id="num1" value="17"></label><br><br>
+    <label>두 번째 숫자: <input type="number" id="num2" value="3"></label><br><br>
+    <button onclick="calculate()">연산 실행</button>
+
+    <hr>
+
+    <div id="output">
+        <!-- 연산 결과가 HTML 본문에 표시되는 영역 -->
+    </div>
+
+    <script>
+        function calculate() {
+            // 1. 입력값 가져오기 (숫자 타입 변환)
+            var n1 = Number(document.getElementById("num1").value);
+            var n2 = Number(document.getElementById("num2").value);
+
+            // 2. 종류별 연산 결과를 HTML 형태로 구성 (if문 미사용)
+            var resultHTML = 
+                "<h2>1. 기본 사칙연산자</h2>" +
+                "<ul>" +
+                    "<li><b>덧셈 (+) :</b> " + (n1 + n2) + "</li>" +
+                    "<li><b>뺄셈 (-) :</b> " + (n1 - n2) + "</li>" +
+                    "<li><b>곱셈 (*) :</b> " + (n1 * n2) + "</li>" +
+                    "<li><b>나눗셈 (/) :</b> " + (n1 / n2) + "</li>" +
+                "</ul>" +
+
+                "<h2>2. 몫과 나머지 연산자</h2>" +
+                "<ul>" +
+                    "<li><b>정수 몫 (Math.floor) :</b> " + Math.floor(n1 / n2) + "</li>" +
+                    "<li><b>나머지 (%) :</b> " + (n1 % n2) + "</li>" +
+                "</ul>" +
+
+                "<h2>3. 기타 산술 연산자</h2>" +
+                "<ul>" +
+                    "<li><b>거듭제곱 (**) :</b> " + (n1 ** n2) + "</li>" +
+                    "<li><b>단항 부호 반전 (-) :</b> " + (-n1) + "</li>" +
+                "</ul>";
+
+            // 3. HTML 본문 내 div#output 영역에 출력
+            document.getElementById("output").innerHTML = resultHTML;
+        }
+
+        // 페이지 로드 시 초기 1회 자동으로 출력 실행
+        calculate();
+    </script>
+</body>
+</html>
