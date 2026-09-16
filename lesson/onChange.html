@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>onchange - Select 예제</title>
+</head>
+<body>
+    <h2>과일 선택 (Select)</h2>
+    
+    <!-- select 요소의 값이 바뀌면 showSelected() 실행 -->
+    <select id="fruitSelect" onchange="showSelected()">
+        <option value="사과">사과</option>
+        <option value="바나나">바나나</option>
+        <option value="오렌지">오렌지</option>
+    </select>
+
+    <p id="result">선택된 과일: 사과</p>
+
+    <script>
+        function showSelected() {
+            var selectBox = document.getElementById("fruitSelect");
+            var selectedValue = selectBox.value; // 선택된 option의 value 가져오기
+            
+            document.getElementById("result").innerHTML = "선택된 과일: <b>" + selectedValue + "</b>";
+        }
+    </script>
+</body>
+</html>
