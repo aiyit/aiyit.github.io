@@ -1,32 +1,44 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>예제8-13if 조건문</title>
+<title>예제8-13 if 조건문</title>
 <script>
 	function time(){
 		var clock = new Date().getHours(); // 현재시간
-		document.getElementById("time").innerHTML=clock;
-		if(clock < 18) alert("좋은 하루!"); // 오후 6시이전이면 
-		else  alert("잘 쉬어요!"); // 오후 6시 이후이면
+		document.getElementById("time").innerHTML = clock; // 문서에 시간 표시
+		if(clock < 18) alert("좋은 하루!"); // 오후 6시 이전이면
+		else alert("잘 쉬어요!"); // 오후 6시 이후이면
 	}
-</Script>
+</script>
 	<script>
 	function year(){
-	var year = parseInt(prompt("연도를 입력하세요:"));
+		var year = parseInt(document.getElementById("yearInput").value); // 입력창에서 값 읽기
+		var result;
 
-// 윤년 조건식
-if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
-    document.write(year + "년은 윤년입니다.");
-} else {
-   document.write(year + "년은 평년입니다.");
-} 
-	}</script>
+		if (isNaN(year)) {
+			result = "연도를 숫자로 입력해 주세요.";
+		}
+		// 윤년 조건식
+		else if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
+			result = year + "년은 윤년입니다.";
+		} else {
+			result = year + "년은 평년입니다.";
+		}
+
+		document.getElementById("year").innerHTML = result; // 문서에 결과 표시
+	}
+	</script>
 </head>
 <body>
 <h3>조건문 if else</h3>
 <h4>현재 시간 Date()의 시간에 따른 문자열 표시</h4>
-<p onclick="time();">현재시각:<b id="time"> </p>/*클릭 하세요*/
-	<p onclick="year();">현재시각:<b id="time"> </p>/*클릭 하세요*/
+<p onclick="time();">현재시각: <b id="time"> </b></p><!-- 클릭 하세요 -->
+<p>
+	연도 입력: <input type="text" id="yearInput" placeholder="예: 2024">
+	<button onclick="year();">윤년 판단</button>
+	<b id="year"> </b>
+</p>
 </body>
 </html>
 
