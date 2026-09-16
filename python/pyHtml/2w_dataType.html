@@ -803,6 +803,76 @@ print("Pro" in text)
 student = {"이름":"홍길동", "학과":"AI소프트웨어과"}
 print("학과" in student)          # 딕셔너리는 key를 기준으로 확인
 print("전화번호" not in student)</code></pre>
+        <pre><code class="language-python"># 산술 연산자 우선순위 - **, *, +
+result = 2 + 3 * 4 ** 2
+print(result)          # ** 먼저 -> * 다음 -> + 마지막 = 50
+
+result2 = (2 + 3) * 4
+print(result2)          # 괄호가 가장 먼저 계산됨 = 20</code></pre>
+        <pre><code class="language-python"># 비교 · 논리 · in 연산자 우선순위
+score = 85
+grade = "B"
+
+# 비교(>) -> in -> and 순서로 계산됨
+result = score > 80 and grade in ["A", "B", "C"]
+print(result)
+
+# not은 and/or보다 우선순위가 높음
+check = not score < 60 and grade == "B"
+print(check)</code></pre>
+                <pre><code class="language-python">연산자 우선순위 (Operator Precedence)
+한 식에 여러 종류의 연산자가 함께 쓰이면 우선순위가 높은 연산자부터 먼저 계산됩니다. 숫자가 작을수록 우선순위가 높습니다.
+
+괄호 ( )
+›
+산술
+›
+비트
+›
+비교
+›
+멤버십(in)
+›
+논리
+›
+대입
+우선순위	연산자	종류	비고
+1	( )	그룹	
+소괄호 — 가장 먼저 계산
+2	**	산술	
+거듭제곱 — 오른쪽에서 왼쪽으로 계산
+3	+a , -a , ~a	단항	
+부호(+/-), 비트 NOT(~)
+4	* , / , // , %	산술	
+곱셈·나눗셈·몫·나머지
+5	+ , -	산술	
+덧셈·뺄셈
+6	<< , >>	비트	
+왼쪽/오른쪽 시프트
+7	&	비트	
+비트 AND
+8	^	비트	
+비트 XOR
+9	|	비트	
+비트 OR
+10	== , != , > , < , >= , <=	비교	
+값 비교
+11	in , not in	멤버십	
+포함 여부 확인
+12	not	논리	
+부정
+13	and	논리	
+모두 참일 때 True
+14	or	논리	
+하나라도 참이면 True
+15	= , += , -= , *= , /= , //= , %= , **=	대입	
+가장 마지막에 계산
+⚠️
+종류별로 보면
+산술 > 비트 > 비교 > 멤버십 > 논리 > 대입
+순으로 우선순위가 낮아집니다. 순서가 헷갈릴 때는 괄호
+( )
+로 명확히 묶어주는 것이 가장 안전합니다.</code></pre>
       </div>
     </section>
 
