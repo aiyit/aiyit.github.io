@@ -10,24 +10,43 @@
 -->
 <html>
 <head>
-    <title>예제8-5 설명문</title>
+    <meta charset="UTF-8">
+    <title>예제8-5 설명문, 연산자, 키워드 정리</title>
 </head>
 <body>
-<h1>JavaScript 설명문</h1>
+    <h1>JavaScript 설명문 및 주요 개념 정리</h1>
+
+    <!-- 1. JS 연산자와 키워드 종류 안내 표 -->
+    <h2>1. 자바스크립트 키워드 및 연산자 종류</h2>
+    <ul>
+        <li><strong>주요 키워드(Reserved Words):</strong> <code>var</code>, <code>let</code>, <code>const</code>, <code>function</code>, <code>if</code>, <code>else</code>, <code>for</code>, <code>while</code>, <code>return</code> 등</li>
+        <li><strong>산술 연산자:</strong> <code>+</code> (더하기), <code>-</code> (빼기), <code>*</code> (곱하기), <code>/</code> (나누기), <code>%</code> (나머지), <code>**</code> (거듭제곱)</li>
+        <li><strong>대입 연산자:</strong> <code>=</code>, <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code></li>
+        <li><strong>비교 연산자:</strong> <code>==</code>, <code>===</code>, <code>!=</code>, <code>!==</code>, <code>&gt;</code>, <code>&lt;</code></li>
+    </ul>
+
+    <hr>
+
+    <!-- 2. 자바스크립트 연산 실행 결과 -->
+    <h2>2. 연산 실행 결과</h2>
     <script>
-        var x, y, z;    // 변수 x, y, z 선언
+        var x, y, z;    // 키워드(var)를 사용한 변수 x, y, z 선언
 
-        x = 17;          // 변수 x에 6 대입
-        y = 3;          // 변수 y에 6 대입
+        x = 17;         // 변수 x에 17 대입 (대입 연산자 =)
+        y = 3;          // 변수 y에 3 대입
 
-        z = x + y;      // x와 y를 더한 값을 z에 대입
+        // 덧셈 연산자 (+)
+        z = x + y;      // 17 + 3 = 20
+        document.write("x + y = ", z, "<br>"); 
 
-        document.write("x+y=", z); 
-        // "x+y=" 문자열과 z 값(12)을 함께 출력
-        z = x//y;
-        document.write("x//y=",z);
-        z = x%y ;
-        document.write("x%y=", z);
+        // 나눗셈 연산자 (/) 및 정수 몫 구하기
+        // ※ JS에서 //는 주석 기호이므로, 정수 나눗셈은 Math.floor()를 사용합니다.
+        z = Math.floor(x / y); // 17 / 3 의 몫 = 5
+        document.write("x // y (몫) = ", z, "<br>");
+
+        // 나머지 연산자 (%)
+        z = x % y;      // 17 % 3 의 나머지 = 2
+        document.write("x % y (나머지) = ", z, "<br>");
     </script>
 </body>
 </html>
