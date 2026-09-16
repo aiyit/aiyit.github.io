@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>onmouseover 예제</title>
+    <style>
+        #box {
+            width: 200px;
+            height: 100px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>onmouseover / onmouseout 실습</h2>
+
+    <!-- 마우스를 올릴 때(onmouseover)와 벗어날 때(onmouseout) 각각 이벤트 호출 -->
+    <div id="box" 
+         onmouseover="handleMouseOver(this)" 
+         onmouseout="handleMouseOut(this)">
+        마우스를 올려보세요
+    </div>
+
+    <script>
+        // 마우스가 올려졌을 때 실행
+        function handleMouseOver(element) {
+            element.style.backgroundColor = "#ff9800";
+            element.innerText = "마우스 올림!";
+        }
+
+        // 마우스가 벗어났을 때 실행 (원상복구)
+        function handleMouseOut(element) {
+            element.style.backgroundColor = "#4CAF50";
+            element.innerText = "마우스를 올려보세요";
+        }
+    </script>
+</body>
+</html>
