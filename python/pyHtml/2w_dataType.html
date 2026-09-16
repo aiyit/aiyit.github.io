@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -177,6 +178,17 @@
     padding:6px 10px; margin-bottom:10px; display:inline-block;
   }
 
+  .op-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
+    gap:8px; margin:14px 0 4px;
+  }
+  .op-chip{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:9px 12px; text-align:center;
+  }
+  .op-chip .sym{font-family:var(--mono); color:var(--blue); font-weight:700; font-size:15px;}
+  .op-chip .desc{font-size:11.5px; color:var(--muted); margin-top:3px;}
+
   footer{
     text-align:center; color:var(--muted); font-size:12.5px; padding:40px 20px 60px;
     border-top:1px solid var(--line); margin-top:60px; font-family:var(--mono);
@@ -205,6 +217,7 @@
     <a href="#s4" class="hw-link"><span class="num">✎</span>과제 1~5</a>
     <a href="#s5" class="code-link"><span class="num">▶</span>고급 과제</a>
     <a href="#s6" class="code-link"><span class="num">▶</span>사용자 입력</a>
+    <a href="#s7" class="code-link"><span class="num">▶</span>연산자</a>
   </nav>
 
   <main>
@@ -590,6 +603,209 @@ print("="*40)</code></pre>
       </div>
     </section>
 
+    <!-- 7. 연산자 -->
+    <section id="s7">
+      <div class="sec-head"><span class="idx">▶</span><h2>연산자(Operator)</h2></div>
+      <p class="lead">파이썬 연산자는 크게 산술·대입·비교·논리·비트 연산자와, 리스트·문자열 등에서 포함 여부를 확인하는 <code style="color:var(--green); font-family:var(--mono)">in</code> / <code style="color:var(--green); font-family:var(--mono)">not in</code> 연산자로 나뉩니다.</p>
+
+      <!-- 7-1 산술연산자 -->
+      <div class="subhead">산술연산자 (Arithmetic Operator)</div>
+      <p class="lead">숫자 데이터를 계산할 때 사용하는 연산자입니다. <code style="color:var(--green); font-family:var(--mono)">+</code>, <code style="color:var(--green); font-family:var(--mono)">-</code>, <code style="color:var(--green); font-family:var(--mono)">*</code>, <code style="color:var(--green); font-family:var(--mono)">/</code> 외에도 몫(//), 나머지(%), 거듭제곱(**)을 지원합니다.</p>
+      <div class="op-grid">
+        <div class="op-chip"><div class="sym">+</div><div class="desc">덧셈</div></div>
+        <div class="op-chip"><div class="sym">-</div><div class="desc">뺄셈</div></div>
+        <div class="op-chip"><div class="sym">*</div><div class="desc">곱셈</div></div>
+        <div class="op-chip"><div class="sym">/</div><div class="desc">나눗셈</div></div>
+        <div class="op-chip"><div class="sym">//</div><div class="desc">몫</div></div>
+        <div class="op-chip"><div class="sym">%</div><div class="desc">나머지</div></div>
+        <div class="op-chip"><div class="sym">**</div><div class="desc">거듭제곱</div></div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>arithmetic1.py</div>
+        <pre><code class="language-python"># 기본 사칙연산
+a = 15
+b = 4
+
+print(a+b)
+print(a-b)
+print(a*b)
+print(a/b)</code></pre>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>arithmetic2.py</div>
+        <pre><code class="language-python"># 몫, 나머지, 거듭제곱 활용 - 홀짝 판별 & 제곱 계산
+num = 27
+
+print(num//5)      # 몫
+print(num%2)       # 나머지 -> 0이면 짝수, 1이면 홀수
+print(2**10)        # 거듭제곱</code></pre>
+      </div>
+
+      <!-- 7-2 대입연산자 -->
+      <div class="subhead">대입연산자 (Assignment Operator)</div>
+      <p class="lead">변수에 값을 저장하거나, 기존 값을 바탕으로 연산한 결과를 다시 저장할 때 사용합니다.</p>
+      <div class="op-grid">
+        <div class="op-chip"><div class="sym">=</div><div class="desc">대입</div></div>
+        <div class="op-chip"><div class="sym">+=</div><div class="desc">더해서 대입</div></div>
+        <div class="op-chip"><div class="sym">-=</div><div class="desc">빼서 대입</div></div>
+        <div class="op-chip"><div class="sym">*=</div><div class="desc">곱해서 대입</div></div>
+        <div class="op-chip"><div class="sym">/=</div><div class="desc">나눠서 대입</div></div>
+        <div class="op-chip"><div class="sym">//=</div><div class="desc">몫 대입</div></div>
+        <div class="op-chip"><div class="sym">%=</div><div class="desc">나머지 대입</div></div>
+        <div class="op-chip"><div class="sym">**=</div><div class="desc">거듭제곱 대입</div></div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>assign1.py</div>
+        <pre><code class="language-python"># 기본 대입연산자
+point = 100
+
+point += 30   # point = point + 30
+print(point)
+
+point -= 50   # point = point - 50
+print(point)
+
+point *= 2    # point = point * 2
+print(point)</code></pre>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>assign2.py</div>
+        <pre><code class="language-python"># 카운터 누적 - 반복문에서 값을 계속 갱신
+total = 0
+
+total += 10
+total += 20
+total += 30
+
+print(total)
+
+count = 5
+count //= 2
+print(count)</code></pre>
+      </div>
+
+      <!-- 7-3 비교연산자 -->
+      <div class="subhead">비교연산자 (Comparison Operator)</div>
+      <p class="lead">두 값의 크기나 같음을 비교하여 결과를 <code style="color:var(--green); font-family:var(--mono)">True</code> / <code style="color:var(--green); font-family:var(--mono)">False</code>로 반환합니다.</p>
+      <div class="op-grid">
+        <div class="op-chip"><div class="sym">==</div><div class="desc">같다</div></div>
+        <div class="op-chip"><div class="sym">!=</div><div class="desc">다르다</div></div>
+        <div class="op-chip"><div class="sym">&gt;</div><div class="desc">크다</div></div>
+        <div class="op-chip"><div class="sym">&lt;</div><div class="desc">작다</div></div>
+        <div class="op-chip"><div class="sym">&gt;=</div><div class="desc">크거나 같다</div></div>
+        <div class="op-chip"><div class="sym">&lt;=</div><div class="desc">작거나 같다</div></div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>compare1.py</div>
+        <pre><code class="language-python"># 점수 비교
+score = 85
+passing_line = 60
+
+print(score == passing_line)
+print(score != passing_line)
+print(score > passing_line)
+print(score >= 90)</code></pre>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>compare2.py</div>
+        <pre><code class="language-python"># 문자열 비교 - 로그인 아이디 확인
+input_id = "python"
+correct_id = "python"
+
+print(input_id == correct_id)
+print(input_id != "java")</code></pre>
+      </div>
+
+      <!-- 7-4 논리연산자 -->
+      <div class="subhead">논리연산자 (Logical Operator)</div>
+      <p class="lead">여러 조건을 결합하거나 부정할 때 사용합니다. <code style="color:var(--green); font-family:var(--mono)">and</code>는 모두 참일 때, <code style="color:var(--green); font-family:var(--mono)">or</code>는 하나라도 참일 때 True를 반환하며, <code style="color:var(--green); font-family:var(--mono)">not</code>은 결과를 반대로 뒤집습니다.</p>
+      <div class="op-grid">
+        <div class="op-chip"><div class="sym">and</div><div class="desc">모두 참</div></div>
+        <div class="op-chip"><div class="sym">or</div><div class="desc">하나라도 참</div></div>
+        <div class="op-chip"><div class="sym">not</div><div class="desc">부정</div></div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>logic1.py</div>
+        <pre><code class="language-python"># 합격 조건 판별 - 평균 80점 이상이면서 결석이 없어야 함
+avg_score = 88
+absence = 0
+
+print(avg_score >= 80 and absence == 0)
+print(avg_score >= 90 or absence == 0)</code></pre>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>logic2.py</div>
+        <pre><code class="language-python"># not 연산자 - 재고 여부 확인
+in_stock = False
+
+print(not in_stock)
+
+age = 17
+is_adult = age >= 19
+print(not is_adult)</code></pre>
+      </div>
+
+      <!-- 7-5 비트연산자 -->
+      <div class="subhead">비트연산자 (Bitwise Operator)</div>
+      <p class="lead">숫자를 2진수(비트) 단위로 계산하는 연산자입니다. 하드웨어 제어, 플래그 처리 등에 자주 사용됩니다.</p>
+      <div class="op-grid">
+        <div class="op-chip"><div class="sym">&amp;</div><div class="desc">AND</div></div>
+        <div class="op-chip"><div class="sym">|</div><div class="desc">OR</div></div>
+        <div class="op-chip"><div class="sym">^</div><div class="desc">XOR</div></div>
+        <div class="op-chip"><div class="sym">~</div><div class="desc">NOT</div></div>
+        <div class="op-chip"><div class="sym">&lt;&lt;</div><div class="desc">왼쪽 시프트</div></div>
+        <div class="op-chip"><div class="sym">&gt;&gt;</div><div class="desc">오른쪽 시프트</div></div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>bitwise1.py</div>
+        <pre><code class="language-python"># 비트 AND, OR, XOR
+a = 12   # 0b1100
+b = 10   # 0b1010
+
+print(a & b)   # AND -> 8  (0b1000)
+print(a | b)   # OR  -> 14 (0b1110)
+print(a ^ b)   # XOR -> 6  (0b0110)</code></pre>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>bitwise2.py</div>
+        <pre><code class="language-python"># 시프트 연산 - 2의 거듭제곱 계산
+num = 3
+
+print(num << 1)   # 왼쪽으로 1비트 이동 -> 2배
+print(num << 2)   # 왼쪽으로 2비트 이동 -> 4배
+
+value = 40
+print(value >> 1)  # 오른쪽으로 1비트 이동 -> 절반</code></pre>
+      </div>
+
+      <!-- 7-6 in, not in -->
+      <div class="subhead">in / not in 연산자 (멤버십 연산자)</div>
+      <p class="lead">리스트, 튜플, 문자열, 딕셔너리 등에 특정 값이 포함되어 있는지 확인할 때 사용합니다.</p>
+      <div class="op-grid">
+        <div class="op-chip"><div class="sym">in</div><div class="desc">포함되어 있다</div></div>
+        <div class="op-chip"><div class="sym">not in</div><div class="desc">포함되어 있지 않다</div></div>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>membership1.py</div>
+        <pre><code class="language-python"># 리스트에서 특정 값 포함 여부 확인
+fruits = ["사과", "바나나", "포도"]
+
+print("바나나" in fruits)
+print("수박" in fruits)
+print("수박" not in fruits)</code></pre>
+      </div>
+      <div class="code-frame">
+        <div class="bar"><span class="file-dot"></span>membership2.py</div>
+        <pre><code class="language-python"># 문자열/딕셔너리에서 포함 여부 확인
+text = "Python Programming"
+print("Pro" in text)
+
+student = {"이름":"홍길동", "학과":"AI소프트웨어과"}
+print("학과" in student)          # 딕셔너리는 key를 기준으로 확인
+print("전화번호" not in student)</code></pre>
+      </div>
+    </section>
+
     <footer>2w_dataType.py — AI소프트웨어과 웹/파이썬 프로그래밍 강의자료</footer>
   </main>
 </div>
@@ -597,3 +813,4 @@ print("="*40)</code></pre>
 <script>hljs.highlightAll();</script>
 </body>
 </html>
+
