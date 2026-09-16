@@ -1,0 +1,64 @@
+ <!-- 
+JavaScript 함수(Function) 핵심 요약
+4. 이벤트(Event) 예시
+   - onchange : 요소 값 변경 시
+   - onclick : 요소 클릭 시
+   - onmouseover : 마우스가 요소 위로 이동 시
+   - onmouseout : 마우스가 요소에서 벗어날 때
+   - onkeydown : 키보드 입력 시
+   - onload : 문서 로딩 완료 시
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>예제8-9 함수(Function) 값 입력 및 호출</title>
+</head>
+<body>
+    <h1>JavaScript 함수(Function)</h1>
+
+    <!-- 1. 두 개의 값 입력받기 위한 HTML 요소를 추가 -->
+    <label>첫 번째 값 (a1): <input type="number" id="inputA1" value="5"></label><br><br>
+    <label>두 번째 값 (a2): <input type="number" id="inputA2" value="6"></label><br><br>
+    
+    <!-- 버튼 클릭 이벤트(onclick)로 함수 호출 -->
+    <button onclick="calculateAndDisplay()">함수 호출하기</button>
+
+    <hr>
+
+    <!-- 2. 결과 출력 영역 -->
+    <h3>계산 결과:</h3>
+    <p id="first"></p>
+    <p id="second"></p>
+
+    <script>
+        // 두 값을 더하고 반환하는 덧셈 함수 (기존 구조 유지)
+        function jsFunction(a1, a2) {
+            var a3;
+            a3 = a1 + a2; // 숫자 덧셈 계산
+            return a3;    // 결과값 반환
+        }
+
+        // 입력값을 읽어와 jsFunction을 호출하고 결과를 화면에 출력하는 실행 함수
+        function calculateAndDisplay() {
+            // input 태그에서 값을 읽어와 숫자(Number) 타입으로 변환
+            var num1 = Number(document.getElementById("inputA1").value);
+            var num2 = Number(document.getElementById("inputA2").value);
+
+            // 입력받은 두 값으로 jsFunction 함수 호출 후 "first" 영역에 출력
+            var result = jsFunction(num1, num2);
+            document.getElementById("first").innerHTML = 
+                "입력값: a1 = " + num1 + ", a2 = " + num2 + " → <b>합계: " + result + "</b>";
+
+            // 고정 매개변수(4, 10)로 호출한 결과도 비교 목적으로 "second" 영역에 함께 출력
+            document.getElementById("second").innerHTML = 
+                "고정값 호출 예시: a1 = 4, a2 = 10 → <b>합계: " + jsFunction(4, 10) + "</b>";
+        }
+
+        // 페이지가 로드될 때 초기 1회 자동 실행
+        window.onload = function() {
+            calculateAndDisplay();
+        };
+    </script>
+</body>
+</html>
