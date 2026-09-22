@@ -607,7 +607,7 @@ window.addEventListener("load", function () {
   <a class="text-white" href="https://aiyit.github.io/">
 <img class="w-10 h-10 hover:scale-110 transition-transform" src="/images/qr_code_ai_300x300.png" alt="AIYIT QR 코드">
 </a>
-<a class="text-white" href="ai_chatbot.html">
+<a class="text-white" href="chatbot/index.html">
 	<p>chatbot</p></a>
 </div>
 </section>
@@ -664,29 +664,22 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('time').setAttribute('loop', 'true');
-    document.getElementById⁸
+window.addEventListener('DOMContentLoaded', () => {
+    const time = document.getElementById('time');
 
+    if (time) {
+        time.setAttribute('loop', 'true');
+        time.setAttribute('startTime', '0');
+    }
 
+    const rtime = document.getElementById('rtime');
 
+    if (rtime) {
+        rtime.setAttribute('loop', 'true');
+        rtime.setAttribute('startTime', '0');
+    }
+});
+</script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</body>
+</html>
