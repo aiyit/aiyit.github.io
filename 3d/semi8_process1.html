@@ -146,11 +146,11 @@ async function setVR(on){if(on&&!started)start();if(!started)return;
  if(on&&typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission){try{await DeviceOrientationEvent.requestPermission()}catch(e){}}
  if(on&&!gyroBound){window.addEventListener('deviceorientation',onDev);gyroBound=true}
  vr=on;document.body.classList.toggle('vr',on);ret.visible=on;
- try{if(on)await document.documentElement.requestFullscreen();else if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}
+ try{if(on){await document.documentElement.requestFullscreen();if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape')}else{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();if(document.fullscreenElement)await document.exitFullscreen()}}catch(e){}
  resize();if(on){cam.position.set(0,1.6,0);yaw=0;pitch=0}else placeCam()}
 $('#bVR').onclick=()=>setVR(true);$('#exit').onclick=()=>setVR(false);
 function resize(){if(!renderer)return;const v=$('#view'),w=v.clientWidth,h=v.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(w,h);
- cam.aspect=vr?w/(h/2):w/h;cam.fov=vr?70:50;cam.updateProjectionMatrix()}
+ cam.aspect=vr?(w/2)/h:w/h;cam.fov=vr?70:50;cam.updateProjectionMatrix()}
 addEventListener('resize',resize);
 // ---- 루프 ----
 let hov=null,dw=0,fired=false;
@@ -168,6 +168,6 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.
  const W=renderer.domElement.clientWidth,H=renderer.domElement.clientHeight;
  if(!vr){renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.render(scene,cam)}
  else{stereo.update(cam);renderer.setScissorTest(true);
-  renderer.setViewport(0,H/2,W,H/2);renderer.setScissor(0,H/2,W,H/2);renderer.render(scene,stereo.cameraL);
-  renderer.setViewport(0,0,W,H/2);renderer.setScissor(0,0,W,H/2);renderer.render(scene,stereo.cameraR)}}
+  renderer.setViewport(0,0,W/2,H);renderer.setScissor(0,0,W/2,H);renderer.render(scene,stereo.cameraL);
+  renderer.setViewport(W/2,0,W/2,H);renderer.setScissor(W/2,0,W/2,H);renderer.render(scene,stereo.cameraR)}}
 </script></body></html>
