@@ -24,7 +24,8 @@ h1{font-size:16px;margin:0 0 4px}.sub{font-size:12px;color:var(--mu);margin-bott
 #ph{position:absolute;inset:0;display:grid;place-items:center;color:#5b6879;font-size:15px;text-align:center;padding:20px}
 #dw{position:fixed;width:34px;height:34px;border-radius:50%;pointer-events:none;display:none;transform:translate(-50%,-50%);-webkit-mask:radial-gradient(circle,transparent 9px,#000 10px);mask:radial-gradient(circle,transparent 9px,#000 10px)}
 #exit{display:none;position:absolute;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;padding:6px 14px;border-radius:16px;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:13px}
-body.vr #side{display:none}body.vr #exit{display:block}body.vr #dw{display:none!important}
+body.vr #side{display:none}body.vr #exit,body.vr #flip{display:block}body.vr #dw{display:none!important}
+#flip{display:none;position:absolute;top:calc(8px + env(safe-area-inset-top,0px));right:12px;z-index:5;padding:6px 14px;border-radius:16px;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:13px}
 @media (max-width:760px){#app{flex-direction:column}#side{width:100%;height:42%;border-right:0;border-bottom:1px solid var(--bd)}}
 </style></head>
 <body><div id="app">
@@ -34,7 +35,7 @@ body.vr #side{display:none}body.vr #exit{display:block}body.vr #dw{display:none!
 <div id="menu"></div>
 <div id="info"><h3>안내</h3>설비를 <b>2초 이상 바라보거나</b> 클릭하면 공정이 작동합니다. 드래그: 회전 · 휠: 확대/축소</div>
 </div>
-<div id="view"><div id="ph">왼쪽 메뉴에서 「① 웨이퍼 제조」를 선택하세요</div><button id="exit">✕ VR 종료</button></div>
+<div id="view"><div id="ph">왼쪽 메뉴에서 「① 웨이퍼 제조」를 선택하세요</div><button id="exit">✕ VR 종료</button><button id="flip">↻ 방향 전환</button></div>
 </div><div id="dw"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -133,7 +134,7 @@ document.addEventListener('pointermove',e=>{const c=renderer&&renderer.domElemen
  ptr.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
  mouseIn=e.pointerType==='mouse'&&e.target===c;$('#dw').style.left=e.clientX+'px';$('#dw').style.top=e.clientY+'px';
  if(down){const dx=e.movementX||0,dy=e.movementY||0;moved+=Math.abs(dx)+Math.abs(dy);drag=moved>5;
-  if(drag){if(vr){yawOff-=dx*.005;if(!gyro){yaw-=dx*.005;pitch=Math.max(-1.2,Math.min(1.2,pitch-dy*.005))}}else{th-=dx*.006;ph=Math.max(.3,Math.min(1.45,ph-dy*.006));placeCam()}}}});
+  if(drag){if(vr){const lx=rotOn?dy*rot:dx,ly=rotOn?-dx*rot:dy;yawOff-=lx*.005;if(!gyro){yaw-=lx*.005;pitch=Math.max(-1.2,Math.min(1.2,pitch-ly*.005))}}else{th-=dx*.006;ph=Math.max(.3,Math.min(1.45,ph-dy*.006));placeCam()}}}});
 document.addEventListener('pointerdown',e=>{if(renderer&&e.target===renderer.domElement){down=true;moved=0;ptr.set(((e.clientX-e.target.getBoundingClientRect().left)/e.target.clientWidth)*2-1,-((e.clientY-e.target.getBoundingClientRect().top)/e.target.clientHeight)*2+1)}});
 document.addEventListener('pointerup',()=>{if(down&&moved<6&&!vr){const s=pick(true);if(s)toggle(s)}down=false;drag=false});
 document.addEventListener('wheel',e=>{if(!started||vr||e.target!==renderer.domElement)return;rad=Math.max(5,Math.min(16,rad+e.deltaY*.01));placeCam();e.preventDefault()},{passive:false});
@@ -149,7 +150,13 @@ async function setVR(on){if(on&&!started)start();if(!started)return;
  try{if(on){await document.documentElement.requestFullscreen();if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape')}else{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();if(document.fullscreenElement)await document.exitFullscreen()}}catch(e){}
  resize();if(on){cam.position.set(0,1.6,0);yaw=0;pitch=0}else placeCam()}
 $('#bVR').onclick=()=>setVR(true);$('#exit').onclick=()=>setVR(false);
-function resize(){if(!renderer)return;const v=$('#view'),w=v.clientWidth,h=v.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(w,h);
+let rot=1,rotOn=false;
+function layoutVR(){const v=$('#view'),W=innerWidth,H=innerHeight;
+ if(vr&&H>W){rotOn=true;v.style.cssText=`position:fixed;left:0;top:0;z-index:3;width:${H}px;height:${W}px;transform-origin:0 0;transform:`+(rot>0?`translate(${W}px,0) rotate(90deg)`:`translate(0,${H}px) rotate(-90deg)`)}
+ else{rotOn=false;v.removeAttribute('style')}}
+$('#flip').onclick=()=>{rot=-rot;layoutVR();resize()};
+addEventListener('orientationchange',()=>setTimeout(resize,300));
+function resize(){if(!renderer)return;layoutVR();const v=$('#view'),w=v.clientWidth,h=v.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(w,h);
  cam.aspect=vr?(w/2)/h:w/h;cam.fov=vr?70:50;cam.updateProjectionMatrix()}
 addEventListener('resize',resize);
 // ---- 루프 ----
