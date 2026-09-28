@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>반도체 8대 공정 디지털 트윈</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#f4f7fb;--pn:#fff;--tx:#1b2430;--mu:#6a7686;--ac:#1a73e8;--bd:#dde4ee;--ok:#1a9b55;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171c24;--pn:#1f2630;--tx:#e8edf4;--mu:#93a0b2;--bd:#2f3947}}
+:root[data-theme="dark"]{--bg:#171c24;--pn:#1f2630;--tx:#e8edf4;--mu:#93a0b2;--bd:#2f3947}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font-family:"Noto Sans KR",system-ui,sans-serif}
+#app{display:flex;height:100%}
+#side{width:25%;min-width:210px;background:var(--pn);border-right:1px solid var(--bd);padding:14px;overflow:auto;box-sizing:border-box}
+#view{flex:1;position:relative;background:#eaf1f8;overflow:hidden}
+canvas{display:block;touch-action:none}
+h1{font-size:16px;margin:0 0 4px}.sub{font-size:12px;color:var(--mu);margin-bottom:12px}
+.m{display:flex;gap:8px;align-items:center;width:100%;padding:10px;margin:0 0 6px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;font-size:13px;text-align:left;cursor:pointer}
+.m b{width:22px;height:22px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-size:12px;flex:none}
+.m.off{opacity:.45;cursor:not-allowed}.m.off b{background:var(--mu)}.m.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac) inset}
+.m small{margin-left:auto;color:var(--mu);font-size:11px}
+.btn{padding:9px 10px;border:0;border-radius:8px;background:var(--ac);color:#fff;font:inherit;font-size:13px;cursor:pointer;margin:0 6px 8px 0}
+.btn.g{background:var(--ok)}
+#info{margin-top:10px;padding:10px;border:1px solid var(--bd);border-radius:8px;font-size:12.5px;line-height:1.55}
+#info h3{margin:0 0 4px;font-size:14px}
+#ph{position:absolute;inset:0;display:grid;place-items:center;color:#5b6879;font-size:15px;text-align:center;padding:20px}
+#dw{position:fixed;width:34px;height:34px;border-radius:50%;pointer-events:none;display:none;transform:translate(-50%,-50%);-webkit-mask:radial-gradient(circle,transparent 9px,#000 10px);mask:radial-gradient(circle,transparent 9px,#000 10px)}
+#exit{display:none;position:absolute;top:calc(8px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:5;padding:6px 14px;border-radius:16px;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:13px}
+body.vr #side{display:none}body.vr #exit{display:block}body.vr #dw{display:none!important}
+@media (max-width:760px){#app{flex-direction:column}#side{width:100%;height:42%;border-right:0;border-bottom:1px solid var(--bd)}}
+</style></head>
+<body><div id="app">
+<div id="side">
+<h1>반도체 8대 공정 디지털 트윈</h1><div class="sub">메뉴 선택 → 3D 공정 생성 · 설비를 2초 응시 또는 클릭하면 가동</div>
+<button class="btn" id="bVR">🥽 VR 모드</button><button class="btn g" id="bAll">전체 가동/정지</button>
+<div id="menu"></div>
+<div id="info"><h3>안내</h3>설비를 <b>2초 이상 바라보거나</b> 클릭하면 공정이 작동합니다. 드래그: 회전 · 휠: 확대/축소</div>
+</div>
+<div id="view"><div id="ph">왼쪽 메뉴에서 「① 웨이퍼 제조」를 선택하세요</div><button id="exit">✕ VR 종료</button></div>
+</div><div id="dw"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const NAMES=["웨이퍼 제조","산화","포토","식각","박막증착","금속배선","EDS","패키징"];
+const menu=$('#menu');
+NAMES.forEach((n,i)=>{const b=document.createElement('button');b.className='m'+(i?' off':'');b.innerHTML=`<b>${i+1}</b>${n}${i?'<small>준비중</small>':''}`;b.onclick=()=>{if(i)return;document.querySelectorAll('.m').forEach(x=>x.classList.remove('on'));b.classList.add('on');start()};menu.appendChild(b)});
+
+const R=7;let started=false,scene,cam,renderer,stereo,vr=false,stations=[],clock,agv,agvT=0;
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.5,metalness:.2},o));
+const cyl=(r,h,c,o,seg=32)=>new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),M(c,o));
+const box=(w,h,d,c,o)=>new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c,o));
+const at=(m,x,y,z)=>{m.position.set(x,y,z);return m};
+
+function label(text){const c=document.createElement('canvas');c.width=512;c.height=128;
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));
+ s.scale.set(2.9,.72,1);s.renderOrder=10;s.userData={c,text};drawLabel(s,false);return s}
+function drawLabel(s,on){const {c,text}=s.userData,g=c.getContext('2d');g.clearRect(0,0,512,128);
+ g.fillStyle=on?'#1a9b55':'#1a73e8';g.fillRect(8,20,496,88);g.fillStyle='#fff';g.font='bold 42px "Noto Sans KR",sans-serif';g.textAlign='center';g.textBaseline='middle';
+ g.fillText((on?'● ':'')+text,256,66);s.material.map.needsUpdate=true}
+
+function station(name,desc,ang,build){
+ const g=new THREE.Group();g.position.set(R*Math.sin(ang),0,-R*Math.cos(ang));g.rotation.y=-ang;
+ g.add(at(box(3.2,.2,2.6,0xcfd8e3),0,.1,0));
+ const hit=at(new THREE.Mesh(new THREE.BoxGeometry(3.2,3,2.6),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})),0,1.5,0);g.add(hit);
+ const lb=label(name);lb.position.y=3.7;g.add(lb);
+ const st={name,desc,g,on:false,k:0,lb,hit,upd:()=>{}};hit.userData.st=st;build(g,st);scene.add(g);stations.push(st)}
+
+function start(){
+ $('#ph').style.display='none';if(started)return;started=true;
+ renderer=new THREE.WebGLRenderer({antialias:true});$('#view').appendChild(renderer.domElement);
+ scene=new THREE.Scene();scene.background=new THREE.Color(0xeaf1f8);
+ cam=new THREE.PerspectiveCamera(50,1,.1,100);scene.add(cam);stereo=new THREE.StereoCamera();stereo.eyeSep=.064;
+ scene.add(new THREE.HemisphereLight(0xffffff,0xd9e2ee,.95));
+ const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(5,10,6);scene.add(dl);
+ // 실내: 바닥/벽/천장 조명 (밝은 분위기)
+ const fl=new THREE.Mesh(new THREE.PlaneGeometry(30,30),M(0xe6ecf3,{roughness:.3}));fl.rotation.x=-Math.PI/2;scene.add(fl);
+ const gr=new THREE.GridHelper(30,30,0xcfd8e3,0xdde4ec);gr.position.y=.01;scene.add(gr);
+ scene.add(at(new THREE.Mesh(new THREE.BoxGeometry(30,8,30),M(0xf3f6fa,{side:THREE.BackSide,roughness:.9})),0,4,0));
+ for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)scene.add(at(new THREE.Mesh(new THREE.BoxGeometry(4,.1,2),new THREE.MeshBasicMaterial({color:0xffffff})),i*8,7.95,j*8));
+ // 이송 경로 + AGV
+ const path=new THREE.Mesh(new THREE.RingGeometry(4.5,4.7,64,1,Math.PI/2-1.1,2.2),new THREE.MeshBasicMaterial({color:0xffc107,side:THREE.DoubleSide}));path.rotation.x=-Math.PI/2;path.position.y=.02;scene.add(path);
+ agv=new THREE.Group();agv.add(at(box(.7,.25,.5,0x1a73e8),0,.2,0),at(box(.3,.2,.3,0xf5c542),0,.42,0));scene.add(agv);
+
+ station('① 잉곳 성장',"초크랄스키(CZ) 공정: 폴리실리콘을 약 1,400℃에서 녹인 뒤 종자결정(Seed)을 회전시키며 서서히 끌어올려 단결정 실리콘 잉곳을 성장시킵니다.",-.94,(g,st)=>{
+  g.add(at(cyl(.9,.5,0xdde3ea),0,.45,0),at(cyl(.9,.2,0xe8edf3),0,2.6,0));
+  g.add(at(new THREE.Mesh(new THREE.CylinderGeometry(.85,.85,2.2,32,1,true),M(0xbfe3ff,{transparent:true,opacity:.28,side:THREE.DoubleSide})),0,1.4,0));
+  const melt=at(cyl(.6,.4,0x884400,{emissive:0xff6a00,emissiveIntensity:.2}),0,.85,0);
+  const ing=cyl(.28,1,0x9aa3ad,{metalness:.8,roughness:.25},24),rod=cyl(.04,.6,0x555f6b);g.add(melt,ing,rod);
+  st.upd=(t,dt,k)=>{const h=.15+1.15*k;ing.scale.y=h;ing.position.y=1.05+h/2;rod.position.y=1.05+h+.3;ing.rotation.y+=dt*2*k;melt.material.emissiveIntensity=.2+.8*k*(.7+.3*Math.sin(t*4))}});
+
+ station('② 웨이퍼 절단',"와이어 쏘(Wire Saw): 다이아몬드 와이어가 잉곳을 0.7mm 안팎의 얇은 원판(웨이퍼)으로 슬라이싱합니다.",-.31,(g,st)=>{
+  g.add(at(box(2.4,.8,1.6,0xa9b6c6),0,.6,0),at(box(.1,2,.1,0x8894a3),-1.3,1.8,0),at(box(.1,2,.1,0x8894a3),1.3,1.8,0),at(box(2.7,.1,.1,0x8894a3),0,2.85,0));
+  const ing=cyl(.35,2,0xb9c1cb,{metalness:.8,roughness:.25});ing.rotation.z=Math.PI/2;ing.position.y=1.35;g.add(ing);
+  const ws=[],wg=new THREE.Group(),wf=new THREE.Group();
+  for(let i=0;i<9;i++){const w=cyl(.35,.04,0xdfe6ee,{metalness:.6,roughness:.2},24);w.rotation.z=Math.PI/2;w.position.y=1.35;wf.add(w);ws.push(w);
+   wg.add(at(cyl(.01,1.2,0xffd54f,{emissive:0xffb300,emissiveIntensity:.5},6),(i-4)*.22,0,0))}
+  g.add(wf,wg);
+  st.upd=(t,dt,k)=>{wg.position.y=2.6-k;wg.children.forEach((w,i)=>w.position.z=Math.sin(t*20+i)*.02*k);
+   const gap=Math.max(0,(k-.6)/.4);ing.visible=gap<.05;wf.visible=gap>=.05;ws.forEach((w,i)=>w.position.x=(i-4)*(.22+.14*gap))}});
+
+ station('③ 웨이퍼 연마',"랩핑/연마(CMP): 절단 시 생긴 표면 손상층을 제거하고, 슬러리와 회전 정반으로 웨이퍼를 거울처럼 평탄하게 만듭니다.",.31,(g,st)=>{
+  g.add(at(box(2.2,.9,2.2,0xb4c3d4),0,.55,0),at(cyl(.06,1.9,0x8894a3),1.1,1.9,-.9),at(box(1.2,.1,.1,0x8894a3),.55,2.8,-.9));
+  const low=at(cyl(1,.12,0x8894a3,{metalness:.7}),0,1.06,0),up=at(cyl(.95,.14,0x9fb0c3,{metalness:.7}),0,1.9,0),wf=at(new THREE.Group(),0,1.14,0);
+  for(let i=0;i<4;i++)wf.add(at(cyl(.28,.04,0xdfe6ee,{metalness:.6,roughness:.2},24),.55*Math.cos(i*Math.PI/2),0,.55*Math.sin(i*Math.PI/2)));
+  const nz=at(cyl(.05,.5,0x4da3ff),-.2,1.7,0);g.add(low,up,wf,nz);
+  st.upd=(t,dt,k)=>{low.rotation.y+=dt*.8*k;wf.rotation.y+=dt*1.6*k;up.rotation.y-=dt*1.5*k;up.position.y=1.9-.55*k;nz.material.emissive.setHex(k>.3?0x2266ff:0);nz.material.emissiveIntensity=.6}});
+
+ station('④ 세정·검사',"화학 세정으로 오염 입자를 제거하고 두께·평탄도를 검사한 뒤, FOUP에 담아 다음 공정(산화)으로 이송합니다.",.94,(g,st)=>{
+  g.add(at(new THREE.Mesh(new THREE.BoxGeometry(2.4,1.2,1.6),M(0xbfe3ff,{transparent:true,opacity:.3})),0,.8,0),at(new THREE.Mesh(new THREE.BoxGeometry(2.2,1,1.4),M(0x4da3ff,{transparent:true,opacity:.35})),0,.75,0));
+  const cs=new THREE.Group();cs.add(at(box(.7,.8,.65,0xf5c542,{transparent:true,opacity:.45}),0,0,0));
+  for(let i=0;i<6;i++){const w=cyl(.27,.03,0xdfe6ee,{metalness:.6,roughness:.2},24);w.position.y=-.3+i*.12;cs.add(w)}
+  g.add(cs);const bs=[];for(let i=0;i<14;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(.04,8,8),new THREE.MeshBasicMaterial({color:0xffffff}));b.userData={x:(Math.random()-.5)*1.8,z:(Math.random()-.5)*1.1,p:Math.random()};g.add(b);bs.push(b)}
+  st.upd=(t,dt,k)=>{cs.position.set(0,1.9-.9*(.5+.5*Math.sin(t*1.6))*k,0);bs.forEach(b=>{b.visible=k>.1;b.userData.p=(b.userData.p+dt*.4)%1;b.position.set(b.userData.x,.3+b.userData.p,b.userData.z)})}});
+
+ // 카메라 제어
+ cam.add(at(new THREE.Mesh(new THREE.CircleGeometry(.012,16),new THREE.MeshBasicMaterial({color:0xffffff,depthTest:false})),0,0,-1.5));
+ ret=new THREE.Group();ret.visible=false;const rb=new THREE.Mesh(new THREE.RingGeometry(.03,.042,32),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.35,depthTest:false}));
+ prog=new THREE.Mesh(new THREE.RingGeometry(.03,.042,32,1,Math.PI/2,-.01),new THREE.MeshBasicMaterial({color:0x2ee27a,depthTest:false}));
+ [rb,prog].forEach(m=>m.renderOrder=20);ret.add(rb,prog);ret.position.z=-1.5;cam.add(ret);
+ cam.children[0].renderOrder=20;
+ clock=new THREE.Clock();resize();placeCam();loop();
+}
+let ret,prog;
+// ---- 입력/카메라 ----
+let th=0,ph=.95,rad=13,yaw=0,pitch=0,yawOff=0,gyro=false;const tgt=new THREE.Vector3(0,1,-3),devQ=new THREE.Quaternion();
+function placeCam(){cam.position.set(tgt.x+rad*Math.sin(ph)*Math.sin(th),tgt.y+rad*Math.cos(ph),tgt.z+rad*Math.sin(ph)*Math.cos(th));cam.lookAt(tgt)}
+const ptr=new THREE.Vector2(9,9),ray=new THREE.Raycaster();let mouseIn=false,down=false,drag=false,moved=0;
+function pick(force){if(!started)return null;
+ if(vr)ray.setFromCamera({x:0,y:0},cam);else if(force||(mouseIn&&!drag))ray.setFromCamera(ptr,cam);else return null;
+ const h=ray.intersectObjects(stations.map(s=>s.hit),false)[0];return h?h.object.userData.st:null}
+function setInfo(s){$('#info').innerHTML=`<h3>${s.name} <span style="color:${s.on?'var(--ok)':'var(--mu)'}">${s.on?'● 가동중':'○ 정지'}</span></h3>${s.desc}`}
+function toggle(s){s.on=!s.on;drawLabel(s.lb,s.on);setInfo(s)}
+$('#bAll').onclick=()=>{if(!started)return;const on=!stations.every(s=>s.on);stations.forEach(s=>{s.on=on;drawLabel(s.lb,on)})};
+document.addEventListener('pointermove',e=>{const c=renderer&&renderer.domElement;if(!c)return;const r=c.getBoundingClientRect();
+ ptr.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+ mouseIn=e.pointerType==='mouse'&&e.target===c;$('#dw').style.left=e.clientX+'px';$('#dw').style.top=e.clientY+'px';
+ if(down){const dx=e.movementX||0,dy=e.movementY||0;moved+=Math.abs(dx)+Math.abs(dy);drag=moved>5;
+  if(drag){if(vr){yawOff-=dx*.005;if(!gyro){yaw-=dx*.005;pitch=Math.max(-1.2,Math.min(1.2,pitch-dy*.005))}}else{th-=dx*.006;ph=Math.max(.3,Math.min(1.45,ph-dy*.006));placeCam()}}}});
+document.addEventListener('pointerdown',e=>{if(renderer&&e.target===renderer.domElement){down=true;moved=0;ptr.set(((e.clientX-e.target.getBoundingClientRect().left)/e.target.clientWidth)*2-1,-((e.clientY-e.target.getBoundingClientRect().top)/e.target.clientHeight)*2+1)}});
+document.addEventListener('pointerup',()=>{if(down&&moved<6&&!vr){const s=pick(true);if(s)toggle(s)}down=false;drag=false});
+document.addEventListener('wheel',e=>{if(!started||vr||e.target!==renderer.domElement)return;rad=Math.max(5,Math.min(16,rad+e.deltaY*.01));placeCam();e.preventDefault()},{passive:false});
+// ---- VR ----
+function setQ(q,a,b,g,o){const e=new THREE.Euler(b,a,-g,'YXZ');q.setFromEuler(e);q.multiply(new THREE.Quaternion(-Math.sqrt(.5),0,0,Math.sqrt(.5)));q.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),-o))}
+let gyroBound=false;
+function onDev(e){if(e.alpha==null)return;const first=!gyro;gyro=true;const d=Math.PI/180;setQ(devQ,e.alpha*d,e.beta*d,e.gamma*d,((screen.orientation&&screen.orientation.angle)||0)*d);
+ if(first)yawOff=-new THREE.Euler().setFromQuaternion(devQ,'YXZ').y}
+async function setVR(on){if(on&&!started)start();if(!started)return;
+ if(on&&typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission){try{await DeviceOrientationEvent.requestPermission()}catch(e){}}
+ if(on&&!gyroBound){window.addEventListener('deviceorientation',onDev);gyroBound=true}
+ vr=on;document.body.classList.toggle('vr',on);ret.visible=on;
+ try{if(on)await document.documentElement.requestFullscreen();else if(document.fullscreenElement)await document.exitFullscreen()}catch(e){}
+ resize();if(on){cam.position.set(0,1.6,0);yaw=0;pitch=0}else placeCam()}
+$('#bVR').onclick=()=>setVR(true);$('#exit').onclick=()=>setVR(false);
+function resize(){if(!renderer)return;const v=$('#view'),w=v.clientWidth,h=v.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(w,h);
+ cam.aspect=vr?w/(h/2):w/h;cam.fov=vr?70:50;cam.updateProjectionMatrix()}
+addEventListener('resize',resize);
+// ---- 루프 ----
+let hov=null,dw=0,fired=false;
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+ stations.forEach(s=>{s.k=Math.max(0,Math.min(1,s.k+(s.on?1:-1)*dt*.7));s.upd(t,dt,s.k)});
+ if(stations.some(s=>s.on))agvT+=dt*.5;const a=Math.sin(agvT)*1.05;agv.position.set(4.6*Math.sin(a),0,-4.6*Math.cos(a));agv.rotation.y=-a+Math.PI/2;
+ if(vr){if(gyro)cam.quaternion.copy(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),yawOff)).multiply(devQ);else cam.rotation.set(pitch,yaw,0,'YXZ')}
+ cam.updateMatrixWorld(true);
+ const s=pick(false);if(s!==hov){hov=s;dw=0;fired=false;if(s)setInfo(s)}
+ if(s&&!fired){dw+=dt;if(dw>=2){toggle(s);fired=true;dw=0}}else if(!s)dw=0;
+ const p=s&&!fired?dw/2:0;
+ renderer.domElement.style.cursor=s?'pointer':'default';
+ const d=$('#dw');d.style.display=(p>0&&!vr)?'block':'none';d.style.background=`conic-gradient(#2ee27a ${p*360}deg,rgba(0,0,0,.25) 0)`;
+ if(vr){prog.visible=p>0;if(p>0){prog.geometry.dispose();prog.geometry=new THREE.RingGeometry(.03,.042,32,1,Math.PI/2,-p*Math.PI*2)}}
+ const W=renderer.domElement.clientWidth,H=renderer.domElement.clientHeight;
+ if(!vr){renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.render(scene,cam)}
+ else{stereo.update(cam);renderer.setScissorTest(true);
+  renderer.setViewport(0,H/2,W,H/2);renderer.setScissor(0,H/2,W,H/2);renderer.render(scene,stereo.cameraL);
+  renderer.setViewport(0,0,W,H/2);renderer.setScissor(0,0,W,H/2);renderer.render(scene,stereo.cameraR)}}
+</script></body></html>
