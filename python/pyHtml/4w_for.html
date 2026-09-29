@@ -554,6 +554,74 @@ print("="*35)</code></pre>
     "박민수":75
 }</div>
         </div>
+<div class="hw-card">
+          <div class="hw-title"><span class="hw-num">과제 7</span><h4>for, while ATM</h4></div>
+          <p class="desc">다음 메뉴를 완성하고 종료시까지 while, for를 이용하여 반복하기</p>
+          <pre><code>
+# 초기 잔액
+balance = 100000
+
+# 거래 내역을 저장할 리스트
+transactions = []
+
+while True:
+    print("\n===== ATM =====")
+    print("1. 잔액 확인")
+    print("2. 입금")
+    print("3. 출금")
+    print("4. 종료")
+    print("==============")
+
+    choice = input("메뉴를 선택하세요: ")
+
+    # 1. 잔액 확인
+    if choice == "1":
+        print(f"현재 잔액: {balance:,}원")
+
+    # 2. 입금
+    elif choice == "2":
+        money = int(input("입금할 금액: "))
+        balance += money
+        transactions.append("입금")
+        print(f"{money:,}원이 입금되었습니다.")
+        print(f"현재 잔액: {balance:,}원")
+
+    # 3. 출금
+    elif choice == "3":
+        money = int(input("출금할 금액: "))
+
+        # 출금 가능 여부 판단
+        if money <= balance:
+            balance -= money
+            transactions.append("출금")
+            print(f"{money:,}원이 출금되었습니다.")
+            print(f"현재 잔액: {balance:,}원")
+        else:
+            print("잔액이 부족합니다.")
+
+    # 4. 종료
+    elif choice == "4":
+        print("ATM을 종료합니다.")
+        break
+
+    # 잘못된 메뉴
+    else:
+        print("잘못된 메뉴입니다.")
+
+
+# 거래 횟수 출력
+print("\n===== 거래 내역 =====")
+
+count = 0
+
+for transaction in transactions:
+    count += 1
+    print(f"{count}. {transaction}")
+
+print(f"총 거래 횟수: {count}회")
+            
+          </code></pre>
+        </div>
 
       </div>
     </section>
