@@ -1,0 +1,2575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>전기 설비 3D 구현 및 안전 설치 · PLC 디지털 트윈 — 기능 설명과 공장 3D 체험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<style>
+
+  :root{
+    --bg-deep:#060a10;
+    --panel-glass: rgba(16,26,38,0.62);
+    --panel-border: rgba(120,200,255,0.18);
+    --accent-cyan:#2fd9ff;
+    --accent-cyan-dim: rgba(47,217,255,0.35);
+    --safety-green:#00e676;
+    --safety-red:#ff3b3b;
+    --safety-amber:#ffb300;
+    --text-main:#dfeaf2;
+    --text-dim:#7f93a3;
+  }
+  *{box-sizing:border-box;}
+  
+  #scene-container{position:absolute; inset:0; z-index:0;}
+  canvas{display:block;}
+
+  /* ===== HMI Panel (compact) ===== */
+  #hmi-panel{
+    position:absolute; top:16px; left:16px; width:220px;
+    background:var(--panel-glass);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    padding:11px 12px 12px;
+    z-index:10;
+    user-select:none;
+  }
+  #hmi-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-bottom:8px; margin-bottom:9px;
+    border-bottom:1px solid rgba(120,200,255,0.14);
+    gap:6px;
+  }
+  #hmi-title{
+    font-size:10.5px; letter-spacing:0.2px; color:#fff; font-weight:700;
+    line-height:1.25;
+  }
+  #hmi-title b{display:block; font-size:8.5px; color:var(--accent-cyan); font-weight:600; letter-spacing:0.6px; margin-top:1px;}
+  #status-badge{
+    padding:3px 7px; border-radius:14px; font-size:8.5px; font-weight:700;
+    letter-spacing:0.3px; white-space:nowrap; flex-shrink:0;
+    transition: all 0.25s ease;
+    border:1px solid rgba(255,255,255,0.15);
+  }
+  .badge-stop{ background:rgba(255,59,59,0.16); color:var(--safety-red); box-shadow:0 0 10px rgba(255,59,59,0.25) inset;}
+  .badge-run{ background:rgba(0,230,118,0.16); color:var(--safety-green); box-shadow:0 0 10px rgba(0,230,118,0.25) inset;}
+  .badge-sensor{ background:rgba(255,179,0,0.18); color:var(--safety-amber); box-shadow:0 0 10px rgba(255,179,0,0.3) inset; animation: badgePulse 0.6s infinite alternate;}
+  @keyframes badgePulse{ from{opacity:1;} to{opacity:0.55;} }
+
+  #btn-row{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px;}
+  .plc-btn{
+    position:relative;
+    padding:7px 10px;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.12);
+    font-family:inherit; font-size:10.5px; font-weight:700; letter-spacing:0.2px;
+    cursor:pointer;
+    color:#08110d;
+    transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    display:flex; align-items:center; gap:7px;
+  }
+  .plc-btn:active{ transform: translateY(1px) scale(0.985); }
+  .plc-btn:disabled{ opacity:0.35; cursor:not-allowed; filter:grayscale(0.4); }
+  .btn-dot{ width:6px; height:6px; border-radius:50%; background:rgba(0,0,0,0.35); flex-shrink:0; }
+
+  #btn-start{ background:linear-gradient(145deg,#28e07a,#0aa855); color:#032414; box-shadow:0 3px 10px rgba(10,168,85,0.3);}
+  #btn-start:not(:disabled):hover{ filter:brightness(1.12); }
+  #btn-stop{ background:linear-gradient(145deg,#ff5b5b,#c81f1f); color:#2b0505; box-shadow:0 3px 10px rgba(200,31,31,0.3);}
+  #btn-stop:not(:disabled):hover{ filter:brightness(1.12); }
+  #btn-estop{ background:linear-gradient(145deg,#ff3030,#9e0f0f); color:#fff; box-shadow:0 3px 10px rgba(200,31,31,0.4);}
+  #btn-estop:not(:disabled):hover{ filter:brightness(1.12); }
+  #btn-guard{ background:linear-gradient(145deg,#ffcc00,#b38600); color:#111; box-shadow:0 3px 10px rgba(255,204,0,0.35);}
+  #alert-banner{position:absolute;top:14px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:8px;font:700 15px 'Malgun Gothic',sans-serif;z-index:50;display:none;pointer-events:none}
+  #alert-banner.warn{display:block;background:rgba(255,59,59,.93);color:#fff;box-shadow:0 0 24px rgba(255,59,59,.6);animation:badgePulse .6s infinite alternate}
+  #alert-banner.info{display:block;background:rgba(255,179,0,.95);color:#111}
+  #demo-caption{cursor:pointer;position:absolute;bottom:170px;left:50%;transform:translateX(-50%);padding:8px 16px;border-radius:8px;background:rgba(16,26,38,.93);border:1px solid var(--accent-cyan);color:#fff;font:700 14px 'Malgun Gothic',sans-serif;z-index:40;display:none;white-space:nowrap}
+  #demo-caption.show{display:block}
+  #btn-guard.open{ background:linear-gradient(145deg,#ff3030,#9e0f0f); color:#fff; box-shadow:0 3px 10px rgba(200,31,31,0.4);}
+  #btn-manual{ background:linear-gradient(145deg,#2fd9ff,#1583a8); color:#03202b; box-shadow:0 3px 10px rgba(21,131,168,0.3);}
+  #btn-manual:hover{ filter:brightness(1.12); }
+
+  #speed-row{
+    background:rgba(4,10,16,0.5);
+    border:1px solid rgba(120,200,255,0.1);
+    border-radius:7px; padding:7px 9px 8px;
+    margin-bottom:10px;
+  }
+  #speed-label-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  #speed-caption{ font-size:8.5px; color:var(--text-dim); letter-spacing:0.8px; }
+  #speed-value{ font-size:10px; font-weight:700; color:var(--accent-cyan); font-variant-numeric:tabular-nums; }
+  #speed-slider{
+    -webkit-appearance:none; appearance:none; width:100%; height:3px;
+    border-radius:3px; background:rgba(120,200,255,0.18); outline:none; cursor:pointer; display:block;
+  }
+  #speed-slider::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:12px; height:12px; border-radius:50%;
+    background:var(--accent-cyan); box-shadow:0 0 6px rgba(47,217,255,0.8); cursor:pointer;
+  }
+  #speed-slider::-moz-range-thumb{
+    width:12px; height:12px; border-radius:50%; border:none;
+    background:var(--accent-cyan); box-shadow:0 0 6px rgba(47,217,255,0.8); cursor:pointer;
+  }
+
+  #counter-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px;
+  }
+  .counter-box{
+    background:rgba(4,10,16,0.55);
+    border:1px solid rgba(120,200,255,0.12);
+    border-radius:6px;
+    padding:5px 4px 5px;
+    text-align:center;
+  }
+  .counter-label{ font-size:7.5px; color:var(--text-dim); letter-spacing:0.6px; margin-bottom:2px;}
+  .counter-value{ font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; text-shadow:0 0 6px currentColor;}
+  #count-total .counter-value{ color:var(--accent-cyan);}
+  #count-pass .counter-value{ color:var(--safety-green);}
+  #count-defect .counter-value{ color:var(--safety-red);}
+
+  #lamp-row{
+    display:flex; justify-content:space-between; align-items:center;
+    background:rgba(4,10,16,0.5);
+    border:1px solid rgba(120,200,255,0.1);
+    border-radius:6px; padding:6px 9px;
+  }
+  .lamp-item{ display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .lamp-led{
+    width:9px; height:9px; border-radius:50%;
+    background:#241010; border:1px solid rgba(255,255,255,0.15);
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.6);
+    transition: all 0.2s ease;
+  }
+  .lamp-led.on-green{ background:radial-gradient(circle at 35% 30%, #b7ffd8, #00e676); box-shadow:0 0 9px 2px rgba(0,230,118,0.9);}
+  .lamp-led.on-yellow{ background:radial-gradient(circle at 35% 30%, #ffe9b0, #ffb300); box-shadow:0 0 9px 2px rgba(255,179,0,0.9);}
+  .lamp-led.on-red{ background:radial-gradient(circle at 35% 30%, #ffb3b3, #ff3b3b); box-shadow:0 0 9px 2px rgba(255,59,59,0.9);}
+  .lamp-caption{ font-size:7px; color:var(--text-dim); letter-spacing:0.3px;}
+
+  #footer-note{
+    margin-top:8px; font-size:7px; color:var(--text-dim); text-align:center; letter-spacing:0.2px; opacity:0.75;
+  }
+
+  #viewport-hint{
+    position:absolute; top:14px; right:16px; font-size:9.5px; color:var(--text-dim);
+    background:rgba(10,16,24,0.5); padding:5px 9px; border-radius:6px; border:1px solid rgba(120,200,255,0.1);
+    z-index:10; letter-spacing:0.2px;
+  }
+
+  #btn-mccb{ background:linear-gradient(145deg,#ffb648,#e07d00); color:#2b1600; box-shadow:0 3px 10px rgba(224,125,0,0.3);}
+  #btn-mccb:disabled{ opacity:1; }
+  #hmi-panel{width:260px}
+  #speed-caption{font-size:9.5px} .counter-label{font-size:9px} .lamp-caption{font-size:9px}
+  #footer-note{font-size:8.5px} #hmi-title b{font-size:9.5px} #status-badge{font-size:9px}
+  .plc-btn{font-size:11.5px} #viewport-hint{font-size:11px}
+  #plc-dock{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:min(700px,94vw);background:var(--panel-glass);border:1px solid var(--panel-border);border-radius:10px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:8px 10px;z-index:10;font-size:10.5px;user-select:none}
+  .dock-head{display:flex;justify-content:space-between;gap:10px;white-space:nowrap;font-size:10px;color:var(--accent-cyan);font-weight:700;letter-spacing:.4px;margin-bottom:6px}
+  #judge.ng{color:var(--safety-red)} #judge.ok{color:var(--safety-green)}
+  .flow-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .flow-row b{width:34px;color:var(--text-dim);font-size:8.5px;flex-shrink:0}
+  .flow{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+  .flow span,.rung span{padding:2px 6px;border:1px solid rgba(120,200,255,.25);border-radius:4px;color:var(--text-dim);transition:all .15s;white-space:nowrap}
+  .flow i{color:var(--text-dim);font-style:normal}
+  .on{color:#04140a!important;background:var(--safety-green);border-color:var(--safety-green)!important;box-shadow:0 0 8px rgba(0,230,118,.7)}
+  .ladder{border-top:1px solid rgba(120,200,255,.14);margin-top:6px;padding-top:4px}
+  .rung{display:flex;align-items:center;gap:4px;margin-top:4px}
+  .rung em{color:var(--accent-cyan);font-style:normal}
+  .rung .ln{flex:1;height:1px;background:rgba(120,200,255,.3);min-width:10px}
+  .rung .coil{border-radius:10px}
+  #manual-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:center;justify-content:center}
+  #manual-modal.hidden{display:none}
+  #manual-box{background:#101a26;border:1px solid var(--panel-border);border-radius:12px;padding:18px 20px;max-width:560px;width:92vw;max-height:84vh;overflow:auto;font-size:12px;line-height:1.55;position:relative}
+  #manual-box h3{margin:0 0 6px;color:#fff;font-size:15px}
+  #manual-box dt{color:var(--accent-cyan);font-weight:700;margin-top:8px}
+  #manual-box dd{margin:0;color:var(--text-main)}
+  #manual-box pre{background:rgba(0,0,0,.35);padding:10px;border-radius:6px;color:var(--safety-green);font-size:11px}
+  #manual-box table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px}
+  #manual-box th,#manual-box td{border:1px solid rgba(120,200,255,.22);padding:4px 6px;text-align:left;vertical-align:top}
+  #manual-box th{color:var(--accent-cyan);background:rgba(120,200,255,.08)}
+  #manual-box td:first-child{white-space:nowrap;font-weight:700;color:#fff}
+  #manual-close{position:absolute;top:8px;right:10px;background:none;border:0;color:#fff;font-size:16px;cursor:pointer}
+
+  /* ===== Mobile / small screens: collapsible panels so the 3D view stays visible ===== */
+  @media (max-width: 700px), (max-height: 520px){
+    #hmi-panel{ width:calc(100% - 20px); left:10px; top:10px; padding:8px 10px; max-height:62vh; overflow-y:auto; }
+    #hmi-header{ cursor:pointer; }
+    #hmi-header::after{ content:'▾'; color:var(--text-dim); margin-left:8px; font-size:12px; }
+    #hmi-panel.collapsed > :not(#hmi-header){ display:none; }
+    #hmi-panel.collapsed #hmi-header{ margin:0; padding:0; border:0; }
+    #hmi-panel.collapsed #hmi-header::after{ content:'▸'; }
+    #btn-row{ display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+    .plc-btn{ font-size:11px; padding-left:6px; padding-right:6px; min-width:0; white-space:normal; }
+    #plc-dock{ bottom:8px; width:calc(100% - 20px); max-height:36vh; overflow-y:auto; padding:6px 8px; }
+    .dock-head{ cursor:pointer; }
+    .dock-head::after{ content:'▾'; }
+    #plc-dock.collapsed > :not(.dock-head){ display:none; }
+    #plc-dock.collapsed .dock-head{ margin:0; }
+    #plc-dock.collapsed .dock-head::after{ content:'▴'; }
+    #viewport-hint{ display:none; }
+    #demo-caption{ width:calc(100% - 28px); white-space:normal; text-align:center; font-size:12px; padding:7px 10px; box-sizing:border-box; }
+    #alert-banner{ top:54px; bottom:auto; width:calc(100% - 28px); text-align:center; font-size:12px; padding:8px 10px; box-sizing:border-box; }
+  }
+
+
+/* =====================================================================
+   문서 페이지 (상단 설명 + 하단 3D 체험)
+   ===================================================================== */
+:root{
+  --night:#0f1419; --surface:#161d25; --rule:#2a3541; --ink:#e8edf2; --ink-dim:#9aa8b5; --signal:#ffc400;
+  --page-font:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+}
+html{ scroll-behavior:smooth; }
+html.vr-lock, html.vr-lock body{ overflow:hidden; }
+body{
+  margin:0; background:var(--night); color:var(--ink);
+  font-family:var(--page-font); font-size:16px; line-height:1.75;
+  -webkit-text-size-adjust:100%;
+}
+a{ color:var(--signal); text-underline-offset:3px; }
+a:focus-visible, button:focus-visible{ outline:3px solid var(--signal); outline-offset:3px; }
+.wrap{ width:min(1120px, 100% - 40px); margin:0 auto; }
+
+/* --- Hero --- */
+.hero{ padding:72px 0 0; }
+.hero h1{
+  margin:0 0 20px; font-weight:900; letter-spacing:-0.03em; line-height:1.12;
+  font-size:clamp(2.1rem, 6.2vw, 4rem); max-width:16ch; word-break:keep-all;
+}
+.hero p.lead{ margin:0 0 28px; max-width:46em; font-size:clamp(1.02rem, 2.2vw, 1.2rem); color:var(--ink-dim); word-break:keep-all; }
+.hero-links{ display:flex; flex-wrap:wrap; gap:12px; margin:0 0 40px; padding:0; list-style:none; }
+.hero-links a{
+  display:inline-block; padding:11px 20px; border:2px solid var(--signal); border-radius:4px;
+  color:var(--signal); font-weight:700; text-decoration:none;
+}
+.hero-links a:first-child{ background:var(--signal); color:#141000; }
+.hazard{ height:16px; background:repeating-linear-gradient(-45deg, var(--signal) 0 16px, #0b0e12 16px 32px); }
+
+/* --- 본문 섹션 --- */
+.sec{ padding:64px 0 8px; }
+.sec h2{ margin:0 0 8px; font-size:clamp(1.45rem, 3.4vw, 2rem); font-weight:900; letter-spacing:-0.02em; word-break:keep-all; }
+.sec .sub{ margin:0 0 28px; max-width:44em; color:var(--ink-dim); word-break:keep-all; }
+.sec p{ word-break:keep-all; }
+.two{ display:grid; grid-template-columns:1fr 1fr; gap:36px; }
+.two h3{ margin:0 0 8px; font-size:1.05rem; color:var(--signal); }
+.two p{ margin:0; max-width:34em; }
+
+/* 신호 흐름 */
+.chain{ list-style:none; margin:32px 0 0; padding:0; display:grid; grid-template-columns:repeat(6, 1fr); border:1px solid var(--rule); }
+.chain li{ padding:16px 14px; border-right:1px solid var(--rule); background:var(--surface); font-size:.93rem; line-height:1.45; word-break:keep-all; }
+.chain li:last-child{ border-right:0; }
+.chain b{ display:block; margin-bottom:4px; font-size:1.02rem; }
+.chain span{ color:var(--ink-dim); font-size:.84rem; }
+
+/* 기능 목록 */
+.feat{ margin:0; border-top:1px solid var(--rule); }
+.feat div{ display:grid; grid-template-columns:240px 1fr; gap:28px; padding:20px 0; border-bottom:1px solid var(--rule); }
+.feat dt{ font-weight:700; font-size:1.05rem; word-break:keep-all; }
+.feat dd{ margin:0; color:var(--ink-dim); word-break:keep-all; }
+.feat dd b{ color:var(--ink); font-weight:500; }
+
+/* 표 */
+.tbl-wrap{ overflow-x:auto; border:1px solid var(--rule); margin:0 0 24px; }
+.tbl{ width:100%; border-collapse:collapse; font-size:.94rem; min-width:620px; }
+.tbl caption{ text-align:left; padding:12px 14px; font-weight:700; background:var(--surface); border-bottom:1px solid var(--rule); }
+.tbl th, .tbl td{ padding:10px 14px; border-bottom:1px solid var(--rule); text-align:left; vertical-align:top; word-break:keep-all; }
+.tbl th{ color:var(--signal); font-weight:700; background:#121920; white-space:nowrap; }
+.tbl td:first-child{ font-weight:700; white-space:nowrap; }
+.tbl tr:last-child td{ border-bottom:0; }
+.tag-done{ color:#58e29a; font-weight:700; } .tag-plan{ color:var(--ink-dim); }
+.ladder-box{ margin:0 0 24px; padding:16px 18px; background:var(--surface); border-left:4px solid var(--signal); font-size:.95rem; }
+.ladder-box code{ display:block; color:#58e29a; font-family:'Consolas',ui-monospace,monospace; line-height:1.9; white-space:pre-wrap; }
+.note{ margin:28px 0 0; padding:16px 18px; border:1px solid var(--signal); background:rgba(255,196,0,.06); font-size:.95rem; word-break:keep-all; }
+
+/* --- 3D 체험 섹션 --- */
+#experience{ padding:72px 0 56px; background:#0b0f14; margin-top:64px; border-top:1px solid var(--rule); }
+#experience h2{ margin:0 0 8px; font-size:clamp(1.45rem, 3.4vw, 2rem); font-weight:900; letter-spacing:-0.02em; }
+#experience .sub{ margin:0 0 22px; max-width:46em; color:var(--ink-dim); word-break:keep-all; }
+.mode-bar{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:14px; }
+.mode-btn{
+  font-family:var(--page-font); font-size:1.02rem; font-weight:700; padding:12px 24px; cursor:pointer;
+  background:transparent; color:var(--ink); border:2px solid var(--rule); border-radius:4px; min-height:48px;
+}
+.mode-btn:hover{ border-color:var(--ink-dim); }
+.mode-btn.active{ background:var(--signal); color:#141000; border-color:var(--signal); }
+#mode-note{ margin:0 0 14px; color:var(--ink-dim); font-size:.95rem; min-height:1.6em; word-break:keep-all; }
+
+#viewer{
+  position:relative; width:100%; height:clamp(540px, 82vh, 840px); overflow:hidden;
+  background:#1b2026; border:1px solid var(--rule);
+  font-family:'Consolas','Segoe UI',ui-monospace,monospace; color:var(--text-main);
+}
+#viewer.vr-fixed{ position:fixed; inset:0; width:100%; height:100vh; height:100dvh; z-index:9999; border:0; }
+#viewer.vr-fixed #hmi-panel, #viewer.vr-fixed #plc-dock, #viewer.vr-fixed #viewport-hint,
+#viewer.vr-fixed #view-bar, #viewer.vr-fixed #alert-banner, #viewer.vr-fixed #demo-caption{ display:none !important; }
+#hmi-panel{ max-height:calc(100% - 32px); overflow-y:auto; }
+#view-bar{ position:absolute; top:52px; right:16px; z-index:9; display:flex; flex-direction:column; gap:6px; align-items:stretch; }
+.vbtn{
+  font-family:'Malgun Gothic','Noto Sans KR',sans-serif; font-size:12.5px; font-weight:700; padding:7px 12px; cursor:pointer;
+  color:var(--text-main); background:rgba(16,26,38,.78); border:1px solid var(--panel-border); border-radius:6px;
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+}
+.vbtn.active{ border-color:var(--signal); color:var(--signal); }
+.vbtn-row{ display:flex; gap:6px; } .vbtn-row .vbtn{ flex:1; font-size:15px; padding:4px 0; }
+#vr-exit{
+  display:none; position:absolute; left:50%; bottom:max(12px, env(safe-area-inset-bottom)); transform:translateX(-50%);
+  z-index:30; padding:9px 18px; font:700 14px 'Noto Sans KR','Malgun Gothic',sans-serif; color:#fff;
+  background:rgba(180,20,20,.9); border:1px solid rgba(255,255,255,.5); border-radius:20px; cursor:pointer;
+}
+#viewer.vr-fixed #vr-exit{ display:block; }
+#rotate-hint{
+  display:none; position:absolute; inset:0; z-index:25; align-items:center; justify-content:center; text-align:center; padding:24px;
+  background:rgba(8,12,16,.92); color:#fff; font:700 18px/1.6 'Noto Sans KR','Malgun Gothic',sans-serif;
+}
+
+.legend{ display:grid; grid-template-columns:repeat(3, 1fr); gap:28px; margin-top:22px; font-size:.92rem; color:var(--ink-dim); }
+.legend h3{ margin:0 0 6px; font-size:.98rem; color:var(--ink); }
+.legend p{ margin:0; word-break:keep-all; }
+footer{ padding:32px 0 48px; color:var(--ink-dim); font-size:.88rem; border-top:1px solid var(--rule); }
+
+@media (max-width:860px){
+  .two, .legend{ grid-template-columns:1fr; gap:22px; }
+  .chain{ grid-template-columns:1fr 1fr; }
+  .chain li{ border-bottom:1px solid var(--rule); }
+  .feat div{ grid-template-columns:1fr; gap:6px; }
+  .hero{ padding-top:44px; }
+  #view-bar{ top:auto; bottom:52px; right:10px; flex-direction:row; flex-wrap:wrap; justify-content:flex-end; max-width:60%; }
+}
+@media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>전기 설비 3D 구현과 안전 설치</h1>
+    <p class="lead">PLC로 제어되는 불량 선별 컨베이어를 3D로 옮겨 놓고, 설비의 상태와 안전 인터락을 직접 눌러 보며 익히는 전기안전 교육용 디지털 트윈입니다. 아래로 내려가면 형광등이 켜진 공장 한가운데에 서서 이 설비를 PC나 구글 카드보드로 둘러볼 수 있습니다.</p>
+    <ul class="hero-links">
+      <li><a href="#experience">공장 안으로 들어가기</a></li>
+      <li><a href="#features">기능 설명 보기</a></li>
+    </ul>
+  </div>
+  <div class="hazard" aria-hidden="true"></div>
+</header>
+
+<main>
+  <section class="sec" id="overview">
+    <div class="wrap">
+      <h2>이 프로그램은 무엇인가요</h2>
+      <p class="sub">설비를 “보는” 것에서 끝나지 않고, 버튼을 누르면 신호가 흘러 모터가 돌고, 위험한 상황에서는 설비가 스스로 멈추는 과정을 눈으로 확인하는 시뮬레이터입니다.</p>
+      <div class="two">
+        <div>
+          <h3>쉽게 말하면</h3>
+          <p>공장에 있는 컨베이어 벨트를 컴퓨터 속에 똑같이 만들어 둔 것입니다. 상자가 벨트를 타고 오다가 센서 앞에서 멈추고, 카메라가 불량인지 검사해서 불량이면 실린더가 옆으로 밀어냅니다. 안전문을 열면 기계가 즉시 멈추고, 문을 닫아도 저절로 다시 돌지 않는다는 점까지 직접 확인할 수 있습니다.</p>
+        </div>
+        <div>
+          <h3>전문적으로 말하면</h3>
+          <p>입력(X: START, 포토센서, E-STOP, 비전 NG, 가드 인터락)을 PLC 래더 로직이 처리해 출력(Y: 모터 릴레이 K1, 솔레노이드, 타워램프)을 내는 구조를 Three.js 3D 장면과 1:1로 연결했습니다. 3D 객체의 동작은 설비 상태 변수와 PLC I/O 값에서 계산되므로, 모델이 단순한 그림이 아니라 설비 데이터의 시각화가 됩니다.</p>
+        </div>
+      </div>
+      <ol class="chain" aria-label="제어 신호 흐름">
+        <li><b>센서·버튼·인터락</b><span>START, 포토센서, E-STOP, 도어</span></li>
+        <li><b>PLC 입력 X</b><span>X0 ~ X4</span></li>
+        <li><b>제어 로직</b><span>자기유지·인터락 래더</span></li>
+        <li><b>PLC 출력 Y</b><span>Y0 ~ Y2</span></li>
+        <li><b>모터·솔레노이드</b><span>릴레이 K1, 공압 밸브</span></li>
+        <li><b>설비 동작</b><span>벨트 이동, 불량 배출</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec" id="features">
+    <div class="wrap">
+      <h2>구현된 기능</h2>
+      <p class="sub">모두 첨부된 index_elec.html 안에서 실제로 동작하는 기능이며, 아래 3D 체험 영역에서 그대로 사용할 수 있습니다.</p>
+      <dl class="feat">
+        <div><dt>3D 설비 모델</dt><dd>컨베이어 벨트·롤러·프레임, 포토센서, 비전 검사 장치, 불량품 푸셔 실린더와 불량통, 구동 모터, 타워램프, 그리고 <b>MCCB·24V SMPS·PLC·릴레이 K1·단자대</b>가 들어 있는 제어반까지 한 장면에 구성했습니다.</dd></div>
+        <div><dt>HMI 제어 패널</dt><dd>START · STOP · E-STOP · MCCB · 안전가드 버튼, 벨트 속도 슬라이더(0.5배 ~ 5배), TOTAL / PASS / DEFECT 카운터, RUN · SENSOR · ALARM 램프를 화면 안에서 조작합니다.</dd></div>
+        <div><dt>PLC I/O 실시간 표시</dt><dd>하단 도크에 <b>신호 흐름과 래더 두 줄(렁)</b>이 표시되고, 설비가 움직이는 순간 접점과 코일이 켜지고 꺼집니다. 제어반의 입력·출력 모듈 LED도 같은 값으로 점등합니다.</dd></div>
+        <div><dt>불량 선별 시퀀스</dt><dd>상자가 포토센서(X1)에 도착하면 컨베이어가 멈추고 비전이 OK/NG를 판정합니다. NG이면 솔레노이드(Y1)가 작동해 실린더가 상자를 불량통으로 밀어냅니다.</dd></div>
+        <div><dt>안전가드 인터락</dt><dd>도어를 열면 인터락 스위치(X4)가 꺼져 모터 출력(Y0)이 즉시 차단됩니다. 도어가 열려 있는 동안은 START가 잠기고, <b>도어를 닫아도 자동 재기동하지 않습니다.</b> 바닥의 위험구역은 붉게 점멸합니다.</dd></div>
+        <div><dt>작업자 점검 시연</dt><dd>작업자가 안전가드로 접근해 도어를 열고, 점검한 뒤 나가서 문을 닫기까지 8단계를 자막과 함께 보여 줍니다. 자막을 탭하면 일시정지됩니다.</dd></div>
+        <div><dt>3D 직접 조작</dt><dd>제어 스테이션의 START·STOP·E-STOP 버튼, 제어반의 MCCB 손잡이, 안전가드 도어를 3D 화면에서 직접 클릭(VR에서는 응시)해서 조작합니다.</dd></div>
+        <div><dt>배선 신호 흐름</dt><dd>켜진 신호의 배선에는 전류 펄스가 흐르고, 꺼진 배선은 어둡게 표시되어 어느 신호가 어디로 가는지 따라가 볼 수 있습니다.</dd></div>
+        <div><dt>설비 설명서</dt><dd>각 장치의 역할과 PLC 입출력 표, 래더 설명을 팝업으로 확인합니다.</dd></div>
+        <div><dt>공장 실내 관찰</dt><dd>설비를 형광등이 켜진 공장 한가운데 놓고 <b>관찰자가 공장 중앙에서</b> 둘러봅니다. 시점 버튼으로 제어반 · 안전가드 · 센서 앞으로 이동할 수 있습니다.</dd></div>
+        <div><dt>PC · VR 두 가지 모드</dt><dd>PC 모드는 마우스·터치 드래그로 둘러보고, VR 모드는 휴대폰을 구글 카드보드에 끼워 좌우 분할 화면과 자이로 센서로 체험합니다.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="sec" id="io">
+    <div class="wrap">
+      <h2>PLC 입출력과 래더</h2>
+      <p class="sub">제어반의 DIGITAL INPUT / OUTPUT 모듈 LED는 해당 신호가 ON일 때 켜집니다.</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <caption>입력 (X)</caption>
+        <tr><th>번호</th><th>장치</th><th>동작</th></tr>
+        <tr><td>X0</td><td>START</td><td>누르면 ON, 라인 가동 시작</td></tr>
+        <tr><td>X1</td><td>PHOTO SENSOR</td><td>제품이 도착하면 ON, 컨베이어 정지 후 비전 검사</td></tr>
+        <tr><td>X2</td><td>EMERGENCY STOP</td><td>누르면 ON, 모터 출력 차단·설비 정지</td></tr>
+        <tr><td>X3</td><td>VISION NG</td><td>비전이 불량으로 판정하면 ON, 배출 동작</td></tr>
+        <tr><td>X4</td><td>GUARD CLOSED</td><td>도어가 닫혀 있으면 ON, 열리면 OFF → 정지·START 잠금</td></tr>
+      </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <caption>출력 (Y)</caption>
+        <tr><th>번호</th><th>장치</th><th>동작</th></tr>
+        <tr><td>Y0</td><td>MOTOR</td><td>컨베이어 모터 구동(릴레이 K1 경유). 검사 중·E-STOP·도어 열림이면 OFF</td></tr>
+        <tr><td>Y1</td><td>SOLENOID</td><td>솔레노이드 밸브 작동, 실린더가 불량품을 밀어냄</td></tr>
+        <tr><td>Y2</td><td>TOWER LAMP</td><td>녹색 가동 · 황색 점멸 검사 중 · 적색 정지 · 적색 점멸 비상</td></tr>
+      </table></div>
+      <div class="ladder-box">
+        <code>래더 1 : ( X0 START  또는  Y0 자기유지 ) + /X2 + X4 GUARD 닫힘  →  ( Y0 MOTOR )
+래더 2 : X1 PHOTO SENSOR + X3 VISION NG  →  ( Y1 SOLENOID )</code>
+        자기유지는 START를 한 번만 눌러도 모터 출력이 유지되는 회로이고, /X2는 E-STOP을 누르지 않았을 때 연결되는 접점입니다.
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="safety">
+    <div class="wrap">
+      <h2>안전 상황 비교</h2>
+      <p class="sub">정상 상태와 위험 상황에서 설비가 어떻게 반응하는지 같은 화면에서 비교해 볼 수 있습니다.</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <tr><th>상황</th><th>설비 반응</th><th>확인할 점</th></tr>
+        <tr><td>정상 가동</td><td>START → Y0 자기유지, 타워램프 녹색</td><td>벨트와 샤프트가 회전하고 배선 펄스가 흐름</td></tr>
+        <tr><td>안전도어 열림</td><td>X4 OFF → Y0 차단, 적색 점멸, START 잠금</td><td>점검 중에는 설비가 움직일 수 없음</td></tr>
+        <tr><td>도어 닫힘</td><td>자동 재기동 없음, START 필요</td><td>자동 재기동 방지(작업자 보호)</td></tr>
+        <tr><td>E-STOP 작동</td><td>X2 ON, 모터 차단, 버튼 래치</td><td>해제(RESET) 후 START를 눌러야 재가동</td></tr>
+        <tr><td>MCCB OFF</td><td>PLC·출력·타워램프 전부 소등</td><td>주전원 차단의 의미, E-STOP도 동작 안 함</td></tr>
+        <tr><td>불량 감지</td><td>X1 + X3 → Y1, 실린더로 배출</td><td>선별 로직과 카운터(DEFECT) 증가</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="sec" id="twin">
+    <div class="wrap">
+      <h2>디지털 트윈 연결 구조와 학습 흐름</h2>
+      <p class="sub">3D 객체는 설비 상태 데이터에 연결되어 있습니다. 현재는 브라우저 안의 시뮬레이션 값을 사용하며, 실제 센서·PLC 연동은 다음 단계입니다.</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <caption>설비 → 3D 객체 → 연결 데이터</caption>
+        <tr><th>설비</th><th>3D 객체</th><th>연결 데이터</th><th>화면 표현</th></tr>
+        <tr><td>MCCB</td><td>제어반 손잡이</td><td>mccb</td><td>손잡이 위치·색, 전원 소등</td></tr>
+        <tr><td>비상정지</td><td>제어 스테이션 버튼</td><td>estop · X2</td><td>버튼 눌림, 적색 점멸</td></tr>
+        <tr><td>안전가드 도어</td><td>힌지 도어·인터락 스위치</td><td>guardOpen · X4</td><td>도어 회전, 위험구역 점멸</td></tr>
+        <tr><td>포토센서·비전</td><td>센서 포스트</td><td>X1 · X3</td><td>LED, 레이저, 판정 표시</td></tr>
+        <tr><td>컨베이어 모터</td><td>구동부·샤프트</td><td>Y0</td><td>벨트 이동, 샤프트 회전</td></tr>
+        <tr><td>솔레노이드·실린더</td><td>밸브·푸셔</td><td>Y1</td><td>밸브 LED, 로드 전진</td></tr>
+        <tr><td>타워램프</td><td>적·황·녹 램프</td><td>Y2</td><td>상태별 색·점멸</td></tr>
+      </table></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <caption>교육 흐름: 관찰 → 선택 → 조작 → 오류 → 위험 인식 → 해결 → 평가</caption>
+        <tr><th>단계</th><th>현재 구현</th><th>확장 예정</th></tr>
+        <tr><td>관찰</td><td class="tag-done">공장 중앙 360° 둘러보기, 시점 이동, 설비 설명서</td><td class="tag-plan">부품 분해도, 부품 정보 팝업</td></tr>
+        <tr><td>선택·조작</td><td class="tag-done">버튼·MCCB·도어를 클릭 또는 응시로 조작</td><td class="tag-plan">설치 순서에 맞춘 부품 장착 조작</td></tr>
+        <tr><td>오류 발생</td><td class="tag-done">도어 열림, E-STOP, MCCB OFF 인터락 반응</td><td class="tag-plan">단락 · 과부하 · 접지불량 · 차단기 오동작</td></tr>
+        <tr><td>위험 인식</td><td class="tag-done">위험구역 점멸, 경고 배너, 작업자 점검 시연</td><td class="tag-plan">감전 위험 체험 시나리오</td></tr>
+        <tr><td>문제 해결·평가</td><td class="tag-done">재기동 절차(RESET → START) 직접 수행</td><td class="tag-plan">퀴즈, 점수, 학습 결과 저장</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="sec" id="howto">
+    <div class="wrap">
+      <h2>사용 방법</h2>
+      <div class="two">
+        <div>
+          <h3>PC 모드</h3>
+          <p>마우스로 화면을 끌면 공장 중앙에서 사방을 둘러봅니다. Ctrl 키를 누른 채 휠을 돌리거나 확대·축소 버튼을 누르면 줌이 바뀝니다. 제어 스테이션 버튼, 제어반 MCCB 손잡이, 안전가드 도어를 클릭해 조작하고, 오른쪽 시점 버튼으로 제어반·안전가드·센서 앞으로 이동합니다. 화면 왼쪽의 제어 패널로도 같은 조작을 할 수 있습니다.</p>
+        </div>
+        <div>
+          <h3>VR 모드 (구글 카드보드)</h3>
+          <p>스마트폰의 Chrome이나 Safari로 이 페이지를 열고 <b>VR 모드</b> 버튼을 누릅니다. iPhone은 모션 센서 권한을 허용해야 합니다. 화면이 좌우로 나뉘면 폰을 가로로 돌려 카드보드에 끼우세요. 고개를 돌리면 시야가 따라 움직이고, 가운데 점을 버튼이나 설비에 1.5초 두면 선택됩니다. 카드보드 버튼이 있으면 누르는 즉시 선택됩니다. 종료는 화면 아래 중앙의 종료 버튼입니다.</p>
+        </div>
+      </div>
+      <p class="note">이 프로그램은 교육용 시뮬레이션이며 실제 PLC와 통신하지 않습니다. 실제 전기 설비의 설치·점검 작업에 적용하려면 관련 전기안전 규정을 확인하고 전기 전문가의 검토를 받아야 합니다. VR은 모션 센서 사용을 위해 https 주소(GitHub Pages 포함)에서만 동작하며, 장시간 사용하면 휴대폰이 뜨거워질 수 있습니다.</p>
+    </div>
+  </section>
+</main>
+
+<section id="experience" aria-labelledby="exp-title">
+  <div class="wrap">
+    <h2 id="exp-title">3D 공장 체험</h2>
+    <p class="sub">형광등이 켜진 공장 실내에 설비가 놓여 있고, 관찰자는 공장의 중앙에 서 있습니다. 모드를 고르세요.</p>
+    <div class="mode-bar">
+      <button class="mode-btn active" id="btn-pc" type="button" aria-pressed="true">PC 모드</button>
+      <button class="mode-btn" id="btn-vr" type="button" aria-pressed="false">VR 모드 (Google Cardboard)</button>
+    </div>
+    <p id="mode-note" aria-live="polite"></p>
+
+    <div id="viewer">
+<div id="scene-container"></div>
+
+<div id="hmi-panel">
+  <div id="hmi-header">
+    <div id="hmi-title">PLC 기반 컨베이어 벨트<b>SORTING LINE #01</b></div>
+    <div id="status-badge" class="badge-stop">STOP</div>
+  </div>
+
+  <div id="btn-row">
+    <button id="btn-start" class="plc-btn"><span class="btn-dot"></span>START · 가동 시작</button>
+    <button id="btn-stop" class="plc-btn"><span class="btn-dot"></span>STOP · 정지</button>
+    <button id="btn-estop" class="plc-btn"><span class="btn-dot"></span>E-STOP · 비상 정지</button>
+    <button id="btn-mccb" class="plc-btn"><span class="btn-dot"></span>MCCB · 전원 ON</button>
+    <button id="btn-guard" class="plc-btn"><span class="btn-dot"></span>SAFETY GUARD · 도어 닫힘</button>
+    <button id="btn-demo" class="plc-btn"><span class="btn-dot"></span>작업자 점검 시연</button>
+    <button id="btn-manual" class="plc-btn"><span class="btn-dot"></span>설비 설명서</button>
+  </div>
+
+  <div id="speed-row">
+    <div id="speed-label-row">
+      <span id="speed-caption">BELT SPEED</span>
+      <span id="speed-value">2.6x</span>
+    </div>
+    <input type="range" id="speed-slider" min="0.5" max="5" step="0.1" value="2.6">
+  </div>
+
+  <div id="counter-grid">
+    <div class="counter-box" id="count-total">
+      <div class="counter-label">TOTAL</div>
+      <div class="counter-value" id="val-total">0</div>
+    </div>
+    <div class="counter-box" id="count-pass">
+      <div class="counter-label">PASS</div>
+      <div class="counter-value" id="val-pass">0</div>
+    </div>
+    <div class="counter-box" id="count-defect">
+      <div class="counter-label">DEFECT</div>
+      <div class="counter-value" id="val-defect">0</div>
+    </div>
+  </div>
+
+  <div id="lamp-row">
+    <div class="lamp-item"><div class="lamp-led" id="led-green"></div><div class="lamp-caption">RUN</div></div>
+    <div class="lamp-item"><div class="lamp-led" id="led-yellow"></div><div class="lamp-caption">SENSOR</div></div>
+    <div class="lamp-item"><div class="lamp-led" id="led-red"></div><div class="lamp-caption">STOP/ALARM</div></div>
+  </div>
+
+  <div id="footer-note">PLC I/O SIMULATION · TRAINING MODEL</div>
+</div>
+
+<div id="plc-dock">
+  <div class="dock-head"><span>PLC I/O SIMULATION · TRAINING MODEL</span><span id="judge">VISION 판정: --</span></div>
+  <div class="flow-row"><b>RUN</b><div class="flow" id="flow-a"></div></div>
+  <div class="flow-row"><b>REJECT</b><div class="flow" id="flow-b"></div></div>
+  <div class="ladder">
+    <div class="rung"><em>┣</em><span data-l="x0">X0 START</span><span data-l="y0h">Y0 자기유지</span><span data-l="x2n">/X2 E-STOP</span><span data-l="x4">X4 GUARD 닫힘</span><i class="ln"></i><span class="coil" data-l="y0">( Y0 MOTOR )</span></div>
+    <div class="rung"><em>┣</em><span data-l="x1">X1 PHOTO SENSOR</span><span data-l="x3">X3 VISION NG</span><i class="ln"></i><span class="coil" data-l="y1">( Y1 SOLENOID )</span></div>
+  </div>
+</div>
+
+
+<div id="alert-banner"></div>
+<div id="demo-caption"></div>
+<div id="viewport-hint">드래그: 둘러보기 · Ctrl+휠: 확대/축소 · 설비 클릭: 조작</div>
+
+
+      <div id="view-bar">
+        <button class="vbtn active" data-view="center" type="button">공장 중앙</button>
+        <button class="vbtn" data-view="cabinet" type="button">제어반</button>
+        <button class="vbtn" data-view="guard" type="button">안전가드</button>
+        <button class="vbtn" data-view="sensor" type="button">센서·실린더</button>
+        <div class="vbtn-row"><button class="vbtn" id="zoom-out" type="button" aria-label="축소">−</button><button class="vbtn" id="zoom-in" type="button" aria-label="확대">+</button></div>
+      </div>
+      <button id="vr-exit" type="button">✕ VR 종료</button>
+      <div id="rotate-hint">휴대폰을 가로로 돌려<br>카드보드에 끼워 주세요</div>
+    </div>
+<div id="manual-modal" class="hidden"><div id="manual-box">
+  <button id="manual-close">✕</button>
+  <h3>설비 설명서</h3>
+  <dl>
+    <dt>MCCB</dt><dd>전기 설비의 전원 차단 및 보호 (제어반 MCCB 손잡이 또는 제어 패널의 MCCB 버튼으로 ON/OFF). OFF이면 PLC·출력·타워램프가 모두 꺼지고 E-STOP도 동작하지 않음</dd>
+    <dt>24V DC SMPS</dt><dd>제어 회로에 필요한 DC 전원 공급</dd>
+    <dt>PLC</dt><dd>입력 신호를 받아 프로그램에 따라 출력 장치를 제어</dd>
+    <dt>릴레이 (K1)</dt><dd>PLC 출력(Y0) 신호로 모터 회로를 개폐</dd>
+    <dt>포토센서</dt><dd>제품의 위치 또는 통과 여부만 감지 (제품 도착 신호). 감지되면 컨베이어가 잠시 멈추고 비전 검사가 진행됨</dd>
+    <dt>비전 검사 장치</dt><dd>카메라로 제품 외관을 검사해 불량(NG)이면 PLC에 신호 전달</dd>
+    <dt>모터</dt><dd>컨베이어 구동</dd>
+    <dt>솔레노이드 밸브</dt><dd>공압 실린더 동작 제어</dd>
+    <dt>실린더</dt><dd>불량품을 옆의 불량품 통(REJECT BIN)으로 밀어내 배출</dd>
+    <dt>START / STOP</dt><dd>라인 가동 시작·정지 (START는 PLC 입력 X0). E-STOP 작동, MCCB OFF, 안전가드 도어 열림 상태에서는 START가 잠김</dd>
+    <dt>Emergency Stop</dt><dd>비상 상황에서 설비 정지 (누르면 래치되어 유지, 해제 후 START를 눌러야 재가동)</dd>
+    <dt>타워램프</dt><dd>설비 상태 표시 (PLC 출력 Y2): 녹색 = 가동 중, 황색 점멸 = 센서 감지·검사 중, 적색 점등 = 정상 정지, 적색 점멸 = 비상(E-STOP 작동 또는 안전가드 도어 열림). MCCB OFF이면 모두 소등</dd>
+    <dt>안전가드</dt><dd>작업자가 구동부(모터·구동 롤러·벨트 끝단)에 접근하는 것을 방지. 도어를 열면 인터락 스위치(X4)가 OFF되어 설비가 즉시 정지하고, 도어를 닫아도 START를 눌러야 재가동 (자동 재기동 방지)</dd>
+    <dt>작업자 점검 시연</dt>
+    <dd><b>목적:</b> 점검·정비를 위해 안전가드 도어를 열었을 때 설비가 어떻게 보호되는지, 작업자의 접근부터 퇴장까지 단계별로 보여 주는 안전 교육용 시연입니다.</dd>
+    <dd><b>학습 포인트:</b> ① 도어 열림 = 인터락 X4 OFF → 모터 출력 Y0 차단(즉시 정지) ② 도어가 열린 동안 START 잠금 ③ 도어를 닫아도 자동 재기동 없음(START 필요) ④ 바닥 해저드 표시로 위험구역 인지</dd>
+    <dd><b>사용법:</b> MCCB ON · E-STOP 해제 · 도어 닫힘 상태에서 [작업자 점검 시연] 버튼을 누르면 카메라가 이동하고 화면 하단에 단계별 설명이 표시됩니다. 라인이 정지 상태이면 시연 시작 시 자동으로 가동되며, 시연 중에는 도어를 직접 조작할 수 없습니다. 설명을 탭하면 일시정지/계속할 수 있습니다.</dd>
+  </dl>
+  <h3 style="margin-top:12px">PLC I/O 정리</h3>
+  <dd style="color:var(--text-dim)">제어반의 DIGITAL INPUT / OUTPUT 모듈 LED는 해당 신호가 ON일 때 켜집니다.</dd>
+  <table>
+    <tr><th>입력</th><th>장치</th><th>핵심 동작</th></tr>
+    <tr><td>X0</td><td>START</td><td>START를 누르면 ON → 라인 가동 시작</td></tr>
+    <tr><td>X1</td><td>PHOTO SENSOR</td><td>제품이 센서 위치에 도착하면 ON → 컨베이어 정지 후 비전 검사 시작</td></tr>
+    <tr><td>X2</td><td>EMERGENCY STOP</td><td>E-STOP을 누르면 ON → 모터 출력 차단, 설비 정지</td></tr>
+    <tr><td>X3</td><td>VISION NG</td><td>비전이 불량(NG)으로 판정하면 ON → 불량품 배출 동작</td></tr>
+    <tr><td>X4</td><td>GUARD CLOSED</td><td>안전가드 도어가 닫혀 있으면 ON, 열리면 OFF → 설비 정지·START 잠금</td></tr>
+  </table>
+  <table>
+    <tr><th>출력</th><th>장치</th><th>핵심 동작</th></tr>
+    <tr><td>Y0</td><td>MOTOR</td><td>컨베이어 모터 구동 (릴레이 K1 경유). 제품 검사 중, E-STOP, 도어 열림 시 OFF</td></tr>
+    <tr><td>Y1</td><td>SOLENOID</td><td>솔레노이드 밸브 작동 → 실린더가 불량품을 밀어내 배출</td></tr>
+    <tr><td>Y2</td><td>TOWER LAMP</td><td>타워램프 출력. 전원(MCCB) ON이면 항상 출력, 상태에 따라 녹색·황색·적색이 선택 점등 (E-STOP·도어 열림 = 적색 점멸)</td></tr>
+  </table>
+  <dd style="margin-top:6px"><b>RUN</b> LED: PLC가 가동 상태일 때 점등</dd>
+  <dd><b>래더 1:</b> (X0 START 또는 Y0 자기유지) + /X2 + X4 GUARD 닫힘 → Y0 MOTOR<br><span style="color:var(--text-dim)">자기유지: START를 한 번만 눌러도 모터 출력이 유지됨. /X2는 E-STOP을 누르지 않았을 때 연결되는 접점</span></dd>
+  <dd><b>래더 2:</b> X1 PHOTO SENSOR + X3 VISION NG → Y1 SOLENOID<br><span style="color:var(--text-dim)">제품이 도착했고 비전이 불량으로 판정했을 때만 배출 실린더 작동</span></dd>
+
+  <h3 style="margin-top:12px">기본 제어 흐름</h3>
+  <pre>센서 / 버튼 / 인터락
+     ↓
+PLC 입력 (X)
+     ↓
+PLC 제어 로직
+     ↓
+PLC 출력 (Y)
+     ↓
+모터 / 솔레노이드
+     ↓
+설비 동작</pre>
+  <dd style="color:var(--text-dim)">※ 본 화면은 PLC I/O 교육용 시뮬레이션이며 실제 PLC와 통신하지 않습니다.</dd>
+</div></div>
+
+
+
+    <div class="legend">
+      <div><h3>둘러보기</h3><p>PC는 드래그, VR은 고개 회전. 관찰 위치는 바닥의 청색 원(공장 중앙)입니다.</p></div>
+      <div><h3>조작하기</h3><p>PC는 클릭, VR은 응시 1.5초 또는 카드보드 버튼. 콘솔은 현재 위치의 왼쪽 앞에 나타납니다.</p></div>
+      <div><h3>확인하기</h3><p>도어를 열어 설비가 멈추는지, 닫은 뒤에도 START 전까지 멈춰 있는지 확인해 보세요.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">전기 설비 3D 구현 및 안전 설치 · VR 디지털 트윈 · 전기캡스톤디자인 · Three.js r128, GSAP</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     0. GLOBAL STATE
+  ========================================================= */
+  const STATE = {
+    isRunning: false,
+    isProcessing: false,
+    beltSpeed: 2.6,          // units per second
+    totalCount: 0,
+    passCount: 0,
+    defectCount: 0,
+    spawnTimer: null,
+    estop: false, inspecting: false, visionNG: false, mccb: true, spawnCount: 0, solenoid: false, judge: '--', x0Until: 0, guardOpen: false
+  };
+
+  const CONVEYOR = {
+    zStart: -9.2,
+    zEnd: 9.6,
+    beltTopY: 1.0,
+    halfWidthX: 1.5
+  };
+  const SENSOR_Z = -0.6;
+  // The pusher MUST sit at the exact same Z as the sensor: the box freezes
+  // in place the instant it crosses the sensor beam (belt stops immediately),
+  // so the ejector has to be aligned with that stop point, not further down
+  // the line, or the rod visually misses the box entirely.
+  const PUSHER_Z = SENSOR_Z;
+  const SPAWN_SAFE_GAP = 1.6; // minimum Z gap required before a new box may spawn (prevents overlap)
+
+  let boxQueue = []; // {group, isDefect, triggered, pushed, id}
+  let boxIdCounter = 0;
+
+  /* =========================================================
+     1. THREE.JS BASE SETUP — 공장 실내 뷰어 (관찰자 = 공장 중앙)
+  ========================================================= */
+  const container = document.getElementById('scene-container');
+  const viewerEl = document.getElementById('viewer');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1b2026);
+  scene.fog = new THREE.Fog(0xaab4bd, 60, 130);
+
+  // 공장 실내 치수(m). 설비(컨베이어)는 원점 부근, 관찰자는 공장 평면의 중앙에 선다.
+  const FACTORY = {x0:-14, x1:30, z0:-19.5, z1:20.5, h:9};
+  const CENTER = {x:(FACTORY.x0+FACTORY.x1)/2, z:(FACTORY.z0+FACTORY.z1)/2};
+  const EYE_H = 1.65, PC_FOV = 62, VR_FOV = 80, IPD = 0.064;
+  const KFONT = '"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo","Noto Sans CJK KR",sans-serif';
+
+  const camera = new THREE.PerspectiveCamera(PC_FOV, 1, 0.1, 200);
+  camera.rotation.order = 'YXZ';
+
+  const renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate = false;      // 프레임당 1회만 갱신(스테레오 2회 렌더 대비)
+  container.appendChild(renderer.domElement);
+
+  const vr = {on:false, gyro:false};
+  const dev = {has:false, alpha:0, beta:0, gamma:0};
+  let currentViewKey = 'center';
+
+  function resizeViewer(){
+    const w = Math.max(2, container.clientWidth), h = Math.max(2, container.clientHeight);
+    renderer.setSize(w, h);
+    const rh = document.getElementById('rotate-hint');
+    if(rh) rh.style.display = (vr.on && window.innerHeight > window.innerWidth) ? 'flex' : 'none';
+  }
+  if(window.ResizeObserver) new ResizeObserver(resizeViewer).observe(container);
+  window.addEventListener('resize', resizeViewer);
+  window.addEventListener('orientationchange', () => setTimeout(resizeViewer, 250));
+  resizeViewer();
+
+  /* ---------- 관찰자 시점 (1인칭, 위치 고정 + 둘러보기) ---------- */
+  const view = {pos:new THREE.Vector3(CENTER.x, EYE_H, CENTER.z), yaw:Math.PI/2, pitch:0, fov:PC_FOV};
+  const VIEWS = {
+    center: {pos:[CENTER.x, EYE_H, CENTER.z], look:[-3, 1.4, CENTER.z]},
+    cabinet:{pos:[5.6, 1.7, -3.0],            look:[-7, 2.9, -3.0]},
+    guard:  {pos:[-8.5, 1.7, 7.5],            look:[-1.9, 1.2, 7.5]},
+    sensor: {pos:[5.5, 1.7, -4.2],            look:[0, 1.3, -0.6]}
+  };
+  function lookAngles(from, to){
+    const dx = to.x-from.x, dy = to.y-from.y, dz = to.z-from.z;
+    return {yaw:Math.atan2(-dx, -dz), pitch:Math.atan2(dy, Math.hypot(dx, dz))};
+  }
+  function wrapPI(a){ while(a > Math.PI) a -= 2*Math.PI; while(a < -Math.PI) a += 2*Math.PI; return a; }
+
+  // 부드러운 시점 이동 (PC 모드)
+  const glide = {t:1, dur:1.2, p0:new THREE.Vector3(), p1:new THREE.Vector3(), y0:0, y1:0, a0:0, a1:0};
+  function flyTo(pos, tgt, dur){
+    const a = lookAngles(pos, tgt);
+    glide.p0.copy(view.pos); glide.p1.copy(pos);
+    glide.y0 = view.yaw; glide.y1 = view.yaw + wrapPI(a.yaw - view.yaw);
+    glide.a0 = view.pitch; glide.a1 = a.pitch; glide.dur = dur || 1.2; glide.t = 0;
+  }
+  function updateCam(dt){
+    if(glide.t >= 1) return;
+    glide.t = Math.min(1, glide.t + dt/glide.dur);
+    const k = glide.t*glide.t*(3 - 2*glide.t);
+    view.pos.lerpVectors(glide.p0, glide.p1, k);
+    view.yaw = glide.y0 + (glide.y1-glide.y0)*k;
+    view.pitch = glide.a0 + (glide.a1-glide.a0)*k;
+  }
+  // 작업자 점검 시연이 쓰는 카메라 이동(VR에서는 멀미 방지를 위해 이동하지 않음)
+  function camGo(pos, tgt){ if(vr.on) return; flyTo(pos, tgt, 1.2); }
+  function saveView(){
+    const f = new THREE.Vector3(-Math.sin(view.yaw), 0, -Math.cos(view.yaw));
+    return {p:view.pos.clone(), t:view.pos.clone().addScaledVector(f, 10).setY(view.pos.y)};
+  }
+
+  // 휴대폰 자이로 → 카메라 방향 (three.js DeviceOrientationControls 와 동일 수식)
+  const _zee = new THREE.Vector3(0,0,1), _eu = new THREE.Euler(), _q0 = new THREE.Quaternion();
+  const _q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5));
+  const _qDev = new THREE.Quaternion(), _qYaw = new THREE.Quaternion(), _up = new THREE.Vector3(0,1,0), _e2 = new THREE.Euler(0,0,0,'YXZ');
+  function deviceQuat(out){
+    const D = Math.PI/180;
+    const ang = (screen.orientation && screen.orientation.angle !== undefined) ? screen.orientation.angle : (window.orientation || 0);
+    _eu.set(dev.beta*D, dev.alpha*D, -dev.gamma*D, 'YXZ');
+    out.setFromEuler(_eu); out.multiply(_q1); out.multiply(_q0.setFromAxisAngle(_zee, -ang*D));
+    return out;
+  }
+  // 현재 바라보는 방향이 targetYaw 가 되도록 자이로 기준 방향을 맞춘다
+  function recenterTo(targetYaw){
+    if(!dev.has){ view.yaw = targetYaw; return; }
+    deviceQuat(_qDev); _e2.setFromQuaternion(_qDev, 'YXZ');
+    view.yaw = targetYaw - _e2.y;
+  }
+  function applyCamera(){
+    camera.position.copy(view.pos);
+    if(vr.on && vr.gyro && dev.has){
+      deviceQuat(_qDev);
+      _qYaw.setFromAxisAngle(_up, view.yaw);
+      camera.quaternion.copy(_qYaw).multiply(_qDev);
+    } else {
+      camera.rotation.set(view.pitch, view.yaw, 0);
+    }
+    camera.updateMatrixWorld(true);
+  }
+
+  // 일반 렌더 / Cardboard 좌우 분할(스테레오) 렌더
+  const eyeL = new THREE.PerspectiveCamera(), eyeR = new THREE.PerspectiveCamera();
+  const _right = new THREE.Vector3();
+  function render(){
+    const w = container.clientWidth, h = container.clientHeight;
+    renderer.shadowMap.needsUpdate = true;
+    if(!vr.on){
+      camera.aspect = w/h; camera.fov = view.fov; camera.updateProjectionMatrix();
+      renderer.render(scene, camera);
+      return;
+    }
+    camera.aspect = (w/2)/h; camera.fov = VR_FOV; camera.updateProjectionMatrix();
+    _right.set(1,0,0).applyQuaternion(camera.quaternion);
+    renderer.autoClear = false;
+    renderer.setScissorTest(false);
+    renderer.setViewport(0, 0, w, h);
+    renderer.clear();
+    renderer.setScissorTest(true);
+    [[eyeL,-1,0],[eyeR,1,w/2]].forEach(function(e){
+      const c = e[0];
+      c.fov = camera.fov; c.aspect = camera.aspect; c.near = camera.near; c.far = camera.far; c.updateProjectionMatrix();
+      c.quaternion.copy(camera.quaternion);
+      c.position.copy(camera.position).addScaledVector(_right, e[1]*IPD/2);
+      c.updateMatrixWorld(true);
+      renderer.setViewport(e[2], 0, w/2, h);
+      renderer.setScissor(e[2], 0, w/2, h);
+      renderer.render(scene, c);
+    });
+    renderer.setScissorTest(false);
+    renderer.setViewport(0, 0, w, h);
+    renderer.autoClear = true;
+  }
+
+  /* =========================================================
+     2. LIGHTING — 형광등 점등 상태의 공장 조명
+  ========================================================= */
+  scene.add(new THREE.HemisphereLight(0xeaf3fb, 0x5b636c, 0.8));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  dirLight.position.set(4, 26, 8);
+  dirLight.target.position.set(-2, 0, 0.5);
+  scene.add(dirLight.target);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.set(2048, 2048);
+  dirLight.shadow.camera.near = 1; dirLight.shadow.camera.far = 60;
+  dirLight.shadow.camera.left = -17; dirLight.shadow.camera.right = 17;
+  dirLight.shadow.camera.top = 17; dirLight.shadow.camera.bottom = -17;
+  dirLight.shadow.bias = -0.0015;
+  scene.add(dirLight);
+
+  [[-3,7.3,-6],[-3,7.3,8],[8,7.3,0.5],[19,7.3,0.5]].forEach(p => {
+    const l = new THREE.PointLight(0xf4f9ff, 0.5, 42, 2);
+    l.position.set(p[0], p[1], p[2]); scene.add(l);
+  });
+
+  /* =========================================================
+     3. FACTORY INTERIOR — 바닥 · 벽 · 천장 · 형광등 · 설비 주변 소품
+  ========================================================= */
+  const FW = FACTORY.x1 - FACTORY.x0, FD = FACTORY.z1 - FACTORY.z0, FH = FACTORY.h;
+  const FCX = CENTER.x, FCZ = CENTER.z;
+
+  function fMat(color, rough, metal){
+    return new THREE.MeshStandardMaterial({color:color, roughness:rough === undefined ? 0.8 : rough, metalness:metal || 0});
+  }
+  function fBox(w, h, d, mat, x, y, z, parent){
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    m.position.set(x, y, z); (parent || scene).add(m); return m;
+  }
+  function signTex(text, w, h, bg, fg, px){
+    const c = document.createElement('canvas');
+    c.width = Math.round(w*200); c.height = Math.round(h*200);
+    const g = c.getContext('2d');
+    g.fillStyle = bg; g.fillRect(0, 0, c.width, c.height);
+    g.strokeStyle = fg; g.lineWidth = 6; g.strokeRect(6, 6, c.width-12, c.height-12);
+    g.fillStyle = fg; g.font = '900 ' + Math.round(c.height*(px || 0.42)) + 'px ' + KFONT;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, c.width/2, c.height/2 + 3, c.width - 30);
+    const t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t;
+  }
+  function signPlane(text, w, h, bg, fg, px){
+    return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({map:signTex(text, w, h, bg, fg, px)}));
+  }
+  // 벽면에 붙이는 평면 (ry: 벽의 안쪽 법선 방향 회전, off: 벽에서 안쪽으로 띄우는 거리)
+  function wallItem(obj, x, y, z, ry, off){
+    obj.position.set(x + Math.sin(ry)*off, y, z + Math.cos(ry)*off);
+    obj.rotation.y = ry; scene.add(obj); return obj;
+  }
+
+  // --- 바닥: 에폭시 콘크리트 슬래브 ---
+  (function(){
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const g = c.getContext('2d');
+    g.fillStyle = '#8c9298'; g.fillRect(0, 0, 512, 512);
+    for(let i = 0; i < 2600; i++){
+      const v = 118 + Math.floor(Math.random()*44);
+      g.fillStyle = 'rgba(' + v + ',' + v + ',' + (v+4) + ',0.28)';
+      g.fillRect(Math.random()*512, Math.random()*512, 2, 2);
+    }
+    g.strokeStyle = 'rgba(38,44,50,0.55)'; g.lineWidth = 3; g.strokeRect(0, 0, 512, 512);
+    const t = new THREE.CanvasTexture(c);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(FW/5, FD/5); t.anisotropy = 4;
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(FW, FD), new THREE.MeshStandardMaterial({map:t, roughness:0.55, metalness:0.12}));
+    floor.rotation.x = -Math.PI/2; floor.position.set(FCX, 0, FCZ); floor.receiveShadow = true; scene.add(floor);
+  })();
+
+  // --- 벽: 골판 패널 + 하부 도장 + 안전 황색 띠 ---
+  function ribTex(len){
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d');
+    g.fillStyle = '#c9d0d6'; g.fillRect(0, 0, 64, 64);
+    g.fillStyle = 'rgba(70,82,94,0.2)'; g.fillRect(0, 0, 6, 64);
+    g.fillStyle = 'rgba(255,255,255,0.24)'; g.fillRect(6, 0, 4, 64);
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(len/0.5, 1); return t;
+  }
+  const WIN_MAT = (function(){
+    const c = document.createElement('canvas'); c.width = 512; c.height = 64;
+    const g = c.getContext('2d');
+    g.fillStyle = '#a9c9e6'; g.fillRect(0, 0, 512, 64);
+    g.fillStyle = '#e4f1fb'; for(let i = 0; i < 8; i++) g.fillRect(i*64 + 6, 6, 52, 22);
+    g.strokeStyle = '#56636f'; g.lineWidth = 4; g.strokeRect(0, 0, 512, 64);
+    for(let i = 1; i < 8; i++){ g.beginPath(); g.moveTo(i*64, 0); g.lineTo(i*64, 64); g.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping; t.repeat.set(1, 1);
+    return new THREE.MeshBasicMaterial({map:t, color:0xdfeaf4});
+  })();
+  const WAIN_MAT = fMat(0x4b5864, 0.85), YEL2_MAT = new THREE.MeshBasicMaterial({color:0xffc400});
+  const WALLS = [
+    {len:FW, x:FCX, z:FACTORY.z0, ry:0,            win:true },   // 북
+    {len:FW, x:FCX, z:FACTORY.z1, ry:Math.PI,      win:true },   // 남
+    {len:FD, x:FACTORY.x0, z:FCZ, ry:Math.PI/2,    win:false},   // 서
+    {len:FD, x:FACTORY.x1, z:FCZ, ry:-Math.PI/2,   win:false}    // 동
+  ];
+  WALLS.forEach(w => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w.len, FH), new THREE.MeshStandardMaterial({map:ribTex(w.len), roughness:0.9}));
+    wallItem(m, w.x, FH/2, w.z, w.ry, 0);
+    wallItem(new THREE.Mesh(new THREE.PlaneGeometry(w.len, 1.3), WAIN_MAT), w.x, 0.65, w.z, w.ry, 0.012);
+    wallItem(new THREE.Mesh(new THREE.PlaneGeometry(w.len, 0.12), YEL2_MAT), w.x, 1.36, w.z, w.ry, 0.013);
+    if(w.win){
+      const win = new THREE.Mesh(new THREE.PlaneGeometry(w.len - 6, 1.3), WIN_MAT.clone());
+      win.material.map = WIN_MAT.map.clone(); win.material.map.needsUpdate = true; win.material.map.repeat.set((w.len-6)/8, 1);
+      wallItem(win, w.x, 7.3, w.z, w.ry, 0.012);
+    }
+  });
+
+  // --- 천장 · 트러스 · 퍼린 ---
+  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(FW, FD), fMat(0x6b747d, 0.9));
+  ceil.rotation.x = Math.PI/2; ceil.position.set(FCX, FH, FCZ); scene.add(ceil);
+  const STEEL = fMat(0x46515c, 0.5, 0.5);
+  [-18,-10,-2,6,14].forEach(z => fBox(FW, 0.5, 0.24, STEEL, FCX, FH-0.35, z));
+  for(let x = -12; x <= 30; x += 6) fBox(0.14, 0.2, FD, STEEL, x, FH-0.08, FCZ);
+
+  // --- 형광등 (InstancedMesh: 25개 · 드로콜 최소화) ---
+  (function(){
+    const FX = [-10,-1,8,17,26], FZ = [-14,-6,2,10,18], FIX_Y = FH - 1.15;
+    const n = FX.length*FZ.length;
+    const housing = new THREE.InstancedMesh(new THREE.BoxGeometry(4.2, 0.12, 0.55), fMat(0xd9dee3, 0.6, 0.2), n);
+    const tubeGeo = new THREE.CylinderGeometry(0.035, 0.035, 4.0, 8); tubeGeo.rotateZ(Math.PI/2);
+    const tubes = new THREE.InstancedMesh(tubeGeo, new THREE.MeshBasicMaterial({color:0xf6fcff}), n*2);
+    const rods = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.012, 0.012, 1.1, 6), fMat(0x2a3038, 0.6, 0.4), n*2);
+    // 형광등 주변 빛 번짐(가산 합성)
+    const gc = document.createElement('canvas'); gc.width = gc.height = 128;
+    const gg = gc.getContext('2d'); const grd = gg.createRadialGradient(64,64,0,64,64,64);
+    grd.addColorStop(0, 'rgba(255,255,255,0.95)'); grd.addColorStop(0.35, 'rgba(210,232,255,0.38)'); grd.addColorStop(1, 'rgba(210,232,255,0)');
+    gg.fillStyle = grd; gg.fillRect(0, 0, 128, 128);
+    const gl = new THREE.PlaneGeometry(6.8, 2.4); gl.rotateX(Math.PI/2);
+    const glow = new THREE.InstancedMesh(gl, new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(gc), transparent:true, opacity:0.55, depthWrite:false, blending:THREE.AdditiveBlending}), n);
+    const d = new THREE.Object3D(); let i = 0, j = 0;
+    FX.forEach(x => FZ.forEach(z => {
+      d.rotation.set(0,0,0); d.scale.set(1,1,1);
+      d.position.set(x, FIX_Y, z); d.updateMatrix(); housing.setMatrixAt(i, d.matrix);
+      d.position.set(x, FIX_Y-0.08, z-0.15); d.updateMatrix(); tubes.setMatrixAt(i*2, d.matrix);
+      d.position.set(x, FIX_Y-0.08, z+0.15); d.updateMatrix(); tubes.setMatrixAt(i*2+1, d.matrix);
+      d.position.set(x-1.5, FIX_Y+0.58, z); d.updateMatrix(); rods.setMatrixAt(i*2, d.matrix);
+      d.position.set(x+1.5, FIX_Y+0.58, z); d.updateMatrix(); rods.setMatrixAt(i*2+1, d.matrix);
+      d.position.set(x, FIX_Y-0.25, z); d.updateMatrix(); glow.setMatrixAt(i, d.matrix);
+      i++;
+    }));
+    [housing, tubes, rods, glow].forEach(m => { m.frustumCulled = false; scene.add(m); });
+    glow.renderOrder = 5;
+  })();
+
+  // --- 기둥 (벽 안쪽) ---
+  (function(){
+    const colMat = fMat(0x39434d, 0.55, 0.4), footMat = new THREE.MeshBasicMaterial({color:0xffc400});
+    const add = (x, z) => { fBox(0.5, FH, 0.5, colMat, x, FH/2, z); fBox(0.54, 1.0, 0.54, footMat, x, 0.5, z); };
+    [-12,-4,4,12].forEach(z => { add(FACTORY.x0 + 0.4, z); add(FACTORY.x1 - 0.4, z); });
+    [-6,2,10,18,26].forEach(x => { add(x, FACTORY.z0 + 0.4); add(x, FACTORY.z1 - 0.4); });
+  })();
+
+  // --- 바닥 안전 표시: 설비 구역 황색 테이프 + 관찰 위치 마크 ---
+  (function(){
+    const tape = new THREE.MeshBasicMaterial({color:0xffc400});
+    const x0 = -10.5, x1 = 3.9, z0 = -12.5, z1 = 13.5, t = 0.16;
+    [[(x0+x1)/2, z0, x1-x0, t],[(x0+x1)/2, z1, x1-x0, t],[x0, (z0+z1)/2, t, z1-z0],[x1, (z0+z1)/2, t, z1-z0]].forEach(s => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(s[2], s[3]), tape);
+      m.rotation.x = -Math.PI/2; m.position.set(s[0], 0.012, s[1]); scene.add(m);
+    });
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.66, 48), new THREE.MeshBasicMaterial({color:0x2fd9ff}));
+    ring.rotation.x = -Math.PI/2; ring.position.set(FCX, 0.014, FCZ); scene.add(ring);
+    const dot = new THREE.Mesh(new THREE.CircleGeometry(0.08, 24), new THREE.MeshBasicMaterial({color:0x2fd9ff}));
+    dot.rotation.x = -Math.PI/2; dot.position.set(FCX, 0.014, FCZ); scene.add(dot);
+  })();
+
+  // --- 팔레트 랙 (북쪽 벽) ---
+  (function(){
+    const up = fMat(0x1f5fbf, 0.5, 0.3), beam = fMat(0xff7a00, 0.5, 0.3), crate = [fMat(0xb98a54, 0.9), fMat(0xa07848, 0.9), fMat(0x3b6ea5, 0.8)];
+    function rack(x, z){
+      const g = new THREE.Group(); g.position.set(x, 0, z); scene.add(g);
+      const W = 4.6, D = 1.0;
+      [[-W/2,-D/2],[W/2,-D/2],[-W/2,D/2],[W/2,D/2]].forEach(p => fBox(0.08, 4.3, 0.08, up, p[0], 2.15, p[1], g));
+      [0.4, 1.8, 3.2].forEach((y, li) => {
+        fBox(W, 0.12, 0.08, beam, 0, y, -D/2, g); fBox(W, 0.12, 0.08, beam, 0, y, D/2, g);
+        fBox(W-0.1, 0.03, D-0.1, fMat(0x7d858d, 0.7, 0.3), 0, y+0.07, 0, g);
+        for(let k = 0; k < 3; k++){
+          const h = 0.7 + ((li*3 + k) % 3)*0.18;
+          fBox(1.3, h, 0.85, crate[(li + k) % 3], -1.5 + k*1.5, y + 0.09 + h/2, 0, g);
+        }
+      });
+    }
+    [8, 14, 20, 26].forEach(x => rack(x, FACTORY.z0 + 1.2));
+  })();
+
+  // --- 팔레트 적재물 (동쪽) ---
+  (function(){
+    const wood = fMat(0xa57c4a, 0.9), crate = [fMat(0xb98a54, 0.9), fMat(0x3b6ea5, 0.8), fMat(0xc7c9cc, 0.7)];
+    [[22,-8],[22,-4.5],[25,2],[25,5.5],[22,12],[25,15]].forEach((p, i) => {
+      fBox(1.2, 0.14, 1.0, wood, p[0], 0.07, p[1]);
+      const n = 2 + (i % 2);
+      for(let k = 0; k < n; k++) fBox(1.1, 0.5, 0.9, crate[(i + k) % 3], p[0], 0.14 + 0.25 + k*0.5, p[1]);
+    });
+  })();
+
+  // --- 벽면 설비 · 표지 ---
+  (function(){
+    // 북쪽 벽 현수막
+    wallItem(signPlane('안전이 최우선 · SAFETY FIRST', 12, 1.4, '#0d1620', '#ffc400', 0.42), FCX + 4, 6.0, FACTORY.z0, 0, 0.03);
+    // 서쪽 벽: 분전반(MDB) + 감전 주의
+    const mdb = new THREE.Group(); mdb.position.set(FACTORY.x0 + 0.2, 0, -4); scene.add(mdb);
+    fBox(0.34, 2.3, 1.7, fMat(0x8f99a3, 0.5, 0.5), 0, 1.7, 0, mdb);
+    const face = signPlane('MDB 분전반', 1.5, 0.5, '#d8d4c8', '#1b232c', 0.4); face.rotation.y = Math.PI/2; face.position.set(0.18, 2.4, 0); mdb.add(face);
+    const warn = signPlane('⚡ 감전 주의', 1.5, 0.5, '#ffc400', '#111111', 0.4); warn.rotation.y = Math.PI/2; warn.position.set(0.18, 1.2, 0); mdb.add(warn);
+    fBox(0.12, FH-2.85, 0.12, fMat(0x2a3038, 0.5, 0.5), 0.0, 2.85 + (FH-2.85)/2, 0, mdb);   // 상부 전선관
+    // 남쪽 벽: 셔터 출입구
+    const dc = document.createElement('canvas'); dc.width = 64; dc.height = 256;
+    const dg = dc.getContext('2d'); dg.fillStyle = '#8a95a0'; dg.fillRect(0, 0, 64, 256);
+    dg.fillStyle = 'rgba(30,38,46,0.35)'; for(let y = 0; y < 256; y += 16) dg.fillRect(0, y, 64, 3);
+    wallItem(new THREE.Mesh(new THREE.PlaneGeometry(6, 4.6), new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(dc), roughness:0.7, metalness:0.3})), FCX - 8, 2.3, FACTORY.z1, Math.PI, 0.02);
+    wallItem(signPlane('물류 출입구', 3, 0.5, '#0d1620', '#dfeaf2', 0.42), FCX - 8, 5.2, FACTORY.z1, Math.PI, 0.03);
+    // 동쪽 벽: 비상구 + 소화기
+    wallItem(new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.5), new THREE.MeshStandardMaterial({color:0x3d7a52, roughness:0.7})), FACTORY.x1, 1.25, FCZ, -Math.PI/2, 0.02);
+    wallItem(signPlane('비상구 EXIT', 1.8, 0.4, '#0b6b3a', '#ffffff', 0.44), FACTORY.x1, 3.0, FCZ, -Math.PI/2, 0.03);
+    [[FACTORY.x1 - 0.9, FCZ + 5],[FACTORY.x0 + 0.9, 3],[FCX + 8, FACTORY.z0 + 0.9]].forEach(p => {
+      const ex = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.5, 14), fMat(0xcc1d1d, 0.5, 0.2)); ex.position.set(p[0], 0.45, p[1]); scene.add(ex);
+      fBox(0.06, 0.12, 0.06, fMat(0x222222), p[0], 0.75, p[1]);
+    });
+  })();
+
+  // --- 설비 받침대(원본 모델) ---
+  const platform = new THREE.Mesh(new THREE.BoxGeometry(7, 0.2, 22), new THREE.MeshStandardMaterial({color:0x1c2733, roughness:0.7, metalness:0.3}));
+  platform.position.set(0, 0.1, 0.2); platform.receiveShadow = true; scene.add(platform);
+
+  /* =========================================================
+     4. MATERIALS (shared)
+  ========================================================= */
+  const MAT_ALU = new THREE.MeshStandardMaterial({color:0x8b929c, metalness:0.85, roughness:0.22});
+  const MAT_ALU_DARK = new THREE.MeshStandardMaterial({color:0x565d66, metalness:0.8, roughness:0.28});
+  const MAT_BELT = new THREE.MeshStandardMaterial({color:0x14181d, metalness:0.15, roughness:0.85});
+  const MAT_BAR = new THREE.MeshStandardMaterial({color:0x2b2f36, metalness:0.4, roughness:0.55});
+  const MAT_PVC_YELLOW = new THREE.MeshStandardMaterial({color:0xffcc33, metalness:0.2, roughness:0.5});
+
+  /* =========================================================
+     5. CONVEYOR STRUCTURE
+  ========================================================= */
+  const conveyorGroup = new THREE.Group();
+  scene.add(conveyorGroup);
+
+  const beltLength = CONVEYOR.zEnd - CONVEYOR.zStart;
+  const beltCenterZ = (CONVEYOR.zStart + CONVEYOR.zEnd) / 2;
+
+  // side rails (aluminum extrusion look)
+  function makeRail(xPos){
+    const railGroup = new THREE.Group();
+    const zMin = beltCenterZ - (beltLength + 0.6)/2, zMax = beltCenterZ + (beltLength + 0.6)/2;
+    // opening in the rail for the reject pusher (rod, head and box pass through here)
+    [[zMin, PUSHER_Z - 0.65], [PUSHER_Z + 0.65, zMax]].forEach(seg => {
+      const len = seg[1] - seg[0], cz = (seg[0] + seg[1]) / 2;
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.32, len), MAT_ALU);
+      rail.position.set(xPos, CONVEYOR.beltTopY + 0.16, cz);
+      rail.castShadow = true; rail.receiveShadow = true;
+      railGroup.add(rail);
+      const groove = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, len), MAT_ALU_DARK);
+      groove.position.set(xPos, CONVEYOR.beltTopY + 0.33, cz);
+      railGroup.add(groove);
+    });
+    return railGroup;
+  }
+  conveyorGroup.add(makeRail(-CONVEYOR.halfWidthX - 0.15));
+  conveyorGroup.add(makeRail(CONVEYOR.halfWidthX + 0.15));
+
+  // belt base (dark rubber surface)
+  const beltGeo = new THREE.BoxGeometry(CONVEYOR.halfWidthX*2, 0.12, beltLength);
+  const beltMesh = new THREE.Mesh(beltGeo, MAT_BELT);
+  beltMesh.position.set(0, CONVEYOR.beltTopY - 0.06, beltCenterZ);
+  beltMesh.receiveShadow = true;
+  beltMesh.castShadow = true;
+  conveyorGroup.add(beltMesh);
+
+  // end rollers (cylinders) at both ends
+  function makeRoller(zPos){
+    const rollerGeo = new THREE.CylinderGeometry(0.24, 0.24, CONVEYOR.halfWidthX*2 + 0.4, 20);
+    const roller = new THREE.Mesh(rollerGeo, MAT_ALU_DARK);
+    roller.rotation.z = Math.PI/2;
+    roller.position.set(0, CONVEYOR.beltTopY, zPos);
+    roller.castShadow = true;
+    return roller;
+  }
+  conveyorGroup.add(makeRoller(CONVEYOR.zStart - 0.2));
+  conveyorGroup.add(makeRoller(CONVEYOR.zEnd + 0.2));
+
+  // moving belt bars (tread pattern) -> creates the "rolling" illusion
+  const beltBars = [];
+  const BAR_SPACING = 0.55;
+  const barGeo = new THREE.BoxGeometry(CONVEYOR.halfWidthX*2 - 0.08, 0.045, 0.09);
+  for(let z = CONVEYOR.zStart; z <= CONVEYOR.zEnd; z += BAR_SPACING){
+    const bar = new THREE.Mesh(barGeo, MAT_BAR);
+    bar.position.set(0, CONVEYOR.beltTopY + 0.045, z);
+    bar.receiveShadow = true;
+    bar.castShadow = false;
+    conveyorGroup.add(bar);
+    beltBars.push(bar);
+  }
+
+  // legs
+  function makeLeg(x,z){
+    const legGroup = new THREE.Group();
+    const legGeo = new THREE.BoxGeometry(0.22, CONVEYOR.beltTopY - 0.1, 0.22);
+    const leg = new THREE.Mesh(legGeo, MAT_ALU);
+    leg.position.set(x, (CONVEYOR.beltTopY - 0.1)/2, z);
+    leg.castShadow = true; leg.receiveShadow = true;
+    legGroup.add(leg);
+    const footGeo = new THREE.BoxGeometry(0.4, 0.06, 0.4);
+    const foot = new THREE.Mesh(footGeo, MAT_ALU_DARK);
+    foot.position.set(x, 0.03, z);
+    foot.castShadow = true; foot.receiveShadow = true;
+    legGroup.add(foot);
+    return legGroup;
+  }
+  const legXs = [-CONVEYOR.halfWidthX - 0.1, CONVEYOR.halfWidthX + 0.1];
+  const legZs = [CONVEYOR.zStart + 0.5, -3, 3, CONVEYOR.zEnd - 0.5];
+  legXs.forEach(x => legZs.forEach(z => conveyorGroup.add(makeLeg(x,z))));
+
+  // cross braces
+  legZs.forEach(z=>{
+    const braceGeo = new THREE.BoxGeometry(CONVEYOR.halfWidthX*2 + 0.4, 0.08, 0.08);
+    const brace = new THREE.Mesh(braceGeo, MAT_ALU_DARK);
+    brace.position.set(0, (CONVEYOR.beltTopY - 0.1)*0.5, z);
+    brace.castShadow = true;
+    conveyorGroup.add(brace);
+  });
+
+  /* =========================================================
+     6. PHOTOSENSOR
+  ========================================================= */
+  const sensorGroup = new THREE.Group();
+  // beam line: just ahead of the box front at its stop position, so the sensor posts never sit in the reject path
+  const BEAM_Z = SENSOR_Z + 0.59;
+  const sensorHeight = CONVEYOR.beltTopY + 0.55;
+
+  function makeSensorPost(xPos){
+    const g = new THREE.Group();
+    const poleGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.6, 12);
+    const pole = new THREE.Mesh(poleGeo, MAT_ALU_DARK);
+    pole.position.set(xPos, sensorHeight - 0.3 + 0.32, BEAM_Z);
+    pole.castShadow = true;
+    g.add(pole);
+    const headGeo = new THREE.BoxGeometry(0.16, 0.16, 0.16);
+    const headMat = new THREE.MeshStandardMaterial({color:0x2c2f34, metalness:0.6, roughness:0.35});
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.position.set(xPos, sensorHeight, BEAM_Z);
+    head.castShadow = true;
+    g.add(head);
+    return g;
+  }
+  const sensorEmitterX = -CONVEYOR.halfWidthX - 0.35;
+  const sensorReceiverX = CONVEYOR.halfWidthX + 0.35;
+  sensorGroup.add(makeSensorPost(sensorEmitterX));
+  sensorGroup.add(makeSensorPost(sensorReceiverX));
+
+  // sensor LED indicator (small emissive sphere on emitter head)
+  const sensorLedMat = new THREE.MeshStandardMaterial({color:0x550000, emissive:0xff0000, emissiveIntensity:0.15});
+  const sensorLedGeo = new THREE.SphereGeometry(0.045, 12, 12);
+  const sensorLed = new THREE.Mesh(sensorLedGeo, sensorLedMat);
+  sensorLed.position.set(sensorEmitterX + 0.1, sensorHeight, BEAM_Z);
+  sensorGroup.add(sensorLed);
+
+  // laser beam mesh (thin transparent red box spanning the belt width)
+  const laserLength = sensorReceiverX - sensorEmitterX;
+  const laserGeo = new THREE.BoxGeometry(laserLength, 0.025, 0.025);
+  const laserMat = new THREE.MeshBasicMaterial({color:0xff2222, transparent:true, opacity:0.4});
+  const laserBeam = new THREE.Mesh(laserGeo, laserMat);
+  laserBeam.position.set(0, sensorHeight, BEAM_Z);
+  sensorGroup.add(laserBeam);
+
+  scene.add(sensorGroup);
+
+  /* =========================================================
+     7. PUSHER CYLINDER (defect ejector)
+  ========================================================= */
+  const pusherGroup = new THREE.Group();
+  const pusherY = CONVEYOR.beltTopY + 0.35;
+  const pusherRestX = -CONVEYOR.halfWidthX - 1.1;
+  const pusherExtendX = 0.05;
+
+  const cylBodyGeo = new THREE.CylinderGeometry(0.16, 0.16, 1.0, 20);
+  const cylBodyMat = new THREE.MeshStandardMaterial({color:0xb0b6bd, metalness:0.75, roughness:0.25});
+  const cylBody = new THREE.Mesh(cylBodyGeo, cylBodyMat);
+  cylBody.rotation.z = Math.PI/2;
+  cylBody.position.set(pusherRestX - 0.75, pusherY, PUSHER_Z);
+  cylBody.castShadow = true;
+  pusherGroup.add(cylBody);
+
+  // mounting bracket
+  const bracketGeo = new THREE.BoxGeometry(0.3, 0.5, 0.3);
+  const bracket = new THREE.Mesh(bracketGeo, MAT_ALU_DARK);
+  bracket.position.set(pusherRestX - 1.35, pusherY - 0.1, PUSHER_Z);
+  bracket.castShadow = true;
+  pusherGroup.add(bracket);
+
+  const rodGeo = new THREE.CylinderGeometry(0.055, 0.055, 1.3, 16);
+  const rodMat = new THREE.MeshStandardMaterial({color:0xe8ecef, metalness:0.9, roughness:0.12});
+  const pusherRod = new THREE.Mesh(rodGeo, rodMat);
+  pusherRod.rotation.z = Math.PI/2;
+  pusherRod.position.set(pusherRestX + 0.1, pusherY, PUSHER_Z);
+  pusherRod.castShadow = true;
+  pusherGroup.add(pusherRod);
+
+  const headPlateGeo = new THREE.BoxGeometry(0.1, 0.5, 0.7);
+  const headPlateMat = new THREE.MeshStandardMaterial({color:0xffb300, metalness:0.5, roughness:0.4});
+  const pusherHead = new THREE.Mesh(headPlateGeo, headPlateMat);
+  pusherHead.position.set(pusherRestX + 0.75, pusherY, PUSHER_Z);
+  pusherHead.castShadow = true;
+  pusherGroup.add(pusherHead);
+
+  scene.add(pusherGroup);
+
+  // gravity chute: box is pushed off the belt edge and slides down into the bin
+  const CH_X1 = CONVEYOR.halfWidthX + 0.18, CH_X2 = CONVEYOR.halfWidthX + 1.55;
+  const CH_Y1 = CONVEYOR.beltTopY, CH_Y2 = 0.78;
+  const CH_SLOPE = (CH_Y1 - CH_Y2) / (CH_X2 - CH_X1), CH_ANG = Math.atan(CH_SLOPE);
+  const chuteLen = Math.sqrt((CH_X2-CH_X1)*(CH_X2-CH_X1) + (CH_Y1-CH_Y2)*(CH_Y1-CH_Y2));
+  const chute = new THREE.Group();
+  chute.position.set((CH_X1+CH_X2)/2, (CH_Y1+CH_Y2)/2 - 0.025, PUSHER_Z);
+  chute.rotation.z = -CH_ANG;
+  const chutePlate = new THREE.Mesh(new THREE.BoxGeometry(chuteLen, 0.05, 1.25), MAT_ALU);
+  chutePlate.castShadow = true; chutePlate.receiveShadow = true;
+  chute.add(chutePlate);
+  [-0.64, 0.64].forEach(dz => {
+    const guide = new THREE.Mesh(new THREE.BoxGeometry(chuteLen, 0.16, 0.04), MAT_ALU_DARK);
+    guide.position.set(0, 0.1, dz); guide.castShadow = true; chute.add(guide);
+  });
+  scene.add(chute);
+  [CH_X1 + 0.5, CH_X2 - 0.2].forEach(x => [-0.6, 0.6].forEach(dz => {
+    const top = CH_Y1 - (x - CH_X1) * CH_SLOPE - 0.05;
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, top, 0.08), MAT_ALU_DARK);
+    leg.position.set(x, top/2, PUSHER_Z + dz); leg.castShadow = true; scene.add(leg);
+  }));
+
+  // reject bin: stands on the floor, open top, wide enough for two boxes side by side
+  const BIN_X = CONVEYOR.halfWidthX + 2.4;
+  const BIN_REST_Y = 0.1 + 0.4;          // floor top + half box height
+  const binBoxes = [];                   // rejected boxes currently lying in the bin
+  const binGroup = new THREE.Group();
+  const binMat = new THREE.MeshStandardMaterial({color:0x8b3a3a, metalness:0.4, roughness:0.6});
+  const binFloor = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.1, 2.3), binMat);
+  binFloor.position.set(BIN_X, 0.05, PUSHER_Z);
+  binFloor.receiveShadow = true; binFloor.castShadow = true;
+  binGroup.add(binFloor);
+  [[-0.87,0],[0.87,0],[0,-1.12],[0,1.12]].forEach(([dx,dz]) => {
+    const wallGeo = (dz===0) ? new THREE.BoxGeometry(0.06,0.75,2.3) : new THREE.BoxGeometry(1.8,0.75,0.06);
+    const wall = new THREE.Mesh(wallGeo, binMat);
+    wall.position.set(BIN_X + dx, 0.375, PUSHER_Z + dz);
+    wall.castShadow = true; wall.receiveShadow = true;
+    binGroup.add(wall);
+  });
+  scene.add(binGroup);
+
+  /* =========================================================
+     8. TOWER LAMP (3-color signal light)
+  ========================================================= */
+  const towerGroup = new THREE.Group();
+  const towerX = -CONVEYOR.halfWidthX - 1.3;
+  const towerZ = CONVEYOR.zStart + 0.4;
+  const TOWER_TOP = CONVEYOR.beltTopY + 2.4;   // top of pole (lamp modules stay at the same height as before)
+
+  // pole now stands on the floor (previously the base floated at belt height)
+  const poleH = TOWER_TOP - 0.12;
+  const pole2 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, poleH, 12), MAT_ALU_DARK);
+  pole2.position.set(towerX, 0.12 + poleH/2, towerZ);
+  pole2.castShadow = true;
+  towerGroup.add(pole2);
+
+  const base2 = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.3, 0.12, 20), MAT_ALU_DARK);
+  base2.position.set(towerX, 0.06, towerZ);
+  base2.castShadow = true; base2.receiveShadow = true;
+  towerGroup.add(base2);
+
+  // soft round glow texture (additive halo so the lit lamp is visible from far away)
+  const glowTex = (function(){
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d'), grd = g.createRadialGradient(64,64,0,64,64,64);
+    grd.addColorStop(0,'rgba(255,255,255,1)'); grd.addColorStop(0.3,'rgba(255,255,255,0.45)'); grd.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle = grd; g.fillRect(0,0,128,128);
+    return new THREE.CanvasTexture(c);
+  })();
+
+  function makeLampSegment(colorHex, yPos){
+    const geo = new THREE.CylinderGeometry(0.19, 0.19, 0.34, 24);
+    const mat = new THREE.MeshStandardMaterial({
+      color: colorHex, emissive: colorHex, emissiveIntensity: 0.06,
+      metalness:0.1, roughness:0.35
+    });
+    const seg = new THREE.Mesh(geo, mat);
+    seg.position.set(towerX, yPos, towerZ);
+    seg.castShadow = true;
+    towerGroup.add(seg);
+    const glow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTex, color: colorHex, transparent:true, opacity:0,
+      blending: THREE.AdditiveBlending, depthWrite:false
+    }));
+    glow.scale.set(1.5, 1.5, 1); glow.position.set(towerX, yPos, towerZ); glow.visible = false; glow.renderOrder = 12;
+    towerGroup.add(glow);
+    seg.userData.glow = glow;
+    return seg;
+  }
+  const lampRed = makeLampSegment(0xff2b2b, CONVEYOR.beltTopY + 2.55);
+  const lampYellow = makeLampSegment(0xffc400, CONVEYOR.beltTopY + 2.18);
+  const lampGreen = makeLampSegment(0x2bff6a, CONVEYOR.beltTopY + 1.81);
+
+  // dark separator rings between the modules (like a real signal tower)
+  [1.625, 1.995, 2.365].forEach(dy => {
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.205, 0.205, 0.04, 24), MAT_ALU_DARK);
+    ring.position.set(towerX, CONVEYOR.beltTopY + dy, towerZ);
+    towerGroup.add(ring);
+  });
+
+  const cap = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.16, 24), MAT_ALU_DARK);
+  cap.position.set(towerX, CONVEYOR.beltTopY + 2.8, towerZ);
+  towerGroup.add(cap);
+
+  // the lit lamp also casts a little coloured light on the surroundings
+  const towerLight = new THREE.PointLight(0xff2b2b, 0, 5, 2);
+  towerLight.position.set(towerX, CONVEYOR.beltTopY + 2.2, towerZ);
+  towerGroup.add(towerLight);
+
+  scene.add(towerGroup);
+
+  /* Tower lamp state is ALWAYS derived from STATE (single source of truth):
+       off       MCCB OFF (power cut)
+       redBlink  E-STOP or guard door open (alarm)
+       yellow    sensor detected / vision inspecting (blinking)
+       green     running
+       red       normal stop
+     Blinking is driven by the render loop, NOT by GSAP, so E-STOP / door open
+     (which pause the GSAP global timeline) can never freeze a blink. */
+  const elLedG = document.getElementById('led-green'), elLedY = document.getElementById('led-yellow'), elLedR = document.getElementById('led-red');
+  let towerMode = 'red', hudG = false, hudY = false, hudR = false;
+  function updateTowerLamp(t){
+    let active = null, lv = 1;
+    if(towerMode === 'redBlink'){ active = 'red'; lv = (Math.floor(t/450) % 2 === 0) ? 1 : 0; }
+    else if(towerMode === 'yellow'){ active = 'yellow'; lv = 0.25 + 0.75*(0.5 + 0.5*Math.sin(t*0.0105)); }
+    else if(towerMode === 'green' || towerMode === 'red'){ active = towerMode; }
+    let lightCol = 0x000000;
+    [['red',lampRed,0xff2b2b],['yellow',lampYellow,0xffc400],['green',lampGreen,0x2bff6a]].forEach(([k,m,col]) => {
+      const v = (k === active) ? lv : 0;
+      m.material.emissiveIntensity = 0.06 + 1.4*v;
+      const gl = m.userData.glow;
+      gl.material.opacity = 0.8*v; gl.visible = v > 0.02;
+      if(k === active) lightCol = col;
+    });
+    towerLight.color.setHex(lightCol || 0x000000);
+    towerLight.intensity = active ? 1.6*lv : 0;
+    const g = active === 'green', y = active === 'yellow' && lv > 0.5, r = active === 'red' && lv > 0.5;
+    if(g !== hudG){ hudG = g; elLedG.classList.toggle('on-green', g); }
+    if(y !== hudY){ hudY = y; elLedY.classList.toggle('on-yellow', y); }
+    if(r !== hudR){ hudR = r; elLedR.classList.toggle('on-red', r); }
+  }
+  function setTowerLamp(){   // argument ignored on purpose: the mode comes from STATE
+    if(!STATE.mccb) towerMode = 'off';
+    else if(STATE.estop || STATE.guardOpen) towerMode = 'redBlink';
+    else if(STATE.isProcessing) towerMode = 'yellow';
+    else if(STATE.isRunning) towerMode = 'green';
+    else towerMode = 'red';
+    updateTowerLamp(performance.now());
+  }
+  setTowerLamp(); // idle default state
+
+  /* =========================================================
+     8B. PLC CONTROL CABINET / FIELD DEVICES / WIRING / SAFETY
+  ========================================================= */
+  const clickables = [];
+  const leds = {};
+  const wires = {};
+
+  function canvasTex(text, w, h, bg, fg){
+    const c = document.createElement('canvas');
+    c.width = Math.round(w*256); c.height = Math.round(h*256);
+    const g = c.getContext('2d');
+    g.fillStyle = bg; g.fillRect(0,0,c.width,c.height);
+    g.strokeStyle = fg; g.lineWidth = 2; g.strokeRect(1,1,c.width-2,c.height-2);
+    g.fillStyle = fg; g.font = 'bold ' + Math.round(c.height*0.5) + 'px Consolas,monospace';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, c.width/2, c.height/2 + 2, c.width - 10);
+    return new THREE.CanvasTexture(c);
+  }
+  function tagPlane(text, w, h, bg, fg){
+    return new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+      new THREE.MeshBasicMaterial({map: canvasTex(text, w, h, bg || '#0d1620', fg || '#dfeaf2')}));
+  }
+  function tagSprite(text, w, x, y, z, bg, fg){
+    const h = 0.26;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({map: canvasTex(text, w, h, bg || 'rgba(13,22,32,0.92)', fg || '#2fd9ff'), depthTest:true, transparent:true}));
+    sp.scale.set(w, h, 1); sp.position.set(x,y,z); sp.renderOrder = 10;
+    scene.add(sp);
+  }
+
+  /* ---- control cabinet (local +z faces world +x, toward the conveyor) ---- */
+  const CAB_S = 1.5;
+  const cab = new THREE.Group();
+  cab.position.set(-8, 0, -3);
+  cab.scale.set(CAB_S, CAB_S, CAB_S);
+  cab.rotation.y = Math.PI/2;
+  scene.add(cab);
+  const W = (lx,ly,lz) => new THREE.Vector3(-8 + lz*CAB_S, ly*CAB_S, -3 - lx*CAB_S); // cabinet-local -> world
+
+  const MAT_CAB = new THREE.MeshStandardMaterial({color:0xaab3bd, metalness:0.6, roughness:0.4});
+  const MAT_PLATE = new THREE.MeshStandardMaterial({color:0xd8d4c8, metalness:0.2, roughness:0.7});
+  const MAT_DARK = new THREE.MeshStandardMaterial({color:0x22272e, metalness:0.3, roughness:0.5});
+  const MAT_GRAY = new THREE.MeshStandardMaterial({color:0x6d757f, metalness:0.3, roughness:0.5});
+  const MAT_DUCT = new THREE.MeshStandardMaterial({color:0x9aa3ad, roughness:0.8});
+  function cbox(w,h,d,mat,x,y,z,parent){
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+    m.position.set(x,y,z); m.castShadow = true; m.receiveShadow = true;
+    (parent || cab).add(m); return m;
+  }
+  const CW = 4.4, CH = 3.6, CD = 0.6, CY = 2.0;
+  cbox(CW,0.2,CD,MAT_ALU_DARK,0,0.1,CD/2-0.02);                 // plinth
+  cbox(CW,CH,0.04,MAT_CAB,0,CY,-0.02);                          // back
+  cbox(CW-0.2,CH-0.2,0.03,MAT_PLATE,0,CY,0.02);                 // mounting plate
+  cbox(0.1,CH,CD,MAT_CAB,-CW/2,CY,CD/2-0.02);                   // sides / top / bottom of enclosure
+  cbox(0.1,CH,CD,MAT_CAB,CW/2,CY,CD/2-0.02);
+  cbox(CW,0.1,CD,MAT_CAB,0,CY+CH/2,CD/2-0.02);
+  cbox(CW,0.1,CD,MAT_CAB,0,CY-CH/2,CD/2-0.02);
+  const sign = tagPlane('PLC I/O SIMULATION · TRAINING MODEL', 3.4, 0.26, '#0d1620', '#2fd9ff');
+  sign.position.set(0, 4.0, 0.3); cab.add(sign);
+  cbox(3.4,0.26,0.03,MAT_DARK,0,4.0,0.28);
+
+  [3.15, 2.05, 1.0].forEach(y => cbox(3.9,0.07,0.03,MAT_ALU,0,y,0.05)); // DIN rails
+  [2.65, 1.45].forEach(y => cbox(4.0,0.14,0.08,MAT_DUCT,0,y,0.07));     // wiring ducts
+
+  function part(name,w,h,d,mat,x,y,labelDy){
+    const b = cbox(w,h,d,mat,x,y,0.04 + d/2);
+    const t = tagPlane(name, w - 0.06, 0.16);
+    t.position.set(x, y + labelDy, 0.04 + d + 0.004); cab.add(t);
+    return b;
+  }
+  function ledMat(color){ return new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:0.05}); }
+  function ioRow(key,ledX,y,labelCx,labelW,text,color){
+    const m = ledMat(color);
+    const sp = new THREE.Mesh(new THREE.SphereGeometry(0.055,12,12), m);
+    sp.position.set(ledX, y, 0.42); cab.add(sp);
+    const t = tagPlane(text, labelW, 0.15, '#0d1620', '#cfe6f2');
+    t.position.set(labelCx, y, 0.404); cab.add(t);
+    leds[key] = m;
+  }
+
+  part('MCCB',0.6,0.7,0.3,MAT_DARK,-1.6,3.15,-0.22);
+  const mccbHandle = cbox(0.14,0.22,0.12,new THREE.MeshStandardMaterial({color:0xff7a00}),-1.6,3.38,0.04+0.3+0.05);
+  mccbHandle.userData.action = 'mccb'; clickables.push(mccbHandle);
+  function setMccbVisual(){ mccbHandle.position.y = STATE.mccb ? 3.38 : 3.22; mccbHandle.material.color.set(STATE.mccb ? 0xff7a00 : 0x555b63); }
+  part('24V DC SMPS',1.3,0.7,0.35,MAT_GRAY,-0.45,3.15,-0.22);
+  const smpsOk = ledMat(0x00e676); smpsOk.emissiveIntensity = 1.5;
+  const smpsLed = new THREE.Mesh(new THREE.SphereGeometry(0.04,12,12), smpsOk);
+  smpsLed.position.set(-0.85, 3.3, 0.42); cab.add(smpsLed);
+
+  part('PLC CPU',0.8,0.9,0.36,MAT_DARK,-1.6,2.05,0.3);
+  ioRow('run',-1.88,2.0,-1.52,0.46,'RUN',0x00e676);
+  part('DIGITAL INPUT',1.5,0.9,0.36,MAT_DARK,-0.35,2.05,0.35);
+  ioRow('x0',-0.95,2.25,-0.25,1.05,'X0 START',0x00e676);
+  ioRow('x1',-0.95,2.105,-0.25,1.05,'X1 PHOTO SENSOR',0xffb300);
+  ioRow('x2',-0.95,1.96,-0.25,1.05,'X2 EMERGENCY STOP',0xff3b3b);
+  ioRow('x3',-0.95,1.815,-0.25,1.05,'X3 VISION NG',0x7fd8ff);
+  ioRow('x4',-0.95,1.67,-0.25,1.05,'X4 GUARD CLOSED',0x00e676);
+  part('DIGITAL OUTPUT',1.5,0.9,0.36,MAT_DARK,1.25,2.05,0.32);
+  ioRow('y0',0.65,2.15,1.35,1.05,'Y0 MOTOR',0x00e676);
+  ioRow('y1',0.65,1.93,1.35,1.05,'Y1 SOLENOID',0xffb300);
+  ioRow('y2',0.65,1.71,1.35,1.05,'Y2 TOWER LAMP',0x2fd9ff);
+
+  part('K1 RELAY',0.6,0.6,0.3,new THREE.MeshStandardMaterial({color:0x2a4d8f,roughness:0.5}),-1.6,1.0,-0.14);
+  for(let i=0;i<9;i++){
+    cbox(0.17,0.5,0.14,new THREE.MeshStandardMaterial({color: i%4===3 ? 0x2a9d4a : 0x8a9099, roughness:0.6}),-0.6+i*0.2,1.0,0.11);
+  }
+  const tl = tagPlane('TERMINAL', 1.0, 0.16); tl.position.set(0.2,0.58,0.2); cab.add(tl);
+  cbox(3.6,0.05,0.06,new THREE.MeshStandardMaterial({color:0x2a9d4a}),0,0.42,0.1);
+  const pe = tagPlane('PE GROUND',0.9,0.15); pe.position.set(-1.3,0.58,0.2); cab.add(pe);
+
+  /* ---- wiring (signal flows animate when active) ---- */
+  // Wires are built from straight cylinders + ball joints (crisp 90-degree corners, no tube twisting).
+  function makeWire(id, color, pts, always, rad){
+    rad = rad || 0.03;
+    const P = [pts[0]];
+    for(let i=1;i<pts.length;i++) if(pts[i].distanceTo(P[P.length-1]) > 1e-3) P.push(pts[i]);   // drop zero-length pieces
+    const path = new THREE.CurvePath();
+    for(let i=0;i<P.length-1;i++) path.add(new THREE.LineCurve3(P[i], P[i+1]));
+    const mat = new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:0.08, roughness:0.5});
+    const grp = new THREE.Group(), UP = new THREE.Vector3(0,1,0);
+    for(let i=0;i<P.length-1;i++){
+      const a = P[i], b = P[i+1];
+      const seg = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, a.distanceTo(b), 8, 1), mat);
+      seg.position.copy(a).add(b).multiplyScalar(0.5);
+      seg.quaternion.setFromUnitVectors(UP, b.clone().sub(a).normalize());
+      grp.add(seg);
+    }
+    P.forEach(p => { const j = new THREE.Mesh(new THREE.SphereGeometry(rad, 8, 6), mat); j.position.copy(p); grp.add(j); });
+    scene.add(grp);
+    const pulse = new THREE.Mesh(new THREE.SphereGeometry(rad*2.6,10,10), new THREE.MeshBasicMaterial({color:0xffffff}));
+    pulse.visible = false; scene.add(pulse);
+    wires[id] = {path:path, mat:mat, pulse:pulse, t:Math.random(), on:false, always:!!always};
+  }
+
+  /* Floor cabling: every signal wire drops straight down the cabinet front (DROP_X), then lies flat on one
+     cable tray (FLOOR_Y) in its own parallel lane (LANE_X0 + lane*LANE_DX), runs along Z and branches off at
+     90 degrees toward its device. Lane order + terminal slots were chosen so that NO two wires cross. */
+  const FLOOR_Y = 0.14, FLOOR_R = 0.04, LANE_X0 = -6.8, LANE_DX = 0.17, DROP_X = -7.0;
+  function trunk(start, lane, dest, tail){
+    tail = tail || [];
+    const V = (x,y,z) => new THREE.Vector3(x,y,z);
+    const t0 = tail.length ? tail[0] : dest, xl = LANE_X0 + lane*LANE_DX;
+    return [start, V(DROP_X,start.y,start.z), V(DROP_X,FLOOR_Y,start.z), V(xl,FLOOR_Y,start.z),
+            V(xl,FLOOR_Y,t0.z), V(t0.x,FLOOR_Y,t0.z)].concat(tail, [dest]);
+  }
+
+  /* ---- field devices ---- */
+  // motor (drives the conveyor end roller)
+  const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,1.0,20), new THREE.MeshStandardMaterial({color:0x1f5fbf, metalness:0.5, roughness:0.4}));
+  motor.rotation.z = Math.PI/2; motor.position.set(-2.4, CONVEYOR.beltTopY, CONVEYOR.zEnd + 0.2);
+  motor.castShadow = true; scene.add(motor);
+  cbox(0.9,0.7,0.7,MAT_ALU_DARK,-2.4,0.35,CONVEYOR.zEnd + 0.2,scene);
+  const shaftG = new THREE.Group(); shaftG.position.set(-1.75, CONVEYOR.beltTopY, CONVEYOR.zEnd + 0.2); scene.add(shaftG);
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.3,12), MAT_ALU);
+  shaft.rotation.z = Math.PI/2; shaftG.add(shaft);
+  cbox(0.04,0.36,0.08,new THREE.MeshStandardMaterial({color:0xffcc00}),0,0,0,shaftG); // spinning coupling
+
+  // solenoid valve + pneumatic line to the pusher cylinder
+  cbox(0.1,0.6,0.1,MAT_ALU_DARK,-3.8,0.3,0.6,scene);
+  cbox(0.4,0.4,0.3,new THREE.MeshStandardMaterial({color:0x1d6fd6,metalness:0.4,roughness:0.4}),-3.8,0.8,0.6,scene);
+  const valveLedMat = ledMat(0xffb300);
+  const valveLed = new THREE.Mesh(new THREE.SphereGeometry(0.05,12,12), valveLedMat);
+  valveLed.position.set(-3.6, 0.8, 0.6); scene.add(valveLed);
+  const airPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-3.8,1.0,0.6), new THREE.Vector3(-3.7,1.4,0.0), new THREE.Vector3(-3.4,1.52,-0.6)]);
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(airPath, 20, 0.03, 6, false), new THREE.MeshStandardMaterial({color:0x4da6ff, roughness:0.4})));
+
+  // operator station: START / STOP / E-STOP (clickable in 3D)
+  const station = new THREE.Group(); station.position.set(-4.6, 0, -6.0); scene.add(station);
+  cbox(0.12,1.35,0.12,MAT_ALU_DARK,0,0.675,0,station);
+  cbox(0.3,0.85,0.7,MAT_ALU,0,1.775,0,station);
+  function pbtn(color,r,x,y,z,action,emit){
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r,r,0.08,20), new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:emit}));
+    m.rotation.z = Math.PI/2; m.position.set(x,y,z); m.userData.action = action;
+    station.add(m); clickables.push(m); return m;
+  }
+  function stLabel(text,y,z){ const t = tagPlane(text,0.3,0.12); t.rotation.y = Math.PI/2; t.position.set(0.152,y,z); station.add(t); }
+  pbtn(0x00c060,0.09,0.19,2.06,0.2,'start',0.3);
+  pbtn(0xc01818,0.09,0.19,2.06,-0.2,'stop',0.3);
+  stLabel('START',1.91,0.2); stLabel('STOP',1.91,-0.2); stLabel('E-STOP',1.74,0);
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.04,24), new THREE.MeshStandardMaterial({color:0xffcc00}));
+  disc.rotation.z = Math.PI/2; disc.position.set(0.16,1.52,0); station.add(disc);
+  const estopMesh = pbtn(0xe01010,0.12,0.22,1.52,0,'estop',0.3);
+  function setEstopVisual(){
+    estopMesh.material.emissiveIntensity = STATE.estop ? 1.3 : 0.3;
+    estopMesh.position.x = STATE.estop ? 0.19 : 0.22;
+  }
+
+  // safety guards: full-height mesh tunnel over the drive end + enclosed motor cage, with an interlocked access door
+  function guardTex(w,h){
+    const c = document.createElement('canvas'); c.width = c.height = 32;
+    const g = c.getContext('2d'); g.strokeStyle = 'rgba(255,204,0,1)'; g.lineWidth = 2; g.strokeRect(0,0,32,32);
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(Math.round(w/0.15), Math.round(h/0.15)); return t;   // square mesh cells on every panel
+  }
+  const MAT_YEL = new THREE.MeshStandardMaterial({color:0xffcc00, roughness:0.5});
+  function guardMesh(w,h){
+    const geo = new THREE.PlaneGeometry(w,h);
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map:guardTex(w,h), transparent:true, opacity:0.6, side:THREE.DoubleSide, depthWrite:false}));
+    m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({color:0xffcc00})));
+    return m;
+  }
+  function guardPanel(x,y,z,w,h,rx,ry){ const m = guardMesh(w,h); m.position.set(x,y,z); m.rotation.set(rx||0, ry||0, 0); scene.add(m); }
+  function guardPost(x,z,y0,y1){ cbox(0.08,y1-y0,0.08,MAT_YEL,x,(y0+y1)/2,z,scene); }
+  const GY0 = 0.3, GY1 = 2.25, GH = GY1 - GY0, GYC = (GY0 + GY1)/2;
+  guardPanel( 1.95,GYC,8.6,4.0,GH,0,Math.PI/2);       // tunnel right
+  guardPanel(-1.95,GYC,8.7,0.6,GH,0,Math.PI/2);       // tunnel left (fixed part beside the door)
+  guardPanel(0,GY1,8.6,3.9,4.0,-Math.PI/2,0);         // tunnel top
+  [[-1.95,6.6],[1.95,6.6],[-1.95,10.6],[1.95,10.6],[-1.95,8.4]].forEach(p => guardPost(p[0],p[1],GY0,GY1));
+  guardPanel(-3.2,1.0,9.8,1.6,1.6,0,Math.PI/2);       // motor cage: outer side, front, back, top
+  guardPanel(-2.575,1.0,9.0,1.25,1.6,0,0);
+  guardPanel(-2.575,1.0,10.6,1.25,1.6,0,0);
+  guardPanel(-2.575,1.8,9.8,1.25,1.6,-Math.PI/2,0);
+  [[-3.2,9.0],[-3.2,10.6],[-1.95,9.0]].forEach(p => guardPost(p[0],p[1],0.2,1.8));
+  const warnSign = tagPlane('DANGER · ROTATING PARTS',1.3,0.22,'#ffcc00','#111');
+  warnSign.position.set(-3.22,1.55,9.8); warnSign.rotation.y = -Math.PI/2; scene.add(warnSign);
+
+  // hinged access door (left side, z 6.6-8.4) - click the door or use the HMI button
+  const DOOR_L = 1.8;
+  let doorAng = 0;
+  const guardDoor = new THREE.Group(); guardDoor.position.set(-1.95,0,6.6); scene.add(guardDoor);
+  const doorPanel = guardMesh(DOOR_L, GH);
+  doorPanel.rotation.y = Math.PI/2; doorPanel.position.set(0,GYC,DOOR_L/2);
+  doorPanel.userData.action = 'guard'; guardDoor.add(doorPanel); clickables.push(doorPanel);
+  cbox(0.05,0.05,DOOR_L,MAT_YEL,0,GY1-0.03,DOOR_L/2,guardDoor);
+  cbox(0.05,0.05,DOOR_L,MAT_YEL,0,GY0+0.03,DOOR_L/2,guardDoor);
+  cbox(0.06,GH,0.06,MAT_YEL,0,GYC,DOOR_L-0.03,guardDoor);
+  const doorHandle = cbox(0.1,0.28,0.07,new THREE.MeshStandardMaterial({color:0xff7a00}),-0.06,1.2,DOOR_L-0.15,guardDoor);
+  doorHandle.userData.action = 'guard'; clickables.push(doorHandle);
+
+  // interlock switch on the latch post (NC contact -> PLC X4: ON = door closed)
+  cbox(0.1,0.3,0.12,MAT_DARK,-2.04,1.3,8.4,scene);
+  const guardLedMat = ledMat(0x00e676);
+  const guardLed = new THREE.Mesh(new THREE.SphereGeometry(0.04,12,12), guardLedMat);
+  guardLed.position.set(-2.1,1.4,8.4); scene.add(guardLed);
+  tagSprite('INTERLOCK SW · X4',1.5,-2.4,1.85,8.4);
+
+  // hazard-striped floor zone (glows red while the door is open)
+  const zoneTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d'); g.fillStyle = '#ffcc00'; g.fillRect(0,0,64,64); g.fillStyle = '#111';
+    for(let i=-1;i<3;i++){ g.beginPath(); g.moveTo(i*32,64); g.lineTo(i*32+32,0); g.lineTo(i*32+48,0); g.lineTo(i*32+16,64); g.fill(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+  })();
+  function hazStrip(x,z,w,d){
+    const t = zoneTex.clone(); t.needsUpdate = true; if(w > d) t.repeat.set(w/0.45,1); else t.repeat.set(1,d/0.45);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w,d), new THREE.MeshBasicMaterial({map:t, polygonOffset:true, polygonOffsetFactor:-4, polygonOffsetUnits:-4}));
+    m.rotation.x = -Math.PI/2; m.position.set(x,0.05,z); scene.add(m);
+  }
+  const ZX0 = -3.7, ZX1 = 2.45, ZZ0 = 6.2, ZZ1 = 11.0;
+  hazStrip((ZX0+ZX1)/2,ZZ0,ZX1-ZX0+0.45,0.45); hazStrip((ZX0+ZX1)/2,ZZ1,ZX1-ZX0+0.45,0.45);
+  hazStrip(ZX0,(ZZ0+ZZ1)/2,0.45,ZZ1-ZZ0); hazStrip(ZX1,(ZZ0+ZZ1)/2,0.45,ZZ1-ZZ0);
+  [[ZX0,ZZ0],[ZX1,ZZ0],[ZX0,ZZ1],[ZX1,ZZ1]].forEach(c => cbox(0.12,0.9,0.12,MAT_YEL,c[0],0.45,c[1],scene));   // corner posts
+  const zoneGlow = new THREE.Mesh(new THREE.PlaneGeometry(ZX1-ZX0,ZZ1-ZZ0), new THREE.MeshBasicMaterial({color:0xff2b2b, transparent:true, opacity:0.14, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2}));
+  zoneGlow.rotation.x = -Math.PI/2; zoneGlow.position.set((ZX0+ZX1)/2,0.035,(ZZ0+ZZ1)/2); scene.add(zoneGlow);
+
+  // maintenance worker (only visible during the demo)
+  const worker = new THREE.Group(); worker.visible = false; scene.add(worker);
+  const MAT_WK = new THREE.MeshStandardMaterial({color:0x2b6fd6, roughness:0.7});
+  const MAT_SK = new THREE.MeshStandardMaterial({color:0xf0c8a0, roughness:0.8});
+  cbox(0.42,0.62,0.24,MAT_WK,0,1.05,0,worker);
+  const wHead = new THREE.Mesh(new THREE.SphereGeometry(0.14,14,12), MAT_SK); wHead.position.set(0,1.54,0); worker.add(wHead);
+  const wHat = new THREE.Mesh(new THREE.SphereGeometry(0.16,14,8,0,Math.PI*2,0,Math.PI/2), MAT_YEL); wHat.position.set(0,1.57,0); worker.add(wHat);
+  function limb(x,y,len,mat){ const g = new THREE.Group(); g.position.set(x,y,0); cbox(0.12,len,0.12,mat,0,-len/2,0,g); worker.add(g); return g; }
+  const wLegL = limb(-0.11,0.74,0.74,MAT_DARK), wLegR = limb(0.11,0.74,0.74,MAT_DARK);
+  const wArmL = limb(-0.29,1.32,0.58,MAT_WK), wArmR = limb(0.29,1.32,0.58,MAT_WK);
+
+  /* ---- signal wires: PLC I/O <-> field devices ---- */
+  const PIN = {x0:W(-0.85,1.6,0.42), x1:W(-0.35,1.6,0.42), x2:W(0.15,1.6,0.42), x3:W(0.3,1.6,0.42),
+               y0:W(0.75,1.6,0.42), y1:W(1.25,1.6,0.42), y2:W(1.75,1.6,0.42), x4:W(-0.6,1.6,0.42)};
+  const V3 = (x,y,z) => new THREE.Vector3(x,y,z);
+  const PX = {x0:-0.85, x1:-0.35, x2:0.15, x3:0.3, y1:1.25, y2:1.75, x4:-0.6};
+  const TB = i => -0.6 + i*0.2; // terminal block x (cabinet-local)
+  // field device -> TERMINAL block -> PLC I/O pin
+  function fieldWire(id,pk,ti,yy,lane,color,dest,tail){
+    makeWire(id+'I', color, [PIN[pk], W(PX[pk],yy,0.42), W(TB(ti),yy,0.42), W(TB(ti),1.27,0.2)]);
+    makeWire(id, color, trunk(W(TB(ti),0.75,0.2), lane, dest, tail), false, FLOOR_R);
+  }
+  // args: id, PLC pin, terminal slot, internal height, floor lane, colour, device point, [riser points]
+  fieldWire('start','x0',4,1.26,4,0x00e676,V3(-4.72,1.35,-5.8),[V3(-4.82,1.35,-5.8)]);
+  fieldWire('sensor','x1',2,1.46,6,0xffb300,V3(sensorEmitterX,sensorHeight,BEAM_Z),[V3(sensorEmitterX,1.75,BEAM_Z+0.5)]);
+  fieldWire('estop','x2',6,1.56,3,0xff3b3b,V3(-4.72,1.35,-6.2),[V3(-4.82,1.35,-6.2)]);
+  fieldWire('vision','x3',3,1.31,7,0x7fd8ff,V3(0,2.95,SENSOR_Z),[V3(-2.22,3.09,-1.5),V3(0,3.09,-1.5),V3(0,3.09,SENSOR_Z)]);
+  fieldWire('guard','x4',0,1.51,1,0xffcc00,V3(-2.04,1.15,8.4));
+  makeWire('y0',    0x2fd9ff, [PIN.y0, W(0.75,1.36,0.42), W(-1.6,1.36,0.42), W(-1.6,1.3,0.3)]);
+  makeWire('y0b',   0x2fd9ff, trunk(W(-1.6,0.7,0.3),0,V3(-2.9,1.0,CONVEYOR.zEnd + 0.2),[V3(-3.05,1.0,CONVEYOR.zEnd + 0.2)]), false, FLOOR_R);
+  fieldWire('sol','y1',1,1.61,5,0xffb300,V3(-4.0,0.8,0.6),[V3(-4.2,0.8,0.6)]);
+  fieldWire('lamp','y2',7,1.41,2,0xc6ff3d,V3(towerX-0.07,FLOOR_Y,towerZ));
+
+  // floor cable tray under the lanes (side rails + ladder rungs) so the cable route reads clearly
+  (function(){
+    const x0 = DROP_X - 0.05, x1 = LANE_X0 + 7*LANE_DX + 0.16, z0 = towerZ - 0.3, z1 = CONVEYOR.zEnd + 0.7, L = z1 - z0;
+    const bed = cbox(x1-x0, 0.02, L, new THREE.MeshStandardMaterial({color:0x151b22, roughness:0.9}), (x0+x1)/2, 0.011, (z0+z1)/2, scene);
+    bed.castShadow = false;
+    [x0+0.03, x1-0.03].forEach(x => cbox(0.06, 0.09, L, MAT_ALU_DARK, x, 0.045, (z0+z1)/2, scene));
+    const rungMat = new THREE.MeshStandardMaterial({color:0x39424d, metalness:0.5, roughness:0.5});
+    for(let z = z0 + 0.3; z < z1; z += 0.7){ const r = cbox(x1-x0-0.1, 0.03, 0.05, rungMat, (x0+x1)/2, 0.035, z, scene); r.castShadow = false; }
+    tagSprite('CABLE TRAY', 0.9, (x0+x1)/2, 0.55, z0 + 0.6);
+    tagSprite('CABLE TRAY', 0.9, (x0+x1)/2, 0.55, z1 - 0.6);
+  })();
+  makeWire('pw1',   0xff8a00, [W(-1.6,3.5,0.4), W(-1.6,3.62,0.4), W(-0.45,3.62,0.4), W(-0.45,3.5,0.4)], true);
+  makeWire('pw2',   0xff5252, [W(-0.9,2.8,0.4), W(-0.9,2.68,0.4), W(-1.6,2.68,0.4), W(-1.6,2.5,0.4)], true);
+
+  /* ---- vision inspection camera on a gantry arm above the stop position ---- */
+  cbox(0.12,3.0,0.12,MAT_ALU_DARK,-2.1,1.5,-1.5,scene);
+  cbox(2.2,0.1,0.1,MAT_ALU_DARK,-1.0,3.0,-1.5,scene);
+  cbox(0.1,0.1,0.96,MAT_ALU_DARK,0,3.0,-1.05,scene);
+  cbox(0.34,0.26,0.4,MAT_DARK,0,2.8,SENSOR_Z,scene);
+  const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.16,16), MAT_GRAY);
+  lens.position.set(0,2.62,SENSOR_Z); scene.add(lens);
+  const visionRing = new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.24,0.05,24), ledMat(0x7fd8ff));
+  visionRing.position.set(0,2.52,SENSOR_Z); scene.add(visionRing);
+  const visionCone = new THREE.Mesh(new THREE.ConeGeometry(0.55,0.8,24,1,true),
+    new THREE.MeshBasicMaterial({color:0x7fd8ff, transparent:true, opacity:0.18, side:THREE.DoubleSide, depthWrite:false}));
+  visionCone.position.set(0,2.1,SENSOR_Z); visionCone.visible = false; scene.add(visionCone);
+  tagSprite('VISION CAMERA',1.3,0,3.4,SENSOR_Z);
+
+  /* ---- floating name tags ---- */
+  tagSprite('PHOTO SENSOR',1.3,sensorEmitterX,2.5,BEAM_Z);
+  tagSprite('CYLINDER',0.9,-3.4,2.0,PUSHER_Z);
+  tagSprite('SOLENOID VALVE',1.5,-3.8,1.55,0.6);
+  tagSprite('MOTOR',0.8,-2.4,1.9,CONVEYOR.zEnd + 0.2);
+  tagSprite('REJECT BIN',1.1,CONVEYOR.halfWidthX + 2.4,1.6,PUSHER_Z);
+  tagSprite('E-STOP STATION',1.5,-4.6,2.55,-6.0);
+  tagSprite('SAFETY GUARD',1.3,0,2.7,8.5,'#ffcc00','#111');
+  tagSprite('TOWER LAMP',1.1,towerX,4.15,towerZ);
+
+
+  /* =========================================================
+     9. BOX FACTORY
+  ========================================================= */
+  const BOX_W = 1.0, BOX_H = 0.8, BOX_D = 1.0;
+  const boxRestY = CONVEYOR.beltTopY + BOX_H/2 + 0.02;
+
+  // Normal and defect boxes share the same design. A defect box differs only by
+  // ONE subtle flaw (label skew / tape offset / slight dent) that is hard to spot by eye.
+  const labelTex = (() => {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 84;
+    const g = c.getContext('2d');
+    g.fillStyle = '#f4f1ea'; g.fillRect(0,0,128,84);
+    g.fillStyle = '#222'; g.font = 'bold 14px monospace'; g.fillText('LOT A-0231', 10, 26);
+    for(let i=0;i<22;i++) g.fillRect(10 + i*5, 40, (i%3) + 1.5, 34);
+    return new THREE.CanvasTexture(c);
+  })();
+  const FLAWS = ['label', 'tape', 'dent'];
+
+  function createBox(flaw){
+    const g = new THREE.Group();
+    const bodyMat = new THREE.MeshStandardMaterial({color:0xb5813f, roughness:0.85, metalness:0.02});
+    const body = new THREE.Mesh(new THREE.BoxGeometry(BOX_W, BOX_H, BOX_D), bodyMat);
+    body.castShadow = true; body.receiveShadow = true;
+    if(flaw === 'dent'){ body.rotation.z = 0.035; body.scale.set(1, 0.97, 0.98); }
+    g.add(body);
+
+    const tapeMat = new THREE.MeshStandardMaterial({color:0xe8d9b0, roughness:0.6});
+    const tapeZ = new THREE.Mesh(new THREE.BoxGeometry(BOX_W + 0.01, 0.09, BOX_D + 0.01), tapeMat);
+    g.add(tapeZ);
+    const tapeX = new THREE.Mesh(new THREE.BoxGeometry(0.09, BOX_H + 0.01, BOX_D + 0.02), tapeMat);
+    if(flaw === 'tape') tapeX.position.x = 0.22;
+    g.add(tapeX);
+
+    const seamMat = new THREE.MeshStandardMaterial({color:0x8f6428, roughness:0.8});
+    const seam1 = new THREE.Mesh(new THREE.BoxGeometry(BOX_W*0.98, 0.02, 0.02), seamMat);
+    seam1.position.set(0, BOX_H/2 + 0.001, BOX_D*0.25);
+    g.add(seam1);
+    const seam2 = seam1.clone();
+    seam2.position.z = -BOX_D*0.25;
+    g.add(seam2);
+
+    const label = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.3), new THREE.MeshStandardMaterial({map:labelTex, roughness:0.7}));
+    label.rotation.y = Math.PI/2;
+    label.position.set(BOX_W/2 + 0.008, 0.08, 0);
+    if(flaw === 'label'){ label.rotateZ(0.16); label.position.y -= 0.06; label.position.z += 0.07; }
+    g.add(label);
+
+    g.position.y = boxRestY;
+    return g;
+  }
+
+  const SPAWN_Z = CONVEYOR.zStart - 0.6;
+
+  // Prevents two boxes from ever being created on top of each other: if the
+  // conveyor is stopped (sensor processing / STOP) a box can still be sitting
+  // right at the spawn point, so a new spawn must wait until it has cleared.
+  function canSpawnNow(){
+    for(let i=boxQueue.length-1;i>=0;i--){
+      const b = boxQueue[i];
+      if(b.removed) continue;
+      return (b.group.position.z - SPAWN_Z) >= SPAWN_SAFE_GAP;
+    }
+    return true;
+  }
+
+  function spawnBox(){
+    STATE.spawnCount++;
+    const isDefect = STATE.spawnCount % 3 === 0; // every 3rd box is defective (repeatable demo)
+    const group = createBox(isDefect ? FLAWS[(STATE.spawnCount/3 - 1) % FLAWS.length] : null);
+    group.position.x = 0;
+    group.position.z = SPAWN_Z;
+    scene.add(group);
+
+    const boxObj = {
+      id: boxIdCounter++,
+      group: group,
+      isDefect: isDefect,
+      triggered: false,
+      state: 'moving' // moving | waiting | ejecting | resuming | done
+    };
+    boxQueue.push(boxObj);
+    updateCounters();
+  }
+
+  // Safe entry point used by the timer / buttons: spawns immediately if the
+  // spawn point is clear, otherwise retries shortly after instead of
+  // stacking a new box on top of one that hasn't moved away yet.
+  function trySpawnBox(attemptsLeft){
+    if(attemptsLeft === undefined) attemptsLeft = 6;
+    if(canSpawnNow()){
+      spawnBox();
+    } else if(attemptsLeft > 0){
+      gsap.delayedCall(0.3, () => trySpawnBox(attemptsLeft - 1));
+    }
+  }
+
+  /* =========================================================
+     10. UI HELPERS
+  ========================================================= */
+  const elBadge = document.getElementById('status-badge');
+  const elTotal = document.getElementById('val-total');
+  const elPass = document.getElementById('val-pass');
+  const elDefect = document.getElementById('val-defect');
+  const btnStart = document.getElementById('btn-start');
+  const btnStop = document.getElementById('btn-stop');
+  const btnEstop = document.getElementById('btn-estop');
+  const btnManual = document.getElementById('btn-manual');
+  const btnMccb = document.getElementById('btn-mccb');
+  const btnGuard = document.getElementById('btn-guard');
+  const btnDemo = document.getElementById('btn-demo');
+
+  function updateCounters(){
+    // TOTAL is always the sum of fully-classified boxes (PASS + DEFECT), so
+    // the three numbers can never drift out of sync with each other. Boxes
+    // still travelling on the belt simply aren't counted yet — the same way
+    // a real PLC counter only increments once a part clears the station.
+    elTotal.textContent = STATE.passCount + STATE.defectCount;
+    elPass.textContent = STATE.passCount;
+    elDefect.textContent = STATE.defectCount;
+  }
+
+  function updateStatusBadge(){
+    if(!STATE.mccb){
+      elBadge.textContent = 'POWER OFF';
+      elBadge.className = 'badge-stop';
+    } else if(STATE.estop){
+      elBadge.textContent = 'E-STOP';
+      elBadge.className = 'badge-stop';
+    } else if(STATE.guardOpen){
+      elBadge.textContent = 'GUARD OPEN';
+      elBadge.className = 'badge-stop';
+    } else if(STATE.isProcessing){
+      elBadge.textContent = 'SENSOR DETECTED';
+      elBadge.className = 'badge-sensor';
+    } else if(STATE.isRunning){
+      elBadge.textContent = 'RUN';
+      elBadge.className = 'badge-run';
+    } else {
+      elBadge.textContent = 'STOP';
+      elBadge.className = 'badge-stop';
+    }
+  }
+
+  function setButtonsForRunning(running){
+    btnStart.disabled = running || STATE.estop || !STATE.mccb || STATE.guardOpen;
+    btnStop.disabled = !running;
+  }
+
+  /* =========================================================
+     11. PLC CONTROL LOGIC
+  ========================================================= */
+  function startLine(){
+    if(STATE.guardOpen){ showAlert('도어가 열려 있어 START 불가 (X4 OFF)', 'warn', 2500); return; }
+    if(STATE.isRunning || STATE.estop || !STATE.mccb) return;
+    STATE.isRunning = true;
+    STATE.x0Until = performance.now() + 1200; // X0 (START) input pulse
+    setTowerLamp(STATE.isProcessing ? 'yellow' : 'green');
+    setButtonsForRunning(true);
+    updateStatusBadge();
+
+    if(STATE.spawnTimer) clearInterval(STATE.spawnTimer);
+    STATE.spawnTimer = setInterval(() => {
+      if(STATE.isRunning) trySpawnBox();
+    }, 3000);
+    trySpawnBox();
+  }
+
+  function stopLine(){
+    STATE.isRunning = false;
+    if(STATE.spawnTimer){ clearInterval(STATE.spawnTimer); STATE.spawnTimer = null; }
+    if(!STATE.isProcessing) setTowerLamp('red');
+    setButtonsForRunning(false);
+    updateStatusBadge();
+  }
+
+  // Emergency stop: latching. Conveyor stops immediately; START is locked until released.
+  function toggleEstop(){
+    if(!STATE.mccb) return;
+    STATE.estop = !STATE.estop;
+    if(STATE.estop){
+      stopLine();
+      setTowerLamp('red');
+      gsap.globalTimeline.pause();
+      btnEstop.innerHTML = '<span class="btn-dot"></span>E-STOP 해제 · RESET';
+    } else {
+      if(!STATE.guardOpen) gsap.globalTimeline.resume();
+      setTowerLamp(STATE.isProcessing && !STATE.guardOpen ? 'yellow' : 'red');
+      btnEstop.innerHTML = '<span class="btn-dot"></span>E-STOP · 비상 정지';
+    }
+    setButtonsForRunning(STATE.isRunning);
+    updateStatusBadge();
+    setEstopVisual();
+  }
+
+  // MCCB: main power breaker. OFF = PLC, outputs and lamps all de-energised.
+  function toggleMccb(){
+    STATE.mccb = !STATE.mccb;
+    if(!STATE.mccb){
+      stopLine();
+      setTowerLamp('off');
+      gsap.globalTimeline.pause();
+    } else {
+      if(!STATE.estop && !STATE.guardOpen) gsap.globalTimeline.resume();
+      setTowerLamp(STATE.isProcessing && !STATE.estop && !STATE.guardOpen ? 'yellow' : 'red');
+    }
+    btnMccb.innerHTML = '<span class="btn-dot"></span>' + (STATE.mccb ? 'MCCB · 전원 ON' : 'MCCB · 전원 OFF');
+    btnEstop.disabled = !STATE.mccb;
+    setButtonsForRunning(STATE.isRunning);
+    updateStatusBadge();
+    setMccbVisual();
+  }
+
+  const elAlert = document.getElementById('alert-banner'); let alertTimer = null;
+  function showAlert(msg, cls, ms){
+    elAlert.textContent = msg; elAlert.className = cls; clearTimeout(alertTimer);
+    if(ms) alertTimer = setTimeout(() => { elAlert.className = ''; }, ms);
+  }
+
+  // Safety guard door: interlock X4 (NC). Opening stops the line at once; closing never restarts it by itself.
+  function toggleGuard(fromDemo){
+    if(demoI >= 0 && fromDemo !== true){ showAlert('시연 중에는 도어를 직접 조작할 수 없습니다', 'info', 2000); return; }
+    STATE.guardOpen = !STATE.guardOpen;
+    if(STATE.guardOpen){
+      stopLine();
+      setTowerLamp(STATE.mccb ? 'red' : 'off');
+      gsap.globalTimeline.pause();
+    } else {
+      if(STATE.mccb && !STATE.estop) gsap.globalTimeline.resume();
+      if(STATE.mccb) setTowerLamp(STATE.isProcessing && !STATE.estop ? 'yellow' : 'red');
+    }
+    if(STATE.guardOpen) showAlert('⚠ SAFETY GUARD 도어 열림 · X4 OFF → 설비 정지', 'warn');
+    else showAlert('✔ 도어 닫힘 · 자동 재기동 없음 — START를 눌러 재가동', 'info', 4000);
+    const gc = STATE.guardOpen ? 0xff3b3b : 0x00e676;
+    guardLedMat.color.set(gc); guardLedMat.emissive.set(gc);
+    btnGuard.classList.toggle('open', STATE.guardOpen);
+    btnGuard.innerHTML = '<span class="btn-dot"></span>' + (STATE.guardOpen ? 'SAFETY GUARD · 도어 열림' : 'SAFETY GUARD · 도어 닫힘');
+    setButtonsForRunning(STATE.isRunning);
+    updateStatusBadge();
+  }
+
+  btnStart.addEventListener('click', startLine);
+  btnGuard.addEventListener('click', toggleGuard);
+
+  // Demo: worker opens the door, inspects, closes it again (runs on its own clock, not GSAP)
+  const DEMO = [   // wait = minimum seconds each caption stays on screen (teaching pace)
+    {cap:'① 라인 가동 중 — 컨베이어와 모터가 정상 동작하고 있습니다.', act:() => { if(!STATE.isRunning) startLine(); }, wait:5},
+    {cap:'② 작업자가 회전부·벨트 점검을 위해 안전가드로 접근합니다.', to:-2.9, wait:5},
+    {cap:'③ 도어를 열면 인터락 스위치(X4)가 OFF → PLC가 모터 출력(Y0)을 차단 → 설비 즉시 정지', act:() => { if(!STATE.guardOpen) toggleGuard(true); }, wait:7},
+    {cap:'④ 작업자가 열린 도어 안쪽으로 손을 뻗어 점검합니다.', to:-2.35, wait:5},
+    {cap:'⑤ 도어가 열려 있는 동안 START는 잠겨 있어 점검 중 재가동될 수 없습니다.', wait:7, inspect:true},
+    {cap:'⑥ 점검을 마치고 위험구역에서 나옵니다.', to:-2.9, wait:5},
+    {cap:'⑦ 도어를 닫아도 자동 재가동되지 않습니다(자동 재기동 방지) → START를 눌러야 재가동', act:() => { if(STATE.guardOpen) toggleGuard(true); }, wait:7},
+    {cap:'⑧ 작업자 퇴장 — 시연 종료', to:-7, wait:4}
+  ];
+  let demoI = -1, demoT = 0;
+  const elCap = document.getElementById('demo-caption');
+  const isSmall = () => window.matchMedia('(max-width: 700px), (max-height: 520px)').matches;
+
+  function gotoStep(i){
+    demoI = i; demoT = 0;
+    if(i >= DEMO.length){
+      demoI = -1; worker.visible = false; btnDemo.disabled = false;
+      btnDemo.innerHTML = '<span class="btn-dot"></span>작업자 점검 시연';
+      elCap.textContent = '✔ 시연 종료 — START를 눌러 재가동하세요';
+      setTimeout(() => { if(demoI < 0) elCap.classList.remove('show'); }, 6000);
+      if(camSaved) camGo(camSaved.p, camSaved.t);
+      return;
+    }
+    elCap.innerHTML = DEMO[i].cap + '<small style="opacity:.6;font-weight:400"> · 탭: 일시정지</small>';
+    if(DEMO[i].act) DEMO[i].act();
+  }
+  function startDemo(){
+    if(demoI >= 0) return;
+    if(STATE.guardOpen){ showAlert('도어를 먼저 닫아 주세요', 'info', 2500); return; }
+    if(!STATE.mccb || STATE.estop){ showAlert('MCCB를 ON하고 E-STOP을 해제한 뒤 시연하세요', 'info', 3000); return; }
+    if(isSmall()){ hmiPanel.classList.add('collapsed'); plcDock.classList.add('collapsed'); }
+    camSaved = saveView();
+    camGo(new THREE.Vector3(-8.5,3.2,11.5), new THREE.Vector3(-2.4,1.1,7.6));
+    worker.position.set(-7,0,7.5); worker.rotation.y = Math.PI/2; worker.visible = true;
+    btnDemo.disabled = true; btnDemo.innerHTML = '<span class="btn-dot"></span>시연 중…';
+    placeCap(); elCap.classList.add('show'); gotoStep(0);
+  }
+  function placeCap(){ elCap.style.bottom = (plcDock.offsetHeight + 22) + 'px'; }   // sits right above the PLC dock
+  window.addEventListener('resize', placeCap);
+  let demoPaused = false;
+  elCap.addEventListener('click', () => {
+    if(demoI < 0) return;
+    demoPaused = !demoPaused;
+    elCap.innerHTML = demoPaused ? '⏸ 일시정지 — 탭하면 계속<br><small style="font-weight:400">' + DEMO[demoI].cap + '</small>'
+                                 : DEMO[demoI].cap + '<small style="opacity:.6;font-weight:400"> · 탭: 일시정지</small>';
+  });
+  function updateDemo(dt){
+    if(demoI < 0 || demoPaused) return;
+    const st0 = DEMO[demoI]; let walk = false, arrived = true;
+    demoT += dt;
+    if(st0.to !== undefined){
+      const dx = st0.to - worker.position.x, st = 1.3*dt;
+      if(Math.abs(dx) <= st){ worker.position.x = st0.to; }
+      else { arrived = false; walk = true; worker.position.x += Math.sign(dx)*st; worker.rotation.y = dx > 0 ? Math.PI/2 : -Math.PI/2; }
+    }
+    if(!walk) worker.rotation.y = Math.PI/2;
+    const sw = walk ? Math.sin(performance.now()*0.006)*0.6 : 0;
+    wLegL.rotation.x = sw; wLegR.rotation.x = -sw; wArmL.rotation.x = -sw;
+    wArmR.rotation.x = st0.inspect ? -1.3 : sw;
+    if(arrived && demoT >= st0.wait) gotoStep(demoI+1);
+  }
+  btnDemo.addEventListener('click', startDemo);
+
+  // small screens: start with both panels collapsed; tap the header to expand
+  const hmiPanel = document.getElementById('hmi-panel'), plcDock = document.getElementById('plc-dock');
+  if(window.matchMedia('(max-width: 700px), (max-height: 520px)').matches){
+    hmiPanel.classList.add('collapsed'); plcDock.classList.add('collapsed');
+  }
+  document.getElementById('hmi-header').addEventListener('click', () => hmiPanel.classList.toggle('collapsed'));
+  plcDock.querySelector('.dock-head').addEventListener('click', () => { plcDock.classList.toggle('collapsed'); placeCap(); });
+  btnStop.addEventListener('click', stopLine);
+  btnEstop.addEventListener('click', toggleEstop);
+  btnMccb.addEventListener('click', toggleMccb);
+  const manualModal = document.getElementById('manual-modal');
+  btnManual.addEventListener('click', () => manualModal.classList.remove('hidden'));
+  document.getElementById('manual-close').addEventListener('click', () => manualModal.classList.add('hidden'));
+  manualModal.addEventListener('click', (e) => { if(e.target === manualModal) manualModal.classList.add('hidden'); });
+  setButtonsForRunning(false);
+  updateStatusBadge();
+  updateCounters();
+
+  const speedSlider = document.getElementById('speed-slider');
+  const speedValueLabel = document.getElementById('speed-value');
+  speedSlider.value = STATE.beltSpeed;
+  speedValueLabel.textContent = STATE.beltSpeed.toFixed(1) + 'x';
+  speedSlider.addEventListener('input', () => {
+    STATE.beltSpeed = parseFloat(speedSlider.value);
+    speedValueLabel.textContent = STATE.beltSpeed.toFixed(1) + 'x';
+  });
+
+  /* =========================================================
+     12. SENSOR / PUSHER SEQUENCE
+  ========================================================= */
+  function flashSensorLed(intense){
+    sensorLedMat.emissiveIntensity = intense ? 1.5 : 0.15;
+    sensorLedMat.emissive.set(intense ? 0xff0000 : 0x550000);
+  }
+  function flashLaser(intense){
+    laserMat.opacity = intense ? 0.85 : 0.4;
+    laserMat.color.set(intense ? 0xff5555 : 0xff2222);
+  }
+
+  function handleSensorTrigger(boxObj){
+    STATE.isProcessing = true;          // X1: photo sensor = "product arrived"
+    STATE.judge = '검사중';
+    STATE.inspecting = true;            // vision camera inspects the appearance
+    boxObj.triggered = true;
+    boxObj.state = 'waiting';
+    setTowerLamp('yellow');
+    flashSensorLed(true);
+    flashLaser(true);
+    updateStatusBadge();
+
+    gsap.delayedCall(0.5, () => {
+      STATE.inspecting = false;
+      STATE.judge = boxObj.isDefect ? 'NG' : 'OK';
+      if(boxObj.isDefect){
+        STATE.visionNG = true;          // X3: camera sends NG signal only for defects
+        gsap.delayedCall(0.3, () => ejectDefectBox(boxObj)); // PLC -> Y1 -> solenoid -> cylinder
+      } else {
+        gsap.delayedCall(1.0, () => resumeAfterPass(boxObj));
+      }
+    });
+  }
+
+  function clearJudge(){ if(!STATE.isProcessing) STATE.judge = '--'; }
+
+  function resumeAfterPass(boxObj){
+    gsap.delayedCall(1.2, clearJudge);
+    boxObj.state = 'moving';
+    STATE.isProcessing = false;
+    flashSensorLed(false);
+    flashLaser(false);
+    setTowerLamp(STATE.isRunning ? 'green' : 'red');
+    updateStatusBadge();
+  }
+
+  function emptyBin(){
+    binBoxes.forEach(g => gsap.to(g.scale, {x:0, y:0, z:0, duration:0.3, onComplete:() => scene.remove(g)}));
+    binBoxes.length = 0;
+  }
+
+  function ejectDefectBox(boxObj){
+    boxObj.state = 'ejecting';
+    STATE.solenoid = true;
+    const g = boxObj.group;
+    if(binBoxes.length >= 2) emptyBin();
+    const slotZ = PUSHER_Z + (binBoxes.length === 0 ? -0.52 : 0.52);
+    const po = {ext:0};
+    let pushing = true;
+    const applyPusher = () => {
+      pusherHead.position.x = pusherRestX + 0.75 + po.ext;
+      pusherRod.scale.y = (1.3 + po.ext) / 1.3;                 // rod grows out of the cylinder body
+      pusherRod.position.x = pusherRestX + 0.1 + po.ext/2;
+      if(pushing && po.ext > 1.3) g.position.x = po.ext - 1.3;  // head pushes the box
+    };
+    const chuteBoxY = x => x < CH_X1 ? boxRestY : (CH_Y1 - (x - CH_X1) * CH_SLOPE) + BOX_H/2 + 0.01;
+    const sl = {x:2.0};
+
+    const tl = gsap.timeline();
+    tl.to(po, {ext:1.3, duration:0.3, ease:'power2.out', onUpdate:applyPusher})
+      .to(po, {ext:3.3, duration:0.6, ease:'power1.inOut', onUpdate:applyPusher})
+      .add(() => {
+        pushing = false;
+        STATE.solenoid = false; // retract piston
+        gsap.to(po, {ext:0, duration:0.7, ease:'power2.in', onUpdate:applyPusher});
+      })
+      // box slides down the chute by gravity
+      .to(sl, {x:3.2, duration:0.5, ease:'power2.in', onUpdate:() => {
+        g.position.x = sl.x;
+        g.position.y = chuteBoxY(sl.x);
+        g.rotation.z = -CH_ANG * Math.min(1, Math.max(0, (sl.x - 1.85) / 0.35));
+      }}, '<')
+      // tips over the bin wall and drops into its slot
+      .to(g.position, {x:BIN_X, z:slotZ, duration:0.3, ease:'power1.out'})
+      .to(g.position, {y:BIN_REST_Y, duration:0.55, ease:'bounce.out'}, '<0.2')
+      .to(g.rotation, {z:(binBoxes.length === 0 ? 0.05 : -0.04), y:(binBoxes.length === 0 ? 0.12 : -0.1), duration:0.5, ease:'power2.out'}, '<')
+      .add(() => {
+        binBoxes.push(g);       // the rejected box stays in the bin
+        boxObj.state = 'done';
+        boxObj.removed = true;
+        STATE.defectCount++;
+        STATE.visionNG = false;
+        updateCounters();
+        gsap.delayedCall(1.2, clearJudge);
+
+        STATE.isProcessing = false;
+        flashSensorLed(false);
+        flashLaser(false);
+        setTowerLamp(STATE.isRunning ? 'green' : 'red');
+        updateStatusBadge();
+      });
+  }
+
+  /* =========================================================
+     12B. PLC I/O SIMULATION (training model - no real PLC link)
+  ========================================================= */
+  const P = {x4:false, x3:false, x0:false, x1:false, x2:false, y0:false, y1:false, y2:false};
+  const FLOWS = [
+    {id:'flow-a', nodes:[['START',()=>P.x0],['X0',()=>P.x0],['PLC',()=>P.x0||P.y0],['Y0',()=>P.y0],['RELAY',()=>P.y0],['MOTOR',()=>P.y0]]},
+    {id:'flow-b', nodes:[['PHOTO SENSOR',()=>P.x1],['X1',()=>P.x1],['VISION',()=>(STATE.inspecting||P.x3)&&STATE.mccb],['X3',()=>P.x3],['PLC',()=>P.x3||P.y1],['Y1',()=>P.y1],['SOLENOID',()=>P.y1],['CYLINDER',()=>P.y1]]}
+  ];
+  FLOWS.forEach(f => {
+    const row = document.getElementById(f.id);
+    f.els = f.nodes.map((n,i) => {
+      if(i) row.insertAdjacentHTML('beforeend', '<i>→</i>');
+      const sp = document.createElement('span'); sp.textContent = n[0]; row.appendChild(sp); return sp;
+    });
+  });
+  const ladderEls = Array.prototype.slice.call(document.querySelectorAll('[data-l]'));
+  const elJudge = document.getElementById('judge');
+
+  function setLed(m,on){ m.emissiveIntensity = on ? 1.6 : 0.05; }
+  function refreshPLC(){
+    P.x0 = performance.now() < STATE.x0Until && STATE.mccb;
+    P.x1 = STATE.isProcessing && STATE.mccb;
+    P.x2 = STATE.estop && STATE.mccb;
+    P.x3 = STATE.visionNG && STATE.mccb;
+    P.x4 = !STATE.guardOpen && STATE.mccb;
+    P.y0 = STATE.isRunning && !STATE.isProcessing && !STATE.estop && !STATE.guardOpen;
+    P.y1 = STATE.solenoid && !STATE.estop && !STATE.guardOpen && STATE.mccb;
+    P.y2 = STATE.mccb;   // tower lamp output is energised whenever power is ON (one colour is always lit)
+
+    ['x0','x1','x2','x3','x4','y0','y1','y2'].forEach(k => setLed(leds[k], P[k]));
+    setLed(leds.run, STATE.isRunning && !STATE.estop && STATE.mccb);
+    setLed(valveLedMat, P.y1);
+    setLed(visionRing.material, STATE.inspecting && STATE.mccb);
+    visionCone.visible = STATE.inspecting && STATE.mccb;
+    smpsOk.emissiveIntensity = STATE.mccb ? 1.5 : 0.05;
+    guardLedMat.emissiveIntensity = STATE.mccb ? 1.5 : 0.05;
+    wires.start.on = P.x0; wires.sensor.on = P.x1; wires.estop.on = P.x2;
+    wires.y0.on = P.y0; wires.y0b.on = P.y0; wires.sol.on = P.y1; wires.lamp.on = P.y2; wires.vision.on = P.x3; wires.guard.on = P.x4;
+    ['start','sensor','estop','sol','lamp','vision','guard'].forEach(k => { wires[k+'I'].on = wires[k].on; });
+
+    FLOWS.forEach(f => f.nodes.forEach((n,i) => f.els[i].classList.toggle('on', !!n[1]())));
+    const L = {x0:P.x0, y0h:P.y0, x2n:!P.x2 && (P.x0 || P.y0), x4:P.x4 && (P.x0 || P.y0), x1:P.x1, x3:P.x3, y0:P.y0, y1:P.y1};
+    ladderEls.forEach(el => el.classList.toggle('on', !!L[el.dataset.l]));
+    elJudge.textContent = 'VISION 판정: ' + STATE.judge;
+    elJudge.className = STATE.judge === 'NG' ? 'ng' : (STATE.judge === 'OK' ? 'ok' : '');
+  }
+  function updateWires(delta){
+    if(P.y0) shaftG.rotation.x += STATE.beltSpeed * delta * 3;
+    Object.keys(wires).forEach(k => {
+      const w = wires[k], on = (w.on || w.always) && STATE.mccb;
+      w.mat.emissiveIntensity = on ? 1.3 : 0.28;
+      w.pulse.visible = on;
+      if(on){ w.t = (w.t + delta*0.45) % 1; w.pulse.position.copy(w.path.getPointAt(w.t)); }
+    });
+  }
+
+  // ===== 관찰자 입력: PC(마우스·터치 드래그) / VR(Cardboard 시선 응시) =====
+  const ray = new THREE.Raycaster(), mouseV = new THREE.Vector2();
+  const cvs = renderer.domElement;
+  cvs.style.touchAction = 'none'; cvs.style.cursor = 'grab';
+
+  function doAction(a){
+    if(!a) return;
+    if(a === 'start') startLine(); else if(a === 'stop') stopLine();
+    else if(a === 'estop') toggleEstop(); else if(a === 'guard') toggleGuard();
+    else if(a === 'mccb') toggleMccb(); else if(a === 'demo') startDemo();
+    else if(a.indexOf('view:') === 0) goView(a.slice(5));
+  }
+
+  /* ---------- 3D 제어 콘솔 (VR에서는 시선으로, PC에서는 클릭으로 조작) ---------- */
+  const kiosk = new THREE.Group(); scene.add(kiosk);
+  const KM_DARK = new THREE.MeshStandardMaterial({color:0x1b232c, roughness:0.6, metalness:0.4});
+  cbox(1.0, 0.06, 0.7, MAT_ALU_DARK, 0, 0.03, 0, kiosk);
+  cbox(0.16, 0.9, 0.16, MAT_ALU_DARK, 0, 0.45, -0.16, kiosk);
+  const panel = new THREE.Group(); panel.position.set(0, 1.5, 0); panel.rotation.x = -0.2; kiosk.add(panel);
+  cbox(2.1, 1.7, 0.1, KM_DARK, 0, 0, -0.02, panel);
+  [[0, 0.86, 2.14, 0.05],[0, -0.86, 2.14, 0.05],[-1.05, 0, 0.05, 1.77],[1.05, 0, 0.05, 1.77]].forEach(s => cbox(s[2], s[3], 0.12, MAT_YEL, s[0], s[1], -0.02, panel));
+  const kioskCap = signPlane('VR 제어 콘솔 · 버튼을 1.5초 응시하면 선택', 2.1, 0.2, '#0d1620', '#2fd9ff', 0.5);
+  kioskCap.position.set(0, 1.0, 0.02); panel.add(kioskCap);
+
+  // 상태 모니터 (캔버스 텍스처)
+  const sCv = document.createElement('canvas'); sCv.width = 1024; sCv.height = 384;
+  const sTex = new THREE.CanvasTexture(sCv);
+  const sMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.92, 0.72), new THREE.MeshBasicMaterial({map:sTex}));
+  sMesh.position.set(0, 0.42, 0.045); panel.add(sMesh);
+
+  function wrapText(g, text, x, y, maxW, lh, maxLines){
+    let line = '', n = 0;
+    for(let i = 0; i < text.length; i++){
+      const t = line + text[i];
+      if(g.measureText(t).width > maxW && line){
+        g.fillText(line, x, y + n*lh); line = text[i]; n++;
+        if(n >= maxLines) return;
+      } else line = t;
+    }
+    g.fillText(line, x, y + n*lh);
+  }
+  function boardMessage(){
+    if(elCap.classList.contains('show')) return elCap.textContent.replace(/\s*·\s*탭: 일시정지\s*$/, '');
+    if(elAlert.className) return elAlert.textContent;
+    return vr.on ? '버튼을 1.5초 응시하면 선택됩니다' : '버튼을 클릭하여 설비를 조작합니다';
+  }
+  function drawBoard(){
+    const g = sCv.getContext('2d');
+    g.fillStyle = '#0b1118'; g.fillRect(0, 0, 1024, 384);
+    g.strokeStyle = 'rgba(47,217,255,0.5)'; g.lineWidth = 4; g.strokeRect(2, 2, 1020, 380);
+    g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+    g.fillStyle = '#7f93a3'; g.font = '700 26px ' + KFONT; g.fillText('SORTING LINE #01 · 상태 모니터', 24, 40);
+    const cls = elBadge.className;
+    g.fillStyle = cls.indexOf('badge-run') >= 0 ? '#00e676' : (cls.indexOf('badge-sensor') >= 0 ? '#ffb300' : '#ff3b3b');
+    g.font = '900 70px ' + KFONT; g.fillText(elBadge.textContent, 24, 120);
+    [['TOTAL', STATE.passCount + STATE.defectCount, '#2fd9ff'], ['PASS', STATE.passCount, '#00e676'], ['DEFECT', STATE.defectCount, '#ff3b3b']].forEach((c, i) => {
+      const x = 540 + i*160;
+      g.fillStyle = 'rgba(255,255,255,0.06)'; g.fillRect(x, 58, 148, 84);
+      g.fillStyle = '#7f93a3'; g.font = '700 22px ' + KFONT; g.textAlign = 'center'; g.fillText(c[0], x + 74, 84);
+      g.fillStyle = c[2]; g.font = '900 46px ' + KFONT; g.fillText(String(c[1]), x + 74, 128);
+    });
+    g.textAlign = 'center';
+    ['x0','x1','x2','x3','x4','y0','y1','y2'].forEach((k, i) => {
+      const x = 80 + i*123, on = !!P[k];
+      g.beginPath(); g.arc(x, 192, 17, 0, Math.PI*2);
+      g.fillStyle = on ? (k[0] === 'x' ? '#00e676' : '#2fd9ff') : '#26323d'; g.fill();
+      g.fillStyle = on ? '#e8edf2' : '#6b7c8b'; g.font = '700 24px ' + KFONT; g.fillText(k.toUpperCase(), x, 242);
+    });
+    g.textAlign = 'left'; g.fillStyle = '#e8edf2'; g.font = '700 30px ' + KFONT;
+    wrapText(g, boardMessage(), 24, 300, 976, 40, 2);
+    sTex.needsUpdate = true;
+  }
+
+  // 버튼
+  const kbuttons = [];
+  function addKBtn(action, x, y, w, h){
+    const cv = document.createElement('canvas'); cv.width = Math.round(w*640); cv.height = Math.round(h*640);
+    const tex = new THREE.CanvasTexture(cv);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({map:tex}));
+    m.position.set(x, y, 0.06); m.userData.action = action; m.userData.kiosk = true;
+    panel.add(m); clickables.push(m);
+    kbuttons.push({mesh:m, cv:cv, tex:tex, key:'', action:action});
+  }
+  [['start',-0.66,-0.07],['stop',0,-0.07],['estop',0.66,-0.07],['mccb',-0.66,-0.33],['guard',0,-0.33],['demo',0.66,-0.33]].forEach(b => addKBtn(b[0], b[1], b[2], 0.62, 0.22));
+  [['view:center',-0.72],['view:cabinet',-0.24],['view:guard',0.24],['view:sensor',0.72]].forEach(b => addKBtn(b[0], b[1], -0.6, 0.46, 0.18));
+
+  function kbStyle(a){
+    switch(a){
+      case 'start': return {l:'START', s:'가동 시작', bg:'#14a34f', fg:'#04170c', dis:STATE.isRunning || STATE.estop || !STATE.mccb || STATE.guardOpen};
+      case 'stop':  return {l:'STOP', s:'정지', bg:'#d83a3a', fg:'#ffffff', dis:!STATE.isRunning};
+      case 'estop': return {l:STATE.estop ? 'RESET' : 'E-STOP', s:STATE.estop ? '비상정지 해제' : '비상 정지', bg:'#a80f0f', fg:'#ffffff', dis:!STATE.mccb};
+      case 'mccb':  return {l:'MCCB', s:STATE.mccb ? '전원 ON' : '전원 OFF', bg:STATE.mccb ? '#e08a00' : '#555d66', fg:STATE.mccb ? '#1f1100' : '#ffffff'};
+      case 'guard': return {l:'안전 도어', s:STATE.guardOpen ? '열림 · X4 OFF' : '닫힘 · X4 ON', bg:STATE.guardOpen ? '#d83a3a' : '#f2c200', fg:STATE.guardOpen ? '#ffffff' : '#1a1500'};
+      case 'demo':  return {l:'점검 시연', s:demoI >= 0 ? '진행 중' : '작업자 안전', bg:'#1b8fb5', fg:'#021a22', dis:demoI >= 0};
+      case 'view:center':  return {l:'중앙', bg:'#26323d', fg:'#e8edf2', act:currentViewKey === 'center'};
+      case 'view:cabinet': return {l:'제어반', bg:'#26323d', fg:'#e8edf2', act:currentViewKey === 'cabinet'};
+      case 'view:guard':   return {l:'안전가드', bg:'#26323d', fg:'#e8edf2', act:currentViewKey === 'guard'};
+      case 'view:sensor':  return {l:'센서', bg:'#26323d', fg:'#e8edf2', act:currentViewKey === 'sensor'};
+    }
+    return {l:a, bg:'#333', fg:'#fff'};
+  }
+  function drawKBtn(k){
+    const st = kbStyle(k.action), key = JSON.stringify(st);
+    if(key === k.key) return; k.key = key;
+    const g = k.cv.getContext('2d'), W = k.cv.width, H = k.cv.height;
+    g.fillStyle = st.bg; g.fillRect(0, 0, W, H);
+    g.strokeStyle = st.act ? '#ffc400' : 'rgba(255,255,255,0.5)'; g.lineWidth = st.act ? 10 : 4; g.strokeRect(3, 3, W-6, H-6);
+    g.fillStyle = st.fg; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '900 ' + Math.round(H*(st.s ? 0.36 : 0.46)) + 'px ' + KFONT; g.fillText(st.l, W/2, st.s ? H*0.37 : H*0.52, W-24);
+    if(st.s){ g.font = '700 ' + Math.round(H*0.22) + 'px ' + KFONT; g.fillText(st.s, W/2, H*0.76, W-24); }
+    if(st.dis){ g.fillStyle = 'rgba(8,12,16,0.55)'; g.fillRect(0, 0, W, H); }
+    k.tex.needsUpdate = true;
+  }
+
+  // 콘솔을 현재 관찰 위치의 왼쪽 앞에 배치 (시점 이동 때마다 따라온다)
+  function placeKiosk(eye, yaw){
+    const fx = -Math.sin(yaw), fz = -Math.cos(yaw), lx = -Math.cos(yaw), lz = Math.sin(yaw);
+    const kx = eye.x + fx*2.4 + lx*2.0, kz = eye.z + fz*2.4 + lz*2.0;
+    const onPlatform = Math.abs(kx) < 3.6 && kz > -10.8 && kz < 11.2;
+    kiosk.position.set(kx, onPlatform ? 0.2 : 0, kz);
+    kiosk.rotation.y = Math.atan2(eye.x - kx, eye.z - kz);
+  }
+  placeKiosk(view.pos, view.yaw);
+
+  function goView(key){
+    const v = VIEWS[key]; if(!v) return;
+    const pos = new THREE.Vector3(v.pos[0], v.pos[1], v.pos[2]), tgt = new THREE.Vector3(v.look[0], v.look[1], v.look[2]);
+    const a = lookAngles(pos, tgt);
+    glide.t = 1;
+    if(vr.on){
+      view.pos.copy(pos);
+      if(vr.gyro) recenterTo(a.yaw); else { view.yaw = a.yaw; view.pitch = a.pitch; }
+    } else flyTo(pos, tgt, 1.3);
+    placeKiosk(pos, a.yaw);
+    currentViewKey = key;
+    document.querySelectorAll('.vbtn[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === key));
+  }
+  document.querySelectorAll('.vbtn[data-view]').forEach(b => b.addEventListener('click', () => goView(b.dataset.view)));
+  goView('center'); view.pos.set(CENTER.x, EYE_H, CENTER.z); view.yaw = Math.PI/2; view.pitch = 0; glide.t = 1;
+
+  /* ---------- Cardboard 시선 응시(레티클) ---------- */
+  const reticle = new THREE.Group();
+  const rRing = new THREE.Mesh(new THREE.RingGeometry(0.022, 0.03, 40), new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.9, depthTest:false, depthWrite:false}));
+  const rFill = new THREE.Mesh(new THREE.CircleGeometry(0.02, 32), new THREE.MeshBasicMaterial({color:0x00e676, transparent:true, opacity:0.95, depthTest:false, depthWrite:false}));
+  rRing.renderOrder = 1000; rFill.renderOrder = 1001; rFill.scale.setScalar(0.001);
+  reticle.add(rRing); reticle.add(rFill); reticle.visible = false; scene.add(reticle);
+
+  const gaze = {obj:null, t:0, fired:false}, GAZE_SEC = 1.5, _fwd = new THREE.Vector3();
+  let hoverObj = null;
+  function updateGaze(dt){
+    if(!vr.on){ reticle.visible = false; gaze.obj = null; return; }
+    camera.getWorldDirection(_fwd); ray.set(camera.position, _fwd);
+    let hit = ray.intersectObjects(clickables, false)[0];
+    if(hit && hit.distance > 35) hit = null;
+    const obj = hit ? hit.object : null;
+    if(obj !== gaze.obj){ gaze.obj = obj; gaze.t = 0; gaze.fired = false; }
+    if(obj && !gaze.fired){
+      gaze.t += dt;
+      if(gaze.t >= GAZE_SEC){ gaze.fired = true; doAction(obj.userData.action); }
+    }
+    const d = hit ? Math.max(0.8, hit.distance - 0.05) : 6;
+    reticle.visible = true;
+    reticle.position.copy(camera.position).addScaledVector(_fwd, d);
+    reticle.quaternion.copy(camera.quaternion); reticle.scale.setScalar(d);
+    rFill.scale.setScalar(obj ? Math.max(0.001, Math.min(1, gaze.t/GAZE_SEC)) : 0.001);
+    rRing.material.color.set(obj ? 0x00e676 : 0xffffff);
+  }
+  let kioskT = 1;
+  function updateKiosk(dt){
+    kioskT += dt;
+    if(kioskT > 0.25){ kioskT = 0; drawBoard(); kbuttons.forEach(drawKBtn); }
+    const hot = vr.on ? gaze.obj : hoverObj;
+    kbuttons.forEach(k => k.mesh.scale.setScalar(k.mesh === hot ? 1.08 : 1));
+  }
+  function frameUpdate(dt){ applyCamera(); updateGaze(dt); updateKiosk(dt); }
+
+  /* ---------- PC: 드래그로 둘러보기 · 클릭으로 조작 ---------- */
+  let drag = null;
+  function pickAt(cx, cy){
+    const r = cvs.getBoundingClientRect();
+    mouseV.set((cx - r.left)/r.width*2 - 1, -((cy - r.top)/r.height)*2 + 1);
+    ray.setFromCamera(mouseV, camera);
+    return ray.intersectObjects(clickables, false)[0] || null;
+  }
+  cvs.addEventListener('pointerdown', e => {
+    drag = {x:e.clientX, y:e.clientY, lx:e.clientX, ly:e.clientY, moved:false};
+    glide.t = 1;
+    try{ cvs.setPointerCapture(e.pointerId); }catch(_){}
+    cvs.style.cursor = 'grabbing';
+  });
+  cvs.addEventListener('pointermove', e => {
+    if(drag){
+      const dx = e.clientX - drag.lx, dy = e.clientY - drag.ly; drag.lx = e.clientX; drag.ly = e.clientY;
+      if(Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 5) drag.moved = true;
+      if(drag.moved){
+        const k = 0.0045*(vr.on ? 1 : view.fov/PC_FOV);
+        view.yaw += dx*k;
+        if(!(vr.on && vr.gyro)) view.pitch = Math.max(-1.25, Math.min(1.25, view.pitch + dy*k));
+      }
+    } else if(!vr.on){
+      const h = pickAt(e.clientX, e.clientY);
+      hoverObj = h ? h.object : null;
+      cvs.style.cursor = h ? 'pointer' : 'grab';
+    }
+  });
+  function endDrag(e){
+    const d = drag; drag = null; cvs.style.cursor = hoverObj ? 'pointer' : 'grab';
+    if(!d || d.moved || !e) return;
+    if(vr.on){ if(gaze.obj) doAction(gaze.obj.userData.action); return; }   // Cardboard 버튼/화면 탭 = 즉시 선택
+    const h = pickAt(e.clientX, e.clientY);
+    if(h) doAction(h.object.userData.action);
+  }
+  cvs.addEventListener('pointerup', endDrag);
+  cvs.addEventListener('pointercancel', () => { drag = null; });
+  cvs.addEventListener('pointerleave', () => { if(!drag) hoverObj = null; });
+  function zoom(d){ view.fov = Math.max(22, Math.min(80, view.fov + d)); }
+  cvs.addEventListener('wheel', e => { if(!(e.ctrlKey || e.metaKey)) return; e.preventDefault(); zoom(e.deltaY*0.05); }, {passive:false});
+  document.getElementById('zoom-in').addEventListener('click', () => zoom(-8));
+  document.getElementById('zoom-out').addEventListener('click', () => zoom(8));
+
+  /* ---------- 모드 전환: PC ↔ VR(Google Cardboard) ---------- */
+  const elBtnPC = document.getElementById('btn-pc'), elBtnVR = document.getElementById('btn-vr');
+  const elVrExit = document.getElementById('vr-exit'), elModeNote = document.getElementById('mode-note');
+  const NOTE_PC = '현재 PC 모드 · 공장 중앙에서 드래그로 둘러보고, 설비를 클릭해 조작합니다.';
+  const NOTE_VR = '현재 VR 모드 · 휴대폰을 카드보드에 끼우고 고개를 돌려 둘러보세요. 버튼을 1.5초 응시하면 선택됩니다.';
+  let wakeLock = null, pcSaved = null, devBound = false;
+  function setModeUI(m){
+    elBtnPC.classList.toggle('active', m === 'pc'); elBtnVR.classList.toggle('active', m === 'vr');
+    elBtnPC.setAttribute('aria-pressed', m === 'pc'); elBtnVR.setAttribute('aria-pressed', m === 'vr');
+    elModeNote.textContent = m === 'pc' ? NOTE_PC : NOTE_VR;
+  }
+  function onDevice(e){
+    if(e.alpha === null || e.alpha === undefined || e.beta === null || e.beta === undefined) return;
+    dev.alpha = e.alpha; dev.beta = e.beta; dev.gamma = e.gamma; dev.has = true;
+  }
+  async function enterVR(){
+    if(vr.on) return;
+    // 권한 요청·전체화면은 사용자 터치 직후(제스처 안)에서 바로 호출해야 한다
+    let permP = null, fsP = null;
+    try{ if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') permP = DeviceOrientationEvent.requestPermission(); }catch(_){}
+    try{ const f = viewerEl.requestFullscreen || viewerEl.webkitRequestFullscreen; if(f) fsP = f.call(viewerEl); }catch(_){}
+    Promise.resolve(fsP).then(() => { try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }catch(_){} }).catch(() => {});
+    try{ if('wakeLock' in navigator) navigator.wakeLock.request('screen').then(l => { wakeLock = l; }).catch(() => {}); }catch(_){}
+    let perm = 'granted';
+    if(permP){ try{ perm = await permP; }catch(_){ perm = 'denied'; } }
+    pcSaved = {pos:view.pos.clone(), yaw:view.yaw, pitch:view.pitch, fov:view.fov};
+    dev.has = false;
+    if(!devBound){ window.addEventListener('deviceorientation', onDevice, true); devBound = true; }
+    vr.on = true; vr.gyro = false;
+    viewerEl.classList.add('vr-fixed'); document.documentElement.classList.add('vr-lock');
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    resizeViewer(); setModeUI('vr');
+    await new Promise(r => setTimeout(r, 500));          // 자이로 첫 값 대기
+    if(!vr.on) return;
+    vr.gyro = (perm === 'granted') && dev.has;
+    goView('center');
+    if(!vr.gyro) elModeNote.textContent = '모션 센서를 사용할 수 없어 터치 드래그로 시선을 움직입니다.';
+  }
+  function exitVR(){
+    if(!vr.on) return;
+    vr.on = false; vr.gyro = false;
+    viewerEl.classList.remove('vr-fixed'); document.documentElement.classList.remove('vr-lock');
+    try{ if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); else if(document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen(); }catch(_){}
+    try{ if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); }catch(_){}
+    if(wakeLock){ try{ wakeLock.release(); }catch(_){} wakeLock = null; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    resizeViewer(); reticle.visible = false; gaze.obj = null;
+    if(pcSaved){ view.pos.copy(pcSaved.pos); view.yaw = pcSaved.yaw; view.pitch = pcSaved.pitch; view.fov = pcSaved.fov; placeKiosk(view.pos, view.yaw); }
+    glide.t = 1; setModeUI('pc');
+  }
+  elBtnVR.addEventListener('click', () => { document.getElementById('viewer').scrollIntoView({block:'start'}); enterVR(); });
+  elBtnPC.addEventListener('click', exitVR);
+  elVrExit.addEventListener('click', exitVR);
+  document.addEventListener('fullscreenchange', () => { if(vr.on && !document.fullscreenElement) exitVR(); });
+  document.addEventListener('webkitfullscreenchange', () => { if(vr.on && !document.webkitFullscreenElement) exitVR(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && vr.on) exitVR(); });
+  setModeUI('pc');
+
+
+  /* =========================================================
+     13. MAIN ANIMATION LOOP
+  ========================================================= */
+  const clock = new THREE.Clock();
+
+  function animate(){
+    requestAnimationFrame(animate);
+    const delta = Math.min(clock.getDelta(), 0.05);
+
+    const beltActive = STATE.isRunning && !STATE.isProcessing;
+
+    if(beltActive){
+      // move belt tread bars (Z axis recycle -> rolling illusion)
+      const step = STATE.beltSpeed * delta;
+      for(let i=0;i<beltBars.length;i++){
+        const bar = beltBars[i];
+        bar.position.z += step;
+        if(bar.position.z > CONVEYOR.zEnd){
+          bar.position.z -= (CONVEYOR.zEnd - CONVEYOR.zStart + BAR_SPACING);
+        }
+      }
+
+      // move boxes that are actively traveling (not waiting/ejecting/done)
+      for(let i=0;i<boxQueue.length;i++){
+        const b = boxQueue[i];
+        if(b.state === 'moving'){
+          b.group.position.z += step;
+          // gentle bounce for realism
+          b.group.rotation.y = Math.sin(performance.now()*0.002 + b.id) * 0.01;
+        }
+      }
+    }
+
+    // sensor detection check (only when not already processing)
+    if(!STATE.isProcessing){
+      for(let i=0;i<boxQueue.length;i++){
+        const b = boxQueue[i];
+        if(b.state === 'moving' && !b.triggered && b.group.position.z >= SENSOR_Z){
+          handleSensorTrigger(b);
+          break;
+        }
+      }
+    }
+
+    // remove boxes that passed the end of the conveyor (normal pass-through)
+    for(let i=boxQueue.length-1;i>=0;i--){
+      const b = boxQueue[i];
+      if(b.state === 'moving' && b.group.position.z > CONVEYOR.zEnd + 0.8){
+        scene.remove(b.group);
+        b.removed = true;
+        if(!b.isDefect){
+          STATE.passCount++;
+          updateCounters();
+        }
+      }
+    }
+
+    // garbage collect finished boxes from the queue
+    if(boxQueue.length > 40){
+      boxQueue = boxQueue.filter(b => !b.removed);
+    } else {
+      boxQueue = boxQueue.filter(b => !b.removed);
+    }
+
+    doorAng += ((STATE.guardOpen ? -1.75 : 0) - doorAng) * Math.min(1, delta*6);   // door swing (independent of GSAP pause)
+    guardDoor.rotation.y = doorAng;
+    updateDemo(delta);
+    updateCam(delta);
+    zoneGlow.material.color.set(STATE.guardOpen ? 0xff2b2b : 0xffcc00);
+    zoneGlow.material.opacity = STATE.guardOpen ? 0.42 + 0.22*Math.sin(performance.now()*0.008) : 0.14;
+
+    updateTowerLamp(performance.now());
+    refreshPLC();
+    updateWires(delta);
+    frameUpdate(delta);
+    render();
+  }
+
+  animate();
+
+})();
+
+</script>
+</body>
+</html>
