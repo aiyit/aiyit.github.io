@@ -184,71 +184,124 @@
 </section>
 
 <section class="mb-2 section bg-pattern" id="x3d">
-  <div class="flex items-center justify-start space-x-2 mb-2">
-    <h2 class="text-xl font-bold underline text-white">AI소프트웨어과 VR/AR</h2>
-    <div class="text-sm text-white">---> 드래그 또는 입체안경은 스마트폰을 세로방향.</div>
-  </div>
-
-  <div id="x3dControls" class="mb-3 flex flex-wrap gap-2">
-    <button onclick="window.open('3d/11-2groupbutterFlying_around.html', '_blank', 'noopener,noreferrer')">나비 애니메이션01</button>
-    <button onclick="window.open('3d/11-5aspot_ani.html', '_blank', 'noopener,noreferrer')">서치라이트</button>
-    <button onclick="window.open('3d/11-6pick_changebutter.html', '_blank', 'noopener,noreferrer')">색상 바꾸기</button>
-    <button onclick="window.open('3d/index_elec_factory.html', '_blank', 'noopener,noreferrer')">전기설비 PLC</button>
-
-    <!-- 학생 홈페이지에서 이동된 VR/AR 콘텐츠 -->
-    <button onclick="window.open('3d/semi8_process1.html', '_blank', 'noopener,noreferrer')">반도체 8대공정-웨이퍼제조</button>
-    <button onclick="window.open('3d/semiconductor-8-process.html', '_blank', 'noopener,noreferrer')">반도체 8대공정 전체</button>
-    <button onclick="window.open('3d/switchboard-simulator.html', '_blank', 'noopener,noreferrer')">전기배전반 3D</button>
-    <button onclick="window.open('backgroundImg.html', '_blank', 'noopener,noreferrer')">3D 모델링</button>
-    <button onclick="window.open('aiCnct/OSI701.html', '_blank', 'noopener,noreferrer')">OSI 7계층 기능</button>
-    <button onclick="window.open('aiCnct/generator.html', '_blank', 'noopener,noreferrer')">직류발전기 원리</button>
-  </div>
-
-  <div class="text-base overflow-hidden transition-all duration-500 text-white" id="x3dText" style="max-height:300px;">
-    <div class="grid grid-cols-1 gap-1 text-white">
-      <div id="x3dContent" class="w-full h-48 sm:h-48" style="min-height:250px;"></div>
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+    <div>
+      <h2 class="text-xl font-bold underline text-white">AI소프트웨어과 VR/AR</h2>
+      <p class="text-sm text-blue-100 mt-1">가상현실 · 3D 디지털 트윈 · 인터랙티브 콘텐츠</p>
     </div>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.2.js"></script>
-    <script type="text/javascript" src="https://www.x3dom.org/x3dom/release/x3dom.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://www.x3dom.org/x3dom/release/x3dom.css" />
-    <script>
-      function loadX3D(fileName) {
-        fetch(fileName)
-          .then(response => {
-            if (!response.ok) throw new Error("로드 실패");
-            return response.text();
-          })
-          .then(data => {
-            const container = document.getElementById('x3dContent');
-            container.innerHTML = data;
-            if (typeof x3dom !== 'undefined') x3dom.reload();
-
-            setTimeout(() => {
-              const time = container.querySelector('#time');
-              const rtime = container.querySelector('#rtime');
-              if (time && rtime) {
-                time.setAttribute('loop', 'true');
-                time.setAttribute('startTime', '0');
-                rtime.setAttribute('loop', 'true');
-                rtime.setAttribute('startTime', '0');
-              }
-            }, 200);
-          })
-          .catch(error => console.error(error));
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        loadX3D('11-2groupbutterFlying_around.html');
-      });
-    </script>
+    <div class="text-sm text-white">PC에서는 마우스·키보드, 스마트폰에서는 터치·입체안경으로 체험</div>
   </div>
 
-  <div class="mt-3 text-white"><button class="text-white underline text-sm focus:outline-none" id="x3dToggle">더보기 +</button></div>
-  <div class="mt-1 text-white">
-    <a href="https://lskvr.github.io" target="_blank" class="text-sm underline text-white">재학생 VR 홈페이지</a>
+  <!-- 초기 화면: 나비 애니메이션 -->
+  <div class="bg-black bg-opacity-30 rounded-xl p-2 sm:p-3 shadow-lg mb-4">
+    <div class="flex items-center justify-between mb-2 px-1">
+      <h3 class="text-base sm:text-lg font-semibold text-white">🦋 나비 애니메이션</h3>
+      <span class="text-xs sm:text-sm text-blue-100">초기 체험 화면</span>
+    </div>
+    <iframe
+      src="3d/11-2groupbutterFlying_around.html"
+      title="나비 애니메이션 VR/AR 체험"
+      class="w-full rounded-lg bg-black"
+      style="height:420px; border:0;"
+      loading="eager"
+      allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer"
+      allowfullscreen>
+    </iframe>
   </div>
+
+  <!-- VR/AR 메뉴 -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+    <button class="vr-card" onclick="window.open('3d/11-2groupbutterFlying_around.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">🦋</span>
+      <span class="vr-title">나비 애니메이션</span>
+      <span class="vr-desc">3D 나비 비행</span>
+    </button>
+    <button class="vr-card" onclick="window.open('3d/11-5aspot_ani.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">🔦</span>
+      <span class="vr-title">서치라이트</span>
+      <span class="vr-desc">빛과 공간 체험</span>
+    </button>
+    <button class="vr-card" onclick="window.open('3d/11-6pick_changebutter.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">🎨</span>
+      <span class="vr-title">나비 색상 변경</span>
+      <span class="vr-desc">인터랙션 체험</span>
+    </button>
+    <button class="vr-card" onclick="window.open('3d/index_elec_factory.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">⚡</span>
+      <span class="vr-title">전기설비 PLC</span>
+      <span class="vr-desc">전기 설비 3D</span>
+    </button>
+    <button class="vr-card" onclick="window.open('3d/semi8_process1.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">💿</span>
+      <span class="vr-title">웨이퍼 제조</span>
+      <span class="vr-desc">반도체 1공정</span>
+    </button>
+    <button class="vr-card" onclick="window.open('3d/semiconductor-8-process.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">🏭</span>
+      <span class="vr-title">반도체 8대공정</span>
+      <span class="vr-desc">전체 공정 체험</span>
+    </button>
+    <button class="vr-card" onclick="window.open('3d/switchboard-simulator.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">🔌</span>
+      <span class="vr-title">전기배전반 3D</span>
+      <span class="vr-desc">배전반 시뮬레이션</span>
+    </button>
+    <button class="vr-card" onclick="window.open('backgroundImg.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">🧊</span>
+      <span class="vr-title">3D 모델링</span>
+      <span class="vr-desc">3D 모델 통합</span>
+    </button>
+    <button class="vr-card" onclick="window.open('aiCnct/OSI701.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">🌐</span>
+      <span class="vr-title">OSI 7계층</span>
+      <span class="vr-desc">네트워크 3D</span>
+    </button>
+    <button class="vr-card" onclick="window.open('aiCnct/generator.html', '_blank', 'noopener,noreferrer')">
+      <span class="vr-icon">⚙️</span>
+      <span class="vr-title">직류발전기</span>
+      <span class="vr-desc">발전 원리 체험</span>
+    </button>
+  </div>
+
+  <div class="mt-4 text-center">
+    <a href="https://lskvr.github.io" target="_blank" rel="noopener noreferrer"
+       class="inline-block px-5 py-2 rounded-lg bg-gray-800 hover:bg-blue-600 text-white text-sm font-semibold transition">
+      🎓 재학생 VR 홈페이지
+    </a>
+  </div>
+
+  <style>
+    .vr-card {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:112px;
+      padding:12px 8px;
+      border-radius:12px;
+      border:1px solid rgba(147,197,253,.35);
+      background:rgba(15,23,42,.78);
+      color:#fff;
+      cursor:pointer;
+      transition:transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .vr-card:hover {
+      transform:translateY(-3px);
+      background:rgba(30,64,175,.72);
+      border-color:rgba(147,197,253,.85);
+      box-shadow:0 8px 20px rgba(0,0,0,.25);
+    }
+    .vr-icon { font-size:1.8rem; line-height:1; margin-bottom:7px; }
+    .vr-title { font-size:.92rem; font-weight:700; text-align:center; }
+    .vr-desc { font-size:.72rem; color:#bfdbfe; margin-top:3px; text-align:center; }
+    @media (max-width:640px) {
+      .vr-card { min-height:100px; padding:9px 5px; }
+      .vr-icon { font-size:1.55rem; }
+      .vr-title { font-size:.8rem; }
+      .vr-desc { font-size:.65rem; }
+    }
+  </style>
 </section>
-
 <section class="mb-2 section" id="web">
   <h2 class="text-xl font-bold mb-2 text-left underline underline-offset-4 decoration-2 text-white">AI 웹프로그래밍</h2>
   <div class="overflow-hidden transition-all duration-500 text-white" id="webText" style="max-height:250px;">
