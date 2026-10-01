@@ -184,83 +184,96 @@
 </section>
 
 <section class="mb-2 section bg-pattern" id="x3d">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-    <div>
-      <h2 class="text-xl font-bold underline text-white">AI소프트웨어과 VR/AR</h2>
-      <p class="text-sm text-blue-100 mt-1">가상현실 · 3D 디지털 트윈 · 인터랙티브 콘텐츠</p>
-    </div>
-    <div class="text-sm text-white">PC에서는 마우스·키보드, 스마트폰에서는 터치·입체안경으로 체험</div>
+  <div class="mb-4">
+    <h2 class="text-xl font-bold underline text-white">AI소프트웨어과 VR/AR</h2>
+    <p class="text-sm text-blue-100 mt-1">X3DOM과 Three.js를 실행 환경별로 분리하여 안정적으로 체험합니다.</p>
   </div>
 
-  <!-- 초기 화면: 나비 애니메이션 -->
-  <div class="bg-black bg-opacity-30 rounded-xl p-2 sm:p-3 shadow-lg mb-4">
+  <!-- X3DOM 초기 체험 영역 -->
+  <div class="bg-black bg-opacity-30 rounded-xl p-2 sm:p-3 shadow-lg mb-5">
     <div class="flex items-center justify-between mb-2 px-1">
-      <h3 class="text-base sm:text-lg font-semibold text-white">🦋 나비 애니메이션</h3>
-      <span class="text-xs sm:text-sm text-blue-100">초기 체험 화면</span>
+      <div>
+        <h3 class="text-base sm:text-lg font-semibold text-white">🧩 X3DOM 체험</h3>
+        <p class="text-xs text-blue-200 mt-1">X3D 기반 애니메이션·조명·Picking</p>
+      </div>
+      <button class="vr-open-btn" onclick="window.open('3d/11-2groupbutterFlying_around.html', '_blank', 'noopener,noreferrer')">
+        새 창에서 실행 ↗
+      </button>
     </div>
+
     <iframe
       src="3d/11-2groupbutterFlying_around.html"
-      title="나비 애니메이션 VR/AR 체험"
+      title="X3DOM 나비 애니메이션"
       class="w-full rounded-lg bg-black"
-      style="height:420px; border:0;"
+      style="height:360px; border:0;"
       loading="eager"
       allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer"
       allowfullscreen>
     </iframe>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
+      <button class="vr-card x3dom-card" onclick="window.open('3d/11-2groupbutterFlying_around.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">🦋</span>
+        <span class="vr-title">나비 애니메이션</span>
+        <span class="vr-desc">X3DOM Animation</span>
+      </button>
+      <button class="vr-card x3dom-card" onclick="window.open('3d/11-5aspot_ani.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">🔦</span>
+        <span class="vr-title">서치라이트</span>
+        <span class="vr-desc">X3DOM SpotLight</span>
+      </button>
+      <button class="vr-card x3dom-card" onclick="window.open('3d/11-6pick_changebutter.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">🎨</span>
+        <span class="vr-title">색상 변경</span>
+        <span class="vr-desc">X3DOM Picking</span>
+      </button>
+    </div>
   </div>
 
-  <!-- VR/AR 메뉴 -->
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-    <button class="vr-card" onclick="window.open('3d/11-2groupbutterFlying_around.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">🦋</span>
-      <span class="vr-title">나비 애니메이션</span>
-      <span class="vr-desc">3D 나비 비행</span>
-    </button>
-    <button class="vr-card" onclick="window.open('3d/11-5aspot_ani.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">🔦</span>
-      <span class="vr-title">서치라이트</span>
-      <span class="vr-desc">빛과 공간 체험</span>
-    </button>
-    <button class="vr-card" onclick="window.open('3d/11-6pick_changebutter.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">🎨</span>
-      <span class="vr-title">색상 변경</span>
-      <span class="vr-desc">인터랙션 체험</span>
-    </button>
-    <button class="vr-card" onclick="window.open('3d/index_elec_factory.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">⚡</span>
-      <span class="vr-title">전기설비 PLC</span>
-      <span class="vr-desc">전기 설비 3D</span>
-    </button>
-    <button class="vr-card" onclick="window.open('3d/semi8_process1.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">💿</span>
-      <span class="vr-title">웨이퍼 제조</span>
-      <span class="vr-desc">반도체 1공정</span>
-    </button>
-    <button class="vr-card" onclick="window.open('3d/semiconductor-8-process.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">🏭</span>
-      <span class="vr-title">반도체 8대공정</span>
-      <span class="vr-desc">전체 공정 체험</span>
-    </button>
-    <button class="vr-card" onclick="window.open('3d/switchboard-simulator.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">🔌</span>
-      <span class="vr-title">전기배전반 3D</span>
-      <span class="vr-desc">배전반 시뮬레이션</span>
-    </button>
-    <button class="vr-card" onclick="window.open('backgroundImg.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">🧊</span>
-      <span class="vr-title">3D 모델링</span>
-      <span class="vr-desc">3D 모델 통합</span>
-    </button>
-    <button class="vr-card" onclick="window.open('aiCnct/OSI701.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">🌐</span>
-      <span class="vr-title">OSI 7계층</span>
-      <span class="vr-desc">네트워크 3D</span>
-    </button>
-    <button class="vr-card" onclick="window.open('aiCnct/generator.html', '_blank', 'noopener,noreferrer')">
-      <span class="vr-icon">⚙️</span>
-      <span class="vr-title">직류발전기</span>
-      <span class="vr-desc">발전 원리 체험</span>
-    </button>
+  <!-- Three.js 체험 영역 -->
+  <div class="bg-black bg-opacity-30 rounded-xl p-2 sm:p-3 shadow-lg">
+    <div class="mb-3 px-1">
+      <h3 class="text-base sm:text-lg font-semibold text-white">⚡ Three.js 체험</h3>
+      <p class="text-xs text-blue-200 mt-1">WebGL 기반 3D · 디지털 트윈 · 전기/반도체 시뮬레이션</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+      <button class="vr-card three-card" onclick="window.open('3d/index_elec_factory.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">⚡</span>
+        <span class="vr-title">전기설비 PLC</span>
+        <span class="vr-desc">Three.js 3D</span>
+      </button>
+      <button class="vr-card three-card" onclick="window.open('3d/semi8_process1.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">💿</span>
+        <span class="vr-title">웨이퍼 제조</span>
+        <span class="vr-desc">반도체 1공정</span>
+      </button>
+      <button class="vr-card three-card" onclick="window.open('3d/semiconductor-8-process.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">🏭</span>
+        <span class="vr-title">반도체 8대공정</span>
+        <span class="vr-desc">디지털 트윈</span>
+      </button>
+      <button class="vr-card three-card" onclick="window.open('3d/switchboard-simulator.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">🔌</span>
+        <span class="vr-title">전기배전반 3D</span>
+        <span class="vr-desc">배전반 시뮬레이션</span>
+      </button>
+      <button class="vr-card three-card" onclick="window.open('backgroundImg.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">🧊</span>
+        <span class="vr-title">3D 모델링</span>
+        <span class="vr-desc">3D 모델 통합</span>
+      </button>
+      <button class="vr-card three-card" onclick="window.open('aiCnct/OSI701.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">🌐</span>
+        <span class="vr-title">OSI 7계층</span>
+        <span class="vr-desc">네트워크 3D</span>
+      </button>
+      <button class="vr-card three-card" onclick="window.open('aiCnct/generator.html', '_blank', 'noopener,noreferrer')">
+        <span class="vr-icon">⚙️</span>
+        <span class="vr-title">직류발전기</span>
+        <span class="vr-desc">발전 원리 체험</span>
+      </button>
+    </div>
   </div>
 
   <div class="mt-4 text-center">
@@ -276,7 +289,7 @@
       flex-direction:column;
       align-items:center;
       justify-content:center;
-      min-height:112px;
+      min-height:108px;
       padding:12px 8px;
       border-radius:12px;
       border:1px solid rgba(147,197,253,.35);
@@ -291,14 +304,24 @@
       border-color:rgba(147,197,253,.85);
       box-shadow:0 8px 20px rgba(0,0,0,.25);
     }
+    .x3dom-card { border-color:rgba(129,140,248,.45); }
+    .three-card { border-color:rgba(34,211,238,.35); }
+    .vr-open-btn {
+      padding:6px 10px;
+      border-radius:8px;
+      background:rgba(30,64,175,.8);
+      color:#fff;
+      font-size:.75rem;
+      font-weight:600;
+    }
     .vr-icon { font-size:1.8rem; line-height:1; margin-bottom:7px; }
-    .vr-title { font-size:.92rem; font-weight:700; text-align:center; }
-    .vr-desc { font-size:.72rem; color:#bfdbfe; margin-top:3px; text-align:center; }
+    .vr-title { font-size:.9rem; font-weight:700; text-align:center; }
+    .vr-desc { font-size:.7rem; color:#bfdbfe; margin-top:3px; text-align:center; }
     @media (max-width:640px) {
-      .vr-card { min-height:100px; padding:9px 5px; }
+      .vr-card { min-height:96px; padding:9px 5px; }
       .vr-icon { font-size:1.55rem; }
       .vr-title { font-size:.8rem; }
-      .vr-desc { font-size:.65rem; }
+      .vr-desc { font-size:.63rem; }
     }
   </style>
 </section>
