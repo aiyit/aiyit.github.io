@@ -78,6 +78,45 @@
 
   main{flex:1; min-width:0; padding:40px 48px 100px;}
 
+  .guide-link{
+    display:block;
+    margin:0 0 30px;
+    padding:16px;
+    background:linear-gradient(135deg,#242438,#2d2d49);
+    border:1px solid var(--blue);
+    border-radius:12px;
+    color:var(--text);
+    text-decoration:none;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+    transition:.2s;
+  }
+  .guide-link:hover{
+    transform:translateY(-2px);
+    border-color:var(--yellow);
+    background:#2a2a42;
+  }
+  .guide-link .guide-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+    font-weight:700;
+    color:var(--yellow);
+  }
+  .guide-link .guide-title span{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--blue);
+  }
+  .guide-link img{
+    display:block;
+    width:100%;
+    max-height:390px;
+    object-fit:contain;
+    border-radius:8px;
+    background:#fff;
+  }
+
   .hero{margin-bottom:56px;}
   .hero .kicker{
     font-family:var(--mono); color:var(--yellow); font-size:13px; letter-spacing:.08em;
@@ -123,7 +162,6 @@
   .scenario::before{content:'if'; font-family:var(--mono); color:var(--purple); font-weight:700; font-size:12px;
     background:#1c1c30; border:1px solid var(--line); border-radius:5px; padding:2px 7px; flex-shrink:0;}
 
-  /* flow diagram for if/else */
   .decision-flow{
     display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; font-family:var(--mono); font-size:13px;
   }
@@ -194,6 +232,7 @@
   @media (max-width: 900px){
     .explorer{display:none;}
     main{padding:28px 20px 80px;}
+    .guide-link img{max-height:300px;}
   }
 </style>
 </head>
@@ -221,13 +260,17 @@
   </nav>
 
   <main>
+    <a class="guide-link" href="if_else.png" target="_blank" rel="noopener" title="파이썬 제어문 핵심 정리 가이드 크게 보기">
+      <div class="guide-title">📌 파이썬 제어문 핵심 정리 가이드 <span>if · else · for · while · range</span></div>
+      <img src="if_else.png" alt="파이썬 제어문 핵심 정리 가이드">
+    </a>
+
     <div class="hero">
       <div class="kicker">AI소프트웨어과 · 3주차 강의노트</div>
       <h1><span class="py">조건문</span><span class="dot-y">.</span> if / elif / else</h1>
       <p>주어진 조건의 참(True) · 거짓(False)에 따라 프로그램의 흐름을 결정하는 조건문 — 비교·논리 연산자부터 중첩 if, 실전 예제까지 정리한 3주차 강의 자료입니다.</p>
     </div>
 
-    <!-- 1. 조건문이란 -->
     <section id="s1">
       <div class="sec-head"><span class="idx">01</span><h2>조건문이란?</h2></div>
       <p class="lead">
@@ -243,7 +286,6 @@
       </div>
     </section>
 
-    <!-- 2. 조건문 종류 -->
     <section id="s2">
       <div class="sec-head"><span class="idx">02</span><h2>조건문의 종류</h2></div>
       <table>
@@ -255,26 +297,23 @@
       </table>
     </section>
 
-    <!-- 3. 들여쓰기 -->
     <section id="s3">
       <div class="sec-head"><span class="idx">▶</span><h2>들여쓰기 (Indentation)</h2></div>
       <p class="lead">파이썬은 중괄호(<code style="color:var(--pink); font-family:var(--mono)">{}</code>) 대신 <b>들여쓰기(보통 공백 4칸)</b>로 코드 블록을 구분합니다.</p>
       <div class="code-frame">
         <div class="bar"><span class="file-dot"></span>indent.py</div>
         <pre><code class="language-python">score = 95
-        if score >= 90:
-          print("A학점")
-        print("프로그램 종료")</code>
-        <code class="language-python">score = input("목이 마른가요? (y or n으로 응답): "
-        if score == 'y':
-          print("물 드세요!")
-        print("갈증 해소!!")</code>
-        
+if score >= 90:
+    print("A학점")
+print("프로그램 종료")</code>
+<code class="language-python">score = input("목이 마른가요? (y or n으로 응답): ")
+if score == 'y':
+    print("물 드세요!")
+print("갈증 해소!!")</code>
         </pre>
       </div>
     </section>
 
-    <!-- 4. 비교 연산자 -->
     <section id="s4">
       <div class="sec-head"><span class="idx">04</span><h2>비교 연산자</h2></div>
       <table>
@@ -293,12 +332,11 @@ b = 20
 
 print(a == b)
 print(a != b)
-print(a > b)
-print(a < b)</code></pre>
+print(a &gt; b)
+print(a &lt; b)</code></pre>
       </div>
     </section>
 
-    <!-- 5. if 문법 3종 -->
     <section id="s5">
       <div class="sec-head"><span class="idx">▶</span><h2>if / if-else / if-elif-else 문법</h2></div>
 
@@ -312,7 +350,7 @@ print(a < b)</code></pre>
         <div class="bar"><span class="file-dot"></span>if_only.py</div>
         <pre><code class="language-python">age = 20
 
-if age >= 19:
+if age &gt;= 19:
     print("성인입니다.")</code></pre>
       </div>
 
@@ -329,14 +367,13 @@ if age >= 19:
         <div class="bar"><span class="file-dot"></span>if_else.py</div>
         <pre><code class="language-python">score = 85
 
-if score >= 60:
+if score &gt;= 60:
     print("합격")
 else:
     print("불합격")</code></pre>
-        <pre><code class="language-python">
-        age = 90
-        staus = "성인" if age >=19 else "청소년
-        print("성인")</code></pre>
+        <pre><code class="language-python">age = 90
+status = "성인" if age &gt;= 19 else "청소년"
+print(status)</code></pre>
       </div>
 
       <div class="subhead">if ~ elif ~ else 문법</div>
@@ -344,20 +381,19 @@ else:
         <div class="bar"><span class="file-dot"></span>if_elif_else.py</div>
         <pre><code class="language-python">score = 87
 
-if score >= 90:
+if score &gt;= 90:
     print("A")
-elif score >= 80:
+elif score &gt;= 80:
     print("B")
-elif score >= 70:
+elif score &gt;= 70:
     print("C")
-elif score >= 60:
+elif score &gt;= 60:
     print("D")
 else:
     print("F")</code></pre>
       </div>
     </section>
 
-    <!-- 6. 논리 연산자 -->
     <section id="s6">
       <div class="sec-head"><span class="idx">06</span><h2>논리 연산자</h2></div>
       <table>
@@ -371,7 +407,7 @@ else:
         <pre><code class="language-python">age = 22
 member = True
 
-if age >= 20 and member:
+if age &gt;= 20 and member:
     print("입장 가능합니다.")
 
 password=input('password:')
@@ -383,7 +419,6 @@ else:
       </div>
     </section>
 
-    <!-- 7. 중첩 if -->
     <section id="s7">
       <div class="sec-head"><span class="idx">▶</span><h2>중첩 if &amp; 리스트 조건 검사</h2></div>
       <div class="code-frame">
@@ -392,7 +427,7 @@ else:
 age = 25
 member = True
 
-if age >= 20:
+if age &gt;= 20:
     if member:
         print("할인 적용")
 
@@ -404,7 +439,6 @@ if "Python" in subjects:
       </div>
     </section>
 
-    <!-- 8. 실전 실습 -->
     <section id="s8">
       <div class="sec-head"><span class="idx">▶</span><h2>실전 실습 코드</h2></div>
 
@@ -413,7 +447,7 @@ if "Python" in subjects:
         <div class="bar"><span class="file-dot"></span>pass_check.py</div>
         <pre><code class="language-python">score = int(input("점수를 입력하세요 : "))
 
-if score >= 60:
+if score &gt;= 60:
     print("합격")
 else:
     print("불합격")</code></pre>
@@ -448,13 +482,13 @@ else:
         <pre><code class="language-python">name = input("이름 : ")
 score = int(input("점수 : "))
 
-if score >= 90:
+if score &gt;= 90:
     grade = "A"
-elif score >= 80:
+elif score &gt;= 80:
     grade = "B"
-elif score >= 70:
+elif score &gt;= 70:
     grade = "C"
-elif score >= 60:
+elif score &gt;= 60:
     grade = "D"
 else:
     grade = "F"
@@ -467,45 +501,43 @@ print(f"점수 : {score}")
 print(f"학점 : {grade}")
 print("=" * 35)</code></pre>
       </div>
-    </section>
-   <div class="subhead">비 관리 — 종합예제2</div>
+
+      <div class="subhead">BMI 관리 — 종합예제2</div>
       <div class="code-frame">
-        <div class="bar"><span class="file-dot"></span>grade_manager.py</div>
+        <div class="bar"><span class="file-dot"></span>bmi_manager.py</div>
         <pre><code class="language-python">height_cm = float(input("키를 입력하세요 (cm): "))
 weight_kg = float(input("체중을 입력하세요 (kg): "))
 
 # 1. 입력 데이터 유효성 검사 (Data Validation)
-if height_cm <= 0 or weight_kg <= 0:
+if height_cm &lt;= 0 or weight_kg &lt;= 0:
     print("오류: 키와 체중은 0보다 큰 양수여야 합니다.")
-elif height_cm > 250 or weight_kg > 300:
+elif height_cm &gt; 250 or weight_kg &gt; 300:
     print("오류: 입력값이 정상 수치 범위를 벗어났습니다.")
 else:
     # 2. BMI 계산 (m 단위 변환 필요)
     height_m = height_cm / 100
     bmi = weight_kg / (height_m ** 2)
-    
+
     # 3. BMI 판정
-    if bmi < 18.5:
+    if bmi &lt; 18.5:
         category = "저체중"
-    elif 18.5 <= bmi < 23.0:
+    elif 18.5 &lt;= bmi &lt; 23.0:
         category = "정상"
-    elif 23.0 <= bmi < 25.0:
+    elif 23.0 &lt;= bmi &lt; 25.0:
         category = "과체중 (비만 전단계)"
-    elif 25.0 <= bmi < 30.0:
+    elif 25.0 &lt;= bmi &lt; 30.0:
         category = "1단계 비만"
     else:
         category = "2단계 이상 고도비만"
-        
+
     print(f"\n계산된 BMI: {bmi:.2f}")
     print(f"판정 결과: [{category}] 입니다.")</code></pre>
       </div>
     </section>
 
-    <!-- 9. 과제 -->
     <section id="s9">
       <div class="sec-head"><span class="idx">✎</span><h2>실습 과제 1~5</h2></div>
       <div class="hw-grid">
-
         <div class="hw-card">
           <div class="hw-title"><span class="hw-num">과제 1</span><h4>기초 — 성인 판별</h4></div>
           <p class="desc">사용자의 나이를 입력받아 다음과 같이 출력하세요.</p>
@@ -546,7 +578,6 @@ else:
 
 결과 : 100</div>
         </div>
-
       </div>
     </section>
 
