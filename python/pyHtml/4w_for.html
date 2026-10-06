@@ -77,7 +77,45 @@
   .explorer a.hw-link .num{color:var(--pink);}
 
   main{flex:1; min-width:0; padding:40px 48px 100px;}
-
+ 
+  .guide-link{
+    display:block;
+    margin:0 0 30px;
+    padding:16px;
+    background:linear-gradient(135deg,#242438,#2d2d49);
+    border:1px solid var(--blue);
+    border-radius:12px;
+    color:var(--text);
+    text-decoration:none;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+    transition:.2s;
+  }
+  .guide-link:hover{
+    transform:translateY(-2px);
+    border-color:var(--yellow);
+    background:#2a2a42;
+  }
+  .guide-link .guide-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+    font-weight:700;
+    color:var(--yellow);
+  }
+  .guide-link .guide-title span{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--blue);
+  }
+  .guide-link img{
+    display:block;
+    width:100%;
+    max-height:390px;
+    object-fit:contain;
+    border-radius:8px;
+    background:#fff;
+  }
   .hero{margin-bottom:56px;}
   .hero .kicker{
     font-family:var(--mono); color:var(--yellow); font-size:13px; letter-spacing:.08em;
