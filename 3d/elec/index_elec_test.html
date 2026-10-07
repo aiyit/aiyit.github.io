@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전기기능사 실기 연계 VR 디지털 트윈 실습</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap">
+<style>
+:root{--bg:#f1f5f9;--fg:#1b2733;--sub:#5b6b7b;--card:#fff;--bd:#d3dde8;--ac:#2a7fd4;--hd:#12324f}
+@media (prefers-color-scheme:dark){:root{--bg:#10171e;--fg:#e8eef5;--sub:#9aa9b8;--card:#18222c;--bd:#2c3a4a;--ac:#4aa0f0;--hd:#0b1f33}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;line-height:1.6}
+header{background:var(--hd);color:#fff;padding:32px 20px 28px}
+.w{max-width:1040px;margin:0 auto}
+header h1{margin:0 0 6px;font-size:clamp(22px,4vw,30px)}
+header p{margin:0;opacity:.85}
+.stat{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.stat span{background:rgba(255,255,255,.14);border-radius:999px;padding:4px 12px;font-size:13px}
+main{padding:22px 20px 40px}
+h2{font-size:18px;margin:0 0 4px}
+.lead{color:var(--sub);margin:0 0 16px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.card.on{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.no{font-weight:700;color:var(--ac)}
+.lv{font-size:12px;border-radius:999px;padding:2px 10px;border:1px solid var(--bd);color:var(--sub)}
+.card h3{margin:0;font-size:17px}
+.card p{margin:0;font-size:14px}
+.k{font-size:13px;color:var(--sub)}
+.k b{color:var(--fg)}
+.btn{margin-top:auto;display:block;text-align:center;border-radius:8px;padding:9px 12px;font-size:14px;text-decoration:none;font-weight:700}
+.btn.go{background:var(--ac);color:#fff}
+.btn.soon{background:transparent;border:1px dashed var(--bd);color:var(--sub);font-weight:400;cursor:not-allowed}
+.note{margin-top:24px;font-size:13px;color:var(--sub);border-top:1px solid var(--bd);padding-top:12px}
+</style>
+</head>
+<body>
+<header><div class="w">
+  <h1>⚡ 전기기능사 실기 연계 VR 디지털 트윈 실습</h1>
+  <p>전기설비 3D 구현 · 결선 실습 · 오류·위험 체험 · 점수 기록 (PC / WebXR VR)</p>
+  <div class="stat"><span id="s1"></span><span id="s2"></span><span>학습 흐름: 관찰 → 결선 → 오류 → 안전조치 → 평가</span></div>
+</div></header>
+<main><div class="w">
+  <h2>실습 목록</h2>
+  <p class="lead">결선 실습은 단자를 클릭해 배선하고, 검사 결과에 따라 오류 메시지와 점수를 확인합니다. 나머지 실습은 순차적으로 연결할 예정입니다.</p>
+  <div class="grid" id="grid"></div>
+  <p class="note">※ 본 실습은 교육용 시뮬레이션입니다. 실제 전기 작업은 관련 전기안전 규정과 전문가의 지도하에 수행해야 합니다.<br>
+  ※ 새 실습을 연결할 때는 아래 스크립트의 LABS 배열에서 해당 항목의 <code>href</code>에 파일명만 입력하면 됩니다.</p>
+</div></main>
+<script>
+// href 를 채우면 해당 카드가 자동으로 '실습 시작' 버튼으로 바뀝니다.
+const LABS=[
+ {t:'3상 유도전동기 결선 실습',lv:'기본',d:'명판과 전원 전압을 보고 Y/Δ 결선과 접지선을 직접 연결합니다.',
+  k:'Y·Δ 결선, 명판 읽기, 접지, 상순(역회전)',e:'전원·권선 단락, 결상, 과전압, 접지 미연결',href:'motor3State.html'},
+ {t:'정·역회전 인터록 결선 실습',lv:'MVP',d:'정회전·역회전 접촉기를 동시에 투입하지 못하게 하는 인터록 회로를 결선합니다.',
+  k:'MC 2개, 인터록(b접점), 주회로 상 교체',e:'인터록 누락 → 상간 단락, 주회로 상 교체 오류',href:''},
+ {t:'자기유지 기동·정지 회로',lv:'MVP',d:'푸시버튼과 전자접촉기로 기동·정지 자기유지 회로를 구성하고 표시등을 연결합니다.',
+  k:'PB, MC 코일·보조접점, 램프 표시',e:'자기유지 접점 누락, 정지 PB 직렬 오류, 코일 단락',href:''},
+ {t:'Y-Δ 자동 기동 회로',lv:'핵심',d:'타이머로 Y 기동에서 Δ 운전으로 자동 전환하는 회로를 결선합니다.',
+  k:'타이머, Y용·Δ용 MC, 기동전류 저감',e:'Y·Δ 동시 투입(전원 단락), 타이머 전환 불발',href:''},
+ {t:'플리커·부저 경보 회로',lv:'핵심',d:'타이머 2개로 램프 점멸과 부저 경보 회로를 구성합니다.',
+  k:'타이머 2개, a/b 접점, 경보 출력',e:'타이머 접점 a/b 혼동, 부저가 멈추지 않는 결선',href:''},
+ {t:'과전류 계전기(EOCR) 보호 회로',lv:'핵심',d:'과부하 시 제어회로를 차단하는 보호 계전기를 결선하고 트립·복귀를 확인합니다.',
+  k:'EOCR 접점, 과부하 트립, 설정 전류',e:'보호 접점 미연결(과부하 소손), 설정 전류 오류',href:''},
+ {t:'접지·누전차단기(ELB) 감전 체험',lv:'고급',d:'접지 유무에 따른 누전 상황과 ELB 동작을 비교하며 감전 위험을 체험합니다.',
+  k:'접지, 누전 전류, ELB 동작',e:'접지 없음+누전 → 감전 위험, ELB 미동작',href:''}
+];
+const g=document.getElementById('grid');
+LABS.forEach((x,i)=>{
+  const on=!!x.href,c=document.createElement('div');c.className='card'+(on?' on':'');
+  c.innerHTML='<div class="top"><span class="no">실습 '+(i+1)+'</span><span class="lv">'+x.lv+'</span></div>'+
+   '<h3>'+x.t+'</h3><p>'+x.d+'</p>'+
+   '<div class="k"><b>학습 포인트</b> '+x.k+'</div><div class="k"><b>체험 오류</b> '+x.e+'</div>'+
+   (on?'<a class="btn go" target="_blank" rel="noopener" href="'+x.href+'">▶ 실습 시작</a>':'<span class="btn soon">추후 연결 예정</span>');
+  g.appendChild(c)});
+const n=LABS.filter(x=>x.href).length;
+document.getElementById('s1').textContent='전체 실습 '+LABS.length+'개';
+document.getElementById('s2').textContent='연결 완료 '+n+'개 · 준비 중 '+(LABS.length-n)+'개';
+</script>
+</body>
+</html>
