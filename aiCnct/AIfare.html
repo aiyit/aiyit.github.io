@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>계정 가입과 요금제 확인 | AI 콘텐츠 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F2F4F7;--panel:#fff;--ink:#172033;--muted:#5B6577;--line:#D9DEE7;--accent:#2448E6;--accent-soft:#E6EBFD;--font:"IBM Plex Sans KR","Noto Sans KR","Malgun Gothic",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.8}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bar{background:var(--panel);border-bottom:1px solid var(--line);padding:12px clamp(20px,5vw,48px);font-size:15px}
+.bar a{text-decoration:none;font-weight:500}
+.wrap{max-width:940px;margin:0 auto;padding:56px 24px 80px}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.25;letter-spacing:-.03em;margin-bottom:16px}
+.lead{font-size:19px;color:var(--muted);margin-bottom:44px;max-width:36em}
+h2{font-size:26px;letter-spacing:-.02em;margin:52px 0 14px}
+p{margin-bottom:14px}
+ol.steps{list-style:none;counter-reset:s;display:grid;gap:10px}
+ol.steps li{counter-increment:s;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 18px 14px 58px;position:relative}
+ol.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;text-align:center;line-height:28px;font-size:15px}
+ol.steps b{display:block}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);font-size:15.5px;min-width:720px}
+th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--paper)}
+td:first-child{font-weight:700;white-space:nowrap}
+.scroll{overflow-x:auto}
+.key{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;padding:16px 20px;margin:20px 0}
+.small{font-size:14px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.links a{font-size:14px;border:1px solid var(--accent);border-radius:6px;padding:5px 12px;text-decoration:none}
+ul.pt{margin:0 0 14px 1.2em}
+ul.pt li{margin-bottom:6px}
+.end{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:15px}
+.nbtn{display:inline-block;font-size:15px;font-weight:500;padding:10px 18px;border-radius:8px;border:1px solid var(--accent);background:var(--panel);color:var(--accent);text-decoration:none;transition:background .15s,color .15s}
+.nbtn:hover{background:var(--accent-soft)}
+.nbtn.next{background:var(--accent);color:#fff}
+.nbtn.next:hover{background:#1A38B8}
+</style>
+</head>
+<body>
+<div class="bar"><a href="aiContents.html#s1">← 강의 메뉴로 돌아가기</a></div>
+
+<main class="wrap">
+<h1>계정 가입과 요금제 확인</h1>
+<p class="lead">AI 서비스를 쓰려면 먼저 계정이 필요합니다. 가입 순서와 서비스별 요금제를 정리했습니다.</p>
+
+<h2>계정 가입 순서</h2>
+<ol class="steps">
+  <li><b>공식 사이트에 접속합니다</b>주소를 직접 입력하거나 공식 링크를 이용하세요. 비슷한 이름의 가짜 사이트와 광고 링크를 조심합니다.</li>
+  <li><b>가입 방식을 고릅니다</b>구글, 애플 계정 연동이나 이메일 가입 중에서 선택합니다. 서비스마다 지원하는 방식이 다릅니다.</li>
+  <li><b>본인 확인을 합니다</b>이메일 인증이나 휴대전화 인증을 요구할 수 있습니다.</li>
+  <li><b>약관과 개인정보 설정을 확인합니다</b>이용 가능 연령과 약관을 읽고, 입력한 대화가 학습에 사용되는지 설정에서 확인합니다.</li>
+  <li><b>무료로 먼저 써 봅니다</b>무료 범위의 한도를 확인한 뒤, 부족할 때만 유료 요금제를 고려합니다.</li>
+</ol>
+<div class="links">
+  <a href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>
+  <a href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>
+  <a href="https://claude.ai" target="_blank" rel="noopener">Claude</a>
+  <a href="https://grok.com" target="_blank" rel="noopener">Grok</a>
+</div>
+
+<h2>서비스별 요금제 (월 기준, 미국 달러)</h2>
+<div class="scroll">
+<table>
+  <tr><th>서비스</th><th>무료</th><th>입문</th><th>표준</th><th>상위</th></tr>
+  <tr><td>ChatGPT</td><td>$0 (광고가 표시될 수 있음)</td><td>Go $8</td><td>Plus $20</td><td>Pro $100 / $200</td></tr>
+  <tr><td>Gemini</td><td>$0</td><td>Google AI Plus $4.99</td><td>Google AI Pro $19.99</td><td>Google AI Ultra $99.99 / $199.99</td></tr>
+  <tr><td>Claude</td><td>$0</td><td>없음</td><td>Pro $20 (연간 결제 시 월 $17)</td><td>Max $100 / $200</td></tr>
+  <tr><td>Grok</td><td>$0 (사용량 제한)</td><td>SuperGrok Lite $10</td><td>SuperGrok $30</td><td>SuperGrok Heavy $300</td></tr>
+</table>
+</div>
+<p class="small" style="margin-top:10px">2026년 10월 기준으로 여러 가격 비교 자료를 종합한 값입니다. 요금제 이름과 가격, 프로모션은 자주 바뀌고, 한국에서는 원화 가격, 부가세, 앱스토어 결제 여부에 따라 달라질 수 있습니다. 결제 전에 반드시 각 서비스의 공식 요금제 페이지에서 확인하세요.</p>
+
+<h2>요금제를 볼 때 확인할 점</h2>
+<ul class="pt">
+  <li><strong>사용 한도:</strong> 가격이 비싸질수록 대화 횟수, 파일 분석, 이미지·영상 생성 한도가 늘어납니다.</li>
+  <li><strong>사용할 수 있는 모델:</strong> 최신 모델은 유료 요금제부터 열리는 경우가 많습니다.</li>
+  <li><strong>추가 혜택:</strong> Gemini의 Google AI 요금제는 클라우드 저장 용량이, Grok은 X 구독과의 묶음 상품이 따라오기도 합니다.</li>
+  <li><strong>API는 별도:</strong> 앱 구독과 개발자용 API는 따로 과금됩니다.</li>
+  <li><strong>학생·교육 혜택:</strong> 서비스에 따라 학생 할인이나 교육기관용 요금제가 있으니 조건을 확인하세요.</li>
+  <li><strong>해지:</strong> 월 단위 구독은 보통 언제든 해지할 수 있고, 해지해도 결제 기간 끝까지는 쓸 수 있습니다.</li>
+</ul>
+<div class="key"><strong>수업 팁.</strong> 이 강의 실습은 무료 요금제로 시작해 보세요. 한도가 부족해서 막히는 일이 반복될 때, 가장 자주 쓰는 서비스 한 곳만 유료로 올려 보는 방식이 부담이 적습니다.</div>
+
+<div class="end">
+  <a class="nbtn" href="AIservice.html">← 이전: 주요 AI 서비스 한눈에 보기</a>
+  <a class="nbtn" href="aiContents.html#s1">1절 목록</a>
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grok 설정 & / 명령어 가이드</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:820px;margin:40px auto;padding:0 20px;line-height:1.6;color:#222}
+h1{font-size:1.5rem;border-bottom:2px solid #333;padding-bottom:8px}
+h2{font-size:1.2rem;margin-top:1.8rem}
+h3{font-size:1.05rem;margin-top:1.2rem}
+code,pre{background:#f4f4f4;border-radius:4px;font-family:ui-monospace,monospace}
+code{padding:2px 5px}
+pre{padding:12px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin:10px 0}
+th,td{border:1px solid #ddd;padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#f0f0f0}
+.note{background:#fff8e6;border-left:4px solid #f0ad4e;padding:10px 14px;margin:12px 0}
+ul{padding-left:1.2em}
+</style>
+</head>
+<body>
+<h1>Grok 설정 메뉴 & / 명령어 가이드</h1>
+
+<h2>설정 메뉴 구조</h2>
+<p>프로필 → <strong>설정</strong> 진입 시 좌측 메뉴:</p>
+<ul>
+<li><strong>일반</strong>: 계정 / 외관 / 행동 유형 / 알림</li>
+<li><strong>Grok</strong>: 맞춤 설정</li>
+<li><strong>데이터 및 정보</strong>: 데이터 컨트롤</li>
+</ul>
+
+<h2>1. 계정</h2>
+<p>로그인/로그아웃, 계정 전환, X 계정 연결.</p>
+<ul>
+<li>로그인 방법: X / Google / Apple / 이메일</li>
+<li>X Premium+ 혜택 연동: <strong>X 계정 연결</strong> 버튼</li>
+<li>예시: 다른 계정으로 전환 → 계정 메뉴 → Switch account</li>
+</ul>
+
+<h2>2. 외관</h2>
+<ul>
+<li>테마: 시스템 따라가기 / 라이트 / 다크</li>
+<li>언어: 시스템 / 한국어 / English 등</li>
+</ul>
+<p>예시: 다크 모드 → 외관 → Dark 선택</p>
+
+<h2>3. 행동 유형</h2>
+<p>Grok 응답 스타일 설정.</p>
+<ul>
+<li>간결 / 정중 / 학구적 / 사용자 정의</li>
+</ul>
+<p>예시: 사용자 정의 선택 후 역할·어조 직접 입력</p>
+
+<h2>4. 알림</h2>
+<ul>
+<li>푸시 알림 on/off</li>
+<li>Bot 완료·입력 필요 시 알림</li>
+</ul>
+<p>예시: 모바일에서 알림 허용 후 설정에서 세부 필터</p>
+
+<h2>5. 맞춤 설정 (Grok)</h2>
+<ul>
+<li>응답 스타일 세부 조정</li>
+<li>개인화 옵션</li>
+</ul>
+<p>예시: Custom → “항상 한국어로, 짧고 직접적으로 답변”</p>
+
+<h2>6. 데이터 컨트롤</h2>
+<ul>
+<li><strong>Improve the model</strong>: 모델 학습 사용 여부 (끄면 새 대화 학습 제외)</li>
+<li><strong>Personalize Grok using X</strong>: X 데이터로 개인화</li>
+<li><strong>대화 기록으로 개인화</strong>: 이전 대화 기억</li>
+<li>전체 대화 삭제 / 계정 삭제 / 데이터 내보내기</li>
+</ul>
+<p>예시: 학습 거부 → 데이터 컨트롤 → Improve the model 끄기</p>
+
+<div class="note">플랫폼마다 별도 설정 필요 (웹 / 앱 / X / CLI).</div>
+
+<h2>7. / 명령어 사용법 (Grok Build CLI)</h2>
+<p>프롬프트에 <code>/</code> 입력 → 메뉴 표시. 전체: <code>/help</code></p>
+<table>
+<thead><tr><th>명령어</th><th>설명</th></tr></thead>
+<tbody>
+<tr><td><code>/help</code></td><td>명령어·단축키</td></tr>
+<tr><td><code>/new</code></td><td>새 세션</td></tr>
+<tr><td><code>/resume</code></td><td>이전 세션</td></tr>
+<tr><td><code>/quit</code></td><td>종료</td></tr>
+<tr><td><code>/compact</code></td><td>대화 압축</td></tr>
+<tr><td><code>/context</code></td><td>컨텍스트 사용량</td></tr>
+<tr><td><code>/model</code></td><td>모델 전환</td></tr>
+<tr><td><code>/effort</code></td><td>추론 강도</td></tr>
+<tr><td><code>/rewind</code></td><td>이전 턴 되돌리기</td></tr>
+<tr><td><code>/fork</code></td><td>세션 분기</td></tr>
+<tr><td><code>/plan</code></td><td>Plan 모드</td></tr>
+<tr><td><code>/imagine</code></td><td>이미지 생성</td></tr>
+<tr><td><code>/btw</code></td><td>사이드 질문</td></tr>
+<tr><td><code>/skills</code></td><td>스킬 목록</td></tr>
+<tr><td><code>/memory</code></td><td>메모리 관리</td></tr>
+<tr><td><code>/settings</code></td><td>설정 열기</td></tr>
+</tbody>
+</table>
+<pre>/model grok-4.7
+/compact keep API
+/imagine a cat in space
+/btw 이 코드 설명해줘</pre>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 콘텐츠 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F4F7; --panel:#FFFFFF; --ink:#172033; --muted:#5B6577;
+  --line:#D9DEE7; --accent:#2448E6; --accent-soft:#E6EBFD;
+  --font:"IBM Plex Sans KR","Noto Sans KR","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.7;display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* 사이드 메뉴 */
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:28px 20px 32px}
+.brand{display:block;margin-bottom:24px;padding:0 8px}
+.brand strong{display:block;font-size:22px;line-height:1.3;letter-spacing:-.02em}
+.brand span{font-size:13px;color:var(--muted)}
+.nav{list-style:none}
+.nav>li>a{display:flex;gap:12px;align-items:baseline;padding:9px 8px;border-radius:6px;font-size:15px;color:var(--muted)}
+.nav>li>a b{font-weight:500;min-width:1.5em;text-align:right;font-variant-numeric:tabular-nums;color:#8C95A6}
+.nav>li>a:hover{background:var(--paper);color:var(--ink)}
+.nav>li>a.on{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.nav>li>a.on b{color:var(--accent)}
+.sub{list-style:none;margin:2px 0 6px 38px;border-left:2px solid var(--line)}
+.sub a{display:block;padding:5px 14px;font-size:14px;color:var(--muted)}
+.sub a:hover{color:var(--accent)}
+
+/* 본문 */
+.main{padding:56px clamp(24px,6vw,88px) 80px;max-width:980px}
+.sec{display:none}
+.sec.on{display:block}
+.sec h1{font-size:clamp(30px,4.4vw,46px);line-height:1.25;letter-spacing:-.03em;margin-bottom:14px}
+.sec h1 i{font-style:normal;color:var(--accent);margin-right:14px}
+.lead{font-size:18px;color:var(--muted);max-width:36em;margin-bottom:36px}
+.topics{list-style:none;display:grid;gap:10px;max-width:40em}
+.topics li{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:14px 18px}
+.note{margin-top:28px;font-size:14px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px 22px 20px;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card h2{font-size:21px;margin-bottom:6px}
+.card p{font-size:15px;color:var(--muted)}
+.card code{display:block;margin-top:14px;font-size:13px;color:var(--accent)}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:15px}
+.pager a{display:inline-block;font-weight:500;padding:10px 18px;border-radius:8px;border:1px solid var(--accent);background:var(--panel);color:var(--accent);transition:background .15s,color .15s}
+.pager a:hover{background:var(--accent-soft)}
+.pager a.next{background:var(--accent);color:#fff}
+.pager a.next:hover{background:#1A38B8}
+
+.top{display:none}
+@media (max-width:860px){
+  body{grid-template-columns:1fr}
+  .top{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding:12px 20px}
+  .top strong{font-size:17px}
+  .top button{font:inherit;font-size:15px;background:var(--accent);color:#fff;border:0;border-radius:6px;padding:7px 14px;cursor:pointer}
+  .side{display:none;position:static;height:auto}
+  body.open .side{display:block}
+  .main{padding:36px 20px 60px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <strong>AI 콘텐츠 활용</strong>
+  <button id="toggle" aria-expanded="false" aria-controls="side">메뉴</button>
+</div>
+
+<aside class="side" id="side">
+  <a class="brand" href="#s1"><strong>AI 콘텐츠 활용</strong><span>강의 자료</span></a>
+  <nav aria-label="강의 메뉴"><ul class="nav" id="nav"></ul></nav>
+</aside>
+
+<main class="main" id="main"></main>
+
+<script>
+var AIS=[
+  {n:"ChatGPT",f:"ChatGptsetting.html",d:"사용자 지침과 답변 스타일을 내 용도에 맞게 설정합니다."},
+  {n:"Gemini",f:"geminisetting.html",d:"맞춤형 도우미를 만들고 기본 설정을 조정합니다."},
+  {n:"Claude",f:"claudesetting.html",d:"선호도와 프로젝트 설정으로 작업 환경을 구성합니다."},
+  {n:"Grok",f:"groksetting.html",d:"응답 스타일과 맞춤 지침을 설정합니다."}
+];
+var SECS=[
+ {t:"AI 콘텐츠 시작하기",s:"생성형 AI가 무엇이고, 어떤 서비스로 어떤 콘텐츠를 만들 수 있는지 큰 그림을 잡습니다.",k:[["생성형 AI의 개념과 원리","AIconcept.html","개념, 학습과 생성 원리, 한계를 쉽게 정리합니다."],["주요 AI 서비스 한눈에 보기","AIservice.html","ChatGPT, Gemini, Claude, Grok의 특징을 비교합니다."],["계정 가입과 요금제 확인","AIfare.html","가입 순서와 서비스별 요금제를 확인합니다."]]},
+ {t:"AI 종류별 개인 맞춤 설정",s:"같은 질문도 설정에 따라 답이 달라집니다. 서비스별 맞춤 설정 방법을 따로 정리했습니다.",ai:true},
+ {t:"프롬프트 작성법",s:"이미지, 사운드, 영상 어디에나 쓰이는 공통 기술입니다. 원하는 결과를 정확히 요청하는 법을 익힙니다.",l:["역할, 맥락, 형식을 나누어 쓰기","좋은 프롬프트와 나쁜 프롬프트 비교","결과를 보고 고쳐 쓰는 반복 요령"]},
+ {t:"이미지 콘텐츠",s:"글로 설명한 장면을 이미지로 만들고, 목적에 맞게 다듬습니다.",l:["이미지 생성 AI 활용하기","스타일과 구도 지정하기","생성한 이미지 수정과 보완"]},
+ {t:"사운드 콘텐츠",s:"배경음악과 효과음, 내레이션까지 소리 콘텐츠를 만듭니다.",l:["AI로 음악 만들기","음성 합성(TTS)으로 내레이션 만들기","효과음과 배경음 활용"]},
+ {t:"웹툰 콘텐츠",s:"시나리오부터 컷 구성, 캐릭터 일관성 유지까지 웹툰 제작 흐름을 따라갑니다.",l:["스토리와 시나리오 구성","캐릭터 설정과 일관성 유지","컷 연출과 말풍선 넣기"]},
+ {t:"동영상 콘텐츠",s:"이미지와 소리를 모아 짧은 영상으로 완성합니다.",l:["영상 생성 AI 활용하기","대본, 장면, 자막 구성","편집과 내보내기"]},
+ {t:"통합 실습 프로젝트",s:"이미지, 사운드, 웹툰, 영상을 하나의 작품으로 묶는 종합 실습입니다.",l:["주제와 기획안 정하기","콘텐츠 제작과 결합","발표와 상호 평가"]},
+ {t:"AI 윤리와 저작권",s:"만든 결과물을 안전하게 쓰기 위해 알아야 할 기준을 정리합니다.",l:["저작권과 초상권","딥페이크와 허위 정보 주의","AI 생성물 표시와 상업적 이용 범위"]},
+ {t:"도구 모음과 작품 갤러리",s:"수업에서 쓰는 도구와 자료를 모으고, 수강생 작품을 함께 봅니다.",l:["AI 도구 링크와 무료/유료 비교","프롬프트 모음과 실습 파일","수강생 작품 전시"]}
+];
+
+var nav=document.getElementById("nav"), main=document.getElementById("main");
+
+SECS.forEach(function(x,i){
+  var li=document.createElement("li");
+  li.innerHTML='<a href="#s'+(i+1)+'" data-i="'+i+'"><b>'+(i+1)+'</b><span>'+x.t+'</span></a>';
+  var subs=x.ai?AIS.map(function(a){return [a.n,a.f];}):x.k;
+  if(subs){
+    var ul=document.createElement("ul"); ul.className="sub";
+    subs.forEach(function(a){ ul.innerHTML+='<li><a href="'+a[1]+'">'+a[0]+'</a></li>'; });
+    li.appendChild(ul);
+  }
+  nav.appendChild(li);
+
+  var sec=document.createElement("section"); sec.className="sec"; sec.id="s"+(i+1);
+  var h='<h1><i>'+(i+1)+'</i>'+x.t+'</h1><p class="lead">'+x.s+'</p>';
+  if(x.ai){
+    h+='<div class="cards">';
+    AIS.forEach(function(a){ h+='<a class="card" href="'+a.f+'"><h2>'+a.n+'</h2><p>'+a.d+'</p><code>'+a.f+'</code></a>'; });
+    h+='</div>';
+  } else if(x.k){
+    h+='<div class="cards">';
+    x.k.forEach(function(a){ h+='<a class="card" href="'+a[1]+'"><h2>'+a[0]+'</h2><p>'+a[2]+'</p><code>'+a[1]+'</code></a>'; });
+    h+='</div>';
+  } else {
+    h+='<ul class="topics">'+x.l.map(function(t){return '<li>'+t+'</li>';}).join("")+'</ul>';
+    h+='<p class="note">세부 강의 내용은 순차적으로 추가됩니다.</p>';
+  }
+  h+='<div class="pager">'+
+     (i>0?'<a href="#s'+i+'">← 이전: '+SECS[i-1].t+'</a>':'<span></span>')+
+     ''+'</div>';
+  sec.innerHTML=h;
+  main.appendChild(sec);
+});
+
+function route(){
+  var id=(location.hash||"#s1").slice(1);
+  if(!document.getElementById(id)) id="s1";
+  document.querySelectorAll(".sec").forEach(function(s){ s.classList.toggle("on",s.id===id); });
+  document.querySelectorAll(".nav>li>a").forEach(function(a){ a.classList.toggle("on","s"+(+a.dataset.i+1)===id); });
+  document.title=SECS[+id.slice(1)-1].t+" | AI 콘텐츠 활용";
+  document.body.classList.remove("open");
+  document.getElementById("toggle").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route);
+route();
+
+document.getElementById("toggle").addEventListener("click",function(){
+  var open=document.body.classList.toggle("open");
+  this.setAttribute("aria-expanded",open);
+});
+</script>
+</body>
+</html>
