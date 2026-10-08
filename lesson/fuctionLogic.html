@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 예제 8-10 ~ 8-19 | 이론 + 실습</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f5f7fb;--card:#fff;--ink:#18212f;--muted:#64748b;
+  --line:#e2e8f0;--primary:#2563eb;--primary2:#0ea5e9;
+  --soft:#eff6ff;--code:#0f172a;--good:#059669;--warn:#d97706
+}
+body{margin:0;font-family:"Noto Sans KR",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+header{background:linear-gradient(135deg,#0f172a,#1d4ed8 55%,#0891b2);color:white;padding:52px 20px 42px}
+.wrap{max-width:1120px;margin:auto}
+.badge{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:6px 12px;border-radius:999px;font-size:13px}
+h1{font-size:clamp(30px,5vw,52px);line-height:1.15;margin:15px 0}
+header p{max-width:800px;color:#dbeafe}
+nav{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow:auto;padding:10px 12px}
+nav a{white-space:nowrap;text-decoration:none;color:#334155;padding:7px 10px;border-radius:8px;font-size:14px}
+nav a:hover{background:var(--soft);color:var(--primary)}
+main{padding:30px 16px 70px}
+section{margin:34px 0}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:16px}
+h2{font-size:28px;margin:0}
+h3{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 5px 18px rgba(15,23,42,.05)}
+.card h3{font-size:20px}
+.num{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--soft);color:var(--primary);font-weight:800;margin-right:8px}
+.kicker{font-size:13px;font-weight:800;color:var(--primary);letter-spacing:.04em}
+table{width:100%;border-collapse:collapse;background:white;border-radius:14px;overflow:hidden}
+th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#f8fafc}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--code);color:#e2e8f0;padding:18px;border-radius:12px;overflow:auto;font-size:14px;line-height:1.55}
+button,.btn{border:0;background:var(--primary);color:#fff;padding:10px 15px;border-radius:9px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{filter:brightness(.94)}
+input,select{padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px}
+.result{margin-top:12px;padding:12px;background:#f8fafc;border-left:4px solid var(--primary);min-height:42px}
+.tip{background:#ecfdf5;border-left:5px solid var(--good);padding:14px 16px;border-radius:8px}
+.warn{background:#fff7ed;border-left:5px solid var(--warn);padding:14px 16px;border-radius:8px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.flow span{padding:9px 12px;border-radius:9px;background:#eef2ff;color:#3730a3;font-weight:700}
+.arrow{color:#94a3b8}
+.small{font-size:14px;color:var(--muted)}
+.practice{border:2px solid #dbeafe;background:#fbfdff}
+.quiz button{margin:5px 5px 0 0;background:#334155}
+.correct{color:#047857;font-weight:800}
+.wrong{color:#b91c1c;font-weight:800}
+footer{background:#0f172a;color:#cbd5e1;padding:30px 16px}
+@media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}.section-title{display:block}h2{font-size:24px}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrap">
+<span class="badge">AI소프트웨어과 · JavaScript</span>
+<h1>예제 8-10 ~ 8-19<br>이론 + 실습 학습노트</h1>
+<p>함수 호출에서 시작하여 조건문과 반복문까지, 원본 수업 예제를 학생 눈높이에 맞게 다시 정리했습니다.</p>
+</div>
+</header>
+
+<nav>
+<div class="wrap">
+<a href="#map">전체 흐름</a>
+<a href="#examples">10개 예제</a>
+<a href="#practice">통합 실습</a>
+<a href="#compare">비교표</a>
+<a href="#quiz">확인문제</a>
+</div>
+</nav>
+
+<main class="wrap">
+
+<section id="map">
+<div class="section-title"><h2>1. 먼저 전체 흐름을 잡아봅시다</h2></div>
+<div class="card">
+<div class="flow">
+<span>이벤트</span><b class="arrow">→</b>
+<span>함수</span><b class="arrow">→</b>
+<span>입력·출력</span><b class="arrow">→</b>
+<span>조건 판단</span><b class="arrow">→</b>
+<span>반복</span>
+</div>
+<p>8-10~8-12에서는 <b>사용자의 행동과 함수</b>를 연결합니다. 8-13~8-15에서는 <b>조건에 따라 다른 코드</b>를 실행합니다. 8-16~8-19에서는 <b>같은 작업을 여러 번 반복</b>하는 방법을 배웁니다.</p>
+<div class="tip"><b>학생용 핵심 문장:</b> JavaScript 프로그램은 결국 “사용자의 행동을 받아 → 값을 처리하고 → 조건에 따라 → 필요한 만큼 반복해서 → 화면에 결과를 보여주는 것”으로 이해하면 쉽습니다.</div>
+</div>
+</section>
+
+<section id="examples">
+<div class="section-title"><h2>2. 예제별 이론과 실습</h2></div>
+
+<div class="card">
+<h3><span class="num">8-10</span>이벤트 함수</h3>
+<p class="kicker">핵심: 클릭 → 함수 실행</p>
+<p>원본 예제는 버튼의 <code>onclick</code>으로 <code>jsFunction()</code>을 호출하고, 함수 안에서 <code>alert()</code>와 <code>getElementById().innerHTML</code>을 사용합니다.</p>
+<pre><code>function jsFunction() {
+  alert("눌렀군요!");
+  document.getElementById("first").innerHTML = "first";
+}
+
+&lt;button onclick="jsFunction()"&gt;눌러주세요&lt;/button&gt;</code></pre>
+<div class="practice">
+<b>직접 해보기</b><br>
+<button onclick="ex10()">눌러보세요</button>
+<div id="ex10result" class="result">버튼을 누르면 결과가 나타납니다.</div>
+</div>
+<script>
+function ex10(){alert("눌렀군요!");document.getElementById("ex10result").innerHTML="이벤트가 발생했고 함수가 실행되었습니다."}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-11</span>함수로 계산하기</h3>
+<p class="kicker">핵심: 입력값 → 읽기 → 숫자 변환 → 계산 → 출력</p>
+<p>원본은 <code>getElementById().value</code>로 입력값을 읽고 <code>parseInt()</code>로 정수로 변환한 뒤 두 값을 더해 결과 입력창에 넣습니다.</p>
+<pre><code>function calc() {
+  var x = document.getElementById("x").value;
+  var y = document.getElementById("y").value;
+  var tot = parseInt(x) + parseInt(y);
+  document.getElementById("sum").value = tot;
+}</code></pre>
+<div class="practice">
+<b>실습</b><br>
+<input id="p11x" type="number" placeholder="정수 1">
++
+<input id="p11y" type="number" placeholder="정수 2">
+<button onclick="calc11()">계산</button>
+<div id="p11result" class="result">결과가 여기에 표시됩니다.</div>
+</div>
+<script>
+function calc11(){
+ const x=Number(document.getElementById("p11x").value);
+ const y=Number(document.getElementById("p11y").value);
+ document.getElementById("p11result").textContent =
+   (Number.isFinite(x)&&Number.isFinite(y)) ? `${x} + ${y} = ${x+y}` : "두 숫자를 입력하세요.";
+}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-12</span>내장함수 prompt · confirm · alert</h3>
+<p class="kicker">핵심: 브라우저가 제공하는 함수</p>
+<table><tr><th>함수</th><th>역할</th><th>결과</th></tr>
+<tr><td><code>prompt()</code></td><td>사용자에게 값을 입력받음</td><td>입력한 문자열 반환</td></tr>
+<tr><td><code>confirm()</code></td><td>계속할지 확인</td><td>확인=true / 취소=false</td></tr>
+<tr><td><code>alert()</code></td><td>메시지를 보여줌</td><td>확인 버튼</td></tr></table>
+<div class="practice">
+<button onclick="prompt('무엇이든 입력해 보세요.','질문')">prompt</button>
+<button onclick="confirm('계속 진행할까요?')">confirm</button>
+<button onclick="alert('실행할까요?')">alert</button>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="num">8-13</span>if ~ else</h3>
+<p class="kicker">핵심: 둘 중 하나를 선택</p>
+<pre><code>if (조건) {
+  조건이 참일 때
+} else {
+  조건이 거짓일 때
+}</code></pre>
+<p>원본에서는 현재 시각이 18시 이전인지 판단하는 예와, 연도를 입력받아 윤년인지 판단하는 예가 함께 사용됩니다.</p>
+<div class="practice">
+<input id="year13" type="number" placeholder="예: 2024">
+<button onclick="leap13()">윤년 판단</button>
+<div id="result13" class="result"></div>
+</div>
+<script>
+function leap13(){
+ const y=Number(document.getElementById("year13").value);
+ const out=document.getElementById("result13");
+ if(!Number.isInteger(y)){out.textContent="연도를 정수로 입력하세요.";return}
+ out.textContent=((y%4===0&&y%100!==0)||(y%400===0))?`${y}년은 윤년입니다.`:`${y}년은 평년입니다.`;
+}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-14</span>else if</h3>
+<p class="kicker">핵심: 여러 조건 중 하나 선택</p>
+<pre><code>if (조건1) {
+} else if (조건2) {
+} else if (조건3) {
+} else {
+}</code></pre>
+<p>원본은 현재 시각에 따라 “꿈나라 / 좋은 아침 / 점심시간 / 좋은 오후 / 저녁시간 / 잘 쉬세요”처럼 여러 결과 중 하나를 표시합니다.</p>
+<div class="practice">
+<input id="hour14" type="number" min="0" max="23" placeholder="0~23시">
+<button onclick="time14()">시간 판단</button>
+<div id="result14" class="result"></div>
+</div>
+<script>
+function time14(){
+ const h=Number(document.getElementById("hour14").value),o=document.getElementById("result14");
+ if(h<0||h>23||!Number.isInteger(h)){o.textContent="0~23 사이의 정수를 입력하세요.";return}
+ if(h<6)o.textContent="꿈나라입니다.";
+ else if(h<10)o.textContent="좋은 아침입니다.";
+ else if(h<13)o.textContent="점심시간입니다.";
+ else if(h<16)o.textContent="좋은 오후입니다.";
+ else if(h<19)o.textContent="저녁시간입니다.";
+ else o.textContent="잘 쉬세요.";
+}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-15</span>switch ~ case</h3>
+<p class="kicker">핵심: 하나의 값에 따라 선택</p>
+<pre><code>switch (값) {
+  case "A":
+    실행문;
+    break;
+  case "B":
+    실행문;
+    break;
+  default:
+    기본 실행문;
+}</code></pre>
+<p>원본은 A~F 학점을 입력받아 해당 학점을 표시하고, 그 외에는 잘못된 입력으로 처리합니다.</p>
+<div class="practice">
+<select id="grade15">
+<option value="">학점 선택</option><option>A</option><option>B</option>
+<option>C</option><option>D</option><option>F</option><option>X</option>
+</select>
+<button onclick="grade15()">판단</button>
+<div id="result15" class="result"></div>
+</div>
+<script>
+function grade15(){
+ const g=document.getElementById("grade15").value,o=document.getElementById("result15");
+ switch(g){
+  case"A":case"B":case"C":case"D":case"F":o.textContent=`${g}학점입니다.`;break;
+  default:o.textContent="잘못 입력했습니다.";
+ }
+}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-16</span>for 반복문</h3>
+<p class="kicker">핵심: 횟수가 비교적 명확한 반복</p>
+<pre><code>for (초기식; 조건식; 증감식) {
+  반복할 코드
+}</code></pre>
+<p>원본은 <code>x=0</code>에서 시작하여 <code>x&lt;1000</code>인 동안 <code>x++</code>하면서 0~999를 출력합니다.</p>
+<div class="tip"><b>실행 순서:</b> 초기식 → 조건 검사 → 실행 → 증감 → 다시 조건 검사</div>
+<div class="practice">
+<button onclick="for16()">1부터 10까지 출력</button>
+<div id="result16" class="result"></div>
+</div>
+<script>
+function for16(){
+ let s="";
+ for(let x=1;x<=10;x++) s+=x+(x<10?", ":"");
+ document.getElementById("result16").textContent=s;
+}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-17</span>이중 for문</h3>
+<p class="kicker">핵심: 반복 안에 또 반복</p>
+<p>원본은 바깥쪽 <code>for</code>로 1~9단의 행을 만들고, 안쪽 <code>for</code>로 2~9를 곱하여 구구단 표를 만듭니다.</p>
+<pre><code>for (var x = 1; x &lt;= 9; x++) {
+  for (var y = 2; y &lt;= 9; y++) {
+    // x와 y를 이용한 작업
+  }
+}</code></pre>
+<div class="practice">
+<button onclick="gugu17()">구구단 만들기</button>
+<div id="result17" class="result"></div>
+</div>
+<script>
+function gugu17(){
+ let t="<table style='width:100%;border-collapse:collapse'>";
+ for(let x=2;x<=9;x++){
+   t+="<tr><th style='border:1px solid #cbd5e1;padding:7px'>"+x+"단</th>";
+   for(let y=1;y<=9;y++) t+="<td style='border:1px solid #cbd5e1;padding:7px;text-align:center'>"+x+"×"+y+"="+(x*y)+"</td>";
+   t+="</tr>";
+ }
+ t+="</table>";
+ document.getElementById("result17").innerHTML=t;
+}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-18</span>while 반복문</h3>
+<p class="kicker">핵심: 조건을 먼저 검사</p>
+<pre><code>while (조건) {
+  실행할 코드;
+  조건에 영향을 주는 값 변경;
+}</code></pre>
+<p>원본은 <code>x=0</code>에서 시작하여 <code>x&lt;100</code>인 동안 실행하고 매 반복마다 <code>x++</code>합니다.</p>
+<div class="warn"><b>주의:</b> 조건이 계속 참이고 변수의 값이 바뀌지 않으면 무한 반복이 발생할 수 있습니다.</div>
+<div class="practice">
+<button onclick="while18()">while 실행</button>
+<div id="result18" class="result"></div>
+</div>
+<script>
+function while18(){
+ let x=0,s="";
+ while(x<10){s+=x+" ";x++}
+ document.getElementById("result18").textContent=s;
+}
+</script>
+</div>
+
+<div class="card">
+<h3><span class="num">8-19</span>do ~ while 반복문</h3>
+<p class="kicker">핵심: 일단 한 번 실행한 뒤 조건 검사</p>
+<pre><code>do {
+  실행할 코드;
+} while (조건);</code></pre>
+<p>원본은 <code>x=20, y=45</code>에서 시작하여 화면에 두 값을 출력하고 <code>x++</code>, <code>y--</code>를 수행한 뒤 <code>x&lt;y</code>인지 검사합니다.</p>
+<div class="practice">
+<button onclick="do19()">do while 실행</button>
+<div id="result19" class="result"></div>
+</div>
+<script>
+function do19(){
+ let x=20,y=45,s="";
+ do{s+=`x=${x}, y=${y}<br>`;x++;y--}while(x<y);
+ document.getElementById("result19").innerHTML=s;
+}
+</script>
+</div>
+
+</section>
+
+<section id="practice">
+<div class="section-title"><h2>3. 통합 실습: 성적 처리 프로그램</h2></div>
+<div class="card practice">
+<p><b>목표:</b> 입력 → 조건 판단 → 결과 출력의 흐름을 직접 만들어 봅니다.</p>
+<p>점수를 입력하면 if / else if / else로 학점을 판정합니다.</p>
+<input id="score" type="number" min="0" max="100" placeholder="0~100">
+<button onclick="scorePractice()">학점 계산</button>
+<div id="scoreResult" class="result">결과가 여기에 표시됩니다.</div>
+<pre><code>function scorePractice() {
+  const score = Number(document.getElementById("score").value);
+
+  if (score >= 90) {
+    result = "A";
+  } else if (score >= 80) {
+    result = "B";
+  } else if (score >= 70) {
+    result = "C";
+  } else if (score >= 60) {
+    result = "D";
+  } else {
+    result = "F";
+  }
+}</code></pre>
+<script>
+function scorePractice(){
+ const s=Number(document.getElementById("score").value);
+ let g;
+ if(!Number.isFinite(s)||s<0||s>100){document.getElementById("scoreResult").textContent="0~100 사이의 점수를 입력하세요.";return}
+ if(s>=90)g="A";else if(s>=80)g="B";else if(s>=70)g="C";else if(s>=60)g="D";else g="F";
+ document.getElementById("scoreResult").textContent=`${s}점 → ${g}학점`;
+}
+</script>
+</div>
+</section>
+
+<section id="compare">
+<div class="section-title"><h2>4. 조건문·반복문 한눈에 비교</h2></div>
+<table>
+<tr><th>구분</th><th>언제 사용하는가?</th><th>대표 문법</th><th>기억할 말</th></tr>
+<tr><td>if ~ else</td><td>두 가지 중 선택</td><td><code>if / else</code></td><td>참이면 A, 아니면 B</td></tr>
+<tr><td>else if</td><td>여러 조건 중 선택</td><td><code>if / else if / else</code></td><td>조건을 위에서부터 검사</td></tr>
+<tr><td>switch</td><td>하나의 값에 따라 분기</td><td><code>switch / case</code></td><td>값이 무엇인가?</td></tr>
+<tr><td>for</td><td>반복 횟수가 비교적 명확</td><td><code>for</code></td><td>몇 번 반복?</td></tr>
+<tr><td>while</td><td>조건이 참인 동안 반복</td><td><code>while</code></td><td>조건부터 검사</td></tr>
+<tr><td>do while</td><td>최소 한 번 실행해야 함</td><td><code>do ... while</code></td><td>실행부터 하고 조건 검사</td></tr>
+</table>
+</section>
+
+<section id="quiz">
+<div class="section-title"><h2>5. 학생 확인문제</h2></div>
+<div class="grid">
+<div class="card quiz">
+<h3>문제 1</h3>
+<p><code>onclick="jsFunction()"</code>의 의미는?</p>
+<button onclick="quiz(1,'A')">A. 페이지를 새로고침한다</button>
+<button onclick="quiz(1,'B')">B. 클릭하면 함수를 실행한다</button>
+<button onclick="quiz(1,'C')">C. CSS를 변경한다</button>
+<div id="q1" class="result"></div>
+</div>
+<div class="card quiz">
+<h3>문제 2</h3>
+<p>조건을 먼저 검사하는 반복문은?</p>
+<button onclick="quiz(2,'A')">A. while</button>
+<button onclick="quiz(2,'B')">B. do while</button>
+<button onclick="quiz(2,'C')">C. switch</button>
+<div id="q2" class="result"></div>
+</div>
+<div class="card quiz">
+<h3>문제 3</h3>
+<p>반복문 안에 반복문을 넣은 것을 무엇이라고 하는가?</p>
+<button onclick="quiz(3,'A')">A. 단일 조건문</button>
+<button onclick="quiz(3,'B')">B. 중첩 반복문</button>
+<button onclick="quiz(3,'C')">C. 이벤트 함수</button>
+<div id="q3" class="result"></div>
+</div>
+<div class="card quiz">
+<h3>문제 4</h3>
+<p>8-19의 do while은 조건이 거짓이어도 처음 한 번은 실행되는 이유는?</p>
+<button onclick="quiz(4,'A')">A. do가 먼저 실행되기 때문</button>
+<button onclick="quiz(4,'B')">B. while이 없기 때문</button>
+<button onclick="quiz(4,'C')">C. switch가 실행하기 때문</button>
+<div id="q4" class="result"></div>
+</div>
+</div>
+<script>
+function quiz(n,a){
+ const ans={1:"B",2:"A",3:"B",4:"A"}[n];
+ const el=document.getElementById("q"+n);
+ el.innerHTML=a===ans?'<span class="correct">정답입니다! 👍</span>':'<span class="wrong">다시 생각해 보세요.</span>';
+}
+</script>
+</section>
+
+<section>
+<div class="card">
+<h2>6. 학습 마무리</h2>
+<p>이 10개 예제에서 가장 중요한 것은 코드를 외우는 것이 아니라 <b>프로그램의 흐름</b>을 읽는 것입니다.</p>
+<ol>
+<li><b>이벤트:</b> 사용자가 클릭하면 함수가 실행됩니다.</li>
+<li><b>입력:</b> <code>value</code>, <code>prompt()</code> 등으로 값을 가져옵니다.</li>
+<li><b>처리:</b> 계산하거나 조건을 판단합니다.</li>
+<li><b>출력:</b> <code>alert()</code>, <code>innerHTML</code>, 입력창 등에 결과를 보여줍니다.</li>
+<li><b>반복:</b> 같은 작업을 여러 번 해야 하면 <code>for</code>, <code>while</code>, <code>do while</code>을 사용합니다.</li>
+</ol>
+<div class="tip"><b>다음 단계:</b> 이 개념을 익힌 뒤에는 배열·객체·이벤트 객체·DOM 조작으로 확장하면 실제 웹페이지의 동작을 만들 수 있습니다.</div>
+</div>
+</section>
+
+</main>
+
+<footer>
+<div class="wrap">
+<b>여주대학교 AI소프트웨어과 · AI웹프로그래밍</b><br>
+<span class="small">원본 예제 8-10~8-19를 바탕으로 학생 학습용 이론·실습 형태로 재구성한 문서입니다.</span>
+</div>
+</footer>
+</body>
+</html>
