@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>반도체 8대 공정 ② 산화(Oxidation) 3D 디지털 트윈</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#eaf1f8;font-family:'Noto Sans KR','Pretendard',system-ui,sans-serif;color:#1d2c3c}
+canvas{display:block;touch-action:none}
+.g{background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border:1px solid #d3deea;border-radius:12px;box-shadow:0 6px 22px rgba(40,70,110,.14)}
+#title{position:fixed;left:12px;top:12px;padding:8px 14px;font-weight:700;font-size:15px}
+#title small{display:block;font-weight:400;color:#5b7088;font-size:11px;margin-top:2px}
+#panel{position:fixed;right:12px;top:12px;width:330px;max-height:calc(100% - 92px);overflow:auto;padding:14px}
+#panel h2{margin:0 0 6px;font-size:16px;color:#0b5cab}
+#desc{font-size:13px;line-height:1.6;margin:0 0 8px}
+#eq{background:#eef6ff;border-left:4px solid #3a8dff;padding:7px 10px;font-size:13px;border-radius:6px;margin-bottom:10px}
+.st{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.st div{background:#f4f8fc;border-radius:8px;padding:6px 8px;font-size:11px;color:#5b7088}
+.st b{display:block;font-size:16px;color:#16283a}
+#bar0{height:6px;background:#dde7f1;border-radius:3px;overflow:hidden;margin-bottom:10px}
+#bar0 i{display:block;height:100%;width:0;background:#2e86f5}
+#list{display:flex;flex-direction:column;gap:4px}
+#list button{text-align:left;font-size:12.5px;padding:6px 10px}
+#list button.on{background:#0b5cab;color:#fff;border-color:#0b5cab}
+.gas{display:flex;gap:6px;margin-bottom:10px}.gas button{flex:1}
+.gas button.on{background:#e8f2ff;border-color:#2e86f5;color:#0b5cab;font-weight:700}
+.tip{font-size:11px;color:#6b7f95;margin-top:8px;line-height:1.5}
+#bar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom));display:flex;gap:6px;padding:8px;align-items:center;max-width:calc(100% - 16px);overflow-x:auto}
+button,select{font:inherit;font-size:13px;border:1px solid #c5d3e2;background:#fff;color:#1d2c3c;border-radius:8px;padding:8px 12px;cursor:pointer;white-space:nowrap}
+button:hover{background:#eef5fc}button:focus-visible,select:focus-visible{outline:2px solid #2e86f5}
+#bar .p{background:#0b5cab;color:#fff;border-color:#0b5cab}
+.sep{width:1px;height:22px;background:#d3deea;flex:none}
+#pad{position:fixed;left:12px;bottom:84px;display:none;grid-template-columns:repeat(3,44px);gap:4px}
+#pad button{padding:0;height:40px;font-size:16px}
+@media(pointer:coarse){#pad{display:grid}}
+@media(max-width:760px){#panel{top:auto;bottom:72px;left:8px;right:8px;width:auto;max-height:36%;padding:10px}#title{font-size:13px}#pad{bottom:calc(36% + 80px)}}
+body.vr #panel,body.vr #title,body.vr #pad{display:none}
+</style></head><body>
+<div id="title" class="g">반도체 8대 공정 ② 산화(Oxidation)<small>Si 웨이퍼 위 SiO₂ 막 형성 · 3D 디지털 트윈</small></div>
+<div id="panel" class="g">
+ <h2 id="sT"></h2><p id="desc"></p><div id="eq"></div>
+ <div class="gas"><button id="gDry">건식 O₂</button><button id="gWet">습식 H₂O</button></div>
+ <div class="st"><div>온도<b id="vT">25°C</b></div><div>산화막 두께<b id="vK">0 nm</b></div><div>산화 시간<b id="vM">0 min</b></div></div>
+ <div id="bar0"><i id="pg"></i></div><div id="list"></div>
+ <div class="tip">🖱 드래그: 회전 · 휠/핀치: 확대·축소 · 우클릭/두 손가락: 이동<br>⌨ W A S D / 방향키: 이동 · Q E: 상하 · Space: 재생/정지<br>단면 두께는 개념도(비율 확대)이며 실제 막 두께는 위 수치를 따릅니다.</div>
+</div>
+<div id="pad"><span></span><button data-k="w">▲</button><span></span><button data-k="a">◀</button><button data-k="s">▼</button><button data-k="d">▶</button><button data-k="q">⤓</button><span></span><button data-k="e">⤒</button></div>
+<div id="bar" class="g">
+ <button id="bPlay" class="p">▶ 전체 재생</button><button id="bStep">⏭ 단계 실행</button><button id="bReset">↺ 초기화</button>
+ <select id="sp"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select><span class="sep"></span>
+ <button data-v="all">전체</button><button data-v="furn">산화로</button><button data-v="cross">단면</button><span class="sep"></span><button id="bVR">🥽 VR</button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const $=id=>document.getElementById(id),V3=THREE.Vector3,clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)),ease=t=>t*t*(3-2*t);
+/* ---------- 기본 장면 ---------- */
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.prepend(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xeaf1f8);scene.fog=new THREE.Fog(0xeaf1f8,40,90);
+const camera=new THREE.PerspectiveCamera(50,1,.1,200);camera.position.set(-2,6,17);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+Object.assign(controls,{enableDamping:true,maxPolarAngle:Math.PI*.495,minDistance:2,maxDistance:45});controls.target.set(0,2,2);
+scene.add(new THREE.HemisphereLight(0xffffff,0xcfd9e6,.95));
+const sun=new THREE.DirectionalLight(0xffffff,.85);sun.position.set(8,16,10);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-16,right:16,top:14,bottom:-10,near:1,far:50});scene.add(sun);
+const heatLight=new THREE.PointLight(0xff8a3c,0,9);heatLight.position.set(0,2.2,0);scene.add(heatLight);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(140,140),new THREE.MeshStandardMaterial({color:0xf8fafc,roughness:.8}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+const grid=new THREE.GridHelper(60,60,0xc6d2df,0xdde5ee);grid.position.y=.01;scene.add(grid);
+/* ---------- 헬퍼 ---------- */
+const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.45,metalness:.2},o));
+function add(g,m,x,y,z,p,sh=true){const o=new THREE.Mesh(g,m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=sh;(p||scene).add(o);return o}
+const cylX=(r,l,m,x,y,z,p,open,sh)=>{const o=add(new THREE.CylinderGeometry(r,r,l,40,1,open),m,x,y,z,p,sh);o.rotation.z=Math.PI/2;return o};
+const ringX=(r,t,m,x,y,z,p)=>{const o=add(new THREE.TorusGeometry(r,t,10,56),m,x,y,z,p);o.rotation.y=Math.PI/2;return o};
+function label(t,x,y,z,p,s=1){const c=document.createElement('canvas');c.width=512;c.height=96;const g=c.getContext('2d');
+ g.fillStyle='rgba(255,255,255,.93)';g.fillRect(4,4,504,88);g.strokeStyle='#9db6d0';g.lineWidth=3;g.strokeRect(4,4,504,88);
+ g.fillStyle='#16283a';g.font='bold 40px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(t,256,50);
+ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c)}));sp.scale.set(3.4*s,.64*s,1);sp.position.set(x,y,z);(p||scene).add(sp);return sp}
+const metal=M(0xcfd6dd,{metalness:.65,roughness:.32}),white=M(0xf3f6f9,{roughness:.55}),dark=M(0x3b4755,{metalness:.4});
+const glass=new THREE.MeshPhysicalMaterial({color:0xcfe9ff,transparent:true,opacity:.2,roughness:.05,metalness:0,clearcoat:1,side:THREE.DoubleSide,depthWrite:false});
+/* ---------- 산화로 ---------- */
+add(new THREE.BoxGeometry(10.6,.9,3),white,0,.45,0);
+add(new THREE.BoxGeometry(2.4,.5,.05),dark,-3.6,.5,1.52);
+add(new THREE.PlaneGeometry(2,.36),M(0x1f7ae0,{emissive:0x1a6fd0,emissiveIntensity:.8}),-3.6,.5,1.55);
+for(let i=0;i<5;i++)add(new THREE.CylinderGeometry(.08,.08,.04,16),M(i%2?0x35c46a:0xf0b429,{emissive:i%2?0x1a7a3a:0x8a6410}),-1+i*.4,.5,1.56).rotation.x=Math.PI/2;
+cylX(1.55,6.4,M(0xdde4ea,{transparent:true,opacity:.3,side:THREE.DoubleSide,metalness:.5}),0,2.2,0,null,true,false);
+[-3.3,3.3].forEach(x=>cylX(1.75,.3,metal,x,2.2,0));
+[-1.6,1.6].forEach(x=>ringX(1.6,.05,M(0x9fb0c2,{metalness:.7}),x,2.2,0));
+const coilMat=M(0x80868c,{emissive:0x000000,roughness:.4,metalness:.5});
+for(let i=0;i<17;i++)ringX(1.25,.035,coilMat,-2.9+i*.36,2.2,0);
+cylX(1.02,9.6,glass,-.1,2.2,0,null,true,false);
+cylX(1.15,.4,metal,-5.0,2.2,0);[-.4,.4].forEach(z=>cylX(.17,.6,metal,-5.4,2.2,z));
+ringX(1.12,.1,metal,4.75,2.2,0);add(new THREE.CylinderGeometry(.25,.25,1.1,20),metal,3.4,4.35,0);
+add(new THREE.BoxGeometry(.9,.25,.9),metal,3.4,3.7,0);
+/* 로딩 스테이션 */
+add(new THREE.BoxGeometry(6.6,.12,1.7),white,8.8,1.24,0);
+[[6,.7],[11.6,.7],[6,-.7],[11.6,-.7]].forEach(p=>add(new THREE.BoxGeometry(.12,1.2,.12),metal,p[0],.62,p[1]));
+label('산화로 (Furnace)',0,4.9,0,null,1);label('로딩 스테이션',8.8,2.3,0,null,.8);
+/* ---------- 웨이퍼 보트 ---------- */
+const boat=new THREE.Group();boat.position.x=8;scene.add(boat);
+const quartz=M(0xe6f4ff,{transparent:true,opacity:.65,roughness:.1,metalness:0});
+[215,325,180,360].forEach(a=>{const r=a*Math.PI/180;cylX(.035,2.7,quartz,0,2.2+.74*Math.sin(r),.74*Math.cos(r),boat)});
+[-1.35,1.35].forEach(x=>cylX(.78,.05,quartz,x,2.2,0,boat,false,false));
+add(new THREE.BoxGeometry(6,.05,.5),quartz,1.5,1.35,0,boat);
+const wafMat=M(0x9aa3ae,{metalness:.7,roughness:.18});
+for(let i=0;i<13;i++)cylX(.68,.035,wafMat,-1.2+i*.2,2.2,0,boat);
+label('웨이퍼 보트 (석영)',0,3.5,0,boat,.8);
+/* ---------- 가스 공급 ---------- */
+function tank(x,z,col,h,r,t){add(new THREE.CylinderGeometry(r,r,h,32),M(col,{metalness:.4,roughness:.3}),x,h/2,z);
+ add(new THREE.SphereGeometry(r,32,16,0,6.3,0,Math.PI/2),M(col,{metalness:.4,roughness:.3}),x,h,z);add(new THREE.CylinderGeometry(.12,.12,.3,12),metal,x,h+r+.1,z);
+ add(new THREE.CylinderGeometry(r+.02,r+.02,.3,32),white,x,h*.5,z);label(t,x,h+1.5,z,null,.7)}
+tank(-9.5,-2.4,0x4aa3ff,2.4,.6,'O₂ 탱크');tank(-9.5,2.4,0xffa24a,2,.7,'증기 발생기 (H₂O)');
+function pipe(pts,col,vi){const c=new THREE.CatmullRomCurve3(pts.map(p=>new V3(...p)),false,'catmullrom',.02);const m=M(col,{metalness:.5,roughness:.3});
+ add(new THREE.TubeGeometry(c,90,.1,12),m,0,0,0);const v=new THREE.Group();const p=c.getPoint(vi);v.position.copy(p);scene.add(v);
+ add(new THREE.SphereGeometry(.24,20,14),metal,0,0,0,v);const w=add(new THREE.TorusGeometry(.2,.035,8,24),M(0xd33,{emissive:0x400}),0,.3,0,v);w.rotation.x=Math.PI/2;
+ [.25,.75].forEach(u=>{const q=c.getPoint(u),f=add(new THREE.CylinderGeometry(.16,.16,.08,16),metal,q.x,q.y,q.z);f.rotation.x=Math.PI/2});return{c,m,w}}
+const pipes={dry:pipe([[-9.5,2.9,-2.4],[-9.5,3.3,-2.4],[-6.4,3.3,-2.4],[-6.4,3.3,-.4],[-6.4,2.2,-.4],[-5.2,2.2,-.4]],0x2f86f0,.3),
+ wet:pipe([[-9.5,2.9,2.4],[-9.5,3.4,2.4],[-6.4,3.4,2.4],[-6.4,3.4,.4],[-6.4,2.2,.4],[-5.2,2.2,.4]],0xf08a2a,.3)};
+label('O₂ 공급관',-7.9,4.1,-2.4,null,.7);label('H₂O 증기관',-7.9,4.2,2.4,null,.7);
+/* 가스 입자 */
+const NP=260,pg=new THREE.BufferGeometry(),pa=new Float32Array(NP*3);pg.setAttribute('position',new THREE.BufferAttribute(pa,3));
+const pm=new THREE.PointsMaterial({size:.13,transparent:true,opacity:.9,depthWrite:false,color:0x3a8dff});const pts=new THREE.Points(pg,pm);pts.frustumCulled=false;scene.add(pts);
+const pu=[],po=[];for(let i=0;i<NP;i++){pu.push(Math.random());const a=Math.random()*6.28,r=.85*Math.sqrt(Math.random());po.push([Math.cos(a)*r,Math.sin(a)*r,Math.random()])}
+/* ---------- 단면(웨이퍼 확대) ---------- */
+add(new THREE.BoxGeometry(4.6,.8,1.8),white,0,.4,6.8);
+const xs=new THREE.Group();xs.position.set(0,.8,6.8);scene.add(xs);
+const sg=new THREE.BoxGeometry(3.4,1,.6);sg.translate(0,.5,0);
+const si=add(sg,M(0x8e9db1,{metalness:.5,roughness:.4}),0,0,0,xs);
+const ox=add(sg,M(0x8fdcff,{transparent:true,opacity:.6,roughness:.2,emissive:0x2a6a90,emissiveIntensity:.25}),0,1,0,xs);
+const itf=add(new THREE.BoxGeometry(3.4,.03,.62),M(0xffd24a,{emissive:0xffa800,emissiveIntensity:1}),0,1,0,xs,false);
+const lat=new THREE.InstancedMesh(new THREE.SphereGeometry(.06,10,8),M(0x5c6b80),33),dm=new THREE.Object3D();
+for(let r=0;r<3;r++)for(let c=0;c<11;c++){dm.position.set(-1.5+c*.3,.15+r*.2,.3);dm.updateMatrix();lat.setMatrixAt(r*11+c,dm.matrix)}xs.add(lat);
+const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new V3(-1.9,1,.32),new V3(1.9,1,.32)]),new THREE.LineDashedMaterial({color:0x223344,dashSize:.1,gapSize:.06}));ln.computeLineDistances();xs.add(ln);
+label('웨이퍼 단면 (확대 개념도)',0,3.3,0,xs,.95);label('SiO₂ 산화막',-2.7,1.3,.3,xs,.6);label('Si 기판',-2.7,.4,.3,xs,.6);label('원래 표면(점선)',2.7,1,.3,xs,.6);
+const atoms=[],oM=M(0xe84a4a,{roughness:.3}),hM=M(0xffffff,{roughness:.3});
+for(let i=0;i<22;i++){const a=new THREE.Group();a.add(new THREE.Mesh(new THREE.SphereGeometry(.09,16,12),oM));
+ const h1=new THREE.Mesh(new THREE.SphereGeometry(.055,12,8),hM);h1.position.set(.1,.07,0);const h2=h1.clone();h2.position.x=-.1;a.add(h1,h2);
+ a.userData={x:(Math.random()-.5)*3,z:-.2+Math.random()*.45,f:Math.random(),sp:.25+Math.random()*.2,h:[h1,h2]};xs.add(a);atoms.push(a)}
+/* ---------- 상태·단계 ---------- */
+const GAS={dry:{n:'건식 산화 (O₂)',max:100,min:120,col:0x3a8dff,eq:'Si + O₂ → SiO₂  (치밀·느림)'},wet:{n:'습식 산화 (H₂O)',max:300,min:60,col:0xff9a3c,eq:'Si + 2H₂O → SiO₂ + 2H₂  (빠름·두꺼운 막)'}};
+const STEPS=[
+ {n:'웨이퍼 로딩',d:5,t:g=>'세정된 실리콘 웨이퍼를 석영 보트에 꽂아 로딩 스테이션에서 산화로 안으로 천천히 밀어 넣습니다. 열충격과 오염을 막기 위해 저속으로 진입합니다.',e:'보트 이송 : 스테이션 → 튜브 중앙'},
+ {n:'승온 (Ramp-up)',d:7,t:g=>'히터 코일이 튜브를 약 1,000°C까지 가열합니다(산화는 보통 800~1,200°C). 질소(N₂) 분위기로 수분·불순물을 제거하고 온도를 균일하게 맞춥니다.',e:'T : 25°C → 1,000°C'},
+ {n:'산화 가스 주입',d:5,t:g=>`밸브를 열어 ${g.n} 가스를 공급관에서 석영 튜브로 흘려보냅니다. 가스는 웨이퍼 표면 전체에 고르게 접촉합니다.`,e:g=>g.eq},
+ {n:'산화막 성장',d:14,t:g=>'산화제가 이미 생긴 SiO₂ 층을 확산해 Si 계면에서 반응합니다. 막이 두꺼워질수록 확산 거리가 길어져 성장이 느려지고(Deal-Grove), 소모된 Si(약 44%)만큼 계면이 아래로 내려갑니다.',e:g=>g.eq+'   |   x² + Ax = B(t+τ)'},
+ {n:'냉각 · 언로딩',d:8,t:g=>'가스를 차단하고 N₂ 분위기에서 서서히 식힌 뒤 웨이퍼를 인출합니다. 완성된 막 두께는 엘립소미터로 측정하고 막 색(간섭색)이 변한 것을 확인할 수 있습니다.',e:'T : 1,000°C → 200°C 이하 → 웨이퍼 인출'}];
+const S={s:0,p:0,run:false,one:false,gas:'dry',speed:1};
+function calc(){const{s,p}=S;let boatX=8,T=25,flow=0,valve=0,g=0;
+ if(s==0)boatX=8*(1-ease(p));else if(s<4)boatX=0;else boatX=8*ease(clamp((p-.45)/.55));
+ if(s==1)T=25+975*ease(p);else if(s==2||s==3)T=1000;else if(s==4)T=1000-800*ease(p);
+ if(s==2)valve=clamp(p*3);else if(s==3)valve=1;else if(s==4)valve=clamp(1-p*5);
+ flow=s==2?p:s==3?1:s==4?valve:0;g=s<3?0:s==3?p:1;return{boatX,T,flow,valve,g}}
+const list=$('list');STEPS.forEach((st,i)=>{const b=document.createElement('button');b.textContent=`${i+1}. ${st.n}`;b.onclick=()=>{S.s=i;S.p=0;S.run=false;S.one=false;sync()};list.appendChild(b)});
+function sync(){$('bPlay').textContent=S.run&&!S.one?'⏸ 일시정지':'▶ 전체 재생';$('bStep').textContent=S.run&&S.one?'⏸ 일시정지':'⏭ 단계 실행';
+ [...list.children].forEach((b,i)=>b.classList.toggle('on',i==S.s));$('gDry').classList.toggle('on',S.gas=='dry');$('gWet').classList.toggle('on',S.gas=='wet');
+ const G=GAS[S.gas],st=STEPS[S.s];$('sT').textContent=`${S.s+1}/5  ${st.n}`;$('desc').textContent=st.t(G);$('eq').textContent=typeof st.e=='function'?st.e(G):st.e}
+$('bPlay').onclick=()=>{if(S.run&&!S.one){S.run=false}else{if(S.s==4&&S.p>=1){S.s=0;S.p=0}S.run=true;S.one=false}sync()};
+$('bStep').onclick=()=>{if(S.run&&S.one){S.run=false}else{if(S.s==4&&S.p>=1)return;S.run=true;S.one=true}sync()};
+$('bReset').onclick=()=>{S.s=0;S.p=0;S.run=false;S.one=false;sync()};
+$('sp').onchange=e=>S.speed=+e.target.value;
+$('gDry').onclick=()=>{S.gas='dry';sync()};$('gWet').onclick=()=>{S.gas='wet';sync()};
+/* ---------- 시점 · 키보드 ---------- */
+const VIEWS={all:[[-2,6,17],[0,2,2]],furn:[[0,4,9.5],[0,2.2,0]],cross:[[0,2.6,11.8],[0,1.8,6.8]]};let tw=null;
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{const v=VIEWS[b.dataset.v];tw={t:0,p0:camera.position.clone(),t0:controls.target.clone(),p1:new V3(...v[0]),t1:new V3(...v[1])}});
+const keys={};const km={arrowup:'w',arrowdown:'s',arrowleft:'a',arrowright:'d'};
+addEventListener('keydown',e=>{let k=e.key.toLowerCase();if(k==' '){e.preventDefault();$('bPlay').click();return}k=km[k]||k;if('wasdqe'.includes(k)&&k.length==1){keys[k]=true;if(e.key.startsWith('Arrow'))e.preventDefault()}});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();keys[km[k]||k]=false});
+document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;b.onpointerdown=()=>keys[k]=true;['pointerup','pointerleave','pointercancel'].forEach(ev=>b['on'+ev]=()=>keys[k]=false)});
+/* ---------- VR (카드보드 좌우 분할 + 자이로) ---------- */
+const stereo=new THREE.StereoCamera();stereo.aspect=.5;stereo.eyeSep=.2;let vr=false,gyro=false,ori={a:0,b:0,g:0};
+const onO=e=>{if(e.alpha==null)return;gyro=true;controls.enabled=false;ori={a:e.alpha,b:e.beta,g:e.gamma}};
+$('bVR').onclick=async()=>{vr=!vr;document.body.classList.toggle('vr',vr);
+ if(vr){try{if(typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission){if(await DeviceOrientationEvent.requestPermission()!=='granted')throw 0}}catch(e){}
+  addEventListener('deviceorientation',onO);try{await document.documentElement.requestFullscreen()}catch(e){}}
+ else{removeEventListener('deviceorientation',onO);gyro=false;controls.enabled=true;if(document.fullscreenElement)document.exitFullscreen()}};
+const _e=new THREE.Euler(),_q=new THREE.Quaternion(),_q1=new THREE.Quaternion(-Math.SQRT1_2,0,0,Math.SQRT1_2),_q0=new THREE.Quaternion(),_z=new V3(0,0,1),R=Math.PI/180;
+function applyGyro(){const o=(screen.orientation?screen.orientation.angle:0)*R;_e.set(ori.b*R,ori.a*R,-ori.g*R,'YXZ');camera.quaternion.setFromEuler(_e).multiply(_q1).multiply(_q0.setFromAxisAngle(_z,-o))}
+/* ---------- 루프 ---------- */
+function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();
+const c0=new THREE.Color(0x9aa3ae),c1=new THREE.Color(0x4f86d8),c2=new THREE.Color(0xc9a43a),tp=new V3(),fw=new V3(),rt=new V3();
+let last=performance.now(),tm=0;
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last)/1000);last=now;tm+=dt;
+ if(S.run){S.p+=dt*S.speed/STEPS[S.s].d;if(S.p>=1){if(S.s<4){S.s++;S.p=0;if(S.one)S.run=false}else{S.p=1;S.run=false}sync()}}
+ const st=calc(),G=GAS[S.gas],pp=pipes[S.gas];
+ boat.position.x=st.boatX;const k=clamp((st.T-300)/700);
+ coilMat.emissive.setHSL(.06,1,.04+.36*k);coilMat.emissiveIntensity=k*1.6;coilMat.color.setHSL(.06*k,.1+.5*k,.5-.1*k);heatLight.intensity=k*1.3;
+ wafMat.color.copy(st.g<.5?c0.clone().lerp(c1,st.g*2):c1.clone().lerp(c2,(st.g-.5)*2));
+ for(const n in pipes){const on=n==S.gas;pipes[n].w.material.color.setHex(on&&st.valve>.05?0x2fbf6a:0xd33333);pipes[n].w.rotation.z=on?st.valve*3:0}
+ /* 가스 흐름 */
+ pm.color.setHex(G.col);const K=Math.floor(NP*st.flow);pg.setDrawRange(0,K);
+ for(let i=0;i<K;i++){pu[i]=(pu[i]+dt*.11*(.6+po[i][2]*.8))%1;const u=pu[i];
+  if(u<.35)pp.c.getPoint(u/.35,tp);else{const q=(u-.35)/.65;tp.set(-4.8+q*9.4,2.2+po[i][1]*(.55+.4*q)+Math.sin(tm*3+i)*.03,po[i][0]*(.55+.4*q))}
+  pa[i*3]=tp.x;pa[i*3+1]=tp.y;pa[i*3+2]=tp.z}pg.attributes.position.needsUpdate=true;
+ /* 단면 */
+ const vis=st.g*.55,top=1-.44*vis,gr=1+.56*vis;
+ si.scale.y=top;ox.position.y=top;ox.scale.y=Math.max(vis,1e-4);ox.visible=vis>.003;itf.position.y=top+.001;itf.material.emissiveIntensity=S.s==3?.6+.5*Math.sin(tm*6):.25;
+ const act=st.flow>.04;atoms.forEach(a=>{const u=a.userData;a.visible=act;if(!act)return;u.f+=dt*u.sp*(.4+st.flow);if(u.f>1){u.f=0;u.x=(Math.random()-.5)*3}
+  a.position.set(u.x,gr+1.3-u.f*(gr+1.3-top),u.z);u.h.forEach(h=>h.visible=S.gas=='wet');oM.color.setHex(S.gas=='wet'?0xe84a4a:0xe84a4a)});
+ /* 수치 */
+ const prog=(S.s+S.p)/5;$('pg').style.width=prog*100+'%';$('vT').textContent=Math.round(st.T)+'°C';$('vK').textContent=Math.round(G.max*Math.pow(st.g,.6))+' nm';$('vM').textContent=Math.round(st.g*G.min)+' min';
+ /* 이동 */
+ const m=6*dt;if(keys.w||keys.s||keys.a||keys.d||keys.q||keys.e){tw=null;camera.getWorldDirection(fw);fw.y=0;fw.normalize();rt.crossVectors(fw,camera.up);
+  const d=new V3();if(keys.w)d.add(fw);if(keys.s)d.sub(fw);if(keys.d)d.add(rt);if(keys.a)d.sub(rt);if(keys.e)d.y+=1;if(keys.q)d.y-=1;d.multiplyScalar(m);
+  camera.position.add(d);controls.target.add(d)}
+ if(tw){tw.t=Math.min(1,tw.t+dt/1.2);const e=ease(tw.t);camera.position.lerpVectors(tw.p0,tw.p1,e);controls.target.lerpVectors(tw.t0,tw.t1,e);if(tw.t>=1)tw=null}
+ if(gyro&&vr)applyGyro();else controls.update();
+ camera.updateMatrixWorld();
+ if(vr){const w=innerWidth,h=innerHeight;stereo.update(camera);renderer.setScissorTest(true);
+  renderer.setViewport(0,0,w/2,h);renderer.setScissor(0,0,w/2,h);renderer.render(scene,stereo.cameraL);
+  renderer.setViewport(w/2,0,w/2,h);renderer.setScissor(w/2,0,w/2,h);renderer.render(scene,stereo.cameraR);
+  renderer.setScissorTest(false);renderer.setViewport(0,0,w,h)}else renderer.render(scene,camera)}
+sync();requestAnimationFrame(frame);
+</script></body></html>
