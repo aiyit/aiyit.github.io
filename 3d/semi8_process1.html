@@ -42,8 +42,10 @@ body.vr #side{display:none}body.vr #exit,body.vr #flip{display:block}body.vr #dw
 const $=s=>document.querySelector(s);
 const NAMES=["웨이퍼 제조","산화","포토","식각","박막증착","금속배선","EDS","패키징"];
 const menu=$('#menu');
-NAMES.forEach((n,i)=>{const b=document.createElement('button');b.className='m'+(i?' off':'');b.innerHTML=`<b>${i+1}</b>${n}${i?'<small>준비중</small>':''}`;b.onclick=()=>{if(i)return;document.querySelectorAll('.m').forEach(x=>x.classList.remove('on'));b.classList.add('on');start()};menu.appendChild(b)});
+NAMES.forEach((n,i)=>{const b=document.createElement('button');b.className='m'+(i>1?' off':'');b.innerHTML=`<b>${i+1}</b>${n}${i>1?'<small>준비중</small>':''}`;b.onclick=()=>{if(i>1)return;document.querySelectorAll('.m').forEach(x=>x.classList.remove('on'));b.classList.add('on');if(i===1){showProcess2()}else{showProcess1()}};menu.appendChild(b)});
 
+function showProcess2(){$('#ph').style.display='none';if(renderer)renderer.domElement.style.display='none';let frame=$('#process2');if(!frame){frame=document.createElement('iframe');frame.id='process2';frame.title='2. 산화(Oxidation) 3D 공정';frame.src='semi8_process2.html';frame.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#eaf1f8';$('#view').appendChild(frame)}frame.style.display='block'}
+function showProcess1(){const frame=$('#process2');if(frame)frame.style.display='none';if(renderer)renderer.domElement.style.display='block';$('#ph').style.display=started?'none':'grid';if(!started)start()}
 const R=7;let started=false,scene,cam,renderer,stereo,vr=false,stations=[],clock,agv,agvT=0;
 const M=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.5,metalness:.2},o));
 const cyl=(r,h,c,o,seg=32)=>new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,seg),M(c,o));
