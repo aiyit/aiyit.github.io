@@ -398,7 +398,8 @@ print(l)            # [1, 2, 3]</code></pre>
       </table>
       <div class="code-block">
         <div class="code-label">python</div>
-        <pre><code class="language-python">title = "python programming"
+        <pre><code class="language-python">
+          title = "python programming"
 print(title.title())        # Python Programming
 
 score = "7"
@@ -406,6 +407,22 @@ print(score.zfill(3))       # 007
 
 raw = "   note   "
 print(raw.strip())          # "note"</code></pre>
+
+text = "  hello Python  "
+
+print(text.upper())       # "  HELLO PYTHON  "
+print(text.lower())       # "  hello python  "
+print(text.capitalize())  # "  hello python  "
+print(text.title())       # "  Hello Python  "
+print("PyThOn".swapcase())  # "pYtHoN"
+
+print(text.strip())       # "hello Python"
+print("...hello...".strip("."))  # "hello"
+print("  hello  ".lstrip())      # "hello  "
+print("  hello  ".rstrip())      # "  hello"
+
+print("42".zfill(5))     # "00042"
+print("-42".zfill(5))    # "-0042"
       </div>
     </section>
 
