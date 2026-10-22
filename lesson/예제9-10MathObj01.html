@@ -1,31 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-	<title>예제9-10Math 메소드1</title>
+    <meta charset="UTF-8">
+    <title>예제 9-10 Math 메소드1 분석 문서</title>
+    <style>
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 30px; line-height: 1.6; color: #333; background-color: #fdfdfd; }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        code { background-color: #f1f2f6; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background-color: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: Consolas, monospace; }
+        .section { margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #2d3436; }
+        .output-box { background: #e8f4f8; border-left: 4px solid #3498db; padding: 10px 15px; margin-top: 10px; }
+    </style>
 </head>
 <body>
-<h3>Math 객체 메소드1</h3>
-<p>abs(x) : <b id="ca"></b></p>
-<p>acos(x) : <b id="cca"></b></p>
-<p>acosh(x) : <b id="cnct"></b></p>
-<p>asin(x) : <b id="ido"></b></p>
-<p>asinh(x): <b id="vlf"></b></p>
-<p>atan(x): <b id="fxd"></b></p>
-<p>atan2(x) : <b id="prc"></b></p>
-<p>cbrt(x) : <b id="exp"></b></p>
-<p>ceil(x) : <b id="str"></b></p>
-<script>
-  var x =1 , y = 3 ;
-  document.getElementById("ca").innerHTML = Math.abs(x);
-  document.getElementById("cca").innerHTML =Math.acos(x);
-  document.getElementById("cnct").innerHTML = Math.acosh(x);
-  document.getElementById("ido").innerHTML = Math.asin(x); 
-  document.getElementById("vlf").innerHTML = Math.asinh(x);
-  document.getElementById("fxd").innerHTML = Math.atan(x);
-  document.getElementById("prc").innerHTML =Math.atan2(x,y);
-  document.getElementById("exp").innerHTML = Math.cbrt(x);
-  document.getElementById("str").innerHTML = Math.ceil(x);  
-</script>
+
+    <h2>예제 9-10: JavaScript Math 객체 메서드1 분석 보고서</h2>
+    <p>본 문서는 JavaScript 수학 내장 객체(Math)가 제공하는 주요 삼각함수, 절대값, 세제곱근, 올림 등의 메서드(abs, acos, acosh, asin, asinh, atan, atan2, cbrt, ceil)의 동작 원리와 활용법을 분석한 내용입니다.</p>
+
+    <div class="section">
+        <h3>1. HTML 전체 소스코드</h3>
+        <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;  &lt;title&gt;예제9-10Math 메소드1&lt;/title&gt; &lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;Math 객체 메소드1&lt;/h3&gt;
+&lt;p&gt;abs(x) : &lt;b id="ca"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;acos(x) : &lt;b id="cca"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;acosh(x) : &lt;b id="cnct"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;asin(x) : &lt;b id="ido"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;asinh(x): &lt;b id="vlf"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;atan(x): &lt;b id="fxd"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;atan2(x) : &lt;b id="prc"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;cbrt(x) : &lt;b id="exp"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;ceil(x) : &lt;b id="str"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;script&gt;
+	var x = 1, y = 3;
+	document.getElementById("ca").innerHTML = Math.abs(x);
+	document.getElementById("cca").innerHTML = Math.acos(x);
+	document.getElementById("cnct").innerHTML = Math.acosh(x);
+	document.getElementById("ido").innerHTML = Math.asin(x); 
+	document.getElementById("vlf").innerHTML = Math.asinh(x);
+	document.getElementById("fxd").innerHTML = Math.atan(x);
+	document.getElementById("prc").innerHTML = Math.atan2(x,y);
+	document.getElementById("exp").innerHTML = Math.cbrt(x);
+	document.getElementById("str").innerHTML = Math.ceil(x);  
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <div class="section">
+        <h3>2. HTML 구조 및 DOM 요소 설명</h3>
+        <ul>
+            <li><b>&lt;h3&gt;</b>: 화면 대표 제목(<code>Math 객체 메소드1</code>)을 정의합니다.</li>
+            <li><b>&lt;p&gt; 및 &lt;b id="..."&gt; 태그</b>: 각 Math 메서드의 연산 결과를 동적으로 바인딩하여 출력하기 위한 DOM 구역입니다. <code>ca</code>, <code>cca</code>, <code>exp</code> 등의 고유 ID가 부여되어 있습니다.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>3. JavaScript Math 주요 메서드 상세 분석 (기준 변수: <code>x = 1</code>, <code>y = 3</code>)</h3>
+        <table>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 의미</th>
+            </tr>
+            <tr>
+                <td><code>Math.abs()</code></td>
+                <td><code>Math.abs(1)</code></td>
+                <td>숫자의 절대값을 반환합니다. ➔ <b>1</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.acos()</code></td>
+                <td><code>Math.acos(1)</code></td>
+                <td>아크코사인(역코사인) 값을 라디안 단위로 반환합니다. ($\arccos(1) = 0$) ➔ <b>0</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.acosh()</code></td>
+                <td><code>Math.acosh(1)</code></td>
+                <td>역쌍곡코사인 값을 반환합니다. ($\operatorname{arcosh}(1) = 0$) ➔ <b>0</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.asin()</code></td>
+                <td><code>Math.asin(1)</code></td>
+                <td>아크사인(역사인) 값을 반환합니다. ($\arcsin(1) = \pi/2$) ➔ <b>1.5707963267948966</b> (약 $\pi/2$)</td>
+            </tr>
+            <tr>
+                <td><code>Math.asinh()</code></td>
+                <td><code>Math.asinh(1)</code></td>
+                <td>역쌍곡사인 값을 반환합니다. ➔ <b>0.881373587019543</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.atan()</code></td>
+                <td><code>Math.atan(1)</code></td>
+                <td>아크탄젠트 값을 반환합니다. ($\arctan(1) = \pi/4$) ➔ <b>0.7853981633974483</b> (약 $\pi/4$)</td>
+            </tr>
+            <tr>
+                <td><code>Math.atan2()</code></td>
+                <td><code>Math.atan2(1, 3)</code></td>
+                <td>주어진 인수(y, x)의 아크탄젠트 값을 반환합니다. ➔ <b>0.3217505543966422</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.cbrt()</code></td>
+                <td><code>Math.cbrt(1)</code></td>
+                <td>숫자의 세제곱근(cube root)을 반환합니다. ($\sqrt[3]{1} = 1$) ➔ <b>1</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.ceil()</code></td>
+                <td><code>Math.ceil(1)</code></td>
+                <td>소수점이 있는 경우 크거나 같은 정수 중 가장 작은 수를 반환(올림)합니다. ➔ <b>1</b></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>4. 실행 과정 및 브라우저 최종 출력 결과</h3>
+        <div class="output-box">
+            <p><strong>Math 객체 메소드1</strong></p>
+            <p>abs(x) : <b>1</b></p>
+            <p>acos(x) : <b>0</b></p>
+            <p>acosh(x) : <b>0</b></p>
+            <p>asin(x) : <b>1.5707963267948966</b></p>
+            <p>asinh(x): <b>0.881373587019543</b></p>
+            <p>atan(x): <b>0.7853981633974483</b></p>
+            <p>atan2(x) : <b>0.3217505543966422</b></p>
+            <p>cbrt(x) : <b>1</b></p>
+            <p>ceil(x) : <b>1</b></p>
+        </div>
+    </div>
+
 </body>
 </html>
 
