@@ -1,42 +1,188 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-	<link rel="stylesheet" href="style.css">
-<meta charset="utf-8">
-<title>예제 10-13 Screen 객체</title>
+    <meta charset="UTF-8">
+    <title>예제 10-13 Screen 객체 및 Window/Screen 비교 분석 문서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; margin-right: 5px; margin-top: 5px; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 라이브 테스트용 함수 (ID 충돌 방지를 위해 live_ 접두사 사용)
+        function liveWH() {   
+            var w = screen.width, h = screen.height; 
+            document.getElementById("live_wh").textContent = "w:" + w + " h:" + h; 
+        }
+        function liveAWh() {   
+            var w = screen.availWidth, h = screen.availHeight; 
+            document.getElementById("live_awh").textContent = "w:" + w + " h:" + h;
+        }
+        function liveCD() {   
+            var c = screen.colorDepth;
+            document.getElementById("live_cd").textContent = "color:" + c;   
+        }
+        function livePD() { 
+            var p = screen.pixelDepth;    
+            document.getElementById("live_pd").textContent = "pixel:" + p; 
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+                // 패널 열릴 때 전체 값 자동 조회 실행
+                liveWH(); liveAWh(); liveCD(); livePD();
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
 <body>
-<p>Screen 크기는 <b id="wh"></b>입니다.</p>
-<p>Screen 가능한 크기는 <b id="awh"></b>입니다.</p>
-<p>Screen 색상은 <b id="cd"></b> 비트입니다.</p>
-<p>Screen 픽셀은 <b id="pd"></b> 비트입니다.</p>
-<h3>Screen 객체</h3>
-<button type="button" onclick="wH()">화면 크기</button>
-<button type="button" onclick="aWh()">가용 크기</button>
-<button type="button" onclick="cD()">칼라 깊이</button>
-<button type="button" onclick="pD()">픽셀 깊이</button>
-<script>
-	function wH() {  
+<main>
+    <h1>예제 10-13: Screen 객체 및 Window vs Screen 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 브라우저 창 환경을 다루는 <strong>`window` 객체</strong>와 사용자 모니터 디스플레이 화면 정보를 다루는 <strong>`screen` 객체</strong>의 차이점을 정리하고, 화면 해상도 및 색상 깊이를 조회하는 기능을 설명합니다.</p>
+    </div>
+
+    <h2>1. Window 객체 vs Screen 객체 차이점 비교</h2>
+    
+    <p>JavaScript에서 <code>window</code>와 <code>screen</code>은 모두 브라우저 환경을 파악하는 데 쓰이지만, 관리하는 대상의 범위가 명확히 다릅니다.</p>
+
+    <div class="note">
+        <strong>💡 핵심 차이 요약:</strong>
+        <ul>
+            <li><strong>Window 객체:</strong> 웹 브라우저 **'창(Window)' 자체**를 의미합니다. 브라우저 창의 크기(`innerWidth`), 문서 객체(`document`), 팝업 제어 등을 담당합니다.</li>
+            <li><strong>Screen 객체:</strong> 브라우저 창이 뜨는 사용자의 **'실제 물리적 모니터 디스플레이 화면'** 전체의 정보를 담고 있습니다. 브라우저 창 크기와 무관하게 모니터 해상도 전체 크기를 반환합니다.</li>
+        </ul>
+    </div>
+
+    <h3>1) Screen 객체의 주요 특징</h3>
+    <p><code>screen</code> 객체는 접두사 없이 사용 가능하며(<code>window.screen</code>의 단축형), 사용자의 디바이스 환경(모니터 해상도, 가용 작업 표시줄 영역 등)을 조회할 때 유용합니다.</p>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+	&lt;link rel="stylesheet" href="style.css"&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;예제 10-13 Screen 객체&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;p&gt;Screen 크기는 &lt;b id="wh"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;Screen 가능한 크기는 &lt;b id="awh"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;Screen 색상은 &lt;b id="cd"&gt;&lt;/b&gt; 비트입니다.&lt;/p&gt;
+&lt;p&gt;Screen 픽셀은 &lt;b id="pd"&gt;&lt;/b&gt; 비트입니다.&lt;/p&gt;
+&lt;h3&gt;Screen 객체&lt;/h3&gt;
+&lt;button type="button" onclick="wH()"&gt;화면 크기&lt;/button&gt;
+&lt;button type="button" onclick="aWh()"&gt;가용 크기&lt;/button&gt;
+&lt;button type="button" onclick="cD()"&gt;칼라 깊이&lt;/button&gt;
+&lt;button type="button" onclick="pD()"&gt;픽셀 깊이&lt;/button&gt;
+&lt;script&gt;
+	function wH() {   
 		var w = screen.width, h = screen.height; 
 		document.getElementById("wh").textContent = "w:" + w + " h:" + h; 
 	}
-	function aWh() {  
+	function aWh() {   
 		var w = screen.availWidth, h = screen.availHeight; 
 		document.getElementById("awh").textContent = "w:" + w + " h:" + h;
 	}
-	function cD() {  
+	function cD() {   
 		var c = screen.colorDepth;
 		document.getElementById("cd").textContent = "color:" + c; 	
 	}
 	function pD() { 
-		var p = screen.pixelDepth;  
+		var p = screen.pixelDepth;    
 		document.getElementById("pd").textContent = "pixel:" + p; 
 	}
-</script>
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <p>Screen 크기는 <b id="live_wh"></b>입니다.</p>
+        <p>Screen 가능한 크기는 <b id="live_awh"></b>입니다.</p>
+        <p>Screen 색상은 <b id="live_cd"></b> 비트입니다.</p>
+        <p>Screen 픽셀은 <b id="live_pd"></b> 비트입니다.</p>
+        <h3 style="margin-top:15px;">Screen 객체 제어</h3>
+        <button type="button" onclick="liveWH()">화면 크기</button>
+        <button type="button" onclick="liveAWh()">가용 크기</button>
+        <button type="button" onclick="liveCD()">칼라 깊이</button>
+        <button type="button" onclick="livePD()">픽셀 깊이</button>
+    </div>
+
+    <h2>3. Screen 객체 주요 속성 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>속성명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>screen.width / height</code></td>
+                <td><code>screen.width, screen.height</code></td>
+                <td>사용자의 모니터 디스플레이 <strong>전체 물리적 해상도(너비와 높이)</strong>를 픽셀 단위로 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>screen.availWidth / availHeight</code></td>
+                <td><code>screen.availWidth, screen.availHeight</code></td>
+                <td>모니터 전체 화면 중 <strong>작업 표시줄(Taskbar) 등을 제외하고 브라우저가 실제로 사용할 수 있는 가용 영역</strong>의 크기를 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>screen.colorDepth</code></td>
+                <td><code>screen.colorDepth</code></td>
+                <td>화면 색상을 표현하는 데 사용되는 색상 팔레트의 비트 깊이(예: 24비트 등)를 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>screen.pixelDepth</code></td>
+                <td><code>screen.pixelDepth</code></td>
+                <td>화면의 픽셀 당 비트(Bit) 수를 반환합니다. 대부분의 모니터에서는 <code>colorDepth</code>와 동일한 값을 가집니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <li><strong>Window vs Screen:</strong> <code>window</code>는 브라우저 창, <code>screen</code>은 모니터 화면 전체를 의미</li>
+        <li><strong>전체 해상도 (`width/height`):</strong> 모니터의 총 픽셀 크기 확인</li>
+        <li><strong>가용 영역 (`availWidth/availHeight`):</strong> 운영체제 작업표시줄을 제외한 순수 브라우저 허용 최대 크기 확인</li>
+    </ul>
+    <p class="small">학습 포인트: 브라우저 창 관점(`window`)과 물리적 모니터 관점(`screen`)의 차이를 이해하고 디스플레이 정보를 조회하는 방법을 익힙니다.</p>
+</main>
 </body>
 </html>
-
-
 
 
 
