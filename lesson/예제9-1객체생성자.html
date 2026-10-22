@@ -1,21 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제9-1객체 생성자</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>예제 9-1 객체 생성자 코드 설명</title>
+<style>
+  :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+  main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+  h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+  h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+  p { margin:10px 0; }
+  .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+  pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+  code { font-family:Consolas,"Courier New",monospace; }
+  .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; }
+  table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+  th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+  th { background:#eaf1f7; }
+  .output { background:#111d28; color:#b9f6ca; padding:16px; border-radius:10px; font-family:Consolas,monospace; white-space:pre-line; }
+  button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; }
+  button:hover { background:#105487; }
+  #flow { display:none; background:white; border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin-top:12px; }
+  .small { color:#5b6b79; font-size:.94rem; }
+</style>
 </head>
 <body>
-<h3>객체생성</h3>
-    <script>
+<main>
+  <h1>JavaScript 예제 9-1: 객체의 개념과 코드 설명</h1>
+  <div class="intro">
+    <p>이 문서는 제공된 프로그램을 그대로 제시하고, 프로그램에 사용된 <strong>객체, 속성, 메서드, this, 반복문</strong>의 의미를 설명합니다.</p>
+    <p class="note">참고: 이 예제는 제목에 ‘객체 생성자’라고 되어 있지만, 실제 코드는 <code>new</code>를 사용하는 생성자 함수 방식이 아니라 <strong>객체 리터럴 방식</strong>으로 객체를 만듭니다.</p>
+  </div>
+
+  <h2>1. 제공된 HTML 전체 코드</h2>
+  <p>아래는 질문에 제공된 원본 코드입니다. 프로그램의 동작을 바꾸지 않았습니다.</p>
+  <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;예제9-1객체 생성자&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;객체생성&lt;/h3&gt;
+    &lt;script&gt;
        var human ={ name: "Park", age:40, sex:"female", speed:20,    //속성
               walk : function(){ this.speed = 5;},      //걷기 메소드
               run : function(){ this.speed +=3;},        //달리기 메소드
         };
- 	do {
- 	document.write("이름:"+human.name+ " 달리기:" + human.speed + "<br />");
+    do {
+    document.write("이름:"+human.name+ " 달리기:" + human.speed + "&lt;br /&gt;");
         human.run();
-        } while( human.speed < 35)
-	human.walk();
-	document.write("이름:"+ human.name + " 걷기:" + human.speed + "<br />");
-    </script>
+        } while( human.speed &lt; 35)
+    human.walk();
+    document.write("이름:"+ human.name + " 걷기:" + human.speed + "&lt;br /&gt;");
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  <h2>2. 객체란 무엇인가요?</h2>
+  <p><strong>객체(Object)</strong>는 관련된 데이터와 기능을 하나로 묶어 놓은 것입니다. 이 예제에서는 사람의 정보와 행동을 <code>human</code>이라는 객체 하나에 모았습니다.</p>
+  <pre><code>var human = {
+    name: "Park",
+    age: 40,
+    sex: "female",
+    speed: 20,
+    walk: function(){ this.speed = 5; },
+    run: function(){ this.speed += 3; }
+};</code></pre>
+
+  <table>
+    <thead><tr><th>구분</th><th>코드</th><th>의미</th></tr></thead>
+    <tbody>
+      <tr><td>속성(Property)</td><td><code>name: "Park"</code></td><td>이름 데이터</td></tr>
+      <tr><td>속성(Property)</td><td><code>age: 40</code></td><td>나이 데이터</td></tr>
+      <tr><td>속성(Property)</td><td><code>sex: "female"</code></td><td>성별 데이터</td></tr>
+      <tr><td>속성(Property)</td><td><code>speed: 20</code></td><td>현재 속도 데이터</td></tr>
+      <tr><td>메서드(Method)</td><td><code>walk: function(){...}</code></td><td>객체가 수행하는 걷기 기능</td></tr>
+      <tr><td>메서드(Method)</td><td><code>run: function(){...}</code></td><td>객체가 수행하는 달리기 기능</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. 메서드와 this의 의미</h2>
+  <p><code>human.run()</code>은 <code>human</code> 객체의 <code>run</code> 메서드를 실행합니다.</p>
+  <pre><code>run: function(){ this.speed += 3; }</code></pre>
+  <p>여기서 <code>this.speed</code>는 현재 메서드를 호출한 <code>human</code> 객체의 <code>speed</code> 속성을 가리킵니다. 따라서 실행할 때마다 속도에 3을 더합니다.</p>
+  <p><code>human.walk()</code>은 다음 코드를 실행합니다.</p>
+  <pre><code>walk: function(){ this.speed = 5; }</code></pre>
+  <p>이 메서드는 속도를 3씩 더하는 것이 아니라, 속도 값을 <strong>5로 다시 설정</strong>합니다.</p>
+
+  <h2>4. do...while 반복문은 어떻게 실행되나요?</h2>
+  <p><code>do...while</code>은 먼저 중괄호 안의 명령을 한 번 실행한 다음, 조건을 검사합니다. 이 코드에서는 현재 속도를 출력하고, 속도를 3 증가시킨 뒤, <code>human.speed &lt; 35</code>인지 검사합니다.</p>
+  <table>
+    <thead><tr><th>순서</th><th>출력되는 속도</th><th>run() 실행 후 속도</th><th>반복 조건 검사</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>20</td><td>23</td><td>23 &lt; 35 → 참</td></tr>
+      <tr><td>2</td><td>23</td><td>26</td><td>26 &lt; 35 → 참</td></tr>
+      <tr><td>3</td><td>26</td><td>29</td><td>29 &lt; 35 → 참</td></tr>
+      <tr><td>4</td><td>29</td><td>32</td><td>32 &lt; 35 → 참</td></tr>
+      <tr><td>5</td><td>32</td><td>35</td><td>35 &lt; 35 → 거짓, 반복 종료</td></tr>
+    </tbody>
+  </table>
+  <div class="note">속도 35는 반복 조건을 검사할 때 만들어지지만, 다음 반복이 시작되지 않으므로 ‘달리기’ 출력에는 나타나지 않습니다.</div>
+
+  <h2>5. 프로그램의 최종 출력</h2>
+  <p>반복문이 끝난 뒤 <code>human.walk()</code>가 실행되어 속도가 5로 바뀝니다. 마지막 출력은 이 값을 보여 줍니다.</p>
+  <div class="output">이름:Park 달리기:20
+이름:Park 달리기:23
+이름:Park 달리기:26
+이름:Park 달리기:29
+이름:Park 달리기:32
+이름:Park 걷기:5</div>
+
+  <h2>6. 실행 순서 한눈에 보기</h2>
+  <ol>
+    <li><code>human</code> 객체를 만들고 속성 및 메서드를 정의합니다.</li>
+    <li>현재 이름과 속도를 출력합니다.</li>
+    <li><code>human.run()</code>으로 속도를 3 증가시킵니다.</li>
+    <li>속도가 35보다 작은 동안 반복합니다.</li>
+    <li>반복이 끝나면 <code>human.walk()</code>으로 속도를 5로 설정합니다.</li>
+    <li>이름과 걷기 속도 5를 마지막으로 출력합니다.</li>
+  </ol>
+  <button type="button" id="showFlow">실행 흐름 다시 확인하기</button>
+  <div id="flow">
+    <p><strong>핵심 순서:</strong> 출력(20) → 증가(23) → 출력(23) → 증가(26) → 출력(26) → 증가(29) → 출력(29) → 증가(32) → 출력(32) → 증가(35) → 조건 거짓 → 걷기 속도 5 → 마지막 출력</p>
+  </div>
+
+  <h2>핵심 정리</h2>
+  <ul>
+    <li><strong>객체:</strong> 데이터와 기능을 하나로 묶은 것</li>
+    <li><strong>속성:</strong> 객체가 가진 데이터(<code>name</code>, <code>age</code>, <code>speed</code> 등)</li>
+    <li><strong>메서드:</strong> 객체가 수행하는 기능(<code>run()</code>, <code>walk()</code>)</li>
+    <li><strong>this:</strong> 이 호출 문맥에서 메서드를 실행하는 <code>human</code> 객체를 가리킴</li>
+    <li><strong>do...while:</strong> 명령을 먼저 실행한 후 조건을 검사하는 반복문</li>
+  </ul>
+  <p class="small">학습 포인트: 이 코드는 객체의 속성 값을 메서드로 변경하고, 반복문으로 그 변화를 관찰하는 예제입니다.</p>
+</main>
+<script>
+document.getElementById("showFlow").addEventListener("click", function () {
+  const panel = document.getElementById("flow");
+  const isHidden = panel.style.display === "" || panel.style.display === "none";
+  panel.style.display = isHidden ? "block" : "none";
+  this.textContent = isHidden ? "실행 흐름 숨기기" : "실행 흐름 다시 확인하기";
+});
+</script>
 </body>
 </html>
