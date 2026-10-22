@@ -1,17 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <link rel="stylesheet" href="style.css">
-  <meta charset="utf-8">
-  <title>예제 10-6 onLoad()</title>
+    <meta charset="UTF-8">
+    <title>예제 10-6 쿠키(Cookie)와 onLoad 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; margin-top: 5px; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 라이브 테스트용 함수
+        function liveCheckCookies() {
+            var text = "";
+            if (navigator.cookieEnabled) {
+                text = "브라우저의 쿠키 기능이 설정(허용)되어 있습니다.";
+            } else {
+                text = "브라우저의 쿠키 기능이 꺼져(차단) 있습니다.";
+            }
+            document.getElementById("live_cook").innerHTML = text;
+            document.getElementById("live_cookie_list").innerHTML = document.cookie ? "현재 저장된 쿠키: " + document.cookie : "저장된 쿠키가 없습니다.";
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+                liveCheckCookies();
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
-<body onload="checkCookies()">
-  <p id="cook">onLoad()</p>
+<body>
+<main>
+    <h1>예제 10-6: onLoad() 이벤트와 쿠키(Cookie) 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 웹 페이지 로딩 완료 시점을 제어하는 <strong>`onload` 이벤트</strong>와, 웹 브라우저가 사용자 상태 정보를 기억하기 위해 사용하는 <strong>HTTP 쿠키(Cookie)</strong>의 개념 및 제어 방법을 상세히 설명합니다.</p>
+    </div>
+
+    <h2>1. HTTP 쿠키(Cookie) 개념 및 제어 방법 상세 이해</h2>
+    
+    <p><strong>쿠키(Cookie)</strong>란 웹사이트가 사용자의 웹 브라우저에 전송하는 작고 가벼운 데이터 파일 조각입니다. 브라우저는 이 쿠키를 로컬에 저장해 두었다가, 동일한 웹사이트에 다시 방문할 때 서버로 해당 쿠키를 자동으로 함께 전송합니다.</p>
+
+    <div class="note">
+        <strong>💡 중요 참고사항:</strong> 사용자의 브라우저 전역 설정인 <code>navigator.cookieEnabled</code>(쿠키 허용/차단 여부)는 보안상의 이유로 <strong>자바스크립트로 강제 설정하거나 해제할 수 없습니다(읽기 전용 속성)</strong>. 쿠키 기능 설정/해제는 브라우저의 환경 설정 메뉴에서 직접 수행해야 합니다. 대신 자바스크립트로는 쿠키 데이터의 생성, 조회, 삭제를 제어할 수 있습니다.
+    </div>
+
+    <h3>1) 자바스크립트 쿠키 생성 및 삭제 코드 (주석문 포함)</h3>
+    <p>아래는 소스코드 내에서 쿠키를 다룰 때 사용하는 전형적인 구문과 주석 설명입니다.</p>
+    <pre><code>// 1. 쿠키 생성(저장) 예시
+// 이름, 값, 만료 시간(max-age, 초 단위), 경로(path)를 지정하여 저장합니다.
+// document.cookie = "username=SmartPark; max-age=3600; path=/";
+
+// 2. 쿠키 삭제(만료) 예시
+// 쿠키의 만료 시간(max-age)을 0으로 설정하면 브라우저가 즉시 해당 쿠키를 폐기합니다.
+// document.cookie = "username=; max-age=0; path=/";</code></pre>
+
+    <h2>2. 제공된 HTML 원본 코드 (주석 포함)</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;예제 10-6 onLoad()&lt;/title&gt;
+&lt;/head&gt;
+&lt;body onload="checkCookies()"&gt;
+  &lt;p id="cook"&gt;onLoad()&lt;/p&gt;
   
-  <script>
+  &lt;script&gt;
     function checkCookies() {
       var text = "";
       
+      // 브라우저의 쿠키 활성화 여부 확인 (읽기 전용 속성이므로 강제 설정/해제 불가)
       if (navigator.cookieEnabled) {
         text = "브라우저의 쿠키 기능이 설정되어 있습니다.";
       } else {
@@ -19,8 +102,65 @@
       }
       
       document.getElementById("cook").innerHTML = text;
+
+      /*
+        [참고: 자바스크립트를 통한 쿠키 제어 주석문 코드]
+        - 쿠키 생성: document.cookie = "user=Park; max-age=60; path=/";
+        - 쿠키 삭제: document.cookie = "user=; max-age=0; path=/";
+      */
     }
-  </script>
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <p id="live_cook">onLoad() 실행 대기중...</p>
+        <p id="live_cookie_list" style="font-weight: bold; color: #1769aa;"></p>
+        <p class="small">※ 참고: 브라우저 보안 정책상 자바스크립트로 브라우저의 쿠키 차단/허용 설정을 직접 조작할 수는 없습니다.</p>
+    </div>
+
+    <h2>3. 주요 코드 요소 및 동작 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>코드 요소</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>navigator.cookieEnabled</code></td>
+                <td><code>if (navigator.cookieEnabled) { ... }</code></td>
+                <td>사용자의 브라우저에서 쿠키 사용이 허용되어 있는지를 확인하는 읽기 전용 부울리언 속성입니다.</td>
+            </tr>
+            <tr>
+                <td>쿠키 생성/삭제 주석문</td>
+                <td><code>document.cookie = "...; max-age=0;";</code></td>
+                <td>브라우저 설정 자체는 스크립트로 바꿀 수 없으나, 저장된 쿠키 데이터는 <code>document.cookie</code>를 통해 생성 및 만료(삭제) 처리할 수 있습니다.</td>
+            </tr>
+            <tr>
+                <td><code>onload</code> 이벤트</td>
+                <td><code>&lt;body onload="checkCookies()"&gt;</code></td>
+                <td>페이지가 열리는 시점에 브라우저의 쿠키 지원 환경 여부를 자동으로 검사합니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <li><strong>브라우저 설정:</strong> <code>navigator.cookieEnabled</code>는 읽기 전용이므로 자바스크립트로 강제 ON/OFF 불가</li>
+        <li><strong>데이터 제어:</strong> <code>document.cookie</code>를 통한 쿠키 데이터 생성 및 만료(삭제) 처리는 가능</li>
+        <li><strong>환경 검사:</strong> 쿠키 사용 필수 웹 앱에서 클라이언트 환경을 사전 진단하는 데 활용</li>
+    </ul>
+    <p class="small">학습 포인트: 브라우저 쿠키의 제약 사항(설정 변경 불가)과 자바스크립트를 통한 데이터 관리 방식의 차이를 이해합니다.</p>
+</main>
 </body>
 </html>
 
