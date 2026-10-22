@@ -1,19 +1,152 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset='utf-8'></meta>
-<title>예제 10-10 onFocus()</title>
-	<link rel="stylesheet" href="mobile_styles.css">
-<script>
-	function mfocus() {
-	 document.getElementById("txt").value = "이미입력했습니다.";
-	}
-</script>
-	<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>예제 10-10 (개선): onFocus / onBlur 올바른 활용 분석 문서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; margin-top: 5px; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+        .input-box { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 250px; transition: all 0.3s; }
+    </style>
+    <script>
+        // 올바른 포커스 진입 시 가이드 및 스타일 부여
+        function liveFocus(element) {
+            document.getElementById("live_guide").innerHTML = "💡 아이디는 영문, 숫자 조합으로 4~12자로 입력해 주세요.";
+            element.style.backgroundColor = "#e8f4f8";
+            element.style.borderColor = "#1769aa";
+        }
+
+        // 포커스 해제 시 가이드 숨김 및 스타일 원복
+        function liveBlur(element) {
+            document.getElementById("live_guide").innerHTML = "";
+            element.style.backgroundColor = "white";
+            element.style.borderColor = "#ccc";
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
 <body>
-<h3>문자를 입력하세요</h3>
-<input id="txt" type="text" onFocus="mfocus()">
+<main>
+    <h1>예제 10-10 (개선): onFocus 및 onBlur 이벤트 활용 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 폼 입력창이 활성화될 때 발생하는 <strong>`onfocus`</strong>와 포커스가 벗어날 때 발생하는 <strong>`onblur`</strong>를 조합하여, 사용자에게 친절한 입력 가이드와 시각적 피드백을 제공하는 올바른 패턴을 설명합니다.</p>
+    </div>
+
+    <h2>1. 개선된 onFocus / onBlur 활용 개념</h2>
+    
+    <p>앞서 살펴본 예제처럼 포커스가 들어올 때 입력값을 강제로 덮어씌우면 사용자 입력이 방해받습니다. 따라서 실무에서는 다음과 같이 활용하는 것이 적절합니다.</p>
+
+    <div class="note">
+        <strong>💡 올바른 UX 패턴:</strong> 
+        <ul>
+            <li><strong><code>onfocus</code></strong>: 입력창 배경색을 강조하고, 아래쪽에 입력 규칙(툴팁/안내 문구)을 띄워줍니다.</li>
+            <li><strong><code>onblur</code></strong>: 입력창에서 포커스가 빠져나갈 때 안내 문구를 지우고 입력창 스타일을 원래대로 돌려놓습니다.</li>
+        </ul>
+    </div>
+
+    <h2>2. 개선된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset='utf-8'&gt;
+&lt;title&gt;예제 10-10 onFocus & onBlur&lt;/title&gt;
+&lt;script&gt;
+    function showGuide(el) {
+        document.getElementById("guide").innerHTML = "💡 영문, 숫자 조합 4~12자로 입력하세요.";
+        el.style.backgroundColor = "#e8f4f8";
+    }
+    function hideGuide(el) {
+        document.getElementById("guide").innerHTML = "";
+        el.style.backgroundColor = "white";
+    }
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;회원 가입 - 아이디 입력&lt;/h3&gt;
+&lt;input id="txt" type="text" onFocus="showGuide(this)" onBlur="hideGuide(this)"&gt;
+&lt;p id="guide" style="color: #1769aa; font-size: 0.9rem;"&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <label for="live_txt" style="font-weight: bold; display: block; margin-bottom: 5px;">아이디: </label>
+        <input id="live_txt" class="input-box" type="text" placeholder="여기를 클릭해 보세요" onFocus="liveFocus(this)" onBlur="liveBlur(this)">
+        <p id="live_guide" style="color: #1769aa; font-size: 0.9rem; margin-top: 8px; min-height: 20px;"></p>
+    </div>
+
+    <h2>3. 주요 이벤트 및 기법 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>이벤트 / 속성</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>onfocus</code> 이벤트</td>
+                <td><code>onFocus="showGuide(this)"</code></td>
+                <td>사용자가 입력 필드를 클릭하거나 탭하여 포커스를 얻을 때 발생합니다. <code>this</code>를 전달해 해당 요소를 직접 제어합니다.</td>
+            </tr>
+            <tr>
+                <td><code>onblur</code> 이벤트</td>
+                <td><code>onBlur="hideGuide(this)"</code></td>
+                <td>사용자가 입력 필드 외부를 클릭하거나 다른 곳으로 포커스를 이동할 때(포커스 상실) 발생합니다.</td>
+            </tr>
+            <tr>
+                <td>스타일 동적 변경</td>
+                <td><code>el.style.backgroundColor = ...</code></td>
+                <td>포커스 상태에 따라 입력창의 배경색이나 테두리를 바꾸어 현재 사용자가 입력 중인 필드를 명확히 인지하게 돕습니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <td><strong>포커스 획득 (`onfocus`):</strong> 입력 가이드 제공 및 시각적 강조 효과 부여</td>
+        <td><strong>포커스 상실 (`onblur`):</strong> 안내 메시지 정리 및 입력창 스타일 원복</td>
+        <td><strong>사용자 경험(UX):</strong> 강제 입력 방식보다 사용자의 자유로운 타이핑을 보장하면서 피드백을 주는 형태가 올바름</td>
+    </ul>
+    <p class="small">학습 포인트: `onfocus`와 짝을 이루는 `onblur`의 역할을 이해하고, 폼 검증 및 가이드 제공에 알맞은 인터랙션 패턴을 익힙니다.</p>
+</main>
 </body>
 </html>
 
