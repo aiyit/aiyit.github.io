@@ -1,37 +1,190 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<link rel="stylesheet" href="style.css">	
-<meta charset="utf-8">
-<title>예제 10-14 Location 객체</title>
+    <meta charset="UTF-8">
+    <title>예제 10-14 Location 객체 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; margin-right: 5px; margin-top: 5px; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 라이브 테스트용 함수 (ID 충돌 방지를 위해 live_ 접두사 사용)
+        function liveLct() {
+            var hf = location.href;
+            var hn = location.hostname;
+            var pn = location.pathname;
+            var pt = location.protocol;
+            var prt = location.port;
+
+            document.getElementById("live_wh").textContent = hf;
+            document.getElementById("live_awh").textContent = hn;
+            document.getElementById("live_cd").textContent = pn;
+            document.getElementById("live_pd").textContent = pt;
+            document.getElementById("live_prt").textContent = prt;
+        }
+
+        function liveAssgn() { 
+            if (confirm("외부 사이트(w3schools)로 이동하시겠습니까?")) {
+                location.assign("https://www.w3schools.com/js/");
+            }
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+                // 패널이 열릴 때 자동으로 정보 조회 실행
+                liveLct();
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
 <body>
-<p>Location href: <b id="wh"></b>입니다.</p>
-<p>Location hostname: <b id="awh"></b>입니다.</p>
-<p>Location pathname: <b id="cd"></b>입니다.</p>
-<p>Location protocol: <b id="pd"></b>입니다.</p>
-<p>Location port: <b id="prt"></b>입니다.</p>
-<h3>Location 객체</h3>
-<button type="button" onclick="lct()">Location 정보 보기</button>
-<button type="button" onclick="assgn()">새 문서 열기</button>
-<script>
-	function lct() {
-		var hf = location.href;
-		var hn = location.hostname;
-		var pn = location.pathname;
-		var pt = location.protocol;
-		var prt = location.port;
+<main>
+    <h1>예제 10-14: Location 객체 분석 보고서</h1>
+    <div class="intro">
+        <p>본 문서는 현재 웹 문서의 <strong>URL 주소 정보를 조회</strong>하고, 새로운 페이지로 이동(네비게이션)하는 기능을 담당하는 <strong>`location` 객체</strong>의 개념과 주요 속성 및 메서드를 설명합니다.</p>
+    </div>
 
-		document.getElementById("wh").textContent = hf;
-		document.getElementById("awh").textContent = hn;
-		document.getElementById("cd").textContent = pn;
-		document.getElementById("pd").textContent = pt;
-		document.getElementById("prt").textContent = prt;
-	}
-	function assgn(){ 
-		location.assign("https://w3schools.com/js/");
-	}
-</script>
+    <h2>1. Location 객체란 무엇인가요? (기초 개념)</h2>
+    
+    <p><strong>`location` 객체</strong>는 현재 브라우저에 표시된 문서의 URL(Uniform Resource Locator) 정보를 담고 있는 자바스크립트의 내장 객체입니다. <code>window.location</code>의 형태로 사용되며, 접두사를 생략하고 간단히 <code>location</code>으로 호출할 수 있습니다.</p>
+
+    <div class="note">
+        <strong>💡 핵심 역할:</strong> 현재 페이지가 어떤 주소로 접속되어 있는지 파악(`href`, `hostname` 등)할 수 있을 뿐만 아니라, 값을 대입하거나 <code>assign()</code> 메서드를 호출하여 <strong>새로운 웹 페이지로 강제 이동</strong>시키는 리다이렉트 기능을 수행할 수 있습니다.
+    </div>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;   
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;예제 10-14 Location 객체&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;p&gt;Location href: &lt;b id="wh"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;Location hostname: &lt;b id="awh"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;Location pathname: &lt;b id="cd"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;Location protocol: &lt;b id="pd"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;Location port: &lt;b id="prt"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;h3&gt;Location 객체&lt;/h3&gt;
+&lt;button type="button" onclick="lct()"&gt;Location 정보 보기&lt;/button&gt;
+&lt;button type="button" onclick="assgn()"&gt;새 문서 열기&lt;/button&gt;
+&lt;script&gt;
+    function lct() {
+        var hf = location.href;
+        var hn = location.hostname;
+        var pn = location.pathname;
+        var pt = location.protocol;
+        var prt = location.port;
+
+        document.getElementById("wh").textContent = hf;
+        document.getElementById("awh").textContent = hn;
+        document.getElementById("cd").textContent = pn;
+        document.getElementById("pd").textContent = pt;
+        document.getElementById("prt").textContent = prt;
+    }
+    function assgn(){ 
+        location.assign("https://w3schools.com/js/");
+    }
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <p>Location href: <b id="live_wh"></b>입니다.</p>
+        <p>Location hostname: <b id="live_awh"></b>입니다.</p>
+        <p>Location pathname: <b id="live_cd"></b>입니다.</p>
+        <p>Location protocol: <b id="live_pd"></b>입니다.</p>
+        <p>Location port: <b id="live_prt"></b>입니다.</p>
+        <h3 style="margin-top:15px;">Location 객체 제어</h3>
+        <button type="button" onclick="liveLct()">Location 정보 보기</button>
+        <button type="button" onclick="liveAssgn()">새 문서 열기</button>
+    </div>
+
+    <h2>3. Location 주요 속성 및 메서드 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>구분 / 속성명</th>
+                <th>사용 예시 (반환 형태)</th>
+                <th>설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>location.href</code></td>
+                <td><code>"https://example.com/path/index.html"</code></td>
+                <td>현재 문서의 <strong>전체 URL 주소 문자열</strong>을 반환합니다. 이 속성에 새로운 URL을 대입하면 페이지가 즉시 해당 주소로 이동합니다.</td>
+            </tr>
+            <tr>
+                <td><code>location.hostname</code></td>
+                <td><code>"example.com"</code></td>
+                <td>웹 주소에서 <strong>도메인 이름(호스트 이름)</strong>만 추출하여 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>location.pathname</code></td>
+                <td><code>"/path/index.html"</code></td>
+                <td>도메인 뒤에 이어지는 <strong>파일 경로와 폴더 구조</strong>를 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>location.protocol</code></td>
+                <td><code>"https:"</code> 또는 <code>"http:"</code></td>
+                <td>웹 페이지에 접근할 때 사용된 <strong>통신 프로토콜(규약)</strong>을 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>location.port</code></td>
+                <td><code>"80"</code>, <code>"3000"</code> 등</td>
+                <td>웹 서버가 사용 중인 <strong>포트 번호</strong>를 반환합니다. (기본 포트인 80이나 443의 경우 빈 문자열로 반환될 수 있음)</td>
+            </tr>
+            <tr>
+                <td><code>location.assign()</code></td>
+                <td><code>location.assign("주소")</code></td>
+                <td>새로운 문서(URL)를 로드하여 페이지를 이동시킵니다. 브라우저의 세션 히스토리에 기록되므로 뒤로 가기가 가능합니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <td><strong>URL 정보 탐색:</strong> <code>href</code>, <code>hostname</code>, <code>pathname</code> 등을 통해 현재 웹 페이지의 주소 구성 요소를 세밀하게 파악</td>
+        <td><strong>페이지 리다이렉트:</strong> <code>location.assign()</code> 또는 <code>location.href = "주소"</code>를 이용해 사용자 화면을 다른 페이지로 전환</td>
+        <td><strong>활용성:</strong> 로그인 인증 상태에 따른 페이지 강제 이동이나 현재 접속 환경 분석에 필수적인 객체</td>
+    </ul>
+    <p class="small">학습 포인트: `location` 객체를 통해 현재 문서의 URL 세부 속성을 읽어내고, 스크립트로 페이지 이동을 제어하는 방법을 익힙니다.</p>
+</main>
 </body>
 </html>
 
