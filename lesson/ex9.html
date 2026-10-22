@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript 객체와 생성자 함수 | 초보자 학습 자료</title>
+<style>
+:root{--navy:#14213d;--blue:#2563eb;--cyan:#06b6d4;--bg:#f4f7fb;--ink:#1f2937;--muted:#64748b;--line:#dbe4f0;--green:#087f5b;--orange:#b45309}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans KR",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+header{background:linear-gradient(120deg,#14213d,#1d4ed8 70%,#0891b2);color:white;padding:38px 20px}
+.wrap{max-width:1050px;margin:auto;padding:0 18px}header h1{font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.25;margin:0 0 12px}header p{margin:0;color:#e0f2fe}
+main{padding:24px 0 55px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:22px;margin:16px 0;box-shadow:0 5px 18px #1e293b0a}
+h2{font-size:1.4rem;color:var(--navy);margin:0 0 12px}h3{font-size:1.08rem;color:#1d4ed8;margin:18px 0 8px}
+.lead{font-size:1.05rem}.pill{display:inline-block;background:#dbeafe;color:#1d4ed8;border-radius:999px;padding:3px 10px;font-size:.85rem;font-weight:700}
+.diagram{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin:14px 0}.diagram div{flex:1;min-width:150px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px;text-align:center}.arrow{align-self:center;color:var(--blue);font-size:1.4rem;font-weight:bold}
+pre{background:#0b1220;color:#e5eefb;border-radius:12px;padding:16px;overflow:auto;line-height:1.6;font-size:.92rem}code{font-family:Consolas,monospace}.key{color:#7dd3fc}.comment{color:#94a3b8}.note{border-left:4px solid var(--cyan);background:#ecfeff;padding:12px 15px;border-radius:0 8px 8px 0;margin:12px 0}.warn{border-left-color:#f59e0b;background:#fffbeb}.good{color:var(--green);font-weight:700}
+table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:#eff6ff;color:var(--navy)}
+button{border:0;border-radius:9px;background:var(--blue);color:white;padding:10px 15px;font-size:1rem;cursor:pointer;font-weight:700}button:hover{background:#1d4ed8}input{padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:1rem;max-width:100%;width:180px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}.output{background:#f8fafc;border:1px dashed #94a3b8;border-radius:10px;padding:14px;min-height:48px;white-space:pre-wrap}
+.quiz-option{display:block;width:100%;text-align:left;background:#f8fafc;color:var(--ink);border:1px solid var(--line);margin:8px 0}.quiz-option:hover{background:#eff6ff}.small{font-size:.9rem;color:var(--muted)}footer{text-align:center;color:var(--muted);padding:22px}
+@media(max-width:600px){.card{padding:16px}table{font-size:.9rem}th,td{padding:7px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<span class="pill">JavaScript 기초 · 예제 9-1 보충 학습</span>
+<h1>객체(Object)와 생성자 함수</h1>
+<p>처음 배우는 학생도 이해할 수 있도록, 객체를 만드는 이유부터 <code>this</code>, <code>new</code>까지 단계별로 살펴봅니다.</p>
+</div></header>
+<main class="wrap">
+<section class="card">
+<h2>1. 객체란 무엇인가요?</h2>
+<p class="lead">객체는 <b>하나의 대상에 관한 정보와 기능을 한데 묶어 놓은 것</b>입니다.</p>
+<p>예를 들어 학생 한 명에게는 이름과 학과 같은 <b>정보</b>가 있고, 자기소개를 하는 <b>기능</b>도 있을 수 있습니다. JavaScript에서는 정보는 <code>속성(property)</code>, 기능은 <code>메서드(method)</code>라고 부릅니다.</p>
+<div class="diagram">
+<div><b>학생 객체</b><br>이름: 민수<br>학과: AI소프트웨어과<br>학년: 1</div><div class="arrow">→</div><div><b>객체의 기능</b><br>자기소개하기()<br>학년 표시하기()</div>
+</div>
+<pre><code><span class="key">const</span> student = {
+  name: "민수",             <span class="comment">// 속성: 학생의 이름</span>
+  department: "AI소프트웨어과",
+  grade: 1,
+  introduce: <span class="key">function</span>() {  <span class="comment">// 메서드: 객체의 기능</span>
+    <span class="key">return</span> "안녕하세요. 저는 " + <span class="key">this</span>.name + "입니다.";
+  }
+};
+
+console.log(student.name);       <span class="comment">// 민수</span>
+console.log(student.introduce()); <span class="comment">// 안녕하세요. 저는 민수입니다.</span></code></pre>
+<div class="note"><b>기억할 점:</b> <code>student.name</code>은 이름이라는 속성의 값이고, <code>student.introduce()</code>는 메서드를 실행하는 표현입니다. 메서드를 실행할 때는 괄호 <code>()</code>가 필요합니다.</div>
+</section>
+
+<section class="card">
+<h2>2. 객체를 여러 개 만들려면?</h2>
+<p>학생 객체를 한 명만 만든다면 위와 같이 작성해도 됩니다. 하지만 학생이 30명이라면 객체 코드를 30번 반복해야 할까요?</p>
+<p><b>생성자 함수(Constructor Function)</b>는 같은 형태의 객체를 반복해서 만들 수 있도록 설계한 함수입니다. 쉽게 말해 <b>객체를 찍어내는 설계도</b>입니다.</p>
+<div class="diagram">
+<div><b>생성자 함수</b><br>학생 객체의 설계도</div><div class="arrow">→</div><div><b>new Student(...)</b><br>학생 객체 1</div><div class="arrow">→</div><div><b>new Student(...)</b><br>학생 객체 2</div>
+</div>
+<pre><code><span class="key">function</span> Student(name, department, grade) {
+  <span class="key">this</span>.name = name;
+  <span class="key">this</span>.department = department;
+  <span class="key">this</span>.grade = grade;
+}
+
+<span class="key">const</span> student1 = <span class="key">new</span> Student("민수", "AI소프트웨어과", 1);
+<span class="key">const</span> student2 = <span class="key">new</span> Student("지영", "AI소프트웨어과", 2);
+
+console.log(student1.name); // 민수
+console.log(student2.name); // 지영</code></pre>
+<table><thead><tr><th>코드</th><th>쉬운 의미</th></tr></thead><tbody>
+<tr><td><code>function Student(...)</code></td><td>학생 객체를 만드는 설계도(생성자 함수)를 정의합니다.</td></tr>
+<tr><td><code>name, department, grade</code></td><td>객체마다 달라질 정보를 전달받는 매개변수입니다.</td></tr>
+<tr><td><code>this.name = name</code></td><td>새로 만들어지는 객체의 <code>name</code> 속성에 전달받은 이름을 저장합니다.</td></tr>
+<tr><td><code>new Student(...)</code></td><td>설계도를 사용해 새로운 학생 객체를 만듭니다.</td></tr>
+<tr><td><code>student1</code>, <code>student2</code></td><td>각각 별도의 객체를 가리키는 변수입니다.</td></tr>
+</tbody></table>
+<div class="note warn"><b>명명 규칙:</b> 생성자 함수 이름은 관례적으로 첫 글자를 대문자로 씁니다. <code>Student</code>처럼 작성하면 일반 함수와 구분하기 쉽습니다. JavaScript가 대문자를 강제하는 것은 아니지만 널리 쓰이는 약속입니다.</div>
+</section>
+
+<section class="card">
+<h2>3. 가장 헷갈리는 this 이해하기</h2>
+<p><code>this</code>는 이 코드에서 <b>새로 만들어지는 객체</b>를 가리킵니다. <code>this.name = name</code>을 두 부분으로 나누어 보세요.</p>
+<pre><code><span class="key">this</span>.name = name;
+<span class="comment">// 왼쪽 this.name : 객체 안에 저장할 속성</span>
+<span class="comment">// 오른쪽 name    : 함수가 전달받은 매개변수 값</span></code></pre>
+<p>예를 들어 <code>new Student("민수", "AI소프트웨어과", 1)</code>을 실행하면, 매개변수 <code>name</code>에는 "민수"가 들어오고 새 객체의 <code>name</code> 속성에 저장됩니다.</p>
+<table><thead><tr><th>왼쪽</th><th>연결</th><th>오른쪽</th></tr></thead><tbody>
+<tr><td><code>this.name</code></td><td>← 값을 저장</td><td><code>name</code> (전달받은 "민수")</td></tr>
+<tr><td><code>this.grade</code></td><td>← 값을 저장</td><td><code>grade</code> (전달받은 1)</td></tr>
+</tbody></table>
+<div class="note"><b>비유:</b> 택배 상자에 붙이는 이름표가 <code>this.name</code>이고, 택배 신청서에서 받아온 이름이 <code>name</code>입니다. 신청서의 이름을 해당 상자의 이름표에 적는 과정입니다.</div>
+</section>
+
+<section class="card">
+<h2>4. 직접 실행해 보기</h2>
+<p>이름과 학년을 바꾸고 버튼을 눌러 보세요. 아래 예제는 생성자 함수를 이용해 두 학생 객체를 만든 뒤, 각 객체의 속성을 읽어 출력합니다.</p>
+<div class="controls"><label for="name1">학생 1 이름</label><input id="name1" value="민수"></div>
+<div class="controls"><label for="grade1">학생 1 학년</label><input id="grade1" type="number" min="1" max="4" value="1"></div>
+<div class="controls"><label for="name2">학생 2 이름</label><input id="name2" value="지영"></div>
+<div class="controls"><label for="grade2">학생 2 학년</label><input id="grade2" type="number" min="1" max="4" value="2"></div>
+<button onclick="runDemo()">객체 생성 및 출력</button>
+<div id="demoOutput" class="output" aria-live="polite">버튼을 누르면 결과가 여기에 표시됩니다.</div>
+<pre><code><span class="key">function</span> Student(name, grade) {
+  <span class="key">this</span>.name = name;
+  <span class="key">this</span>.grade = grade;
+}
+<span class="key">const</span> student1 = <span class="key">new</span> Student("민수", 1);
+<span class="key">const</span> student2 = <span class="key">new</span> Student("지영", 2);</code></pre>
+</section>
+
+<section class="card">
+<h2>5. 객체 리터럴과 생성자 함수 비교</h2>
+<table><thead><tr><th>구분</th><th>객체 리터럴</th><th>생성자 함수</th></tr></thead><tbody>
+<tr><td>작성 예</td><td><code>const s = {name:"민수"};</code></td><td><code>const s = new Student("민수");</code></td></tr>
+<tr><td>적합한 상황</td><td>형태가 다른 객체 또는 소수의 객체</td><td>같은 구조의 객체를 여러 개 생성할 때</td></tr>
+<tr><td>장점</td><td>짧고 직관적</td><td>반복 코드를 줄이고 구조를 통일</td></tr>
+</tbody></table>
+<p>현대 JavaScript에서는 <b>클래스(class)</b> 문법도 자주 사용합니다. 다만 생성자 함수의 원리를 먼저 이해하면 <code>this</code>와 객체 생성 과정을 배우는 데 도움이 됩니다.</p>
+<pre><code><span class="key">class</span> Student {
+  <span class="key">constructor</span>(name, grade) {
+    <span class="key">this</span>.name = name;
+    <span class="key">this</span>.grade = grade;
+  }
+}
+<span class="key">const</span> student1 = <span class="key">new</span> Student("민수", 1);</code></pre>
+</section>
+
+<section class="card">
+<h2>6. 확인 문제</h2>
+<p><b>문제 1.</b> <code>new Student("민수", 1)</code>에서 <code>new</code>의 역할은 무엇인가요?</p>
+<button class="quiz-option" onclick="checkQuiz(0, false)">① 기존 객체의 이름을 바꿉니다.</button>
+<button class="quiz-option" onclick="checkQuiz(0, true)">② 새로운 객체를 생성합니다.</button>
+<button class="quiz-option" onclick="checkQuiz(0, false)">③ 함수를 삭제합니다.</button>
+<div id="quiz1" class="output" aria-live="polite"></div>
+<p><b>문제 2.</b> <code>this.name = name</code>에서 오른쪽 <code>name</code>은 무엇인가요?</p>
+<button class="quiz-option" onclick="checkQuiz(1, true)">① 함수가 전달받은 매개변수 값입니다.</button>
+<button class="quiz-option" onclick="checkQuiz(1, false)">② 항상 전역 변수입니다.</button>
+<button class="quiz-option" onclick="checkQuiz(1, false)">③ 객체를 생성하는 명령어입니다.</button>
+<div id="quiz2" class="output" aria-live="polite"></div>
+</section>
+
+<section class="card">
+<h2>7. 핵심 정리</h2>
+<ul>
+<li><b>객체:</b> 관련된 데이터와 기능을 묶은 것</li>
+<li><b>속성:</b> 객체가 가진 정보. 예: <code>student.name</code></li>
+<li><b>메서드:</b> 객체에 연결된 함수. 예: <code>student.introduce()</code></li>
+<li><b>생성자 함수:</b> 비슷한 구조의 객체를 반복해서 만드는 함수</li>
+<li><b>this:</b> 생성자 함수에서 새로 만들어지는 객체를 가리킴</li>
+<li><b>new:</b> 생성자 함수를 이용해 새 객체를 생성</li>
+</ul>
+<div class="note"><b>한 문장으로 기억하기:</b> 생성자 함수는 설계도이고, <code>new</code>는 그 설계도로 새 객체를 만들며, <code>this</code>는 만들어지는 객체의 속성을 설정할 때 사용합니다.</div>
+<p class="small">수업 활용 안내: 본 자료는 연결된 페이지 제목인 ‘객체 생성’을 바탕으로 객체와 생성자 함수의 기초를 설명하는 보충용 HTML입니다. 원본 페이지의 전체 코드가 확인되지 않아, 원문 코드를 그대로 옮긴 해설이 아니라 초보 학습자를 위한 독립적인 설명 자료로 구성했습니다.</p>
+</section>
+</main>
+<footer>JavaScript 기초 학습 자료 · AI소프트웨어 교육용</footer>
+<script>
+function Student(name, grade) {
+  this.name = name;
+  this.grade = grade;
+}
+function runDemo() {
+  const name1 = document.getElementById("name1").value.trim() || "이름 없음";
+  const grade1 = Number(document.getElementById("grade1").value) || 1;
+  const name2 = document.getElementById("name2").value.trim() || "이름 없음";
+  const grade2 = Number(document.getElementById("grade2").value) || 1;
+  const student1 = new Student(name1, grade1);
+  const student2 = new Student(name2, grade2);
+  document.getElementById("demoOutput").textContent =
+    "student1.name = " + student1.name + "\nstudent1.grade = " + student1.grade +
+    "\n\nstudent2.name = " + student2.name + "\nstudent2.grade = " + student2.grade +
+    "\n\n두 변수는 서로 다른 학생 객체를 가리킵니다.";
+}
+function checkQuiz(number, correct) {
+  const target = document.getElementById(number === 0 ? "quiz1" : "quiz2");
+  target.textContent = correct ? "정답입니다! 잘 이해하셨습니다. 🎉" : "다시 생각해 보세요. 위의 설명에서 new 또는 매개변수의 의미를 확인해 보세요.";
+  target.style.color = correct ? "#087f5b" : "#b45309";
+}
+</script>
+</body>
+</html>
