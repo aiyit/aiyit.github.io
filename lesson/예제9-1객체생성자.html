@@ -1,142 +1,21 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>예제 9-1 객체 생성자 - 객체와 메서드 이해하기</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#f4f7fb;color:#1f2937;font-family:"Noto Sans KR",Arial,sans-serif;line-height:1.75}
-header{background:linear-gradient(120deg,#14213d,#1d4ed8);color:#fff;padding:28px 18px}
-main{max-width:1000px;margin:24px auto;padding:0 16px}
-h1{margin:0;font-size:clamp(1.6rem,4vw,2.25rem)}header p{margin:8px 0 0;color:#dbeafe}
-section{background:white;border:1px solid #dbe4f0;border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 4px 15px #14213d08}
-h2{color:#1e3a8a;margin:0 0 10px;font-size:1.3rem}h3{color:#1d4ed8;margin-bottom:6px}
-code{font-family:Consolas,monospace;background:#eff6ff;padding:2px 5px;border-radius:4px}
-pre{background:#0b1220;color:#e5eefb;border-radius:10px;padding:16px;overflow:auto;line-height:1.65}
-pre code{background:transparent;padding:0;color:inherit}
-.note{background:#ecfeff;border-left:4px solid #0891b2;padding:12px 14px;border-radius:0 8px 8px 0}
-.warn{background:#fffbeb;border-left-color:#f59e0b}
-table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #dbe4f0;padding:9px;text-align:left;vertical-align:top}th{background:#eff6ff}
-.result{background:#f8fafc;border:1px dashed #94a3b8;border-radius:10px;padding:12px;font-family:Consolas,monospace;white-space:pre-wrap}
-button{background:#2563eb;color:white;border:0;border-radius:8px;padding:10px 15px;font-size:1rem;cursor:pointer}button:hover{background:#1d4ed8}
-.small{font-size:.92rem;color:#64748b}
-@media(max-width:600px){section{padding:15px}table{font-size:.9rem}th,td{padding:7px}}
-</style>
+<title>예제9-1객체 생성자</title>
 </head>
 <body>
-<header><div style="max-width:1000px;margin:auto">
-<h1>예제 9-1. 객체 생성과 메서드</h1>
-<p>JavaScript 초보자를 위한 설명: 객체, 속성, 메서드, this, do...while 반복문</p>
-</div></header>
-<main>
-<section>
-<h2>1. 객체란 무엇인가요?</h2>
-<p><b>객체(Object)</b>는 하나의 대상에 관한 정보와 기능을 묶어 놓은 자료입니다. 이 예제에서는 사람을 <code>human</code>이라는 객체로 표현합니다.</p>
-<table><thead><tr><th>구분</th><th>코드</th><th>쉬운 설명</th></tr></thead><tbody>
-<tr><td>속성(Property)</td><td><code>name: "Park"</code></td><td>사람의 이름 정보</td></tr>
-<tr><td>속성(Property)</td><td><code>age: 40</code></td><td>나이 정보</td></tr>
-<tr><td>속성(Property)</td><td><code>sex: "female"</code></td><td>성별 정보</td></tr>
-<tr><td>속성(Property)</td><td><code>speed: 20</code></td><td>현재 속도 값</td></tr>
-<tr><td>메서드(Method)</td><td><code>walk: function(){...}</code></td><td>걷기 동작을 수행하는 함수</td></tr>
-<tr><td>메서드(Method)</td><td><code>run: function(){...}</code></td><td>달리기 동작을 수행하는 함수</td></tr>
-</tbody></table>
-<div class="note">쉽게 말하면 <b>속성은 객체가 가진 정보</b>이고, <b>메서드는 객체가 할 수 있는 동작</b>입니다. 객체는 중괄호 <code>{ }</code> 안에 속성과 메서드를 함께 작성합니다.</div>
-</section>
-
-<section>
-<h2>2. 원본 코드와 줄별 설명</h2>
-<pre><code>var human = {
-    name: "Park",   // 이름 속성
-    age: 40,        // 나이 속성
-    sex: "female",  // 성별 속성
-    speed: 20,      // 현재 속성 값(초기 속도)
-
-    walk: function() {
-        this.speed = 5;
-    },              // 걷기 메서드: 속도를 5로 바꿈
-
-    run: function() {
-        this.speed += 3;
-    }               // 달리기 메서드: 속도에 3을 더함
-};</code></pre>
-<p><code>var human = { ... }</code>은 <code>human</code>이라는 객체를 만들고 그 안에 정보와 동작을 저장합니다.</p>
-<p><code>this.speed</code>에서 <code>this</code>는 현재 메서드를 실행한 객체, 이 예제에서는 <code>human</code>을 가리킵니다. 따라서 <code>this.speed += 3</code>은 <code>human.speed = human.speed + 3</code>과 같은 뜻입니다.</p>
-<div class="note warn"><b>주의:</b> 이 예제는 객체 리터럴로 객체를 직접 만듭니다. 제목에 ‘객체 생성자’가 들어 있지만, <code>function Human(){...}</code> 형태의 생성자 함수와 <code>new</code>를 사용하는 코드는 아닙니다. 여기서는 객체와 메서드의 동작을 먼저 익힙니다.</div>
-</section>
-
-<section>
-<h2>3. 달리기 반복문 이해하기</h2>
-<pre><code>do {
-    document.write("이름:" + human.name
-        + " 달리기:" + human.speed + "&lt;br&gt;");
-    human.run();
-} while (human.speed &lt; 35);</code></pre>
-<ul>
-<li><code>do { ... }</code> 안의 코드는 조건을 검사하기 전에 먼저 한 번 실행됩니다.</li>
-<li><code>document.write(...)</code>는 현재 이름과 속도를 웹페이지에 출력합니다.</li>
-<li><code>human.run()</code>을 호출하면 속도가 3 증가합니다.</li>
-<li><code>while (human.speed &lt; 35)</code>는 속도가 35보다 작은 동안 반복합니다.</li>
-</ul>
-<p>처음 속도는 20입니다. 반복할 때마다 먼저 현재 속도를 출력하고, 그다음 3을 더합니다.</p>
-<table><thead><tr><th>출력 순서</th><th>출력되는 속도</th><th>출력 후 run() 실행</th></tr></thead><tbody>
-<tr><td>1</td><td>20</td><td>23</td></tr><tr><td>2</td><td>23</td><td>26</td></tr><tr><td>3</td><td>26</td><td>29</td></tr><tr><td>4</td><td>29</td><td>32</td></tr><tr><td>5</td><td>32</td><td>35</td></tr>
-</tbody></table>
-<p>속도가 35가 되면 조건 <code>35 &lt; 35</code>가 거짓이므로 반복문이 종료됩니다. 따라서 마지막에 달리기 속도 35는 출력되지 않습니다.</p>
-<div class="note">핵심: <code>do...while</code>은 <b>실행 → 조건 검사</b> 순서입니다. 반면 일반적인 <code>while</code>은 <b>조건 검사 → 실행</b> 순서입니다.</div>
-</section>
-
-<section>
-<h2>4. 걷기 메서드 실행</h2>
-<pre><code>human.walk();
-document.write("이름:" + human.name
-    + " 걷기:" + human.speed + "&lt;br&gt;");</code></pre>
-<p>달리기 반복문이 끝나면 <code>human.walk()</code>를 호출합니다. 걷기 메서드 안의 <code>this.speed = 5</code>가 실행되어 속도가 5로 바뀝니다. 마지막 출력은 <b>이름: Park 걷기:5</b>가 됩니다.</p>
-</section>
-
-<section>
-<h2>5. 전체 실행 결과 확인</h2>
-<p>아래 버튼은 원본 예제의 핵심 동작을 같은 순서로 실행해 결과를 보여 줍니다.</p>
-<button type="button" onclick="runExample()">예제 실행하기</button>
-<div id="output" class="result" aria-live="polite">버튼을 누르면 출력 결과가 표시됩니다.</div>
-<script>
-function runExample() {
-    const human = {
-        name: "Park",
-        age: 40,
-        sex: "female",
-        speed: 20,
-        walk: function() { this.speed = 5; },
-        run: function() { this.speed += 3; }
-    };
-    const lines = [];
-    do {
-        lines.push("이름:" + human.name + " 달리기:" + human.speed);
+<h3>객체생성</h3>
+    <script>
+       var human ={ name: "Park", age:40, sex:"female", speed:20,    //속성
+              walk : function(){ this.speed = 5;},      //걷기 메소드
+              run : function(){ this.speed +=3;},        //달리기 메소드
+        };
+ 	do {
+ 	document.write("이름:"+human.name+ " 달리기:" + human.speed + "<br />");
         human.run();
-    } while (human.speed < 35);
-    human.walk();
-    lines.push("이름:" + human.name + " 걷기:" + human.speed);
-    document.getElementById("output").textContent = lines.join("\n");
-}
-</script>
-</section>
-
-<section>
-<h2>6. 핵심 개념 정리</h2>
-<table><thead><tr><th>문법</th><th>의미</th></tr></thead><tbody>
-<tr><td><code>human.name</code></td><td>human 객체의 name 속성 값에 접근</td></tr>
-<tr><td><code>human.run()</code></td><td>human 객체의 달리기 메서드 실행</td></tr>
-<tr><td><code>this.speed</code></td><td>현재 메서드가 동작하는 객체의 speed 속성</td></tr>
-<tr><td><code>this.speed += 3</code></td><td>현재 속도에 3을 더해 저장</td></tr>
-<tr><td><code>do...while</code></td><td>명령을 먼저 실행하고 조건에 따라 반복 여부 결정</td></tr>
-<tr><td><code>document.write()</code></td><td>웹 문서에 내용을 출력</td></tr>
-</tbody></table>
-<h3>확인 문제</h3>
-<p><b>1.</b> <code>human.speed</code>의 초기값은 얼마인가요? <button type="button" onclick="document.getElementById('a1').textContent='정답: 20입니다. 객체를 만들 때 speed: 20으로 지정했습니다.'">정답 보기</button></p><p id="a1" class="small"></p>
-<p><b>2.</b> <code>human.run()</code>을 한 번 실행하면 속도는 어떻게 되나요? <button type="button" onclick="document.getElementById('a2').textContent='정답: 현재 속도에 3이 더해집니다. 초기값 20에서 시작하면 23이 됩니다.'">정답 보기</button></p><p id="a2" class="small"></p>
-<p><b>3.</b> 마지막 걷기 출력이 5인 이유는 무엇인가요? <button type="button" onclick="document.getElementById('a3').textContent='정답: human.walk()가 실행되고, 메서드 안의 this.speed = 5가 속성을 5로 바꾸기 때문입니다.'">정답 보기</button></p><p id="a3" class="small"></p>
-</section>
-<p class="small">학습 목표: 객체의 속성과 메서드를 구분하고, this를 통한 속성 변경 및 do...while 반복문의 실행 순서를 설명할 수 있습니다.</p>
-</main>
+        } while( human.speed < 35)
+	human.walk();
+	document.write("이름:"+ human.name + " 걷기:" + human.speed + "<br />");
+    </script>
 </body>
 </html>
