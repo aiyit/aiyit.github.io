@@ -42,11 +42,11 @@
 	document.getElementById("ca").innerHTML = Number.isFinite(num);
 	document.getElementById("cca").innerHTML = Number.isInteger(num);
 	document.getElementById("cnct").innerHTML = Number.isNaN(num);
-	document.getElementById("ido").innerHTML = num.toExponential();	
+	document.getElementById("ido").innerHTML = num.toExponential(num);	
 	document.getElementById("fxd").innerHTML = num.toFixed(1);
 	document.getElementById("prc").innerHTML = num.toPrecision(4);
-	document.getElementById("str").innerHTML = num.toString();
-	document.getElementById("vlf").innerHTML = num.valueOf();
+	document.getElementById("str").innerHTML = num.toString(num);
+	document.getElementById("vlf").innerHTML = num.valueOf(num);
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</pre>
