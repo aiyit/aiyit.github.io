@@ -1,20 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-	<title>예제9-7Number 속성</title>
+    <meta charset="UTF-8">
+    <title>예제 9-7 Number 속성 분석 문서</title>
+    <style>
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 30px; line-height: 1.6; color: #333; background-color: #fdfdfd; }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        code { background-color: #f1f2f6; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background-color: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: Consolas, monospace; }
+        .section { margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #2d3436; }
+        .output-box { background: #e8f4f8; border-left: 4px solid #3498db; padding: 10px 15px; margin-top: 10px; }
+    </style>
 </head>
 <body>
-<h3>Number 속성</h3>
-<p>MAX_VALUE : <b id="ca"></b></p>
-<p>MIN_VALUE : <b id="cca"></b></p>
-<p>POSITIVE_INFINITY : <b id="cnct"></b></p>
-<p>NEGATIVE_INFINITY : <b id="ido"></b></p>
-<script>
-  document.getElementById("ca").innerHTML = Number.MAX_VALUE;
-  document.getElementById("cca").innerHTML =Number.MIN_VALUE;
-  document.getElementById("cnct").innerHTML = Number.POSITIVE_INFINITY;
-  document.getElementById("ido").innerHTML = Number.NEGATIVE_INFINITY; 
-</script>
+
+    <h2>예제 9-7: JavaScript Number 객체 속성 분석 보고서</h2>
+    <p>본 문서는 JavaScript 숫자(Number) 객체가 제공하는 주요 정적 속성(MAX_VALUE, MIN_VALUE, POSITIVE_INFINITY, NEGATIVE_INFINITY)의 개념과 표현 범위를 분석한 내용입니다.</p>
+
+    <div class="section">
+        <h3>1. HTML 전체 소스코드</h3>
+        <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+	&lt;title&gt;예제9-7Number 속성&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;Number 속성&lt;/h3&gt;
+&lt;p&gt;MAX_VALUE : &lt;b id="ca"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;MIN_VALUE : &lt;b id="cca"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;POSITIVE_INFINITY : &lt;b id="cnct"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;NEGATIVE_INFINITY : &lt;b id="ido"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;script&gt;
+	document.getElementById("ca").innerHTML = Number.MAX_VALUE;
+	document.getElementById("cca").innerHTML = Number.MIN_VALUE;
+	document.getElementById("cnct").innerHTML = Number.POSITIVE_INFINITY;
+	document.getElementById("ido").innerHTML = Number.NEGATIVE_INFINITY; 
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <div class="section">
+        <h3>2. HTML 구조 및 DOM 요소 설명</h3>
+        <ul>
+            <li><b>&lt;h3&gt;</b>: 화면 대표 제목(<code>Number 속성</code>)을 정의합니다.</li>
+            <li><b>&lt;p&gt; 및 &lt;b id="..."&gt; 태그</b>: Number 객체의 속성 값을 동적으로 바인딩하여 출력하기 위한 DOM 구역입니다. <code>ca</code>, <code>cca</code>, <code>cnct</code>, <code>ido</code> 등의 고유 ID가 부여되어 있습니다.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>3. JavaScript Number 주요 속성 상세 분석</h3>
+        <table>
+            <tr>
+                <th>속성명</th>
+                <th>사용 표현</th>
+                <th>동작 설명 및 의미</th>
+            </tr>
+            <tr>
+                <td><code>Number.MAX_VALUE</code></td>
+                <td><code>Number.MAX_VALUE</code></td>
+                <td>JavaScript에서 표현할 수 있는 <b>가장 큰 양의 숫자</b>를 나타냅니다. (약 1.79E+308) 이 값을 초과하면 무한대(Infinity)로 처리됩니다.</td>
+            </tr>
+            <tr>
+                <td><code>Number.MIN_VALUE</code></td>
+                <td><code>Number.MIN_VALUE</code></td>
+                <td>JavaScript에서 표현할 수 있는 <b>0에 가장 가까운 양의 숫자</b>를 나타냅니다. (약 5E-324) 0은 아니지만 0에 근접한 가장 작은 양수입니다.</td>
+            </tr>
+            <tr>
+                <td><code>Number.POSITIVE_INFINITY</code></td>
+                <td><code>Number.POSITIVE_INFINITY</code></td>
+                <td><b>양의 무한대(Infinity)</b>를 나타내는 특수한 상숫값입니다. 오버플로우 발생 시 반환됩니다.</td>
+            </tr>
+            <tr>
+                <td><code>Number.NEGATIVE_INFINITY</code></td>
+                <td><code>Number.NEGATIVE_INFINITY</code></td>
+                <td><b>음의 무한대(-Infinity)</b>를 나타내는 특수한 상숫값입니다.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>4. 실행 과정 및 브라우저 최종 출력 결과</h3>
+        <div class="output-box">
+            <p><strong>Number 속성</strong></p>
+            <p>MAX_VALUE : <b>1.7976931348623157e+308</b></p>
+            <p>MIN_VALUE : <b>5e-324</b></p>
+            <p>POSITIVE_INFINITY : <b>Infinity</b></p>
+            <p>NEGATIVE_INFINITY : <b>-Infinity</b></p>
+        </div>
+    </div>
+
 </body>
 </html>
 
