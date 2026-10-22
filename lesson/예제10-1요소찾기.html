@@ -1,32 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <link rel="stylesheet" href="style.css">
-  <meta charset="utf-8">
-  <title>예제10-1요소찾기(Find Element)</title>
-  <script>
-    function changeTag() {
-      document.getElementsByTagName("h1")[0].innerHTML = '첫번째 h1: getElementsByTagName';
-    }
+    <meta charset="UTF-8">
+    <title>예제 10-1 DOM 요소 찾기 및 DOM 개념 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 분석 문서 내 예제 구동 함수
+        function changeTag() {
+            document.getElementsByTagName("h1")[0].innerHTML = '첫번째 h1: getElementsByTagName';
+        }
+        function changeId() {
+            document.getElementById('txt').innerHTML = 'getElementById';
+        }
+        function changeCls() {
+            document.getElementsByClassName('cls')[0].innerHTML = 'getElementsByClassName';
+        }
 
-    function changeId() {
-      document.getElementById('txt').innerHTML = 'getElementById';
-    }
-
-    function changeCls() {
-      document.getElementsByClassName('cls')[0].innerHTML = 'getElementsByClassName';
-    }
-  </script>
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
-<body id="main">
-  <h1 style="text-align:center;">요소찾기(Find Element)</h1>
+<body>
+<main>
+    <h1>예제 10-1: DOM(Document Object Model) 요소 찾기 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 웹 페이지의 구조와 동적 제어의 핵심인 <strong>DOM(문서 객체 모델)의 상세 개념</strong>과, HTML 문서 내에서 태그명, ID, 클래스 이름을 기반으로 요소를 탐색하고 제어하는 JavaScript 메서드들의 활용법을 설명합니다.</p>
+    </div>
 
-  <p id="txt">이 문장은 p 태그의 내용입니다.</p>
-  <h1 class="cls" style="color:blue;">두 번째 h1 요소</h1>
+    <h2>1. DOM (Document Object Model) 개념 상세 이해</h2>
+    
+    <p><strong>DOM(Document Object Model, 문서 객체 모델)</strong>은 웹 브라우저가 HTML 또는 XML 문서를 메모리에 적재한 후, 문서의 구조화된 요소를 <strong>객체(Object)의 트리 구조(Tree Structure)</strong>로 표현하여 프로그램(JavaScript 등)이 문서에 접근하고 제어할 수 있도록 제공하는 인터페이스입니다.</p>
 
-  <input type="button" id="bt1" value="change_title" onclick="changeTag();">
-  <input type="button" id="bt2" value="change_id" onclick="changeId();">
-  <input type="button" class="bt3" value="change_class" onclick="changeCls();">
+    <div class="note">
+        <strong>💡 핵심 포인트:</strong> DOM은 단순한 HTML 소스 코드가 아닙니다. 브라우저가 HTML 코드를 읽어 들여 파싱(Parsing)한 결과물로 생성되는 <strong>동적인 메모리 객체 모델</strong>입니다.
+    </div>
+
+    <h3>1) DOM 트리 구조 (Hierarchy & Nodes)</h3>
+    <p>브라우저는 HTML 문서를 로드할 때 각 태그와 텍스트, 속성을 계층적인 <strong>노드(Node)</strong> 단위로 변환합니다. 모든 노드는 부모-자식 및 형제 관계로 연결되어 거대한 '트리'를 형성합니다.</p>
+    <ul>
+        <li><strong>문서 노드 (Document Node)</strong>: 트리의 최상위 루트(Root) 객체로 전체 문서 자체를 가리킵니다 (`document`).</li>
+        <li><strong>요소 노드 (Element Node)</strong>: HTML 태그(예: <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;body&gt;</code> 등)를 의미하며, DOM 트리의 뼈대를 이룹니다.</li>
+        <li><strong>텍스트 노드 (Text Node)</strong>: HTML 태그가 담고 있는 순수 텍스트 내용(예: "요소찾기(Find Element)")을 의미하며, 요소 노드의 자식 노드로 존재합니다.</li>
+        <li><strong>속성 노드 (Attribute Node)</strong>: HTML 태그의 속성(예: <code>id="txt"</code>, <code>class="cls"</code>)을 의미합니다. (※ 최신 사양에서는 요소 노드의 프로퍼티로 주로 취급됩니다.)</li>
+    </ul>
+
+    <h3>2) DOM이 필요한 이유와 역할</h3>
+    <p>웹 초기에는 HTML 문서가 정적(Static)이었으나, 오늘날의 웹 애플리케이션은 사용자 인터랙션에 따라 실시간으로 화면 내용이 바뀌어야 합니다(동적 웹). JavaScript는 자체적으로 브라우저 화면을 그릴 수 있는 능력이 없기 때문에, <strong>브라우저가 제공하는 DOM API</strong>를 통해 문서 구조에 접근하여 요소를 추가, 수정, 삭제하거나 스타일을 변경할 수 있습니다.</p>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;  
+    &lt;link rel="stylesheet" href="style.css"&gt;  
+    &lt;meta charset="utf-8"&gt;  
+    &lt;title&gt;예제10-1요소찾기(Find Element)&lt;/title&gt;  
+    &lt;script&gt;    
+        function changeTag() {      
+            document.getElementsByTagName("h1")[0].innerHTML = '첫번째 h1: getElementsByTagName';    
+        }
+        function changeId() {      
+            document.getElementById('txt').innerHTML = 'getElementById';    
+        }
+        function changeCls() {      
+            document.getElementsByClassName('cls')[0].innerHTML = 'getElementsByClassName';    
+        }  
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body id="main"&gt;  
+    &lt;h1 style="text-align:center;"&gt;요소찾기(Find Element)&lt;/h1&gt;
+    &lt;p id="txt"&gt;이 문장은 p 태그의 내용입니다.&lt;/p&gt;  
+    &lt;h1 class="cls" style="color:blue;"&gt;두 번째 h1 요소&lt;/h1&gt;
+    &lt;input type="button" id="bt1" value="change_title" onclick="changeTag();"&gt;  
+    &lt;input type="button" id="bt2" value="change_id" onclick="changeId();"&gt;  
+    &lt;input type="button" class="bt3" value="change_class" onclick="changeCls();"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <h1 style="text-align:center;">요소찾기(Find Element)</h1>
+        <p id="txt">이 문장은 p 태그의 내용입니다.</p>  
+        <h1 class="cls" style="color:blue;">두 번째 h1 요소</h1>
+        <input type="button" id="bt1" value="change_title" onclick="changeTag();">  
+        <input type="button" id="bt2" value="change_id" onclick="changeId();">  
+        <input type="button" class="bt3" value="change_class" onclick="changeCls();">
+    </div>
+
+    <h2>3. DOM 요소 탐색 메서드 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>getElementsByTagName()</code></td>
+                <td><code>document.getElementsByTagName("h1")[0]</code></td>
+                <td>지정한 태그 이름을 가진 모든 요소를 찾아 <strong>HTMLCollection(배열 유사 객체)</strong> 형태로 반환합니다. 복수 개가 존재할 수 있으므로 인덱스(<code>[0]</code>)를 지정해 접근합니다.</td>
+            </tr>
+            <tr>
+                <td><code>getElementById()</code></td>
+                <td><code>document.getElementById('txt')</code></td>
+                <td>HTML 요소의 고유 <code>id</code> 속성값을 기준으로 <strong>단 하나의 고유한 요소</strong>를 정확히 찾아 반환합니다. 페이지 내에서 ID는 유일해야 합니다.</td>
+            </tr>
+            <tr>
+                <td><code>getElementsByClassName()</code></td>
+                <td><code>document.getElementsByClassName('cls')[0]</code></td>
+                <td>지정한 클래스 이름을 가진 모든 요소를 찾아 <strong>HTMLCollection</strong> 형태로 반환합니다. 같은 클래스를 공유하는 여러 요소 중 특정 요소를 인덱스로 선택합니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <li><strong>DOM(Document Object Model):</strong> HTML 문서를 브라우저가 계층적 트리 구조(노드 객체)로 변환하여 스크립트로 제어할 수 있게 하는 모델</li>
+        <li><strong>태그명 탐색:</strong> <code>getElementsByTagName()</code> (복수 반환, 인덱스 필요)</li>
+        <li><strong>ID 탐색:</strong> <code>getElementById()</code> (단일 고유 요소 반환)</li>
+        <li><strong>클래스 탐색:</strong> <code>getElementsByClassName()</code> (복수 반환, 인덱스 필요)</li>
+    </ul>
+    <p class="small">학습 포인트: DOM의 트리 구조와 노드 개념을 이해하고, 목적에 맞는 선택자 메서드를 통해 HTML 요소를 정확히 탐색·제어하는 기법을 익힙니다.</p>
+</main>
 </body>
 </html>
 
