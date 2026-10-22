@@ -1,34 +1,180 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<link rel="stylesheet" href="style.css">	
-<meta charset="utf-8">
-<title>예제 10-3 노드 추가/삭제(addChild/removeChild)</title>
-<script>
-	function Add() {
-		var add = document.createElement("li");
-		var cnode = document.createTextNode("오렌지");
-		add.appendChild(cnode);
-		document.getElementById("myList").appendChild(add); 
-	}
-	
-	function remove() {
-		var list = document.getElementById("myList");
-		var rnode = list.lastElementChild;
-		if (rnode) list.removeChild(rnode);
-	} 
-</script>
+    <meta charset="UTF-8">
+    <title>예제 10-3 노드 추가 및 삭제 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 분석 문서 내 예제 구동 함수
+        function Add() {
+            var add = document.createElement("li");
+            var cnode = document.createTextNode("오렌지");
+            add.appendChild(cnode);
+            document.getElementById("liveList").appendChild(add); 
+        }
+        
+        function remove() {
+            var list = document.getElementById("liveList");
+            var rnode = list.lastElementChild;
+            if (rnode) list.removeChild(rnode);
+        } 
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
-<body id='main'>
-	<h3 style="text-align:center;">노드 추가/삭제(addChild/removeChild)</h3>
-	<h4>클릭버튼 추가/삭제</h4>
-	<ul id="myList">
-		<li>사과</li>
-		<li>바나나</li>
-	</ul>
-	<input type="button" id="bt1" value="추가" onclick="Add();">
-	<input type="button" id="bt2" value="삭제" onclick="remove();">
+<body>
+<main>
+    <h1>예제 10-3: DOM 노드 추가 및 삭제(addChild/removeChild) 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 JavaScript를 활용하여 웹 페이지에 새로운 HTML 요소를 동적으로 생성하고 추가(Append)하거나 제거(Remove)하는 DOM 노드 조작 원리와 관련 메서드들의 상세한 동작 방식을 설명합니다.</p>
+    </div>
+
+    <h2>1. DOM 노드 동적 추가·삭제 개념 상세 이해</h2>
+    
+    <p>정적(Static)으로 작성된 HTML 문서와 달리, 사용자의 버튼 클릭이나 데이터 입력에 반응하여 화면의 리스트나 카드 요소를 실시간으로 생성하거나 지우는 기능은 모던 웹 개발의 핵심입니다. JavaScript는 DOM API를 통해 문서 트리에 새로운 노드를 자유롭게 붙이고 뗄 수 있습니다.</p>
+
+    <div class="note">
+        <strong>💡 핵심 포인트:</strong> 노드를 추가할 때는 <code>createElement</code>로 뼈대를 만들고, <code>createTextNode</code>로 내용을 채운 뒤 <code>appendChild</code>로 부모 요소에 조립하는 단계를 거칩니다. 삭제할 때는 부모 요소를 통해 자식 요소를 지목하여 제거합니다.
+    </div>
+
+    <h3>1) 노드 추가 과정 (Add)</h3>
+    <ul>
+        <li><strong><code>document.createElement("li")</code></strong>: 메모리상에 지정한 태그 이름(<code>&lt;li&gt;</code>)의 새로운 요소 노드를 생성합니다.</li>
+        <li><strong><code>document.createTextNode("오렌지")</code></strong>: 화면에 출력될 텍스트 노드를 생성합니다.</li>
+        <li><strong><code>add.appendChild(cnode)</code></strong>: 생성한 텍스트 노드를 새로 만든 <code>&lt;li&gt;</code> 요소의 자식으로 포함시킵니다.</li>
+        <li><strong>부모요소.appendChild(add)</strong>: 최종 완성된 <code>&lt;li&gt;오렌지&lt;/li&gt;</code> 요소를 <code>&lt;ul id="myList"&gt;</code> 리스트의 마지막 자식으로 추가하여 화면에 렌더링합니다.</li>
+    </ul>
+
+    <h3>2) 노드 삭제 과정 (Remove)</h3>
+    <ul>
+        <li><strong><code>list.lastElementChild</code></strong>: 대상 부모 요소(<code>&lt;ul&gt;</code>)의 마지막 자식 요소(가장 최근에 추가되었거나 맨 아래에 있는 <code>&lt;li&gt;</code>)를 선택합니다.</li>
+        <li><strong><code>if (rnode) list.removeChild(rnode)</code></strong>: 삭제할 대상 노드가 존재하는지 안전성 검사(유효성 검사)를 거친 후, 부모 노드 입장에서 <code>removeChild()</code>를 호출하여 DOM 트리에서 완전히 제거합니다.</li>
+    </ul>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;   
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;예제 10-3 노드 추가/삭제(addChild/removeChild)&lt;/title&gt;
+&lt;script&gt;
+    function Add() {
+        var add = document.createElement("li");
+        var cnode = document.createTextNode("오렌지");
+        add.appendChild(cnode);
+        document.getElementById("myList").appendChild(add); 
+    }
+    
+    function remove() {
+        var list = document.getElementById("myList");
+        var rnode = list.lastElementChild;
+        if (rnode) list.removeChild(rnode);
+    } 
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body id='main'&gt;
+    &lt;h3 style="text-align:center;"&gt;노드 추가/삭제(addChild/removeChild)&lt;/h3&gt;
+    &lt;h4&gt;클릭버튼 추가/삭제&lt;/h4&gt;
+    &lt;ul id="myList"&gt;
+        &lt;li&gt;사과&lt;/li&gt;
+        &lt;li&gt;바나나&lt;/li&gt;
+    &lt;ul&gt;
+    &lt;input type="button" id="bt1" value="추가" onclick="Add();"&gt;
+    &lt;input type="button" id="bt2" value="삭제" onclick="remove();"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <h4 style="margin-top:5px;">클릭버튼 추가/삭제</h4>
+        <ul id="liveList">
+            <li>사과</li>
+            <li>바나나</li>
+        </ul>
+        <input type="button" id="bt1" value="추가" onclick="Add();">
+        <input type="button" id="bt2" value="삭제" onclick="remove();">
+    </div>
+
+    <h2>3. 노드 제어 주요 메서드 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>document.createElement()</code></td>
+                <td><code>document.createElement("li")</code></td>
+                <td>지정한 태그 명의 새로운 HTML 요소 노드를 생성하여 메모리에 올립니다. 아직 화면에는 보이지 않는 상태입니다.</td>
+            </tr>
+            <tr>
+                <td><code>document.createTextNode()</code></td>
+                <td><code>document.createTextNode("오렌지")</code></td>
+                <td>요소 내부에 들어갈 순수한 텍스트 조각을 노드 형태로 생성합니다.</td>
+            </tr>
+            <tr>
+                <td><code>appendChild()</code></td>
+                <td><code>parent.appendChild(child)</code></td>
+                <td>특정 부모 노드의 <strong>자식 노드 리스트 중 맨 마지막 위치</strong>에 새로운 노드를 추가합니다. 요소 생성 과정과 조립 과정 모두에 활용됩니다.</td>
+            </tr>
+            <tr>
+                <td><code>removeChild()</code></td>
+                <td><code>parent.removeChild(child)</code></td>
+                <td>부모 노드로부터 특정 자식 노드를 전달받아 DOM 트리에서 분리 및 제거합니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <li><strong>요소 생성:</strong> <code>createElement()</code>와 <code>createTextNode()</code>로 빈 껍데기와 내용물 제작</li>
+        <li><strong>트리 결합:</strong> <code>appendChild()</code>를 이용해 자식을 부모에게 소속시키고 화면에 반영</li>
+        <li><strong>노드 제거:</strong> <code>lastElementChild</code> 등으로 타겟을 선정하고 <code>removeChild()</code>로 삭제</li>
+    </ul>
+    <p class="small">학습 포인트: 정적인 HTML 구조를 벗어나 스크립트로 요소를 동적 생성하고 구조를 재편하는 DOM 조작의 핵심 매커니즘을 익힙니다.</p>
+</main>
 </body>
 </html>
-
 
