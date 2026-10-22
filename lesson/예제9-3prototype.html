@@ -1,31 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>예제9-3프로토타입</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예제 9-3: 객체와 프로토타입 분석</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        pre {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+        .output-box {
+            background-color: #1e1e1e;
+            color: #00ff66;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+        .highlight {
+            background-color: #e7f5ff;
+            border-left: 4px solid #1c7ed6;
+            padding: 12px;
+            margin: 15px 0;
+        }
+    </style>
 </head>
 <body>
-<h3>프로토타입</h3>
-    <script>
-        function Human(name, age, sex,speed)
-        {
-	        this.name=name;           
-		this.age=age;
-        	this.sex = sex;
-		this.speed = speed;
-	}
-	Human.prototype.walk = function(){ this.speed = 5;  }
-        Human.prototype.run = function () { this.speed += 3; }
-	var cmHuman  = new Human("Park",12,"male", 20) ;
-	var cfHuman  = new Human("Kim",12,"female", 15) ;
-	do {
-  	document.write("Name:"+cmHuman.name+" run:"+ cmHuman.speed + "<br />");
-        cmHuman.run();
-  	document.write("Name:" + cfHuman.name + " run:" + cfHuman.speed+ "<br />");
-        cfHuman.run();} while( cmHuman.speed < 35)
-	cmHuman.walk();  cfHuman.walk();
-  	document.write("Name:" + cmHuman.name + " walk:" + cmHuman.speed + "<br />");
-  	document.write("Name:" + cfHuman.name + " walk:" + cfHuman.speed+"<br />");
-    </script>
+
+<div class="container">
+    <h1>JavaScript 객체와 프로토타입 (ex9-3.html)</h1>
+
+    <h2>1. 소스 코드 목록</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;예제9-3프로토타입&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;프로토타입&lt;/h3&gt;
+    &lt;script&gt;
+        function Human(name, age, sex, speed) {
+            this.name = name;           
+            this.age = age;
+            this.sex = sex;
+            this.speed = speed;
+        }
+
+        Human.prototype.walk = function() { this.speed = 5; }
+        Human.prototype.run = function() { this.speed += 3; }
+
+        var cmHuman = new Human("Park", 12, "male", 20);
+        var cfHuman = new Human("Kim", 12, "female", 15);
+
+        do {
+            document.write("Name:" + cmHuman.name + " run:" + cmHuman.speed + "&lt;br /&gt;");
+            cmHuman.run();
+            document.write("Name:" + cfHuman.name + " run:" + cfHuman.speed + "&lt;br /&gt;");
+            cfHuman.run();
+        } while (cmHuman.speed &lt; 35);
+
+        cmHuman.walk();
+        cfHuman.walk();
+
+        document.write("Name:" + cmHuman.name + " walk:" + cmHuman.speed + "&lt;br /&gt;");
+        document.write("Name:" + cfHuman.name + " walk:" + cfHuman.speed + "&lt;br /&gt;");
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h2>2. JavaScript 객체 및 프로토타입 개념 분석</h2>
+
+    <h3>1) 생성자 함수 (Constructor Function)</h3>
+    <p><code>function Human(name, age, sex, speed)</code>는 새로운 객체를 생성하기 위한 <strong>생성자 함수</strong>입니다. <code>new</code> 키워드와 함께 호출하면 다음과 같은 과정이 실행됩니다:</p>
+    <ul>
+        <li>새로운 빈 객체가 생성됩니다.</li>
+        <li><code>this</code> 키워드가 새로 생성된 객체를 가리키도록 바인딩됩니다.</li>
+        <li>전달된 인수로 인스턴스의 고유 속성(Own Properties)을 초기화합니다.</li>
+    </ul>
+
+    <h3>2) 프로토타입 (Prototype) 및 메모리 효율성</h3>
+    <p>JavaScript의 모든 함수는 <code>prototype</code> 속성을 가집니다. 메서드를 생성자 함수 내부가 아닌 프로토타입 객체에 추가하는 이유는 <strong>메모리 절약</strong> 때문입니다.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>구분</th>
+                <th>인스턴스 속성 (Instance Properties)</th>
+                <th>프로토타입 메서드 (Prototype Methods)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>예시</th>
+                <td><code>this.name</code>, <code>this.speed</code></td>
+                <td><code>Human.prototype.walk</code>, <code>Human.prototype.run</code></td>
+            </tr>
+            <tr>
+                <th>할당 방식</th>
+                <td>각 인스턴스마다 독자적인 메모리 공간에 저장됨</td>
+                <td>프로토타입 객체 메모리에 1개만 생성되어 모든 인스턴스가 공유함</td>
+            </tr>
+            <tr>
+                <th>장점</th>
+                <td>인스턴스별 독립적인 데이터 관리 가능</td>
+                <td>동일한 기능을 가지는 함수를 중복 생성하지 않아 메모리 절약</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3) <code>this</code> 바인딩의 의미</h3>
+    <div class="highlight">
+        <p>메서드 및 생성자 내부의 <code>this</code>는 <strong>호출 시점(Execution Context)에 해당 메서드를 실행한 객체 인스턴스</strong>를 참조합니다.</p>
+        <ul>
+            <li><code>cmHuman.run()</code> 실행 시: <code>this.speed</code>는 <code>cmHuman.speed</code>를 의미합니다.</li>
+            <li><code>cfHuman.run()</code> 실행 시: <code>this.speed</code>는 <code>cfHuman.speed</code>를 의미합니다.</li>
+        </ul>
+    </div>
+
+    <h2>3. 실행 과정 분석 및 브라우저 출력 결과</h2>
+
+    <h3>1) 반복문 흐름 (<code>do...while</code>)</h3>
+    <p>조건식 <code>cmHuman.speed &lt; 35</code>에 따라 반복이 실행됩니다.</p>
+    <ol>
+        <li><strong>1차 루프:</strong> Park(20) 출력 ➔ Park 속도 23으로 증가 | Kim(15) 출력 ➔ Kim 속도 18로 증가 (조건: 23 &lt; 35 참)</li>
+        <li><strong>2차 루프:</strong> Park(23) 출력 ➔ Park 속도 26으로 증가 | Kim(18) 출력 ➔ Kim 속도 21로 증가 (조건: 26 &lt; 35 참)</li>
+        <li><strong>3차 루프:</strong> Park(26) 출력 ➔ Park 속도 29로 증가 | Kim(21) 출력 ➔ Kim 속도 24로 증가 (조건: 29 &lt; 35 참)</li>
+        <li><strong>4차 루프:</strong> Park(29) 출력 ➔ Park 속도 32로 증가 | Kim(24) 출력 ➔ Kim 속도 27로 증가 (조건: 32 &lt; 35 참)</li>
+        <li><strong>5차 루프:</strong> Park(32) 출력 ➔ Park 속도 35로 증가 | Kim(27) 출력 ➔ Kim 속도 30으로 증가 (조건: 35 &lt; 35 <strong>거짓</strong> ➔ 종료)</li>
+    </ol>
+
+    <h3>2) 최종 출력 화면</h3>
+    <div class="output-box">
+Name:Park run:20
+Name:Kim run:15
+Name:Park run:23
+Name:Kim run:18
+Name:Park run:26
+Name:Kim run:21
+Name:Park run:29
+Name:Kim run:24
+Name:Park run:32
+Name:Kim run:27
+Name:Park walk:5
+Name:Kim walk:5
+    </div>
+</div>
+
 </body>
 </html>
 
