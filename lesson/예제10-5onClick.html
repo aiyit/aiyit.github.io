@@ -1,24 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<link rel="stylesheet" href="style.css">	
-<meta charset="utf-8">
-<title>예제 10-5 onClick()</title>
-<script>
-	function changeText(){
-	  document.getElementById("one").innerHTML = "입력타입을 눌렀군요!"
-	}
-	function changeButton(){
-	  document.getElementById("bttn").innerHTML = "버튼을 눌렀군요!"
-	}
-</script>
+    <meta charset="UTF-8">
+    <title>예제 10-5 onClick 이벤트 핸들러 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 라이브 테스트용 함수 (ID 충돌 방지를 위해 live 접두사 사용)
+        function liveChangeText(){
+            document.getElementById("live_one").innerHTML = "입력타입을 눌렀군요!";
+        }
+        function liveChangeButton(){
+            document.getElementById("live_bttn").innerHTML = "버튼을 눌렀군요!";
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
-<body id="main">
-	<h3 id="one" style="text-align:center;">onClick()</h3>
-	<h4 onclick="this.innerHTML='나를 눌렀군요!!'">Click me!!</h4>
-	<h3 id="bttn">Button</h3>
-	<input type="button" id="bt1" value="onClick" onclick="changeText();">
-	<button onclick="changeButton()">눌러봐!!</button>
+<body>
+<main>
+    <h1>예제 10-5: onClick 이벤트 핸들러 분석 보고서</h1>
+    <div class="intro">
+        <p>본 문서는 웹 페이지에서 사용자의 마우스 클릭 상호작용을 감지하고 이에 반응하여 동적으로 화면을 제어하는 <strong>`onclick` 이벤트 핸들러</strong>의 개념과 동작 방식을 설명합니다.</p>
+    </div>
+
+    <h2>1. onClick 이벤트 핸들러 개념 및 동작 방식 이해</h2>
+    
+    <p><strong>이벤트(Event)</strong>란 웹 브라우저에서 발생하는 사용자의 행동(클릭, 키보드 입력, 마우스 이동 등)이나 브라우저의 상태 변화(페이지 로딩 완료 등)를 의미합니다. <strong>이벤트 핸들러(Event Handler)</strong>는 특정 이벤트가 발생했을 때 실행될 JavaScript 함수나 코드를 지정하는 속성입니다.</p>
+
+    <div class="note">
+        <strong>💡 핵심 포인트 (`onclick`):</strong> 사용자가 HTML 요소(버튼, 텍스트, 이미지 등)를 마우스로 클릭할 때 발생하며, 인라인(Inline) 방식으로 HTML 태그 안에 직접 작성하거나 스크립트 함수와 연동하여 동작합니다.
+    </div>
+
+    <h3>1) 프로그램 주요 동작 방식</h3>
+    <ul>
+        <li><strong>인라인 직접 제어 (`this` 키워드 활용)</strong>: <code>&lt;h4 onclick="this.innerHTML='...'"&gt;</code>와 같이 별도의 함수 호출 없이 요소 자체를 가리키는 <code>this</code>를 이용해 클릭 즉시 내용을 바꿉니다.</li>
+        <li><strong>함수 연동 제어 (`onclick="함수명()"`)</strong>: <code>&lt;input type="button" onclick="changeText();"&gt;</code>처럼 버튼이나 일반 태그에 클릭 이벤트를 걸어 <code>&lt;script&gt;</code> 내부에 정의된 커스텀 함수를 실행합니다.</li>
+    </ul>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;   
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;예제 10-5 onClick()&lt;/title&gt;
+&lt;script&gt;
+    function changeText(){
+        document.getElementById("one").innerHTML = "입력타입을 눌렀군요!"
+    }
+    function changeButton(){
+        document.getElementById("bttn").innerHTML = "버튼을 눌렀군요!"
+    }
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body id="main"&gt;
+    &lt;h3 id="one" style="text-align:center;"&gt;onClick()&lt;/h3&gt;
+    &lt;h4 onclick="this.innerHTML='나를 눌렀군요!!'"&gt;Click me!!&lt;/h4&gt;
+    &lt;h3 id="bttn"&gt;Button&lt;/h3&gt;
+    &lt;input type="button" id="bt1" value="onClick" onclick="changeText();"&gt;
+    &lt;button onclick="changeButton()"&gt;눌러봐!!&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <h3 id="live_one" style="text-align:center;">onClick()</h3>
+        <h4 onclick="this.innerHTML='나를 눌렀군요!!'" style="cursor:pointer; color:#1769aa;">Click me!! (여기를 눌러보세요)</h4>
+        <h3 id="live_bttn">Button</h3>
+        <input type="button" id="bt1" value="onClick" onclick="liveChangeText();">
+        <button onclick="liveChangeButton()">눌러봐!!</button>
+    </div>
+
+    <h2>3. 주요 코드 요소 및 동작 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>코드 패턴</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>인라인 이벤트와 <code>this</code></td>
+                <td><code>&lt;h4 onclick="this.innerHTML='...'"&gt;</code></td>
+                <td>별도의 함수 정의 없이 이벤트가 발생한 바로 그 요소를 <code>this</code>로 참조하여 즉각적으로 내용을 수정합니다. 간단한 텍스트 변경에 유용합니다.</td>
+            </tr>
+            <tr>
+                <td>입력 버튼(Input) 이벤트</td>
+                <td><code>&lt;input type="button" onclick="changeText();"&gt;</code></td>
+                <td>클릭 가능한 버튼 컴포넌트에 <code>onclick</code>을 지정하여 <code>document.getElementById("one")</code> 요소를 찾아 문구를 변경합니다.</td>
+            </tr>
+            <tr>
+                <td>일반 버튼(Button) 이벤트</td>
+                <td><code>&lt;button onclick="changeButton()"&gt;눌러봐!!&lt;/button&gt;</code></td>
+                <td>HTML5 표준 <code>&lt;button&gt;</code> 태그를 사용하여 클릭 시 <code>changeButton()</code> 함수를 호출하고 대상 요소를 갱신합니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <td><strong>이벤트(Event):</strong> 사용자의 마우스 클릭 등의 상호작용</td>
+        <td><strong>이벤트 핸들러(<code>onclick</code>):</strong> 클릭 발생 시 실행될 동작을 매핑하는 속성</td>
+        <td><strong>동적 화면 갱신:</strong> 이벤트 발생 ➔ 핸들러 호출 ➔ DOM 요소 내용 변경(<code>innerHTML</code>) 과정으로 사용자에게 즉각 피드백 제공</td>
+    </ul>
+    <p class="small">학습 포인트: 정적인 웹 페이지에 사용자의 마우스 클릭 반응을 부여하는 이벤트 처리의 가장 기초적이고 핵심적인 구조를 익힙니다.</p>
+</main>
 </body>
 </html>
 
