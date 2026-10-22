@@ -1,8 +1,83 @@
 <!DOCTYPE html>
-<html>
-<head>   <title>숫자 맞추기 게임</title>
-  <script>     var randomNum;       // 랜덤 숫자 저장
-	    var clickNum = 0;    // 클릭 횟수
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>숫자 맞추기 게임 분석 보고서 및 실행</title>
+    <style>
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 30px; line-height: 1.6; color: #333; background-color: #fdfdfd; }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        code { background-color: #f1f2f6; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background-color: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: Consolas, monospace; }
+        .section { margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #2d3436; }
+        .output-box { background: #e8f4f8; border-left: 4px solid #3498db; padding: 10px 15px; margin-top: 10px; }
+        .run-btn { background-color: #27ae60; color: white; border: none; padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+        .run-btn:hover { background-color: #219653; }
+        .game-panel { margin-top: 15px; display: none; border: 2px solid #27ae60; border-radius: 8px; padding: 20px; background: #f9fff9; }
+    </style>
+    <script>
+        // 게임 토글 함수
+        function toggleGame() {
+            var panel = document.getElementById("gamePanel");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+            } else {
+                panel.style.display = "none";
+            }
+        }
+
+        // 실제 게임 동작 스크립트
+        var randomNum;       
+        var clickNum = 0;    
+        
+        function randomV() {
+            randomNum = Math.floor(Math.random() * 100);  
+            document.getElementById("rnd").value = "**";
+            clickNum = 0;
+            document.getElementById("clickN").value = "";
+            document.getElementById("result").value = "";
+            document.getElementById("txt").value = "";     
+        }
+        
+        function findNum() {
+            if (typeof randomNum !== 'number') {
+                alert("먼저 '랜덤발생' 버튼을 눌러 주세요.");
+                return;    
+            }
+            var number = parseInt(document.getElementById("txt").value);
+            if (isNaN(number) || number < 0 || number > 99) {
+                alert("0부터 99 사이의 숫자를 입력하세요.");         
+                return;    
+            }
+            clickNum++;        
+            var result = "";
+            if (number === randomNum) {          
+                result = "성공입니다!";        
+            } else if (number < randomNum) {         
+                result = "값이 낮습니다.";
+            } else {        
+                result = "값이 높습니다.";     
+            }
+            document.getElementById("result").value = result;
+            document.getElementById("clickN").value = clickNum;     
+        }
+    </script>
+</head>
+<body>
+
+    <h2>숫자 맞추기 게임: JavaScript 웹 애플리케이션 분석 보고서</h2>
+    <p>본 문서는 사용자가 입력한 숫자를 컴퓨터가 생성한 난수와 비교하여 맞추는 <strong>'숫자 맞추기 게임'</strong> 소스코드를 바탕으로 HTML 폼 구조와 JavaScript 이벤트 제어, 조건문 활용법을 분석한 내용입니다.</p>
+
+    <div class="section">
+        <h3>1. HTML 전체 소스코드</h3>
+        <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;   &lt;title&gt;숫자 맞추기 게임&lt;/title&gt;
+  &lt;script&gt;
+     var randomNum;       // 랜덤 숫자 저장
+     var clickNum = 0;    // 클릭 횟수
     function randomV() {
       randomNum = Math.floor(Math.random() * 100);  // 0~99 정수
       document.getElementById("rnd").value = "**";
@@ -15,28 +90,91 @@
         alert("먼저 '랜덤발생' 버튼을 눌러 주세요.");
         return;    }
       var number = parseInt(document.getElementById("txt").value);
-      if (isNaN(number) || number < 0 || number > 99) {
+      if (isNaN(number) || number &lt; 0 || number &gt; 99) {
         alert("0부터 99 사이의 숫자를 입력하세요.");         return;    }
       clickNum++;        var result = "";
-      if (number === randomNum) {          result = "성공입니다!";       
-      } else if (number < randomNum) {         result = "값이 낮습니다.";
+      if (number === randomNum) {          result = "성공입니다!";        
+      } else if (number &lt; randomNum) {         result = "값이 낮습니다.";
       } else {        result = "값이 높습니다.";     }
       document.getElementById("result").value = result;
       document.getElementById("clickN").value = clickNum;     }
-  </script> </head>
-<body>
-  <h2>숫자 맞추기 게임</h2>
-  <p>컴퓨터가 발생한 0~99 사이의 숫자를 가장 적은 횟수로 맞추세요.</p>
-  <form onsubmit="return false;">
+  &lt;/script&gt; &lt;/head&gt;
+&lt;body&gt;
+  &lt;h2&gt;숫자 맞추기 게임&lt;/h2&gt;
+  &lt;p&gt;컴퓨터가 발생한 0~99 사이의 숫자를 가장 적은 횟수로 맞추세요.&lt;/p&gt;
+  &lt;form onsubmit="return false;"&gt;
     컴퓨터 랜덤 숫자:
-    <input type="button" value="랜덤발생" onclick="randomV()">
-    <input type="text" id="rnd" size="3" readonly><p/>
-    숫자 입력(0~99): <input type="text" id="txt" size="3">
-    <input type="button" value="확인" onclick="findNum();"><p/>
-    힌트: <input type="text" id="result" size="16" readonly><p/>
-    클릭 횟수: <input type="text" id="clickN" size="5" readonly><br/><br/>
-    <input type="reset" value="다시하기" onclick="location.reload();">
-  </form>
+    &lt;input type="button" value="랜덤발생" onclick="randomV()"&gt;
+    &lt;input type="text" id="rnd" size="3" readonly&gt;&lt;p/&gt;
+    숫자 입력(0~99): &lt;input type="text" id="txt" size="3"&gt;
+    &lt;input type="button" value="확인" onclick="findNum();"&gt;&lt;p/&gt;
+    힌트: &lt;input type="text" id="result" size="16" readonly&gt;&lt;p/&gt;
+    클릭 횟수: &lt;input type="text" id="clickN" size="5" readonly&gt;&lt;br/&gt;&lt;br/&gt;
+    &lt;input type="reset" value="다시하기" onclick="location.reload();"&gt;
+  &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+        <!-- 프로그램 실행 단추 -->
+        <button class="run-btn" onclick="toggleGame()">▶ 프로그램 실행 (게임 테스트)</button>
+        
+        <!-- 단추 클릭 시 열리는 실시간 게임 실행 패널 -->
+        <div id="gamePanel" class="game-panel">
+            <h3>🎮 실시간 게임 실행 화면</h3>
+            <p>컴퓨터가 발생한 0~99 사이의 숫자를 가장 적은 횟수로 맞추세요.</p>
+            <form onsubmit="return false;">
+                컴퓨터 랜덤 숫자:
+                <input type="button" value="랜덤발생" onclick="randomV()">
+                <input type="text" id="rnd" size="3" readonly><p/>
+                숫자 입력(0~99): <input type="text" id="txt" size="3">
+                <input type="button" value="확인" onclick="findNum();"><p/>
+                힌트: <input type="text" id="result" size="16" readonly><p/>
+                클릭 횟수: <input type="text" id="clickN" size="5" readonly><br/><br/>
+                <input type="reset" value="다시하기" onclick="location.reload();">
+            </form>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>2. HTML 구조 및 폼(Form) 요소 설명</h3>
+        <ul>
+            <li><b>&lt;form onsubmit="return false;"&gt;</b>: 엔터 키 입력 시 페이지가 새로고침되는 기본 동작을 방지합니다.</li>
+            <li><b>읽기 전용 입력창 (<code>readonly</code>)</b>: 컴퓨터의 랜덤 숫자를 숨기거나(<code>**</code>), 힌트 결과 및 클릭 횟수를 출력하는 창으로 사용자 직접 입력을 차단하고 스크립트로만 제어합니다.</li>
+            <li><b>이벤트 핸들러 (<code>onclick</code>)</b>: 버튼 클릭 시 각각 <code>randomV()</code>와 <code>findNum()</code> 함수를 호출합니다.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>3. JavaScript 핵심 로직 분석</h3>
+        <table>
+            <tr>
+                <th>함수 및 기능</th>
+                <th>주요 코드 표현</th>
+                <th>동작 설명 및 역할</th>
+            </tr>
+            <tr>
+                <td>랜덤 숫자 생성</td>
+                <td><code>Math.floor(Math.random() * 100)</code></td>
+                <td>0 이상 1 미만의 난수에 100을 곱한 후 소수점을 버려 <b>0부터 99 사이의 정수</b>를 생성합니다.</td>
+            </tr>
+            <tr>
+                <td>입력값 검증</td>
+                <td><code>isNaN(number) || number &lt; 0 || number &gt; 99</code></td>
+                <td>사용자가 숫자가 아닌 문자를 입력했거나 0~99 범위를 벗어날 경우 경고창을 띄우고 실행을 중단합니다.</td>
+            </tr>
+            <tr>
+                <td>숫자 비교 및 힌트</td>
+                <td><code>if...else if...else</code></td>
+                <td>입력값과 정답을 비교하여 "성공입니다!", "값이 낮습니다.", "값이 높습니다." 메시지를 힌트 칸에 출력합니다.</td>
+            </tr>
+            <tr>
+                <td>시도 횟수 카운트</td>
+                <td><code>clickNum++</code></td>
+                <td>버튼을 누를 때마다 시도 횟수를 1씩 증가시켜 게임의 효율성을 측정합니다.</td>
+            </tr>
+        </table>
+    </div>
+
 </body>
 </html>
 
