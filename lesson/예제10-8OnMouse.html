@@ -1,10 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="style.css">
-  <title>예제 10-8 onmouseover()/onmouseout()</title>
-  <script>
+    <meta charset="UTF-8">
+    <title>예제 10-7 & 10-8 이벤트 핸들러 통합 분석 문서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; margin-top: 5px; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 분석 문서 내 통합 라이브 테스트용 함수
+        function liveChangeText() {
+            var x = document.getElementById("live_txt").value;
+            document.getElementById("live_txt").value = x.toUpperCase(); 
+            var y = x.length; 
+
+            if (y < 10) {
+                alert(y + "자 입력됨. 10자 이상 입력하세요!");
+            } else {
+                alert("올바른 입력입니다.");
+            }
+        }
+
+        function liveMouseOver() {
+            var target = document.getElementById("live_mouse");
+            target.innerHTML = "onMouseOut()";
+            target.style.border = "2px solid blue";
+        }
+
+        function liveMouseOut() {
+            var target = document.getElementById("live_mouse");
+            target.innerHTML = "onMouseOver()";
+            target.style.border = "2px solid red";
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 병합 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
+</head>
+<body>
+<main>
+    <h1>예제 10-7 & 10-8: 사용자 입력 및 마우스 이벤트 핸들러 통합 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 폼 요소의 값 변경을 감지하는 <strong>`onchange` 이벤트</strong>와 마우스 포인터의 진입·이탈을 감지하는 <strong>`onmouseover`/`onmouseout` 이벤트</strong>의 동작 원리와 문자열·스타일 제어 기법을 설명합니다.</p>
+    </div>
+
+    <h2>1. 이벤트 핸들러 개념 및 통합 개요</h2>
+    
+    <p>웹 인터페이스에서 사용자의 입력값 검증과 시각적 피드백은 사용자 경험(UX)을 결정하는 핵심 요소입니다.</p>
+    <div class="note">
+        <strong>💡 핵심 포인트:</strong> 
+        <ul>
+            <li><strong><code>onchange</code></strong>: 입력 필드의 값이 바뀌고 포커스가 벗어날 때(또는 엔터 입력 시) 발생하여 유효성 검사 및 데이터 가공에 사용됩니다.</li>
+            <li><strong><code>onmouseover</code> / <code>onmouseout</code></strong>: 마우스 커서가 특정 영역에 올라가거나 벗어날 때 발생하여 동적인 UI 효과를 제공합니다.</li>
+        </ul>
+    </div>
+
+    <h2>2. 병합된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="style.css"&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;예제 10-7 & 10-8 통합 예제&lt;/title&gt;
+  &lt;script&gt;
+    // 예제 10-7: 입력값 대문자 변환 및 글자 수 검사
+    function changeText() {
+      var x = document.getElementById("txt").value;
+      document.getElementById("txt").value = x.toUpperCase();  // 대문자로 변환
+      var y = x.length;  // 입력된 문자의 길이 계산
+
+      if (y &lt; 10) {
+        alert(y + "자 입력됨. 10자 이상 입력하세요!");
+      } else {
+        alert("올바른 입력입니다.");
+      }
+    }
+
+    // 예제 10-8: 마우스 오버/아웃에 따른 스타일 및 텍스트 변경
     function mouseOver() {
       var target = document.getElementById("mouse");
       target.innerHTML = "onMouseOut()";
@@ -16,14 +117,92 @@
       target.innerHTML = "onMouseOver()";
       target.style.border = "2px solid red";
     }
-  </script>
-</head>
-<body id="main">
-  <h3 id="bttn">마우스를 올려놓으세요</h3>
-  <h3 id="mouse" style="text-align:center; border:2px solid red;"
-       onmouseover="mouseOver()" onmouseout="mouseOut()">
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body id="main"&gt;
+  &lt;!-- Part 1: onchange --&gt;
+  &lt;h3 style="text-align:center;"&gt;onchange() 이벤트 예제&lt;/h3&gt;
+  &lt;h3&gt;소문자로 입력한 후, 엔터를 누르거나 포커스를 이동해 보세요.&lt;/h3&gt;
+  &lt;input type="text" id="txt" size="20" onchange="changeText();"&gt;
+
+  &lt;hr style="margin: 30px 0;"&gt;
+
+  &lt;!-- Part 2: onmouseover / onmouseout --&gt;
+  &lt;h3&gt;마우스를 올려놓으세요&lt;/h3&gt;
+  &lt;h3 id="mouse" style="text-align:center; border:2px solid red;"
+        onmouseover="mouseOver()" onmouseout="mouseOut()"&gt;
     onMouseOver()
-  </h3>
+  &lt;/h3&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 병합 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        
+        <h3 style="text-align:center;">onchange() 이벤트 예제</h3>
+        <p>소문자로 입력한 후, 엔터를 누르거나 포커스를 이동해 보세요.</p>
+        <input type="text" id="live_txt" size="20" onchange="liveChangeText();" placeholder="여기에 입력하세요">
+
+        <hr style="margin: 25px 0; border: 0; border-top: 1px dashed var(--line);">
+
+        <h3 style="margin-top:10px;">마우스를 올려놓으세요 (아래 박스에 호버링 테스트)</h3>
+        <h3 id="live_mouse" style="text-align:center; border:2px solid red; padding: 15px; cursor: pointer; background: #fdfdfd;"
+            onmouseover="liveMouseOver()" onmouseout="liveMouseOut()">
+          onMouseOver()
+        </h3>
+    </div>
+
+    <h2>3. 주요 함수 및 메서드 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>이벤트 / 메서드</th>
+                <th>관련 코드</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>onchange</code> 이벤트</td>
+                <td><code>onchange="changeText();"</code></td>
+                <td>입력 필드의 값이 변경된 후, 사용자가 포커스를 다른 곳으로 이동하거나 <strong>엔터(Enter) 키를 누를 때</strong> 트리거되어 함수를 실행합니다.</td>
+            </tr>
+            <tr>
+                <td><code>toUpperCase()</code></td>
+                <td><code>x.toUpperCase()</code></td>
+                <td>입력받은 문자열의 모든 영문 소문자를 <strong>대문자로 변환</strong>하여 다시 입력창에 반영합니다.</td>
+            </tr>
+            <tr>
+                <td><code>length</code> 속성</td>
+                <td><code>var y = x.length;</code></td>
+                <td>문자열의 총 글자 수를 숫자로 반환하여 조건문(10자 이상 여부) 검사에 활용합니다.</td>
+            </tr>
+            <tr>
+                <td><code>onmouseover</code> / <code>onmouseout</code></td>
+                <td><code>onmouseover="..." onmouseout="..."</code></td>
+                <td>마우스 커서가 해당 요소 영역 안으로 들어올 때(Over)와 밖으로 빠져나갈 때(Out) 각각 다른 동작을 수행하여 직관적인 인터랙션을 구현합니다.</td>
+            </tr>
+            <tr>
+                <td>스타일 동적 변경</td>
+                <td><code>target.style.border = "..."</code></td>
+                <td>요소의 테두리 색상이나 모양을 스크립트로 실시간으로 갱신하여 시각적 변화를 줍니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <td><strong>입력값 제어 (`onchange`):</strong> 폼 데이터 완성 시점에 값을 가공(대문자 변환)하고 유효성을 검증(길이 체크)</td>
+        <td><strong>마우스 반응 (`onmouseover`/`onmouseout`):</strong> 포인터 위치에 따라 콘텐츠와 스타일을 동적으로 토글</td>
+        <td><strong>통합 인터랙션:</strong> 사용자 입력과 시각적 피드백을 웹 페이지에 구현하는 대표적인 DOM 이벤트 모델</td>
+    </ul>
+    <p class="small">학습 포인트: 폼 입력 제어 이벤트와 마우스 포인터 인터랙션 이벤트를 결합하여 다양한 사용자 행동 패턴에 대응하는 웹 스크립트 작성법을 익힙니다.</p>
+</main>
 </body>
 </html>
 
