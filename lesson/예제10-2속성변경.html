@@ -1,10 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
- <link rel="stylesheet" href="style.css"> 
-<meta charset="utf-8">
-<title>예제10-2속성변경(attribute change)</title>
-<script>
+    <meta charset="UTF-8">
+    <title>예제 10-2 속성 변경(Attribute Change) 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 분석 문서 내 예제 구동 함수
+        function changeImg(){
+            document.getElementById("live-img").src = 'images/aisoftware.png';
+        }
+
+        function changeCss(){
+            document.getElementById("live-cls").style.color = "red";
+        }
+
+        function changeSeta(){
+            document.getElementById('live-set').setAttribute("style", "background-color:cyan; padding:5px;");
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
+</head>
+<body>
+<main>
+    <h1>예제 10-2: DOM 요소 속성 변경(Attribute Change) 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 JavaScript를 활용하여 HTML 요소의 속성(Attribute)과 스타일(Style)을 동적으로 변경하는 원리와, <code>src</code> 프로퍼티 제어, <code>style</code> 객체 제어, 그리고 <code>setAttribute()</code> 메서드의 활용법을 상세히 설명합니다.</p>
+    </div>
+
+    <h2>1. HTML 속성 변경 및 동적 제어 개념</h2>
+    
+    <p>웹 페이지가 로드된 이후, 사용자의 상호작용(버튼 클릭 등)에 따라 화면의 이미지를 바꾸거나 디자인(CSS 스타일)을 실시간으로 수정해야 할 때 DOM 요소의 <strong>속성 제어 기능</strong>이 사용됩니다.</p>
+
+    <div class="note">
+        <strong>💡 핵심 포인트:</strong> DOM 트리에 반영된 객체의 프로퍼티나 메서드를 호출하면 브라우저는 즉시 화면을 다시 그림(Rendering / Repaint), 사용자가 변경된 결과를 실시간으로 확인할 수 있게 됩니다.
+    </div>
+
+    <h3>1) 주요 제어 방식의 차이점</h3>
+    <ul>
+        <li><strong>프로퍼티 직접 접근 (예: <code>element.src</code>)</strong>: 객체의 속성 값을 직접 읽거나 대입하여 변경합니다. 직관적이고 간편합니다.</li>
+        <li><strong>인라인 스타일 제어 (예: <code>element.style.color</code>)</strong>: 요소의 CSS 스타일 속성을 직접 조작합니다. CSS 속성명이 카멜케이스(CamelCase, 예: <code>backgroundColor</code>)로 변환되어 적용됩니다.</li>
+        <li><strong><code>setAttribute(name, value)</code> 메서드</strong>: 속성 이름과 값을 직접 지정하여 새로운 속성을 부여하거나 기존 속성값을 강제로 교체합니다.</li>
+    </ul>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;link rel="stylesheet" href="style.css"&gt; 
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;예제10-2속성변경(attribute change)&lt;/title&gt;
+&lt;script&gt;
   function changeImg(){
     document.getElementById("img").src = 'images/aisoftware.png';
   }
@@ -16,21 +95,79 @@
   function changeSeta(){
     document.getElementById('set').setAttribute("style", "background-color:cyan");
   }
-</script>
-</head>
-<body id="main">
-  <h1 style="text-align:center;">속성 변경(Find Element)</h1>
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body id="main"&gt;
+  &lt;h1 style="text-align:center;"&gt;속성 변경(Find Element)&lt;/h1&gt;
 
-  <p>이미지 변경: 
-    <img id="img" src="images/ai.png" width="100px" height="100px">
-  </p>
+  &lt;p&gt;이미지 변경: 
+    &lt;img id="img" src="images/ai.png" width="100px" height="100px"&gt;
+  &lt;/p&gt;
 
-  <h2 id="cls" style="color:blue">CSS 속성(색상) 변경</h2>
-  <h2 id="set" style="color:green">CSS setAttribute(attribute,value)</h2>
+  &lt;h2 id="cls" style="color:blue"&gt;CSS 속성(색상) 변경&lt;/h2&gt;
+  &lt;h2 id="set" style="color:green"&gt;CSS setAttribute(attribute,value)&lt;/h2&gt;
 
-  <input type="button" id="bt1" value="change_img" onclick="changeImg();">
-  <input type="button" id="bt2" value="change_style" onclick="changeCss();">
-  <input type="button" class="bt3" value="change_setAttribute" onclick="changeSeta();">
+  &lt;input type="button" id="bt1" value="change_img" onclick="changeImg();"&gt;
+  &lt;input type="button" id="bt2" value="change_style" onclick="changeCss();"&gt;
+  &lt;input type="button" class="bt3" value="change_setAttribute" onclick="changeSeta();"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <h1 style="text-align:center;">속성 변경(Find Element)</h1>
+        <p>이미지 변경: 
+            <!-- 실제 렌더링을 위해 대체 텍스트 또는 샘플 아이콘 활용 가능 공간 -->
+            <img id="live-img" src="https://via.placeholder.com/100x100?text=AI" width="100px" height="100px" alt="샘플이미지">
+        </p>
+        <h2 id="live-cls" style="color:blue">CSS 속성(색상) 변경</h2>
+        <h2 id="live-set" style="color:green">CSS setAttribute(attribute,value)</h2>
+        <input type="button" id="bt1" value="change_img" onclick="changeImg();">  
+        <input type="button" id="bt2" value="change_style" onclick="changeCss();">  
+        <input type="button" class="bt3" value="change_setAttribute" onclick="changeSeta();">
+    </div>
+
+    <h2>3. 속성 제어 메서드 및 프로퍼티 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>구분 / 메서드</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>src</code> 프로퍼티 변경</td>
+                <td><code>document.getElementById("img").src = '...';</code></td>
+                <td>이미지 태그(<code>&lt;img&gt;</code>)의 경로 속성을 직접 수정하여 웹 페이지에 로드되는 이미지소스를 동적으로 교체합니다.</td>
+            </tr>
+            <tr>
+                <td><code>style</code> 객체 제어</td>
+                <td><code>document.getElementById("cls").style.color = "red";</code></td>
+                <td>요소의 인라인 스타일(Inline Style) 속성에 접근하여 특정 스타일 값(글자 색상, 크기 등)을 실시간으로 변경합니다.</td>
+            </tr>
+            <tr>
+                <td><code>setAttribute()</code></td>
+                <td><code>document.getElementById('set').setAttribute("style", "...");</code></td>
+                <td>HTML 태그의 특정 속성(Attribute) 이름과 바꿀 값을 매개변수로 받아 강제로 설정합니다. 기존 스타일 속성 전체를 덮어씌울 때 유용합니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <li><strong>이미지 경로 변경:</strong> <code>element.src = '경로'</code>를 이용해 화면에 표시될 리소스를 즉시 전환</li>
+        <li><strong>스타일 속성 조작:</strong> <code>element.style.CSS속성명 = '값'</code>을 통해 개별 스타일 동적 변경</li>
+        <li><strong>범용 속성 설정:</strong> <code>element.setAttribute(속성명, 값)</code>으로 HTML 표준/사용자 정의 속성 부여 및 수정</li>
+    </ul>
+    <p class="small">학습 포인트: DOM 요소를 가져오는 것에 그치지 않고, 가져온 요소의 속성과 스타일을 스크립트로 조작하여 인터랙티브한 웹 화면을 만드는 기법을 익힙니다.</p>
+</main>
 </body>
 </html>
 
