@@ -1,34 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>예제 9-15 현재 시간 표시</title>
+    <meta charset="UTF-8">
+    <title>예제 9-15 현재 시간 표시 분석 문서</title>
+    <style>
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 30px; line-height: 1.6; color: #333; background-color: #fdfdfd; }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        code { background-color: #f1f2f6; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background-color: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: Consolas, monospace; }
+        .section { margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #2d3436; }
+        .output-box { background: #e8f4f8; border-left: 4px solid #3498db; padding: 10px 15px; margin-top: 10px; }
+        .run-btn { background-color: #27ae60; color: white; border: none; padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+        .run-btn:hover { background-color: #219653; }
+        .game-panel { margin-top: 15px; display: none; border: 2px solid #27ae60; border-radius: 8px; padding: 20px; background: #f9fff9; }
+    </style>
+    <script>
+        function toggleLive() {
+            var panel = document.getElementById("livePanel");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+            } else {
+                panel.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
-    <h3>setTimeout()으로 현재 시간 갱신</h3>
-    <p>현재 시간: <b id="ca"></b></p>
 
-    <script>
-        // 시간을 표시하는 함수 정의
+    <h2>예제 9-15: setTimeout()으로 현재 시간 갱신 분석 보고서</h2>
+    <p>본 문서는 JavaScript의 <code>Date</code> 객체와 <code>setTimeout()</code> 타이머 함수를 활용하여 웹 페이지에 현재 시각(시:분:초:밀리초)을 실시간으로 갱신하여 출력하는 예제 코드를 분석한 내용입니다.</p>
+
+    <div class="section">
+        <h3>1. HTML 전체 소스코드</h3>
+        <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;예제 9-15 현재 시간 표시&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h3&gt;setTimeout()으로 현재 시간 갱신&lt;/h3&gt;
+    &lt;p&gt;현재 시간: &lt;b id="ca"&gt;&lt;/b&gt;&lt;/p&gt;
+
+    &lt;script&gt;
         function setTime() {
             var time = new Date();
 
-            // 시:분:초:밀리초 형식으로 시간 구성
             var nowTime = 
                 time.getHours().toString().padStart(2, '0') + ":" +
                 time.getMinutes().toString().padStart(2, '0') + ":" +
                 time.getSeconds().toString().padStart(2, '0') + ":" +
                 time.getMilliseconds().toString().padStart(3, '0');
 
-            // 화면에 출력
             document.getElementById("ca").innerText = nowTime;
 
-            // 재귀적으로 10ms 후 함수 다시 호출
-            setTimeout(setTime, 10);  // 문자열 대신 함수 이름 사용 권장
+            setTimeout(setTime, 10);
         }
 
-        // 최초 호출
         setTime();
-    </script>
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+
+        <!-- 라이브 테스트 단추 -->
+        <button class="run-btn" onclick="toggleLive()">▶ 예제 라이브 실행 및 테스트</button>
+        
+        <!-- 실시간 실행 결과 패널 -->
+        <div id="livePanel" class="game-panel">
+            <h3>⏰ 실시간 시계 실행 화면</h3>
+            <p>현재 시간: <b id="live_ca"></b></p>
+            <script>
+                function liveSetTime() {
+                    var time = new Date();
+                    var nowTime = 
+                        time.getHours().toString().padStart(2, '0') + ":" +
+                        time.getMinutes().toString().padStart(2, '0') + ":" +
+                        time.getSeconds().toString().padStart(2, '0') + ":" +
+                        time.getMilliseconds().toString().padStart(3, '0');
+                    var target = document.getElementById("live_ca");
+                    if (target) {
+                        target.innerText = nowTime;
+                        setTimeout(liveSetTime, 10);
+                    }
+                }
+                liveSetTime();
+            </script>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>2. HTML 구조 및 DOM 요소 설명</h3>
+        <ul>
+            <li><b>&lt;h3&gt; 및 &lt;p&gt; 태그</b>: 타이틀과 함께 "현재 시간:" 라벨을 표시합니다.</li>
+            <li><b>&lt;b id="ca"&gt; 태그</b>: JavaScript 스크립트가 계산한 시·분·초·밀리초 문자열을 <code>innerText</code>를 통해 실시간으로 갱신하여 보여주는 핵심 출력 영역입니다.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>3. JavaScript 핵심 로직 상세 분석</h3>
+        <table>
+            <tr>
+                <th>코드 요소</th>
+                <th>주요 역할 및 동작 원리</th>
+            </tr>
+            <tr>
+                <td><code>new Date()</code></td>
+                <td>컴퓨터의 현재 시스템 날짜 및 시간 정보를 담은 객체를 생성합니다.</td>
+            </tr>
+            <tr>
+                <td><code>padStart(2, '0')</code><br><code>padStart(3, '0')</code></td>
+                <td>숫자 문자열의 자릿수가 부족할 경우 지정된 길이(시간/분/초는 2자리, 밀리초는 3자리)가 되도록 빈 자리를 <b>'0'으로 채워주는</b> 메서드입니다. (예: 5초 ➔ "05")</td>
+            </tr>
+            <tr>
+                <td><code>setTimeout(setTime, 10)</code></td>
+                <td>지정한 시간(10밀리초 = 0.01초) 후에 <code>setTime</code> 함수를 다시 호출합니다. 이를 통해 함수가 스스로를 반복 호출(재귀 호출)하면서 실시간 시계 기능을 구현합니다.</td>
+            </tr>
+        </table>
+    </div>
+
 </body>
 </html>
