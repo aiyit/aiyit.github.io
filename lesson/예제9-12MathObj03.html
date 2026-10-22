@@ -1,27 +1,122 @@
 <!DOCTYPE html>
-<html>
-<head><title>예제9-12Math 메소드3</title></head>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예제 9-12 Math 메소드3 분석 문서</title>
+    <style>
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 30px; line-height: 1.6; color: #333; background-color: #fdfdfd; }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        code { background-color: #f1f2f6; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background-color: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: Consolas, monospace; }
+        .section { margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #2d3436; }
+        .output-box { background: #e8f4f8; border-left: 4px solid #3498db; padding: 10px 15px; margin-top: 10px; }
+    </style>
+</head>
 <body>
-<h3>Math 객체 메소드3   var x =1.234</h3>
-<p>Math.round(x) : <b id="ca"></b></p>
-<p>Math.sin(x) : <b id="cca"></b></p>
-<p>Math.sinh(x) : <b id="cnct"></b></p>
-<p>Math.sqrt(x)) : <b id="ido"></b></p>
-<p>Math.tan(x): <b id="vlf"></b></p>
-<p>Math.tanh(x): <b id="fxd"></b></p>
-<p>Math.trunc(x) : <b id="prc"></b></p>
-<script>
-  var x =1.234 ;
-  document.getElementById("ca").innerHTML = Math.round(x);
-  document.getElementById("cca").innerHTML =Math.sin(x);
-  document.getElementById("cnct").innerHTML = Math.sinh(x);
-  document.getElementById("ido").innerHTML = Math.sqrt(x); 
-  document.getElementById("vlf").innerHTML = Math.tan(x);
-  document.getElementById("fxd").innerHTML = Math.tanh(x);
-  document.getElementById("prc").innerHTML =Math.trunc(x);
-</script>
+
+    <h2>예제 9-12: JavaScript Math 객체 메서드3 분석 보고서</h2>
+    <p>본 문서는 JavaScript 수학 내장 객체(Math)가 제공하는 반올림, 삼각함수, 제곱근, 정수 추출 등 주요 메서드(round, sin, sinh, sqrt, tan, tanh, trunc)의 동작 원리와 활용법을 분석한 내용입니다.</p>
+
+    <div class="section">
+        <h3>1. HTML 전체 소스코드</h3>
+        <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;예제9-12Math 메소드3&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;Math 객체 메소드3    var x =1.234&lt;/h3&gt;
+&lt;p&gt;Math.round(x) : &lt;b id="ca"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;Math.sin(x) : &lt;b id="cca"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;Math.sinh(x) : &lt;b id="cnct"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;Math.sqrt(x)) : &lt;b id="ido"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;Math.tan(x): &lt;b id="vlf"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;Math.tanh(x): &lt;b id="fxd"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;Math.trunc(x) : &lt;b id="prc"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;script&gt;
+	var x = 1.234;
+	document.getElementById("ca").innerHTML = Math.round(x);
+	document.getElementById("cca").innerHTML = Math.sin(x);
+	document.getElementById("cnct").innerHTML = Math.sinh(x);
+	document.getElementById("ido").innerHTML = Math.sqrt(x); 
+	document.getElementById("vlf").innerHTML = Math.tan(x);
+	document.getElementById("fxd").innerHTML = Math.tanh(x);
+	document.getElementById("prc").innerHTML = Math.trunc(x);
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <div class="section">
+        <h3>2. HTML 구조 및 DOM 요소 설명</h3>
+        <ul>
+            <li><b>&lt;h3&gt;</b>: 화면 대표 제목과 기준 변수 값(<code>var x = 1.234</code>)을 함께 표시합니다.</li>
+            <li><b>&lt;p&gt; 및 &lt;b id="..."&gt; 태그</b>: 각 Math 메서드의 연산 결과를 동적으로 바인딩하여 출력하기 위한 DOM 구역입니다. <code>ca</code>, <code>cca</code>, <code>ido</code> 등의 고유 ID가 부여되어 있습니다.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>3. JavaScript Math 주요 메서드 상세 분석 (기준 변수: <code>x = 1.234</code>)</h3>
+        <table>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 의미</th>
+            </tr>
+            <tr>
+                <td><code>Math.round()</code></td>
+                <td><code>Math.round(1.234)</code></td>
+                <td>소수점 이하 첫째 자리에서 반올림하여 가장 가까운 정수를 반환합니다. ➔ <b>1</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.sin()</code></td>
+                <td><code>Math.sin(1.234)</code></td>
+                <td>주어진 각도(라디안)의 사인 값을 반환합니다. ➔ <b>0.942488801931616</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.sinh()</code></td>
+                <td><code>Math.sinh(1.234)</code></td>
+                <td>쌍곡사인(Hyperbolic Sine) 값을 반환합니다. ➔ <b>1.5654395346894052</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.sqrt()</code></td>
+                <td><code>Math.sqrt(1.234)</code></td>
+                <td>숫자의 양의 제곱근(Square Root)을 반환합니다. ($\sqrt{1.234}$) ➔ <b>1.1108555263624835</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.tan()</code></td>
+                <td><code>Math.tan(1.234)</code></td>
+                <td>주어진 각도(라디안)의 탄젠트 값을 반환합니다. ➔ <b>2.915011707577517</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.tanh()</code></td>
+                <td><code>Math.tanh(1.234)</code></td>
+                <td>쌍곡탄젠트 값을 반환합니다. ➔ <b>0.8433983693437295</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.trunc()</code></td>
+                <td><code>Math.trunc(1.234)</code></td>
+                <td>숫자의 소수점 이하를 버리고 정수 부분만 반환합니다. ➔ <b>1</b></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>4. 실행 과정 및 브라우저 최종 출력 결과</h3>
+        <div class="output-box">
+            <p><strong>Math 객체 메소드3    var x =1.234</strong></p>
+            <p>Math.round(x) : <b>1</b></p>
+            <p>Math.sin(x) : <b>0.942488801931616</b></p>
+            <p>Math.sinh(x) : <b>1.5654395346894052</b></p>
+            <p>Math.sqrt(x)) : <b>1.1108555263624835</b></p>
+            <p>Math.tan(x): <b>2.915011707577517</b></p>
+            <p>Math.tanh(x): <b>0.8433983693437295</b></p>
+            <p>Math.trunc(x) : <b>1</b></p>
+        </div>
+    </div>
+
 </body>
-</html>
 </html>
 
 
