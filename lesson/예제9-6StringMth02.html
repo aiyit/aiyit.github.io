@@ -1,27 +1,119 @@
 <!DOCTYPE html>
-<html>
-<head><title>예제9-6String 메소드2</title></head>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예제 9-6 String 메소드2 분석 문서</title>
+    <style>
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 30px; line-height: 1.6; color: #333; background-color: #fdfdfd; }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        code { background-color: #f1f2f6; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background-color: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: Consolas, monospace; }
+        .section { margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #2d3436; }
+        .output-box { background: #e8f4f8; border-left: 4px solid #3498db; padding: 10px 15px; margin-top: 10px; }
+    </style>
+</head>
 <body>
-<h3>String 메소드2</h3>
-<p>match : <b id="ca"></b></p>
-<p>search : <b id="cca"></b></p>
-<p>slice : <b id="cnct"></b></p>
-<p>split : <b id="ido"></b></p>
-<p>toUpperCase : <b id="lido"></b></p>
-<p>toString : <b id="rpl"></b></p>
-<script>
-  var str = "Hello, welcome, AI, Software";
-  var str2 = 5678;
-  var ca = str.match("AI"), cca = str.search("Software");
-  var cnct = str.slice(7,12), ido = str.split(" ");
-  var lido = str.toUpperCase(), rpl = str2.toString();
-  document.getElementById("ca").innerHTML = ca;
-  document.getElementById("cca").innerHTML = cca;
-  document.getElementById("cnct").innerHTML = cnct;
-  document.getElementById("ido").innerHTML = ido;
-  document.getElementById("lido").innerHTML = lido;
-  document.getElementById("rpl").innerHTML = rpl;
-</script>
+
+    <h2>예제 9-6: JavaScript String 객체 메서드2 분석 보고서</h2>
+    <p>본 문서는 JavaScript 문자열(String) 객체가 제공하는 주요 메서드(match, search, slice, split, toUpperCase, toString)의 동작 원리와 활용법을 분석한 내용입니다.</p>
+
+    <div class="section">
+        <h3>1. HTML 전체 소스코드</h3>
+        <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+	&lt;title&gt;예제9-6String 메소드2&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;h3&gt;String 메소드2&lt;/h3&gt;
+	&lt;p&gt;match : &lt;b id="ca"&gt;&lt;/b&gt;&lt;/p&gt;
+	&lt;p&gt;search : &lt;b id="cca"&gt;&lt;/b&gt;&lt;/p&gt;
+	&lt;p&gt;slice : &lt;b id="cnct"&gt;&lt;/b&gt;&lt;/p&gt;
+	&lt;p&gt;split : &lt;b id="ido"&gt;&lt;/b&gt;&lt;/p&gt;
+	&lt;p&gt;toUpperCase : &lt;b id="lido"&gt;&lt;/b&gt;&lt;/p&gt;
+	&lt;p&gt;toString : &lt;b id="rpl"&gt;&lt;/b&gt;&lt;/p&gt;
+&lt;script&gt;
+	var str = "Hello, welcome, AI, Software";
+	var str2 = 5678;
+	var ca = str.match("AI"), cca = str.search("Software");
+	var cnct = str.slice(7,12), ido = str.split(" ");
+	var lido = str.toUpperCase(), rpl = str2.toString();
+	document.getElementById("ca").innerHTML = ca;
+	document.getElementById("cca").innerHTML = cca;
+	document.getElementById("cnct").innerHTML = cnct;
+	document.getElementById("ido").innerHTML = ido;
+	document.getElementById("lido").innerHTML = lido;
+	document.getElementById("rpl").innerHTML = rpl;
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <div class="section">
+        <h3>2. HTML 구조 및 DOM 요소 설명</h3>
+        <ul>
+            <li><b>&lt;h3&gt;</b>: 화면 대표 제목(<code>String 메소드2</code>)을 정의합니다.</li>
+            <li><b>&lt;p&gt; 및 &lt;b id="..."&gt; 태그</b>: 각 메서드의 연산 결과를 바인딩하여 출력하기 위한 DOM 구역입니다. 변수명과 다소 차이가 있는 고유 <code>id</code> 값(<code>ca</code>, <code>cca</code>, <code>cnct</code>, <code>ido</code>, <code>lido</code>, <code>rpl</code>)이 사용되었습니다.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>3. JavaScript String 주요 메서드 상세 분석</h3>
+        <table>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 결과</th>
+            </tr>
+            <tr>
+                <td><code>match(pattern)</code></td>
+                <td><code>str.match("AI")</code></td>
+                <td>지정한 정규식 또는 문자열과 일치하는 항목을 검색하여 배열로 반환합니다. ➔ <b>AI</b></td>
+            </tr>
+            <tr>
+                <td><code>search(pattern)</code></td>
+                <td><code>str.search("Software")</code></td>
+                <td>지정한 정규식 또는 문자열이 처음으로 시작되는 인덱스 위치를 반환합니다. ➔ <b>20</b></td>
+            </tr>
+            <tr>
+                <td><code>slice(start, end)</code></td>
+                <td><code>str.slice(7, 12)</code></td>
+                <td>인덱스 7부터 12 직전(11)까지의 문자열을 부분 추출합니다. ➔ <b>welco</b></td>
+            </tr>
+            <tr>
+                <td><code>split(separator)</code></td>
+                <td><code>str.split(" ")</code></td>
+                <td>구분자(공백 <code>" "</code>)를 기준으로 문자열을 분할하여 배열을 생성합니다. (DOM 출력 시 콤마로 연결됨) ➔ <b>Hello,,welcome,,AI,,Software</b></td>
+            </tr>
+            <tr>
+                <td><code>toUpperCase()</code></td>
+                <td><code>str.toUpperCase()</code></td>
+                <td>문자열 내부의 모든 영문 소문자를 대문자로 변환합니다. ➔ <b>HELLO, WELCOME, AI, SOFTWARE</b></td>
+            </tr>
+            <tr>
+                <td><code>toString()</code></td>
+                <td><code>str2.toString()</code></td>
+                <td>숫자 객체/원시 값(<code>5678</code>)을 문자열 형태(<code>"5678"</code>)로 변환합니다. ➔ <b>5678</b></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>4. 실행 과정 및 브라우저 최종 출력 결과</h3>
+        <div class="output-box">
+            <p><strong>String 메소드2</strong></p>
+            <p>match : <b>AI</b></p>
+            <p>search : <b>20</b></p>
+            <p>slice : <b>welco</b></p>
+            <p>split : <b>Hello,,welcome,,AI,,Software</b></p>
+            <p>toUpperCase : <b>HELLO, WELCOME, AI, SOFTWARE</b></p>
+            <p>toString : <b>5678</b></p>
+        </div>
+    </div>
+
 </body>
 </html>
 
