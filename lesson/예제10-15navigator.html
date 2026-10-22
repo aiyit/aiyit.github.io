@@ -1,39 +1,195 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<meta charset="utf-8">
-<title>navigator 객체</title>
-<link rel="stylesheet" href="style.css">	
+    <meta charset="UTF-8">
+    <title>Navigator 객체 기초 및 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; margin-right: 5px; margin-top: 5px; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 라이브 테스트용 함수 (ID 충돌 방지를 위해 live_ 접두사 사용)
+        function liveLct() {
+            var appCodeName = navigator.appCodeName;
+            var appVersion = navigator.appVersion; 
+            var appName = navigator.appName;
+            var cookieEnabled = navigator.cookieEnabled;
+            var onLine = navigator.onLine;
+            var platform = navigator.platform;
+            var userAgent = navigator.userAgent;
+            
+            document.getElementById("live_wh").textContent = appCodeName;
+            document.getElementById("live_awh").textContent = appName;
+            document.getElementById("live_cd").textContent = appVersion;
+            document.getElementById("live_pd").textContent = cookieEnabled;
+            document.getElementById("live_prt").textContent = onLine;
+            document.getElementById("live_pltf").textContent = platform;
+            document.getElementById("live_userA").textContent = userAgent;
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+                // 패널이 열릴 때 자동으로 정보 조회 실행
+                liveLct();
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
 <body>
-<h3>navigator 객체</h3>
-<p>navigator appCodeName: <b id="wh"></b>입니다.</p>
-<p>navigator appName: <b id="awh"></b>입니다.</p>
-<p>navigator appVersion: <b id="cd"></b>입니다.</p>
-<p>navigator cookieEnabled: <b id="pd"></b>입니다.</p>
-<p>navigator onLine: <b id="prt"></b>입니다.</p>
-<p>navigator platform: <b id="pltf"></b>입니다.</p>
-<p>navigator userAgent: <b id="userA"></b>입니다.</p>
-<button type="button" onclick="lct()">navigator 정보 보기</button>
-<script>
-	function lct() {
-		 var appCodeName = navigator.appCodeName;
-		 var appVersion = navigator.appVersion; 
-		 var appName = navigator.appName;
-		 var cookieEnabled = navigator.cookieEnabled;
-		 var onLine = navigator.onLine;
-		 var platform = navigator.platform;
-		 var userAgent = navigator.userAgent;
-		 
-		document.getElementById("wh").textContent = appCodeName;
-		document.getElementById("awh").textContent = appName;
-		document.getElementById("cd").textContent = appVersion;
-		document.getElementById("pd").textContent = cookieEnabled;
-		document.getElementById("prt").textContent = onLine;
-		document.getElementById("pltf").textContent = platform;
-		document.getElementById("userA").textContent = userAgent;
-	}
-</script>
+<main>
+    <h1>Navigator 객체 기초 개념 및 속성 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 사용자의 웹 브라우저 종류, 버전, 운영체제(OS) 및 네트워크 연결 상태 등의 <strong>클라이언트 환경 정보</strong>를 조회할 수 있는 <strong>`navigator` 객체</strong>의 기초 개념과 주요 속성들을 상세히 설명합니다.</p>
+    </div>
+
+    <h2>1. Navigator 객체란 무엇인가요? (기초 개념)</h2>
+    
+    <p><strong>`navigator` 객체</strong>는 브라우저를 실행하고 있는 사용자(클라이언트)의 단말기 및 웹 브라우저에 대한 종합적인 정보를 담고 있는 자바스크립트의 내장 객체입니다.</p>
+
+    <div class="note">
+        <strong>💡 핵심 역할:</strong> 서버는 클라이언트의 정확한 브라우저 환경을 알기 어렵기 때문에, 자바스크립트의 <code>navigator</code> 객체를 통해 사용자의 기기 운영체제나 네트워크 상태(온라인 여부)를 파악하고 그에 맞는 맞춤형 콘텐츠나 예외 처리를 제공할 수 있습니다.
+    </div>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;navigator 객체&lt;/title&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;   
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;navigator 객체&lt;/h3&gt;
+&lt;p&gt;navigator appCodeName: &lt;b id="wh"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;navigator appName: &lt;b id="awh"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;navigator appVersion: &lt;b id="cd"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;navigator cookieEnabled: &lt;b id="pd"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;navigator onLine: &lt;b id="prt"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;navigator platform: &lt;b id="pltf"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;p&gt;navigator userAgent: &lt;b id="userA"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+&lt;button type="button" onclick="lct()"&gt;navigator 정보 보기&lt;/button&gt;
+&lt;script&gt;
+    function lct() {
+         var appCodeName = navigator.appCodeName;
+         var appVersion = navigator.appVersion; 
+         var appName = navigator.appName;
+         var cookieEnabled = navigator.cookieEnabled;
+         var onLine = navigator.onLine;
+         var platform = navigator.platform;
+         var userAgent = navigator.userAgent;
+          
+        document.getElementById("wh").textContent = appCodeName;
+        document.getElementById("awh").textContent = appName;
+        document.getElementById("cd").textContent = appVersion;
+        document.getElementById("pd").textContent = cookieEnabled;
+        document.getElementById("prt").textContent = onLine;
+        document.getElementById("pltf").textContent = platform;
+        document.getElementById("userA").textContent = userAgent;
+    }
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <p>navigator appCodeName: <b id="live_wh"></b>입니다.</p>
+        <p>navigator appName: <b id="live_awh"></b>입니다.</p>
+        <p>navigator appVersion: <b id="live_cd"></b>입니다.</p>
+        <p>navigator cookieEnabled: <b id="live_pd"></b>입니다.</p>
+        <p>navigator onLine: <b id="live_prt"></b>입니다.</p>
+        <p>navigator platform: <b id="live_pltf"></b>입니다.</p>
+        <p>navigator userAgent: <b id="live_userA"></b>입니다.</p>
+        <button type="button" onclick="liveLct()">navigator 정보 보기</button>
+    </div>
+
+    <h2>3. Navigator 주요 속성 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>속성명</th>
+                <th>반환 예시 (브라우저 환경에 따라 다름)</th>
+                <th>설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>appCodeName</code></td>
+                <td><code>"Mozilla"</code></td>
+                <td>브라우저의 코드 이름을 반환합니다. (대부분의 모던 브라우저는 호환성을 위해 "Mozilla"로 고정되어 반환됨)</td>
+            </tr>
+            <tr>
+                <td><code>appName</code></td>
+                <td><code>"Netscape"</code></td>
+                <td>브라우저의 공식 이름을 반환합니다. (크롬, 사파리 등도 레거시 호환을 위해 "Netscape"를 반환하는 경우가 많음)</td>
+            </tr>
+            <tr>
+                <td><code>appVersion</code></td>
+                <td>버전 및 엔진 상세 정보 문자열</td>
+                <td>브라우저의 상세 버전 정보를 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>cookieEnabled</code></td>
+                <td><code>true</code> 또는 <code>false</code></td>
+                <td>사용자의 브라우저에서 쿠키 사용이 허용(활성화)되어 있는지 부울리언 값으로 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>onLine</code></td>
+                <td><code>true</code> 또는 <code>false</code></td>
+                <td>현재 사용자의 기기가 인터넷에 연결(온라인)되어 있는지 여부를 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>platform</code></td>
+                <td><code>"Win32"</code>, <code>"MacIntel"</code> 등</td>
+                <td>브라우저가 실행되고 있는 사용자의 운영체제(OS) 플랫폼 환경을 반환합니다.</td>
+            </tr>
+            <tr>
+                <td><code>userAgent</code></td>
+                <td>브라우저 전체 식별 문자열</td>
+                <td>브라우저 종류, 버전, OS 정보가 모두 포함된 종합 문자열로, 브라우저 세부 식별에 가장 많이 사용됩니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <td><strong>클라이언트 환경 파악:</strong> 사용자의 브라우저와 기기 상태를 코드로 진단하는 도구</td>
+        <td><strong>활용성:</strong> 쿠키 지원 여부 확인(<code>cookieEnabled</code>)이나 네트워크 상태 체크(<code>onLine</code>) 등에 유용</td>
+        <td><strong>주의점:</strong> 일부 속성(`appName`, `appCodeName` 등)은 과거 웹 표준 호환성 문제로 인해 모든 브라우저에서 고유한 값을 주지 않고 통일된 값을 반환하므로, 상세 식별에는 주로 `userAgent`나 기능 감지 기법을 함께 활용함</td>
+    </ul>
+    <p class="small">학습 포인트: `navigator` 객체를 통해 클라이언트의 브라우저 및 시스템 환경 정보를 안전하게 조회하는 방법을 익힙니다.</p>
+</main>
 </body>
 </html>
 
