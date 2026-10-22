@@ -1,27 +1,184 @@
 <!DOCTYPE html>
-<html>
-<head><title>예제9-2this객체생성자</title></head>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>예제 9-2 this 객체 생성자 설명</title>
+<style>
+  :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+  main { max-width:1050px; margin:0 auto; padding:28px 18px 48px; }
+  h1 { color:var(--navy); font-size:1.8rem; margin:0 0 10px; }
+  h2 { color:var(--blue); font-size:1.3rem; margin-top:32px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+  h3 { color:var(--navy); margin-top:24px; }
+  p { margin:10px 0; }
+  .intro,.card { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+  .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; }
+  pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+  code { font-family:Consolas,"Courier New",monospace; }
+  table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+  th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+  th { background:#eaf1f7; }
+  .output { background:#111d28; color:#b9f6ca; padding:16px; border-radius:10px; font-family:Consolas,monospace; white-space:pre-line; overflow-wrap:anywhere; }
+  button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; }
+  button:hover { background:#105487; }
+  #flow { display:none; background:white; border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin-top:12px; }
+  .small { color:#5b6b79; font-size:.94rem; }
+  .tag { display:inline-block; background:#eaf1f7; color:#244e70; border-radius:5px; padding:2px 7px; font-size:.9rem; }
+</style>
+</head>
 <body>
-<h3>객체생성</h3>
-    <script>
+<main>
+  <h1>JavaScript 예제 9-2: this와 객체 생성자</h1>
+  <div class="intro">
+    <p>이 예제는 <strong>생성자 함수</strong>로 사람 객체 두 개를 만들고, 각 객체의 속도 값을 메서드로 변경하는 프로그램입니다.</p>
+    <p class="note">핵심: <code>new Human(...)</code>을 두 번 실행하면 서로 독립적인 객체인 <code>cmHuman</code>과 <code>cfHuman</code>이 만들어집니다. 각 객체는 자신의 이름과 속도 값을 따로 가집니다.</p>
+  </div>
+
+  <h2>1. HTML 전체 코드</h2>
+  <p>아래는 제공된 원본 코드입니다. 원본의 프로그램 로직을 변경하지 않았습니다.</p>
+  <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;예제9-2this객체생성자&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;객체생성&lt;/h3&gt;
+    &lt;script&gt;
         function Human(name, age, sex,speed)
         {
             this.name=name;       this.age=age;
             this.sex = sex;         this.speed = speed;
             this.walk = function () { this.speed = 10;  }
             this.run = function () {this.speed += 4; }
-	}
+    }
     var cmHuman  = new Human("Park",12,"male", 20) ;
-	var cfHuman  = new Human("Kim",12,"female", 15) ;
-	do {
-  document.write("Name:"+cmHuman.name+" run:"+ cmHuman.speed + "<br />");
+    var cfHuman  = new Human("Kim",12,"female", 15) ;
+    do {
+  document.write("Name:"+cmHuman.name+" run:"+ cmHuman.speed + "&lt;br /&gt;");
         cmHuman.run();
-  document.write("Name:" + cfHuman.name + " run:" + cfHuman.speed+ "<br />");
-        cfHuman.run();} while( cmHuman.speed < 35)
-	cmHuman.walk();  cfHuman.walk();
-  document.write("Name:" + cmHuman.name + " walk:" + cmHuman.speed + "<br />");
-  document.write("Name:" + cfHuman.name + " walk:" + cfHuman.speed+"<br />");
-    </script>
+  document.write("Name:" + cfHuman.name + " run:" + cfHuman.speed+ "&lt;br /&gt;");
+        cfHuman.run();} while( cmHuman.speed &lt; 35)
+    cmHuman.walk();  cfHuman.walk();
+  document.write("Name:" + cmHuman.name + " walk:" + cmHuman.speed + "&lt;br /&gt;");
+  document.write("Name:" + cfHuman.name + " walk:" + cfHuman.speed+"&lt;br /&gt;");
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  <h2>2. HTML 구조 설명</h2>
+  <table>
+    <thead><tr><th>HTML 요소</th><th>역할</th><th>이 코드에서의 기능</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>문서 형식 선언</td><td>브라우저가 HTML5 문서로 해석하도록 합니다.</td></tr>
+      <tr><td><code>&lt;html&gt;</code></td><td>HTML 문서의 최상위 요소</td><td>문서의 전체 내용을 감쌉니다.</td></tr>
+      <tr><td><code>&lt;head&gt;</code></td><td>문서 정보 영역</td><td>문서 제목을 설정합니다.</td></tr>
+      <tr><td><code>&lt;title&gt;</code></td><td>문서 제목</td><td>브라우저 탭에 ‘예제9-2this객체생성자’를 표시합니다.</td></tr>
+      <tr><td><code>&lt;body&gt;</code></td><td>화면에 표시되는 내용</td><td>제목과 JavaScript 실행 코드를 포함합니다.</td></tr>
+      <tr><td><code>&lt;h3&gt;</code></td><td>세 번째 수준의 제목</td><td>화면에 ‘객체생성’을 표시합니다.</td></tr>
+      <tr><td><code>&lt;script&gt;</code></td><td>JavaScript 코드 영역</td><td>생성자 함수를 정의하고 객체를 만든 뒤 결과를 출력합니다.</td></tr>
+      <tr><td><code>document.write()</code></td><td>문서에 출력</td><td>이름과 현재 속도 값을 화면에 표시합니다. <code>&lt;br /&gt;</code>는 줄을 바꿉니다.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. JavaScript 객체와 생성자 함수</h2>
+  <h3>3-1. 생성자 함수란?</h3>
+  <p><code>Human</code>은 사람 객체를 만들기 위한 <strong>생성자 함수</strong>입니다. 일반적으로 생성자 함수의 이름은 대문자로 시작하는 관례가 있습니다.</p>
+  <pre><code>function Human(name, age, sex, speed) {
+    this.name = name;
+    this.age = age;
+    this.sex = sex;
+    this.speed = speed;
+    this.walk = function () { this.speed = 10; };
+    this.run = function () { this.speed += 4; };
+}</code></pre>
+  <p>함수에 전달된 매개변수 <code>name</code>, <code>age</code>, <code>sex</code>, <code>speed</code>의 값을 <code>this</code>가 가리키는 새 객체의 속성에 저장합니다.</p>
+
+  <h3>3-2. this는 무엇인가요?</h3>
+  <p>이 코드에서 <code>new Human(...)</code>으로 생성자 함수를 호출하면, <code>this</code>는 새로 만들어지는 객체를 가리킵니다.</p>
+  <ul>
+    <li><code>this.name = name;</code> — 새 객체의 이름을 저장합니다.</li>
+    <li><code>this.speed = speed;</code> — 새 객체의 초기 속도를 저장합니다.</li>
+    <li><code>this.walk = function () { this.speed = 10; }</code> — 해당 객체의 속도를 10으로 설정하는 메서드입니다.</li>
+    <li><code>this.run = function () { this.speed += 4; }</code> — 해당 객체의 속도에 4를 더하는 메서드입니다.</li>
+  </ul>
+
+  <h3>3-3. new를 이용해 객체 두 개 만들기</h3>
+  <pre><code>var cmHuman = new Human("Park", 12, "male", 20);
+var cfHuman = new Human("Kim", 12, "female", 15);</code></pre>
+  <table>
+    <thead><tr><th>객체 변수</th><th>name</th><th>age</th><th>sex</th><th>초기 speed</th></tr></thead>
+    <tbody>
+      <tr><td><code>cmHuman</code></td><td>Park</td><td>12</td><td>male</td><td>20</td></tr>
+      <tr><td><code>cfHuman</code></td><td>Kim</td><td>12</td><td>female</td><td>15</td></tr>
+    </tbody>
+  </table>
+  <p class="note">두 객체는 같은 <code>Human</code> 생성자 함수로 만들어졌지만, 각각의 <code>speed</code> 속성은 독립적으로 관리됩니다. <code>cmHuman.run()</code>은 Park의 속도만 바꾸고, <code>cfHuman.run()</code>은 Kim의 속도만 바꿉니다.</p>
+
+  <h2>4. 실행 과정 분석</h2>
+  <p>반복문 안에서는 먼저 Park의 속도를 출력한 뒤 Park의 속도를 4 증가시킵니다. 다음으로 Kim의 속도를 출력한 뒤 Kim의 속도를 4 증가시킵니다. 반복 조건은 <strong>Park의 속도(<code>cmHuman.speed</code>)만</strong> 검사합니다.</p>
+  <table>
+    <thead><tr><th>반복</th><th>Park 출력 시 속도</th><th>Park run() 후</th><th>Kim 출력 시 속도</th><th>Kim run() 후</th><th>Park 속도로 조건 검사</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>20</td><td>24</td><td>15</td><td>19</td><td>24 &lt; 35 → 참</td></tr>
+      <tr><td>2</td><td>24</td><td>28</td><td>19</td><td>23</td><td>28 &lt; 35 → 참</td></tr>
+      <tr><td>3</td><td>28</td><td>32</td><td>23</td><td>27</td><td>32 &lt; 35 → 참</td></tr>
+      <tr><td>4</td><td>32</td><td>36</td><td>27</td><td>31</td><td>36 &lt; 35 → 거짓, 종료</td></tr>
+    </tbody>
+  </table>
+  <p>따라서 반복문은 총 4회 실행됩니다. 네 번째 반복에서 Park의 속도는 32로 출력되고, 그 후 36이 됩니다. 조건 검사에서 36은 35보다 작지 않으므로 반복이 종료됩니다. Kim의 속도는 반복 종료 시 31입니다.</p>
+
+  <h3>4-1. 반복문이 끝난 뒤</h3>
+  <pre><code>cmHuman.walk();
+cfHuman.walk();</code></pre>
+  <p>각 객체의 <code>walk()</code> 메서드를 실행하므로 Park와 Kim 모두 속도가 10으로 설정됩니다. 이때 Kim의 속도가 반복문 종료 직전에 31이었더라도, <code>walk()</code>가 실행되면 10으로 바뀝니다.</p>
+
+  <h2>5. 최종 출력 결과</h2>
+  <div class="output">Name:Park run:20
+Name:Kim run:15
+Name:Park run:24
+Name:Kim run:19
+Name:Park run:28
+Name:Kim run:23
+Name:Park run:32
+Name:Kim run:27
+Name:Park walk:10
+Name:Kim walk:10</div>
+
+  <h2>6. 핵심 개념 정리</h2>
+  <table>
+    <thead><tr><th>개념</th><th>이 예제에서의 의미</th></tr></thead>
+    <tbody>
+      <tr><td>생성자 함수</td><td><code>Human()</code> — 같은 구조의 객체를 생성하는 함수</td></tr>
+      <tr><td><code>new</code></td><td>새 객체를 만들고 생성자 함수의 <code>this</code>가 그 객체를 가리키도록 호출</td></tr>
+      <tr><td><code>this</code></td><td>생성자 안에서는 새 객체를 가리킴</td></tr>
+      <tr><td>속성</td><td><code>name</code>, <code>age</code>, <code>sex</code>, <code>speed</code>처럼 객체가 보관하는 데이터</td></tr>
+      <tr><td>메서드</td><td><code>run()</code>, <code>walk()</code>처럼 객체에 연결된 기능</td></tr>
+      <tr><td><code>do...while</code></td><td>본문을 실행한 뒤 조건을 검사하는 반복문</td></tr>
+      <tr><td>반복 조건</td><td><code>cmHuman.speed &lt; 35</code>이므로 Park의 속도만 검사</td></tr>
+    </tbody>
+  </table>
+
+  <button type="button" id="showFlow">실행 순서 간단히 확인하기</button>
+  <div id="flow">
+    <ol>
+      <li>Park 20, Kim 15를 각각 출력합니다.</li>
+      <li>Park와 Kim의 속도를 각각 4씩 증가시킵니다.</li>
+      <li>Park의 속도가 35보다 작은 동안 반복합니다.</li>
+      <li>Park 속도가 36이 되면 반복을 종료합니다.</li>
+      <li>Park와 Kim의 <code>walk()</code>를 실행해 두 속도를 10으로 설정합니다.</li>
+      <li>두 사람의 걷기 속도 10을 출력합니다.</li>
+    </ol>
+  </div>
+  <p class="small">학습 포인트: 반복문 조건이 두 객체 모두의 속도를 검사하는 것이 아니라 <code>cmHuman.speed</code> 하나만 검사한다는 점에 주의하세요.</p>
+</main>
+<script>
+document.getElementById("showFlow").addEventListener("click", function () {
+  const panel = document.getElementById("flow");
+  const isHidden = panel.style.display === "" || panel.style.display === "none";
+  panel.style.display = isHidden ? "block" : "none";
+  this.textContent = isHidden ? "실행 순서 숨기기" : "실행 순서 간단히 확인하기";
+});
+</script>
 </body>
 </html>
 
