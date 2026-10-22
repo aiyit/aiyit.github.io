@@ -1,43 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<link rel="stylesheet" href="style.css">	
-<meta charset="utf-8">
-<title>예제 10-4 노드 트리(Node Tree)</title>
-<script>
-	function next() {
-		let elem = document.getElementById("one").nextElementSibling;
-		document.getElementById("next").innerHTML = elem ? elem.innerHTML : "없음";
-	}
+    <meta charset="UTF-8">
+    <title>예제 10-4 노드 트리(Node Tree) 탐색 분석 보고서</title>
+    <style>
+        :root { --navy:#17324d; --blue:#1769aa; --pale:#eef6fc; --line:#d6e1ea; --text:#243342; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Arial,"Malgun Gothic",sans-serif; color:var(--text); line-height:1.7; background:#f4f7fa; }
+        main { max-width:1000px; margin:0 auto; padding:28px 18px 48px; }
+        h1 { color:var(--navy); font-size:1.8rem; margin:0 0 8px; }
+        h2 { color:var(--blue); font-size:1.25rem; margin-top:30px; border-bottom:2px solid var(--line); padding-bottom:7px; }
+        h3 { color:var(--navy); font-size:1.1rem; margin-top:20px; }
+        p { margin:10px 0; }
+        .intro { background:white; border:1px solid var(--line); border-radius:12px; padding:18px 20px; }
+        pre { overflow-x:auto; padding:18px; border-radius:10px; background:#17212b; color:#f0f5f9; line-height:1.55; font-size:14px; white-space:pre; }
+        code { font-family:Consolas,"Courier New",monospace; }
+        .note { background:var(--pale); border-left:4px solid var(--blue); padding:12px 15px; border-radius:5px; margin: 10px 0; }
+        table { width:100%; border-collapse:collapse; background:white; margin:12px 0; }
+        th,td { border:1px solid var(--line); padding:10px 12px; text-align:left; vertical-align:top; }
+        th { background:#eaf1f7; }
+        button { border:0; border-radius:8px; background:var(--blue); color:white; padding:10px 16px; font-size:1rem; cursor:pointer; }
+        button:hover { background:#105487; }
+        .run-panel { display:none; background:white; border:2px solid var(--blue); border-radius:10px; padding:20px; margin-top:15px; }
+        .small { color:#5b6b79; font-size:.94rem; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+    </style>
+    <script>
+        // 라이브 실행용 함수 (ID 충돌 방지를 위해 접두사 live 사용)
+        function liveNext() {
+            let elem = document.getElementById("live_one").nextElementSibling;
+            document.getElementById("live_next").innerHTML = elem ? elem.innerHTML : "없음";
+        }
 
-	function previous() {
-		let elem = document.getElementById("two").previousElementSibling;
-		document.getElementById("prev").innerHTML = elem ? elem.innerHTML : "없음";
-	}
+        function livePrevious() {
+            let elem = document.getElementById("live_two").previousElementSibling;
+            document.getElementById("live_prev").innerHTML = elem ? elem.innerHTML : "없음";
+        }
 
-	function child() {
-		let list = document.getElementById("myList");
-		document.getElementById("firstC").innerHTML = list.firstElementChild.innerHTML;
-		document.getElementById("lastC").innerHTML = list.lastElementChild.innerHTML;
-	}
-</script>
+        function liveChild() {
+            let list = document.getElementById("live_myList");
+            document.getElementById("live_firstC").innerHTML = list.firstElementChild.innerHTML;
+            document.getElementById("live_lastC").innerHTML = list.lastElementChild.innerHTML;
+        }
+
+        // 라이브 실행 패널 토글 함수
+        function toggleRunPanel() {
+            var panel = document.getElementById("runPanel");
+            var btn = document.getElementById("toggleBtn");
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                btn.textContent = "실행 화면 숨기기";
+            } else {
+                panel.style.display = "none";
+                btn.textContent = "▶ 프로그램 직접 실행 및 테스트";
+            }
+        }
+    </script>
 </head>
-<body id="main">
-	<h3 style="text-align:center;">노드의 구조(Tree)</h3>
-	<h4>Node Tree</h4>
-	<ul id="myList">
-		<li id="one">사과</li>
-		<li id="two">바나나</li>
-	</ul>
+<body>
+<main>
+    <h1>예제 10-4: 노드 트리(Node Tree) 탐색 분석 문서</h1>
+    <div class="intro">
+        <p>본 문서는 DOM 트리 구조에서 특정 노드를 기준으로 부모, 자식, 그리고 형제(Sibling) 요소를 상대적으로 찾아가는 <strong>노드 탐색 프로퍼티</strong>의 원리와 활용법을 설명합니다.</p>
+    </div>
 
-	<p>사과의 nextSibling은 <b id="next"></b>입니다.</p>
-	<p>바나나의 previousSibling은 <b id="prev"></b>입니다.</p>
-	<p>리스트의 First Child는 <b id="firstC"></b>입니다.</p>
-	<p>리스트의 Last Child는 <b id="lastC"></b>입니다.</p>
+    <h2>1. DOM 노드 트리 탐색 개념 상세 이해</h2>
+    
+    <p>HTML 문서가 브라우저에 의해 파싱되면 계층적인 트리 구조가 완성됩니다. 개발자는 <code>getElementById</code>처럼 직접 ID를 지정해 요소를 찾을 수도 있지만, 특정 요소의 <strong>상대적인 위치(바로 다음 요소, 이전 요소, 첫째 자식 등)</strong>를 기반으로 노드를 탐색해야 할 때가 많습니다.</p>
 
-	<input type="button" id="bt1" value="nextSibling" onclick="next();">
-	<input type="button" id="bt2" value="previousSibling" onclick="previous();">
-	<input type="button" id="bt3" value="Tree" onclick="child();">
+    <div class="note">
+        <strong>💡 핵심 포인트 (Node vs Element):</strong> DOM에는 공백이나 줄바꿈을 텍스트 노드로 취급하는 속성(예: <code>nextSibling</code>, <code>firstChild</code>)과, 순수하게 HTML 태그(요소)만을 대상으로 하는 속성(예: <code>nextElementSibling</code>, <code>firstElementChild</code>)이 있습니다. 실무에서는 주로 태그 단위로 제어하기 때문에 후자(`Element`가 붙은 속성)를 주로 사용합니다.
+    </div>
+
+    <h3>1) 주요 탐색 프로퍼티의 종류</h3>
+    <ul>
+        <li><strong><code>nextElementSibling</code></strong>: 현재 요소의 <strong>바로 다음 형제 요소</strong>를 반환합니다. (없으면 <code>null</code>)</li>
+        <li><strong><code>previousElementSibling</code></strong>: 현재 요소의 <strong>바로 이전 형제 요소</strong>를 반환합니다. (없으면 <code>null</code>)</li>
+        <li><strong><code>firstElementChild</code></strong>: 부모 요소의 <strong>첫 번째 자식 요소</strong>를 반환합니다.</li>
+        <li><strong><code>lastElementChild</code></strong>: 부모 요소의 <strong>마지막 자식 요소</strong>를 반환합니다.</li>
+    </ul>
+
+    <h2>2. 제공된 HTML 원본 코드</h2>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;   
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;예제 10-4 노드 트리(Node Tree)&lt;/title&gt;
+&lt;script&gt;
+    function next() {
+        let elem = document.getElementById("one").nextElementSibling;
+        document.getElementById("next").innerHTML = elem ? elem.innerHTML : "없음";
+    }
+
+    function previous() {
+        let elem = document.getElementById("two").previousElementSibling;
+        document.getElementById("prev").innerHTML = elem ? elem.innerHTML : "없음";
+    }
+
+    function child() {
+        let list = document.getElementById("myList");
+        document.getElementById("firstC").innerHTML = list.firstElementChild.innerHTML;
+        document.getElementById("lastC").innerHTML = list.lastElementChild.innerHTML;
+    }
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body id="main"&gt;
+    &lt;h3 style="text-align:center;"&gt;노드의 구조(Tree)&lt;/h3&gt;
+    &lt;h4&gt;Node Tree&lt;/h4&gt;
+    &lt;ul id="myList"&gt;
+        &lt;li id="one"&gt;사과&lt;/li&gt;
+        &lt;li id="two"&gt;바나나&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;사과의 nextSibling은 &lt;b id="next"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+    &lt;p&gt;바나나의 previousSibling은 &lt;b id="prev"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+    &lt;p&gt;리스트의 First Child는 &lt;b id="firstC"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+    &lt;p&gt;리스트의 Last Child는 &lt;b id="lastC"&gt;&lt;/b&gt;입니다.&lt;/p&gt;
+
+    &lt;input type="button" id="bt1" value="nextSibling" onclick="next();"&gt;
+    &lt;input type="button" id="bt2" value="previousSibling" onclick="previous();"&gt;
+    &lt;input type="button" id="bt3" value="Tree" onclick="child();"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <div style="margin-top: 15px;">
+        <button type="button" id="toggleBtn" onclick="toggleRunPanel()">▶ 프로그램 직접 실행 및 테스트</button>
+    </div>
+
+    <!-- 라이브 실행 테스트 영역 -->
+    <div id="runPanel" class="run-panel">
+        <h3 style="margin-top:0; color:var(--navy);">실시간 실행 화면</h3>
+        <h4 style="margin-top:5px;">Node Tree</h4>
+        <ul id="live_myList">
+            <li id="live_one">사과</li>
+            <li id="live_two">바나나</li>
+        </ul>
+
+        <p>사과의 nextSibling은 <b id="live_next"></b>입니다.</p>
+        <p>바나나의 previousSibling은 <b id="live_prev"></b>입니다.</p>
+        <p>리스트의 First Child는 <b id="live_firstC"></b>입니다.</p>
+        <p>리스트의 Last Child는 <b id="live_lastC"></b>입니다.</p>
+
+        <input type="button" value="nextSibling" onclick="liveNext();">
+        <input type="button" value="previousSibling" onclick="livePrevious();">
+        <input type="button" value="Tree" onclick="liveChild();">
+    </div>
+
+    <h2>3. 노드 트리 탐색 프로퍼티 상세 분석</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>프로퍼티명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 특징</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>nextElementSibling</code></td>
+                <td><code>document.getElementById("one").nextElementSibling</code></td>
+                <td>기준 요소의 바로 다음에 위치한 형제 태그(요소)를 선택합니다. <code>&lt;li id="one"&gt;사과&lt;/li&gt;</code>의 다음 요소인 <code>&lt;li&gt;바나나&lt;/li&gt;</code>를 가리킵니다.</td>
+            </tr>
+            <tr>
+                <td><code>previousElementSibling</code></td>
+                <td><code>document.getElementById("two").previousElementSibling</code></td>
+                <td>기준 요소의 바로 이전 형제 태그(요소)를 선택합니다. <code>&lt;li id="two"&gt;바나나&lt;/li&gt;</code>의 이전 요소인 <code>&lt;li&gt;사과&lt;/li&gt;</code>를 가리킵니다.</td>
+            </tr>
+            <tr>
+                <td><code>firstElementChild</code></td>
+                <td><code>list.firstElementChild</code></td>
+                <td>부모 요소 내부의 <strong>첫 번째 자식 요소</strong>를 반환합니다. <code>&lt;ul id="myList"&gt;</code>의 첫 자식인 "사과"를 선택합니다.</td>
+            </tr>
+            <tr>
+                <td><code>lastElementChild</code></td>
+                <td><code>list.lastElementChild</code></td>
+                <td>부모 요소 내부의 <strong>마지막 자식 요소</strong>를 반환합니다. <code>&lt;ul id="myList"&gt;</code>의 마지막 자식인 "바나나"를 선택합니다.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>핵심 정리</h2>
+    <ul>
+        <li><strong>형제 탐색:</strong> <code>nextElementSibling</code>(다음), <code>previousElementSibling</code>(이전)으로 인접 요소 이동</li>
+        <li><strong>자식 탐색:</strong> <code>firstElementChild</code>(첫째), <code>lastElementChild</code>(막내)로 부모 안의 자식 요소 접근</li>
+        <li><strong>안전성:</strong> 탐색 결과 대상이 없을 경우 <code>null</code>을 반환하므로 삼항 연산자(<code>elem ? ... : "없음"</code>) 등을 활용해 예외 처리를 해주는 것이 안전함</li>
+    </ul>
+    <p class="small">학습 포인트: ID나 클래스 없이도 DOM 트리의 상대적 위치 관계를 이용해 원하는 요소를 정확하게 찾아내는 탐색 기법을 익힙니다.</p>
+</main>
 </body>
 </html>
 
