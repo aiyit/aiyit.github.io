@@ -1,30 +1,138 @@
 <!DOCTYPE html>
-<html>
-<head><title>Math 메소드2</title></head>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예제 9-11 Math 메소드2 분석 문서</title>
+    <style>
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 30px; line-height: 1.6; color: #333; background-color: #fdfdfd; }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+        code { background-color: #f1f2f6; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background-color: #2d3436; color: #f1f2f6; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: Consolas, monospace; }
+        .section { margin-bottom: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dfe6e9; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; color: #2d3436; }
+        .output-box { background: #e8f4f8; border-left: 4px solid #3498db; padding: 10px 15px; margin-top: 10px; }
+    </style>
+</head>
 <body>
-<h3>Math 객체 메소드2</h3>
-<br>var x =1.00 , y = 3 ;
-<br>Math.cos(1) : <b id="ca"></b>
-<br>Math.cosh(1) : <b id="cca"></b>
-<br>Math.exp(1) : <b id="cnct"></b>
-<br>Math.floor(1) : <b id="ido"></b>
-<br>Math.log(1): <b id="vlf"></b>
-<br>Math.max(x,3,0.3,12): <b id="fxd"></b>
-<br>Math.min(1,3,0.3,12) : <b id="prc"></b>
-<br>Math.pow(1,y) : <b id="exp"></b>
-<br>Math.random() : <b id="str"></b>
-<script>
-  var x =1.00 , y = 3 ;
-  document.getElementById("ca").innerHTML = Math.cos(x);
-  document.getElementById("cca").innerHTML =Math.cosh(x);
-  document.getElementById("cnct").innerHTML = Math.exp(x);
-  document.getElementById("ido").innerHTML = Math.floor(x); 
-  document.getElementById("vlf").innerHTML = Math.log(x);
-  document.getElementById("fxd").innerHTML = Math.max(x,3,0.3,12);
-  document.getElementById("prc").innerHTML =Math.min(x,3,0.3,12);
-  document.getElementById("exp").innerHTML = Math.pow(x,y);
-  document.getElementById("str").innerHTML = Math.random();
-</script>
+
+    <h2>예제 9-11: JavaScript Math 객체 메서드2 분석 보고서</h2>
+    <p>본 문서는 JavaScript 수학 내장 객체(Math)가 제공하는 삼각함수, 지수/로그, 최댓값/최솟값, 거듭제곱 및 난수 생성 메서드(cos, cosh, exp, floor, log, max, min, pow, random)의 동작 원리와 활용법을 분석한 내용입니다.</p>
+
+    <div class="section">
+        <h3>1. HTML 전체 소스코드</h3>
+        <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;Math 메소드2&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;h3&gt;Math 객체 메소드2&lt;/h3&gt;
+&lt;br&gt;var x =1.00 , y = 3 ;
+&lt;br&gt;Math.cos(1) : &lt;b id="ca"&gt;&lt;/b&gt;
+&lt;br&gt;Math.cosh(1) : &lt;b id="cca"&gt;&lt;/b&gt;
+&lt;br&gt;Math.exp(1) : &lt;b id="cnct"&gt;&lt;/b&gt;
+&lt;br&gt;Math.floor(1) : &lt;b id="ido"&gt;&lt;/b&gt;
+&lt;br&gt;Math.log(1): &lt;b id="vlf"&gt;&lt;/b&gt;
+&lt;br&gt;Math.max(x,3,0.3,12): &lt;b id="fxd"&gt;&lt;/b&gt;
+&lt;br&gt;Math.min(1,3,0.3,12) : &lt;b id="prc"&gt;&lt;/b&gt;
+&lt;br&gt;Math.pow(1,y) : &lt;b id="exp"&gt;&lt;/b&gt;
+&lt;br&gt;Math.random() : &lt;b id="str"&gt;&lt;/b&gt;
+&lt;script&gt;
+	var x = 1.00, y = 3;
+	document.getElementById("ca").innerHTML = Math.cos(x);
+	document.getElementById("cca").innerHTML = Math.cosh(x);
+	document.getElementById("cnct").innerHTML = Math.exp(x);
+	document.getElementById("ido").innerHTML = Math.floor(x); 
+	document.getElementById("vlf").innerHTML = Math.log(x);
+	document.getElementById("fxd").innerHTML = Math.max(x, 3, 0.3, 12);
+	document.getElementById("prc").innerHTML = Math.min(x, 3, 0.3, 12);
+	document.getElementById("exp").innerHTML = Math.pow(x, y);
+	document.getElementById("str").innerHTML = Math.random();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+
+    <div class="section">
+        <h3>2. HTML 구조 및 DOM 요소 설명</h3>
+        <ul>
+            <li><b>&lt;h3&gt;</b>: 화면 대표 제목(<code>Math 객체 메소드2</code>)을 정의합니다.</li>
+            <li><b>&lt;br&gt; 및 &lt;b id="..."&gt; 태그</b>: 줄바꿈 태그와 함께 각 Math 메서드의 연산 결과를 동적으로 바인딩하여 출력하기 위한 DOM 구역입니다. <code>ca</code>, <code>cca</code>, <code>exp</code> 등의 고유 ID가 부여되어 있습니다.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>3. JavaScript Math 주요 메서드 상세 분석 (기준 변수: <code>x = 1.00</code>, <code>y = 3</code>)</h3>
+        <table>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 의미</th>
+            </tr>
+            <tr>
+                <td><code>Math.cos()</code></td>
+                <td><code>Math.cos(1)</code></td>
+                <td>주어진 각도(라디안)의 코사인 값을 반환합니다. ➔ <b>0.5403023058681398</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.cosh()</code></td>
+                <td><code>Math.cosh(1)</code></td>
+                <td>쌍곡코사인 값을 반환합니다. ➔ <b>1.5430806348152437</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.exp()</code></td>
+                <td><code>Math.exp(1)</code></td>
+                <td>오일러 상수 $e$의 거듭제곱($e^1$) 값을 반환합니다. ➔ <b>2.718281828459045</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.floor()</code></td>
+                <td><code>Math.floor(1)</code></td>
+                <td>인수로 전달된 숫자와 같거나 작은 정수 중 가장 큰 수(내림)를 반환합니다. ➔ <b>1</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.log()</code></td>
+                <td><code>Math.log(1)</code></td>
+                <td>자연로그 값($\ln(1)$)을 반환합니다. ➔ <b>0</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.max()</code></td>
+                <td><code>Math.max(1, 3, 0.3, 12)</code></td>
+                <td>전달된 인수들 중 가장 큰 값을 반환합니다. ➔ <b>12</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.min()</code></td>
+                <td><code>Math.min(1, 3, 0.3, 12)</code></td>
+                <td>전달된 인수들 중 가장 작은 값을 반환합니다. ➔ <b>0.3</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.pow()</code></td>
+                <td><code>Math.pow(1, 3)</code></td>
+                <td>베이스 숫자의 지정된 거듭제곱 값($1^3$)을 반환합니다. ➔ <b>1</b></td>
+            </tr>
+            <tr>
+                <td><code>Math.random()</code></td>
+                <td><code>Math.random()</code></td>
+                <td>0 이상 1 미만의 무작위 난수(Pseudo-random number)를 반환합니다. ➔ <b>(실행 시마다 무작위 소수 반환, 예: 0.812...)</b></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>4. 실행 과정 및 브라우저 최종 출력 결과</h3>
+        <div class="output-box">
+            <p><strong>Math 객체 메소드2</strong></p>
+            <p>Math.cos(1) : <b>0.5403023058681398</b></p>
+            <p>Math.cosh(1) : <b>1.5430806348152437</b></p>
+            <p>Math.exp(1) : <b>2.718281828459045</b></p>
+            <p>Math.floor(1) : <b>1</b></p>
+            <p>Math.log(1): <b>0</b></p>
+            <p>Math.max(x,3,0.3,12): <b>12</b></p>
+            <p>Math.min(1,3,0.3,12) : <b>0.3</b></p>
+            <p>Math.pow(1,y) : <b>1</b></p>
+            <p>Math.random() : <b>(0 이상 1 미만의 난수 출력)</b></p>
+        </div>
+    </div>
+
 </body>
 </html>
 
