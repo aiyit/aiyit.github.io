@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NumPy 시각화 강의안</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#1c2433;--sub:#5b6577;--line:#dbe1ea;--main:#1d4e89;--acc:#e08a00;--code:#14213a;--codefg:#e6edf7;--ok:#e8f3ea}
+@media(prefers-color-scheme:dark){:root{--bg:#10151f;--card:#18202e;--ink:#e6ebf3;--sub:#9aa6ba;--line:#2a3447;--main:#6fa8ee;--acc:#f0a830;--ok:#1b2d22}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Noto Sans KR","Malgun Gothic",sans-serif}
+header{background:var(--main);color:#fff;padding:40px 20px 28px}
+header div,main,nav div{max-width:960px;margin:0 auto}
+header h1{margin:0 0 8px;font-size:2rem;letter-spacing:-.02em}
+header p{margin:0;opacity:.9}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+nav div{display:flex;gap:4px;overflow-x:auto;padding:8px 20px}
+nav a{white-space:nowrap;padding:6px 14px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:.92rem}
+nav a:hover,nav a:focus-visible{background:var(--bg);outline:2px solid var(--main)}
+main{padding:12px 20px 60px}
+section{margin-top:36px;scroll-margin-top:60px}
+h2{font-size:1.5rem;margin:0 0 6px;padding-left:12px;border-left:5px solid var(--acc)}
+h3{font-size:1.15rem;margin:26px 0 8px;color:var(--main)}
+.goal{background:var(--ok);padding:10px 14px;border-radius:6px;margin:10px 0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:12px 0}
+pre{background:var(--code);color:var(--codefg);padding:14px 16px;border-radius:8px;overflow-x:auto;font:14px/1.6 Consolas,"D2Coding",monospace;margin:10px 0;white-space:pre}
+code{background:var(--bg);padding:1px 5px;border-radius:4px;font-family:Consolas,monospace;font-size:.92em}
+pre code{background:none;padding:0}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.93rem}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--main);color:#fff;white-space:nowrap}
+.q{border-left:4px solid var(--acc);padding:4px 14px;margin:10px 0;background:var(--card)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.flow .box{margin:0;border-top:4px solid var(--main)}
+label{display:block;font-weight:600;margin:8px 0 4px}
+select,button{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
+select{width:100%}
+button{background:var(--main);color:#fff;border:0;cursor:pointer;margin-top:12px}
+button:focus-visible,select:focus-visible{outline:2px solid var(--acc)}
+#msg{margin:12px 0;padding:10px 14px;border-radius:6px;background:var(--ok)}
+@media print{nav{display:none}}
+</style>
+</head>
+<body>
+<header><div>
+<h1>NumPy 시각화 강의안</h1>
+<p>숫자 배열을 그래프로 바꿔 데이터의 패턴을 읽는 방법 · NumPy + Matplotlib 중심</p>
+</div></header>
+<nav><div>
+<a href="#goal">학습 목표</a><a href="#rel">NumPy와 시각화</a><a href="#tools">시각화 도구</a><a href="#graphs">대표 그래프 5가지</a><a href="#p1">실습 1</a><a href="#p2">실습 2</a><a href="#pick">그래프 선택 실습</a><a href="#wrap">정리</a>
+</div></nav>
+<main>
+
+<section id="goal">
+<h2>학습 목표</h2>
+<div class="goal">
+<ul>
+<li>NumPy와 시각화 도구가 각각 맡는 역할을 설명할 수 있다.</li>
+<li>데이터의 종류에 맞는 그래프(선, 막대, 히스토그램, 산점도, 히트맵)를 고를 수 있다.</li>
+<li>NumPy로 계산한 결과를 Matplotlib 그래프로 직접 출력할 수 있다.</li>
+</ul></div>
+<div class="box"><strong>실습 환경:</strong> Google Colab 또는 Jupyter Notebook. 로컬 PC에서는 아래 명령으로 설치합니다.
+<pre><code>pip install numpy matplotlib seaborn plotly</code></pre>
+Colab에는 NumPy, Matplotlib, Seaborn, Plotly가 대부분 설치되어 있습니다.</div>
+</section>
+
+<section id="rel">
+<h2>1. NumPy와 시각화 도구의 관계</h2>
+<p>NumPy는 수치 계산과 배열 처리가 주된 역할이고, 그래프를 직접 그리는 기능은 약합니다. 그래서 계산한 데이터를 시각화 라이브러리에 넘겨주는 구조로 사용합니다.</p>
+<div class="flow">
+<div class="box"><strong>1단계. 데이터 생성·수집</strong><br>학생 점수, 센서 온도, 매출 데이터</div>
+<div class="box"><strong>2단계. NumPy 처리</strong><br>평균, 합계, 최댓값, 조건 검색, 배열 연산</div>
+<div class="box"><strong>3단계. 시각화 도구</strong><br>Matplotlib, Seaborn, Plotly</div>
+<div class="box"><strong>4단계. 결과 해석</strong><br>추세, 분포, 차이, 이상값 확인</div>
+</div>
+<div class="box">예) 학생 점수 100개가 있을 때 NumPy로 평균과 최고점을 계산하고, Matplotlib으로 점수 분포를 그래프로 표현합니다.</div>
+</section>
+
+<section id="tools">
+<h2>2. NumPy 연계 시각화 도구</h2>
+<div class="wrap"><table>
+<tr><th>도구</th><th>특징</th><th>활용</th></tr>
+<tr><td>Matplotlib (초보자 추천)</td><td>NumPy 배열을 선 그래프, 막대그래프, 히스토그램 등으로 표현하는 대표 라이브러리</td><td>학생 성적, 시간별 온도, 매출 변화, 센서 데이터</td></tr>
+<tr><td>Seaborn</td><td>Matplotlib 기반. 분포, 상관관계, 히트맵을 간결하게 표현</td><td>과목별 성적 비교, 변수 간 관계, 데이터 분포 분석</td></tr>
+<tr><td>Plotly</td><td>마우스 올리기, 확대·축소, 범례 선택 등 상호작용 지원</td><td>웹 기반 분석, 인터랙티브 대시보드, 실시간 모니터링</td></tr>
+</table></div>
+<div class="box"><strong>학습 순서 권장:</strong> NumPy + Matplotlib으로 기본 원리 → 통계 분석이 필요하면 Seaborn → 인터랙티브 웹 시각화가 필요하면 Plotly</div>
+<p>공식 사이트: <a href="https://matplotlib.org" target="_blank" rel="noopener">matplotlib.org</a> · <a href="https://seaborn.pydata.org" target="_blank" rel="noopener">seaborn.pydata.org</a> · <a href="https://plotly.com/python" target="_blank" rel="noopener">plotly.com/python</a></p>
+</section>
+
+<section id="graphs">
+<h2>3. 대표적인 그래프 5가지</h2>
+<p>같은 숫자 배열도 어떤 그래프를 쓰느냐에 따라 전달하는 정보가 달라집니다.</p>
+<div class="wrap"><table>
+<tr><th>그래프</th><th>용도</th><th>예시</th><th>NumPy 기능</th><th>그리기 함수</th></tr>
+<tr><td>선 그래프 (Line)</td><td>시간에 따른 변화</td><td>시간별 온도 변화</td><td>np.arange(), 배열 연산</td><td>plt.plot()</td></tr>
+<tr><td>막대그래프 (Bar)</td><td>항목 간 크기 비교</td><td>학생별 시험 점수</td><td>np.array(), np.max()</td><td>plt.bar()</td></tr>
+<tr><td>히스토그램 (Histogram)</td><td>값이 어느 구간에 얼마나 분포하는지</td><td>한 학급의 성적 분포</td><td>np.mean(), np.std()</td><td>plt.hist()</td></tr>
+<tr><td>산점도 (Scatter)</td><td>두 변수 사이의 관계</td><td>공부 시간과 시험 점수</td><td>배열 간 연산, 조건 검색</td><td>plt.scatter()</td></tr>
+<tr><td>히트맵 (Heatmap)</td><td>숫자 크기를 색으로 표현</td><td>학생별·과목별 점수 비교</td><td>2차원 배열, reshape()</td><td>sns.heatmap()</td></tr>
+</table></div>
+<div class="q">질문: "학생 5명의 점수 비교"와 "한 학급 100명의 점수 분포"에는 각각 어떤 그래프가 맞을까요?</div>
+</section>
+
+<section id="p1">
+<h2>4. 실습 1 — 학생 점수 막대그래프와 평균선</h2>
+<p><strong>목표:</strong> 배열 생성 → 평균 계산 → 막대그래프 → 평균선 표시까지 한 흐름으로 실행합니다.</p>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. 학생 점수 배열 생성
+scores = np.array([70, 85, 90, 65, 95])
+
+# 2. NumPy로 평균 계산
+average = np.mean(scores)
+
+# 3. 막대그래프 작성
+students = np.arange(1, 6)
+plt.bar(students, scores, label="Score")
+plt.axhline(average, linestyle="--", label="Average")
+
+# 4. 그래프 꾸미기
+plt.xlabel("Student Number")
+plt.ylabel("Score")
+plt.title("Student Score Visualization")
+plt.xticks(students)
+plt.legend()
+plt.grid(axis="y", alpha=0.3)
+
+# 5. 그래프 출력
+plt.show()
+print("평균 점수:", average)</code></pre>
+<div class="wrap"><table>
+<tr><th>코드</th><th>역할</th></tr>
+<tr><td>np.array()</td><td>점수 데이터를 배열로 생성</td></tr>
+<tr><td>np.mean()</td><td>평균 계산 (결과: 81.0)</td></tr>
+<tr><td>plt.bar()</td><td>학생별 점수를 막대로 표시</td></tr>
+<tr><td>plt.axhline()</td><td>평균을 나타내는 수평 점선</td></tr>
+<tr><td>plt.show()</td><td>그래프 화면 출력</td></tr>
+</table></div>
+<div class="q">학생 질문: ① 점수를 하나 추가하면 어떤 줄을 고쳐야 할까요? ② 평균 미만인 막대만 다른 색으로 칠하려면?(힌트: <code>scores &lt; average</code>)</div>
+</section>
+
+<section id="p2">
+<h2>5. 실습 2 — 그래프 종류별 따라 하기</h2>
+<p><strong>목표:</strong> 같은 방식으로 선 그래프, 히스토그램, 산점도, 히트맵을 직접 그려 봅니다. 한글 폰트 문제를 피하기 위해 라벨은 영어로 작성했습니다.</p>
+<h3>① 선 그래프 — 시간별 온도</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+hours = np.arange(0, 24)
+temp = 15 + 8 * np.sin((hours - 9) * np.pi / 12)   # 배열 연산으로 온도 생성
+plt.plot(hours, temp, marker="o")
+plt.xlabel("Hour"); plt.ylabel("Temperature")
+plt.title("Hourly Temperature")
+plt.show()</code></pre>
+<h3>② 히스토그램 — 점수 분포</h3>
+<pre><code>np.random.seed(0)
+scores = np.random.normal(70, 10, 100).clip(0, 100)   # 평균 70, 표준편차 10
+plt.hist(scores, bins=10, edgecolor="black")
+plt.axvline(scores.mean(), linestyle="--", label="Mean")
+plt.xlabel("Score"); plt.ylabel("Students")
+plt.legend(); plt.show()
+print("평균:", scores.mean().round(1), "표준편차:", scores.std().round(1))</code></pre>
+<h3>③ 산점도 — 공부 시간과 점수</h3>
+<pre><code>np.random.seed(1)
+hours = np.random.uniform(0, 10, 50)
+score = 40 + 5 * hours + np.random.normal(0, 5, 50)
+plt.scatter(hours, score)
+plt.xlabel("Study Hours"); plt.ylabel("Score")
+plt.title("Study Hours vs Score")
+plt.show()
+print("상관계수:", np.corrcoef(hours, score)[0, 1].round(2))</code></pre>
+<h3>④ 히트맵 — 학생별·과목별 점수</h3>
+<pre><code>import seaborn as sns
+
+scores = np.array([[80, 90, 70, 85],
+                   [85, 95, 88, 78],
+                   [75, 80, 90, 92],
+                   [60, 70, 65, 80],
+                   [95, 85, 90, 88]])
+sns.heatmap(scores, annot=True, cmap="Blues",
+            xticklabels=["Kor", "Eng", "Math", "Sci"],
+            yticklabels=["S1", "S2", "S3", "S4", "S5"])
+plt.show()</code></pre>
+<div class="q">학생 질문: ③에서 점들이 오른쪽 위로 향하는 이유는 무엇일까요? 상관계수가 1에 가까우면 어떤 의미일까요?</div>
+<p>※ ②, ③은 난수를 사용하므로 <code>seed</code>를 고정해야 매번 같은 그래프가 나옵니다.</p>
+</section>
+
+<section id="pick">
+<h2>6. 확장 실습 — 시각화 도구 선택하기</h2>
+<p>데이터 종류와 그래프 종류를 고르면 적합 여부와 실습 코드를 확인할 수 있습니다.</p>
+<div class="box">
+<label for="dt">① 데이터 종류</label>
+<select id="dt">
+<option value="score">학생별 시험 점수</option>
+<option value="temp">시간별 온도 변화</option>
+<option value="rel">공부 시간과 시험 점수의 관계</option>
+<option value="dist">전체 학생의 점수 분포</option>
+</select>
+<label for="gt">② 그래프 종류</label>
+<select id="gt">
+<option value="bar">막대그래프</option>
+<option value="line">선 그래프</option>
+<option value="scatter">산점도</option>
+<option value="hist">히스토그램</option>
+</select>
+<button id="go" type="button">추천 확인</button>
+<div id="msg" role="status" aria-live="polite">선택 후 [추천 확인]을 누르세요.</div>
+<strong>추천 실습 코드</strong>
+<pre id="code"><code>(선택 후 표시됩니다)</code></pre>
+</div>
+</section>
+
+<section id="wrap">
+<h2>정리</h2>
+<div class="grid">
+<div class="box"><strong>역할 분담</strong><br>NumPy는 계산, Matplotlib 등은 그리기를 맡습니다.</div>
+<div class="box"><strong>그래프 선택 기준</strong><br>비교 = 막대, 변화 = 선, 분포 = 히스토그램, 관계 = 산점도, 표 전체 = 히트맵</div>
+<div class="box"><strong>다음 단계</strong><br>Seaborn으로 통계 시각화, Plotly로 인터랙티브 그래프</div>
+</div>
+</section>
+
+</main>
+<script>
+(function(){
+var names={bar:"막대그래프",line:"선 그래프",scatter:"산점도",hist:"히스토그램"};
+var data={
+score:{best:"bar",label:"학생별 시험 점수",code:"scores = np.array([70, 85, 90, 65, 95])\nplt.bar(np.arange(1, 6), scores)\nplt.show()"},
+temp:{best:"line",label:"시간별 온도 변화",code:"hours = np.arange(0, 24)\ntemp = 15 + 8 * np.sin((hours - 9) * np.pi / 12)\nplt.plot(hours, temp, marker=\"o\")\nplt.show()"},
+rel:{best:"scatter",label:"공부 시간과 시험 점수의 관계",code:"hours = np.array([1, 2, 3, 4, 5, 6, 7, 8])\nscore = np.array([45, 52, 58, 63, 70, 74, 82, 88])\nplt.scatter(hours, score)\nplt.show()"},
+dist:{best:"hist",label:"전체 학생의 점수 분포",code:"np.random.seed(0)\nscores = np.random.normal(70, 10, 100)\nplt.hist(scores, bins=10, edgecolor=\"black\")\nplt.show()"}
+};
+document.getElementById("go").addEventListener("click",function(){
+var d=data[document.getElementById("dt").value];
+var g=document.getElementById("gt").value;
+var m=document.getElementById("msg");
+m.textContent=(g===d.best)
+?"좋은 선택입니다. "+d.label+"에는 "+names[g]+"가 적합합니다."
+:"'"+d.label+"'에는 "+names[d.best]+"가 더 적합합니다. 선택한 "+names[g]+"와 어떻게 다른지 비교해 보세요.";
+document.getElementById("code").textContent="import numpy as np\nimport matplotlib.pyplot as plt\n\n"+d.code;
+});
+})();
+</script>
+</body>
+</html>
