@@ -9,7 +9,7 @@ const $=id=>document.getElementById(id), cl=v=>Math.max(0,Math.min(1,v));
 /* ---------- UI 주입 ---------- */
 const css=document.createElement('style');
 css.textContent=`
-#xs{width:100%;border:1px solid var(--line);border-radius:8px;background:#0b0f16;display:block}
+#xs{width:100%;border:1px solid var(--line);border-radius:8px;background:#e9eef4;display:block}
 .xscap{font-size:11.5px;color:var(--cyan);margin-top:8px;font-family:'JetBrains Mono',monospace}
 .ro-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--line)}
 .ro-row span{color:var(--muted)} .ro-row b{color:var(--amber);font-family:'JetBrains Mono',monospace;font-weight:500;text-align:right}
@@ -79,7 +79,7 @@ function renderRO(){
 
 /* ---------- 웨이퍼 단면 ---------- */
 const xc=$('xs').getContext('2d'), W=260, H=130, y0=92, WX=[40,100,160,220], SEG=[[0,25],[55,85],[115,145],[175,205],[235,260]];
-const C={si:'#8a94a3',ox:'#4aa3bf',pr:'#6de08a',bg:'#0b0f16'};
+const C={si:'#8a94a3',ox:'#4aa3bf',pr:'#6de08a',bg:'#e9eef4'};
 const R=(c,x,y,w,h)=>{ xc.fillStyle=c; xc.fillRect(x,y,w,h); };
 function drawXS(n,m){
   xc.clearRect(0,0,W,H); R(C.bg,0,0,W,H); let cap='';
@@ -143,7 +143,7 @@ let last=performance.now();
   dom.style.cursor=over?'pointer':'grab';
   if(over&&!playing){ dwell+=dt; if(dwell>=2){ dwell=0; setPlay(true); } } else dwell=0;
   const dl=$('dwell');
-  if(dwell>0){ dl.style.display='block'; dl.style.left=mx+'px'; dl.style.top=my+'px'; dl.style.background=`conic-gradient(var(--amber) ${dwell/2*360}deg,rgba(255,255,255,.12) 0)`; }
+  if(dwell>0){ dl.style.display='block'; dl.style.left=mx+'px'; dl.style.top=my+'px'; dl.style.background=`conic-gradient(var(--amber) ${dwell/2*360}deg,rgba(0,0,0,.12) 0)`; }
   else dl.style.display='none';
   if(playing){ setNorm(paramNorm+dt*parseFloat($('spd').value)/DURATION); if(paramNorm>=1) setPlay(false); }
   roAcc+=dt; if(roAcc>.1){ roAcc=0; renderRO(); }
@@ -160,7 +160,7 @@ sync();
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-scene.fog=new THREE.Fog(0x06080c,16,34);
+scene.fog=new THREE.Fog(0xdde4ec,16,34);
 keyLight.intensity=.85; keyLight.castShadow=true;
 keyLight.shadow.mapSize.set(2048,2048); keyLight.shadow.bias=-.0005;
 Object.assign(keyLight.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:1,far:28});
@@ -175,8 +175,8 @@ const et=new THREE.CanvasTexture(ec); et.mapping=THREE.EquirectangularReflection
 const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromEquirectangular(et).texture; pm.dispose();
 
 /* 3) 클린룸 바닥: 격자 + 그림자 수신 */
-const grid=new THREE.GridHelper(36,36,0x1f2b3a,0x131a24); grid.position.y=-2.4; scene.add(grid);
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(36,36),new THREE.ShadowMaterial({opacity:.45}));
+const grid=new THREE.GridHelper(36,36,0xaab6c4,0xc9d2dc); grid.position.y=-2.4; scene.add(grid);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(36,36),new THREE.ShadowMaterial({opacity:.28}));
 floor.rotation.x=-Math.PI/2; floor.position.y=-2.39; floor.receiveShadow=true; scene.add(floor);
 
 /* 4) 웨이퍼 질감: 다이 격자 + 빛 회절 무지개 + 클리어코트 */
@@ -204,4 +204,58 @@ function dress(){
 }
 const _gl=loadStage; loadStage=function(i){ _gl(i); dress(); };
 loadStage(current);   /* 새 렌더 설정으로 현재 공정 재생성 */
+})();
+
+/* =========================================================
+   밝은 배경 테마 + 메탈릭 PBR 재질 (공정별 실제 금속 색상)
+   ========================================================= */
+(()=>{
+const st=document.createElement('style');
+st.textContent=`:root{--bg:#eef2f6;--panel:#fff;--panel-2:#f1f4f8;--line:#d5dce5;--cyan:#0a7ea4;--amber:#c76d00;--text:#1b2430;--muted:#5d6b7a}
+header{background:linear-gradient(180deg,#fff,#eef2f6)} footer{background:#fff}
+#viewport{background:radial-gradient(ellipse at 50% 30%,#fff,#d6dee8 85%)}
+#info p{color:#3a4756} .hint{background:rgba(255,255,255,.75)}
+.node.active .dot{box-shadow:0 0 8px 2px rgba(10,126,164,.35)}`;
+document.head.appendChild(st);
+
+/* 조명·환경맵: 밝은 스튜디오 */
+scene.children.filter(c=>c.isAmbientLight).forEach(a=>{ a.color.set(0xffffff); a.intensity=.75; });
+rimLight.intensity=.25;
+const ec=document.createElement('canvas'); ec.width=512; ec.height=256; const eg=ec.getContext('2d');
+const gr=eg.createLinearGradient(0,0,0,256); gr.addColorStop(0,'#ffffff'); gr.addColorStop(.5,'#9fb2c6'); gr.addColorStop(1,'#4d5b6b');
+eg.fillStyle=gr; eg.fillRect(0,0,512,256);
+eg.fillStyle='#fff'; [[40,30,110,34],[240,20,140,30],[410,45,80,44]].forEach(a=>eg.fillRect(...a));
+const et=new THREE.CanvasTexture(ec); et.mapping=THREE.EquirectangularReflectionMapping; et.encoding=THREE.sRGBEncoding;
+const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromEquirectangular(et).texture; pm.dispose();
+
+/* 공정별 금속: 톱날=강, 히터코일=구리, 스퍼터 타겟·프로브=텅스텐/은, 리드프레임=구리 */
+const METAL=[0xcfd3d9,0xb86b3a,0xd5d9de,0xd5d9de,0xcfd3d9,0xd5d9de,0xc0c4ca,0xb87333];
+function fin(m){
+  if(!m||!m.color||m.userData.fin) return; m.userData.fin=1;
+  const h=m.color.getHex();
+  if(h===0x8a94a3){ m.color.set(0x6f7b8a); m.metalness=.95; m.roughness=.22; }      /* 실리콘 잉곳 */
+  else if(h===0xf2a541){ m.color.set(METAL[current]); m.metalness=1; m.roughness=.16; }
+  else if(h===0x232b38){ m.color.set(0x3b4554); m.metalness=.7; m.roughness=.3; }   /* 포토마스크(크롬/석영) */
+  else if(h===0x9fb4c2){ m.metalness=.95; m.roughness=.14; }                          /* 웨이퍼 */
+  else if(m.metalness>=.8){ m.metalness=1; m.roughness=.2; }                          /* 금속 배선 */
+  m.envMapIntensity=1.3;
+}
+/* 300 mm 웨이퍼의 결정 방향 표시용 노치 */
+function notch(o){
+  if(o.userData.n) return; o.userData.n=1;
+  const p=o.geometry.parameters, r=p.radiusTop;
+  const n=new THREE.Mesh(new THREE.BoxGeometry(r*.07,p.height*1.05,r*.07),new THREE.MeshStandardMaterial({color:0x3a4350,roughness:.6}));
+  n.position.set(0,0,r); o.add(n);
+}
+const _t=loadStage;
+loadStage=function(i){
+  _t(i);
+  keyLight.color.set(i===2?0xffe29a:0xffffff);   /* 포토 공정실은 실제로 황색 조명 */
+  stageGroup.traverse(o=>{
+    if(!o.isMesh) return;
+    [].concat(o.material).forEach(fin);
+    if(Array.isArray(o.material)&&o.geometry.type==='CylinderGeometry'&&o.geometry.parameters.height<.2) notch(o);
+  });
+};
+loadStage(current);
 })();
