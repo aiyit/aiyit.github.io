@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seoul Fireworks Festival</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#020205;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+canvas{display:block;position:fixed;inset:0}
+#info{position:absolute;top:15px;left:20px;color:rgba(255,255,255,.7);font-size:13px;letter-spacing:.5px;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.8);z-index:10}
+#info b{display:block;font-size:15px;color:#f0f4ff;margin-bottom:2px}
+#info small{font-size:11px;opacity:.75}
+</style>
+</head>
+<body>
+<div id="info"><b>Seoul Fireworks Festival</b><small>40,000 stars · 10,000 twinkling</small></div>
+<canvas id="c"></canvas>
+<script>
+(() => {
+  const cv = document.getElementById('c');
+  const ctx = cv.getContext('2d', { alpha: false });
+  const MAX_P = 3500;
+  let W, H, DPR, S, last = 0, clock = 0, nextVolley = 0.5, pStart = 0, fireOn = false, pv = 0, endAt = 0, drones = [], bg = null, buildings = [], twink = [], trail = null, tg = null, fadeT = 0, seed = 91823;
+  const particles = [], rockets = [], smoke = [], flashes = [], queue = [];
+  const rand = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296; // 배경 전용(시드 고정)
+  const rnd = Math.random;                                                      // 불꽃 전용
+
+  // 불꽃 색 [h,s,l] (마지막은 티타늄 화이트)
+  const palette = [[40,100,60],[22,100,58],[350,95,54],[8,100,60],[155,88,52],[195,95,62],[228,90,58],[280,85,56],[50,25,88],[330,92,58]];
+
+  // 글로우 스프라이트: shadowBlur 대신 미리 그려둔 이미지를 drawImage
+  function sprite(h, s, l, size = 32) {
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    const g = c.getContext('2d'), r = size / 2;
+    const gr = g.createRadialGradient(r, r, 0, r, r, r);
+    gr.addColorStop(0, `hsla(${h},${s}%,${Math.min(97, l + 35)}%,1)`);
+    gr.addColorStop(.25, `hsla(${h},${s}%,${l}%,.85)`);
+    gr.addColorStop(1, `hsla(${h},${s}%,${l}%,0)`);
+    g.fillStyle = gr; g.fillRect(0, 0, size, size);
+    return c;
+  }
+  const sprites = palette.map(p => sprite(...p));
+  const redSpr = sprite(0, 100, 55, 24), whiteSpr = sprite(45, 30, 95);
+  const smokeSpr = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 32;
+    const g = c.getContext('2d'), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gr.addColorStop(0, 'rgba(140,140,160,.9)'); gr.addColorStop(1, 'rgba(140,140,160,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 32, 32); return c;
+  })();
+
+  let rt;
+  function resize() {
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth; H = innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px'; // 100vh 대신 실제 크기 사용
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    S = Math.max(.55, Math.min(1.3, Math.min(W / 1100, H / 650))); // 화면 비례 스케일
+    buildBackground();
+  }
+  addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(resize, 150); }); // 디바운스
+  addEventListener('visibilitychange', () => { last = performance.now(); });
+
+  // ---- 정적 배경(하늘+별+별자리+도시)을 오프스크린에 1회만 렌더 ----
+  function buildBackground() {
+    seed = 91823; // 리사이즈해도 같은 별/건물
+    bg = document.createElement('canvas');
+    bg.width = Math.round(W * DPR); bg.height = Math.round(H * DPR);
+    const g = bg.getContext('2d'); g.scale(DPR, DPR);
+
+    const sk = g.createLinearGradient(0, 0, 0, H);
+    [[0,'#020308'],[.45,'#050716'],[.85,'#0a0a18'],[1,'#14121f']].forEach(([o, c]) => sk.addColorStop(o, c));
+    g.fillStyle = sk; g.fillRect(0, 0, W, H);
+
+    // 별 4만 개: 3만 개는 배경에 고정, 1만 개는 8개 그룹으로 나눠 그룹별로 반짝임
+    const NS = 40000, NT = 10000, NG = 8;
+    const ts = Math.min(DPR, Math.max(1, Math.sqrt(9e7 / (32 * W * H))));
+    twink = [];
+    trail = document.createElement('canvas'); trail.width = Math.round(W * ts); trail.height = Math.round(H * ts);
+    tg = trail.getContext('2d', { alpha: false }); tg.scale(ts, ts); tg.fillStyle = '#000'; tg.fillRect(0, 0, W, H);
+    for (let k = 0; k < NG; k++) {
+      const l = document.createElement('canvas');
+      l.width = Math.round(W * ts); l.height = Math.round(H * ts);
+      const lg = l.getContext('2d'); lg.scale(ts, ts);
+      twink.push({ l, lg, sp: 1.2 + rand() * 3.3, ph: rand() * 6.283 });
+    }
+    for (let i = 0; i < NS; i++) {
+      const tw = i < NT, t = tw ? twink[i % NG].lg : g;
+      const x = rand() * W, y = rand() * H * .92, r = .3 + Math.pow(rand(), 3.5) * 1.1, q = rand();
+      t.globalAlpha = (tw ? .25 : .05) + Math.pow(rand(), 2.5) * (tw ? .75 : .65);
+      t.fillStyle = q < .6 ? '#e8f0ff' : q < .8 ? '#fff2d8' : '#cce0ff';
+      t.fillRect(x, y, r, r);
+    }
+    g.globalAlpha = 1;
+
+    // 도시 스카이라인
+    buildings = [];
+    let x = -15;
+    while (x < W + 30) {
+      const bw2 = (38 + rand() * 60) * S, bh = H * (.16 + rand() * .23) * .5, by2 = H - bh, rt2 = Math.floor(rand() * 5);
+      const bgd = g.createLinearGradient(x, by2, x + bw2, by2 + bh);
+      bgd.addColorStop(0, '#0a0d1a'); bgd.addColorStop(.5, '#05070e'); bgd.addColorStop(1, '#020306');
+      g.fillStyle = bgd; g.fillRect(x, by2, bw2, bh);
+      g.fillStyle = '#060812';
+      if (rt2 === 1) { g.fillRect(x + bw2 * .48, by2 - 20 * S, 2.5 * S, 20 * S); g.fillRect(x + bw2 * .43, by2 - 7 * S, bw2 * .14, 7 * S); }
+      else if (rt2 === 2) { g.fillRect(x + bw2 * .15, by2 - 9 * S, bw2 * .7, 9 * S); g.fillRect(x + bw2 * .32, by2 - 17 * S, bw2 * .36, 8 * S); }
+      else if (rt2 === 3) { g.beginPath(); g.moveTo(x, by2); g.lineTo(x + bw2, by2 - 12 * S); g.lineTo(x + bw2, by2); g.fill(); }
+      else if (rt2 === 4) g.fillRect(x + bw2 * .2, by2 - 4 * S, bw2 * .6, 4 * S);
+
+      const rows = Math.floor(bh / (8 * S)), cols = Math.floor(bw2 / (6.5 * S));
+      for (let r = 2; r < rows - 1; r++) for (let c = 1; c < cols - 1; c++) {
+        if (rand() > .40) {
+          const t = rand();
+          g.fillStyle = t < .48 ? `rgba(255,210,110,${.35 + rand() * .55})` : t < .82 ? `rgba(195,230,255,${.3 + rand() * .5})` : `rgba(255,160,60,${.4 + rand() * .4})`;
+          g.fillRect(x + c / cols * bw2, by2 + r / rows * bh, 2.2 * S, 3.2 * S);
+        }
+      }
+      if (rand() > .58) {
+        g.strokeStyle = rand() > .5 ? 'rgba(65,165,255,.65)' : 'rgba(255,80,130,.65)';
+        g.lineWidth = 1; g.beginPath(); g.moveTo(x, by2); g.lineTo(x + bw2, by2); g.stroke();
+      }
+      const top = (rt2 === 1 ? 20 : rt2 === 2 ? 17 : 3) * S;
+      buildings.push({ x: rt2 === 1 ? x + bw2 * .49 : x + bw2 * .5, y: by2 - top, ph: rand() * 6.28 });
+      x += bw2 - 2.5;
+    }
+    makeDrones();
+  }
+
+  // ---- 드론 오프닝: 옥상 → 하트 → SEOUL → 태극 → 흩어짐 (총 21.5초) ----
+  // 로고를 마스크로 그린 뒤 균일 격자로 샘플링 → 점 간격이 일정해 모양이 또렷함
+  function logoPoints(n, w, h, draw) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; draw(g);
+    const px = g.getImageData(0, 0, w, h).data;
+    let pts = [], st = 2;
+    for (; st < 40; st += .2) {
+      pts = [];
+      for (let y = st / 2; y < h; y += st) for (let x = st / 2; x < w; x += st) if (px[((y | 0) * w + (x | 0)) * 4 + 3] > 128) pts.push([x, y]);
+      if (pts.length <= n) break;
+    }
+    if (!pts.length) pts.push([w / 2, h / 2]);
+    if (pts.length > n) pts.length = n;
+    for (let i = pts.length; i < n; i++) { const q = pts[rnd() * pts.length | 0]; pts.push([q[0] + (rnd() - .5) * st * .5, q[1] + (rnd() - .5) * st * .5]); }
+    return pts;
+  }
+
+  function makeDrones() {
+    const n = Math.max(120, Math.min(420, Math.round(W * H / 3500))), cx = W / 2;
+    const heart = logoPoints(n, 400, 360, g => {
+      g.beginPath();
+      for (let i = 0; i <= 120; i++) {
+        const t = i / 120 * 6.2832, x = 200 + 176 * Math.pow(Math.sin(t), 3);
+        const y = 150 - 11 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+        i ? g.lineTo(x, y) : g.moveTo(x, y);
+      }
+      g.fill();
+    });
+    const text = logoPoints(n, 600, 200, g => { g.font = 'bold 150px Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('SEOUL', 300, 104); });
+    const tae = logoPoints(n, 400, 400, g => { g.beginPath(); g.arc(200, 200, 190, 0, 6.2832); g.fill(); });
+    const place = (pts, mw, mh, tw, cy, col) => {
+      const k = tw / mw;
+      return pts.map(([x, y]) => [cx + (x - mw / 2) * k, cy + (y - mh / 2) * k, col(x, y)]).sort((a, b) => a[0] - b[0] || a[1] - b[1]); // x순 정렬 → 변신 때 경로가 덜 엉킴
+    };
+    const P = [
+      place(heart, 400, 360, Math.min(W * .5, H * .55), H * .33, () => sprites[9]),
+      place(text, 600, 200, Math.min(W * .9, 820 * S), H * .30, () => sprites[0]),
+      place(tae, 400, 400, Math.min(W * .42, H * .5), H * .32, (x, y) => { // 태극: 위 빨강 / 아래 파랑 + 작은 반원 교차
+        const u = (x - 200) / 190, v = (y - 200) / 190;
+        return (v < 0 ? Math.hypot(u - .5, v) > .5 : Math.hypot(u + .5, v) <= .5) ? sprites[2] : sprites[6];
+      })
+    ];
+    drones = P[0].map((h, i) => {
+      let b = buildings[0] || { x: W / 2, y: H };
+      for (const q of buildings) if (Math.abs(q.x - h[0]) < Math.abs(b.x - h[0])) b = q; // 가장 가까운 옥상에서 출발
+      return { sx: b.x + (rnd() - .5) * 24 * S, sy: b.y, p: [h, P[1][i], P[2][i]],
+        dl: rnd() * 1.2, ph: rnd() * 6.283, dx: (rnd() - .5) * W * .3, dy: -H * (.3 + rnd() * .3) };
+    });
+  }
+
+  function dronePos(d, t) {
+    const E = u => u * u * (3 - 2 * u), C = (a, b) => Math.min(1, Math.max(0, (t - a) / (b - a))), P = d.p;
+    let x, y, al = 1, hv = .7 * S;
+    const mix = (a, b, u) => { x = a[0] + (b[0] - a[0]) * u; y = a[1] + (b[1] - a[1]) * u; };
+    if (t < 3.6) { const u = E(C(d.dl, d.dl + 2.4)); x = d.sx + (P[0][0] - d.sx) * u; y = d.sy + (P[0][1] - d.sy) * u; al = Math.min(1, u * 5); hv = 0; }
+    else if (t < 7) mix(P[0], P[0], 0);
+    else if (t < 9.5) mix(P[0], P[1], E(C(7, 9.5)));
+    else if (t < 13) mix(P[1], P[1], 0);
+    else if (t < 15.5) mix(P[1], P[2], E(C(13, 15.5)));
+    else if (t < 19) mix(P[2], P[2], 0);
+    else { const u = E(C(19, 21.5)); mix(P[2], P[2], 0); x += d.dx * u; y += d.dy * u; al = 1 - u; }
+    return [x + Math.sin(t * 2 + d.ph) * hv, y + Math.cos(t * 1.7 + d.ph) * hv, al];
+  }
+
+  // ---- 모양 불꽃(국화 외 6종): 단위 도형 위의 점 [x, y, 보조색 여부] ----
+  const SH = [
+    () => { const t = rnd() * 6.283; return [Math.pow(Math.sin(t), 3) * .95, -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 16 * .95 + .08, 0]; }, // 하트
+    () => { const i = rnd() * 10 | 0, a1 = -1.5708 + i * .6283, a2 = a1 + .6283, r1 = i % 2 ? .42 : 1, r2 = i % 2 ? 1 : .42, f = rnd();
+      return [Math.cos(a1) * r1 * (1 - f) + Math.cos(a2) * r2 * f, Math.sin(a1) * r1 * (1 - f) + Math.sin(a2) * r2 * f, 0]; },                                                      // 별
+    () => { const a = rnd() * 6.283, r = rnd() < .7 ? 1 : .62; return [Math.cos(a) * r, Math.sin(a) * r, r < 1 ? 1 : 0]; },                                                          // 이중 링
+    () => { if (rnd() < .4) { const a = rnd() * 6.283, z = rnd() * 2 - 1, h = Math.sqrt(1 - z * z); return [Math.cos(a) * h * .5, Math.sin(a) * h * .5, 0]; }
+      const a = rnd() * 6.283, x = Math.cos(a), y = Math.sin(a) * .28; return [x * .921 + y * .389, -x * .389 + y * .921, 1]; },                                                    // 토성
+    () => { const t = rnd() * 37.7, r = Math.exp(Math.sin(t)) - 2 * Math.cos(4 * t) + Math.pow(Math.sin((2 * t - 3.1416) / 24), 5); return [Math.sin(t) * r / 3.6, -Math.cos(t) * r / 3.6, 0]; }, // 나비
+    () => { const q = rnd(), j = (rnd() - .5) * .18;
+      if (q < .5) { const a = rnd() * 6.283; return [Math.cos(a), Math.sin(a), 0]; }
+      if (q < .65) return [-.38 + j, -.3 + (rnd() - .5) * .18, 1];
+      if (q < .8) return [.38 + j, -.3 + (rnd() - .5) * .18, 1];
+      const a = .6283 + rnd() * 1.885; return [Math.cos(a) * .62, Math.sin(a) * .62 - .05, 1]; }                                                                                   // 스마일
+  ];
+
+  // ---- 발사 / 폭발 ----
+  function launch(allowSec) {
+    const b = buildings[rnd() * buildings.length | 0]; if (!b) return;
+    const type = allowSec || rnd() < .4 ? 0 : 1 + (rnd() * 6 | 0), R = (type ? 245 : 190) * S; // type 0=국화, 1~6=모양 불꽃
+    const ty = Math.min(H * .55, Math.max(R + 10, H * (.12 + rnd() * .28)));
+    const ci = rnd() * palette.length | 0;
+    rockets.push({ sx: b.x, sy: b.y, tx: b.x + (rnd() - .5) * W * .16, ty, dur: (1.5 + rnd() * .7) / .6, age: 0, ci, allowSec, type, sm: 0, ph: rnd() * 6.283, fr: 18 + rnd() * 10 });
+    flashes.push({ x: b.x, y: b.y, r: (14 + rnd() * 8) * S, age: 0, life: .22 });
+    for (let k = 0; k < 8; k++) {
+      const a = -Math.PI / 2 + (rnd() - .5) * 1.3, v = (70 + rnd() * 160) * S;
+      particles.push({ x: b.x, y: b.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: .25 + rnd() * .3, age: 0, sz: 3 * S, ci });
+    }
+  }
+
+  function explode(x, y, ci, sec, allowSec, type) {
+    if (!sec && type > 0) { // 모양 불꽃: 도형 윤곽 위의 점으로 속도를 줘서 모양을 유지한 채 퍼짐
+      const f = SH[type - 1], c1 = type === 6 ? 0 : ci, c2 = type === 6 ? 3 : (ci + 3) % palette.length;
+      const rot = (rnd() - .5) * .4, cr = Math.cos(rot), sr = Math.sin(rot), vs = 175 * 1.8 * .8 * S * 2.2;
+      for (let i = 0; i < 240 && particles.length < MAX_P; i++) {
+        const [ux, uy, k] = f();
+        particles.push({ x, y, vx: (ux * cr - uy * sr) * vs, vy: (ux * sr + uy * cr) * vs, life: 1.9 + rnd() * .5, age: 0, sz: 6 * S * (.8 + rnd() * .4), ci: k ? c2 : c1, gm: .35 });
+      }
+      return;
+    }
+    const n = sec ? 28 + (rnd() * 14 | 0) : 170 + (rnd() * 70 | 0);
+    const v0 = (sec ? 70 : 175) * S * 2.2 * 1.8; // 반경 1.8배
+    for (let i = 0; i < n && particles.length < MAX_P; i++) {
+      const a = rnd() * 6.283, z = rnd() * 2 - 1, hr = Math.sqrt(1 - z * z);
+      const sp = v0 * (rnd() < .85 ? .86 + rnd() * .14 : .3 + rnd() * .5);
+      particles.push({ x, y, vx: Math.cos(a) * hr * sp, vy: Math.sin(a) * hr * sp,
+        life: (sec ? .9 : 1.5) + rnd() * (sec ? .4 : .9), age: 0, sz: (sec ? 5 : 7.5) * S * (.7 + rnd() * .6), ci });
+    }
+    if (!sec && allowSec && particles.length < MAX_P * .7) {
+      const k = 3 + (rnd() * 3 | 0);
+      for (let s = 0; s < k; s++) {
+        const a = rnd() * 6.283, d = (14 + rnd() * 24) * S * 1.8;
+        queue.push({ t: clock + .26 + s * .11 + rnd() * .09, f: () => explode(x + Math.cos(a) * d, y + Math.sin(a) * d, ci, true, false) });
+      }
+    }
+  }
+
+  // ---- 메인 루프 (모든 시간은 dt 기반, setTimeout 미사용) ----
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min((now - last) / 1000 || .016, .05);
+    last = now; clock += dt;
+
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    ctx.drawImage(bg, 0, 0, W, H);
+
+    // 반짝이는 별 1만 개 (8그룹 × 약 1,250개)
+    for (const t of twink) {
+      ctx.globalAlpha = .2 + .8 * (.5 + .5 * Math.sin(clock * t.sp + t.ph));
+      ctx.drawImage(t.l, 0, 0, W, H);
+    }
+
+    // 항공장애등
+    const bs = 12 * S;
+    for (const b of buildings) {
+      ctx.globalAlpha = .25 + .75 * Math.max(0, Math.sin(clock * 3.8 + b.ph));
+      ctx.drawImage(redSpr, b.x - bs / 2, b.y - bs / 2, bs, bs);
+    }
+    ctx.globalAlpha = 1;
+
+    // 드론 오프닝 그리기
+    const td = clock - pStart;
+    if (td < 21.5) {
+      ctx.globalCompositeOperation = 'lighter';
+      const ph = td < 8.25 ? 0 : td < 14.25 ? 1 : 2, r1 = 5.5 * S, r2 = 2.2 * S;
+      for (const d of drones) {
+        const [x, y, al] = dronePos(d, td);
+        if (al <= 0) continue;
+        ctx.globalAlpha = al * (.85 + .15 * Math.sin(clock * 5 + d.ph));
+        ctx.drawImage(d.p[ph][2], x - r1, y - r1, r1 * 2, r1 * 2);
+        ctx.drawImage(whiteSpr, x - r2, y - r2, r2 * 2, r2 * 2);
+      }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    }
+
+    // 스케줄러: 드론이 흩어질 즈음(15초) 불꽃 피날레 시작 → 5회 발사(5번째는 8발) → 다시 드론
+    if (!fireOn && td >= 20.5) { fireOn = true; pv = 0; nextVolley = clock + .2; endAt = Infinity; }
+    if (fireOn) {
+      if (pv < 5 && clock >= nextVolley) {
+        const n = ++pv === 5 ? 8 : 4 + (rnd() * 4 | 0), sec = n === 4; // 4발이면 2차 폭발
+        for (let k = 0; k < n; k++) queue.push({ t: clock + k * .14, f: () => launch(sec) });
+        nextVolley = clock + 2.2;
+        if (pv === 5) endAt = clock + 9;
+      }
+      if (clock >= endAt) { fireOn = false; pStart = clock; }
+    }
+    for (let i = queue.length - 1; i >= 0; i--) if (queue[i].t <= clock) { const f = queue[i].f; queue[i] = queue[queue.length - 1]; queue.pop(); f(); }
+
+    const wind = Math.sin(clock * .3) * 8 * S;
+
+    // 연기: 수명 3배, 흔들리며 상승, 퍼지면서 옅어짐
+    for (let i = smoke.length - 1; i >= 0; i--) {
+      const m = smoke[i]; m.age += dt;
+      if (m.age > m.life) { smoke[i] = smoke[smoke.length - 1]; smoke.pop(); continue; }
+      m.x += (m.vx + wind + Math.sin(m.age * 2.2 + m.ph) * m.sw * S) * dt;
+      m.y += m.vy * dt; m.vy *= Math.exp(-.25 * dt);
+      const f = 1 - m.age / m.life, s = m.sz * (1 + (1 - f) * 1.5);
+      ctx.globalAlpha = Math.pow(f, 1.2) * .2 * Math.min(1, m.age * 2);
+      ctx.drawImage(smokeSpr, m.x - s, m.y - s, s * 2, s * 2);
+    }
+
+    // 로켓: 작은 원형 머리 + 3배 긴 꼬리(좌우로 흔들림)
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = rockets.length - 1; i >= 0; i--) {
+      const r = rockets[i]; r.age += dt;
+      const u = Math.min(1, r.age / r.dur);
+      const pos = uu => {
+        const e = 1 - Math.pow(1 - uu, 1.8);
+        return [r.sx + (r.tx - r.sx) * e + Math.sin(uu * r.fr + r.ph) * 4.5 * S * Math.sin(uu * Math.PI), r.sy + (r.ty - r.sy) * e];
+      };
+      for (let k = 14; k >= 1; k--) {
+        const [px, py] = pos(Math.max(0, u - k * .018)), s = (3 - k * .13) * S;
+        ctx.globalAlpha = .7 * (1 - k / 15);
+        ctx.drawImage(sprites[r.ci], px - s, py - s, s * 2, s * 2);
+      }
+      const [hx, hy] = pos(u), gs = 6 * S;
+      ctx.globalAlpha = .6; ctx.drawImage(sprites[r.ci], hx - gs, hy - gs, gs * 2, gs * 2);
+      ctx.globalAlpha = 1; ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(hx, hy, 2.4 * S, 0, 6.283); ctx.fill();
+
+      r.sm += dt;
+      while (r.sm > .05) {
+        r.sm -= .05;
+        if (u > .05 && smoke.length < 2500) smoke.push({ x: hx + (rnd() - .5) * 2.5, y: hy, vx: (rnd() - .5) * 10, vy: -(6 + rnd() * 12) * S,
+          life: 5.4 + rnd() * 4.8, age: 0, sz: (3.5 + rnd() * 3) * S, ph: rnd() * 6.283, sw: 8 + rnd() * 14 });
+      }
+      if (u >= 1) { explode(r.tx, r.ty, r.ci, false, r.allowSec, r.type); rockets[i] = rockets[rockets.length - 1]; rockets.pop(); }
+    }
+
+    // 발사 섬광
+    for (let i = flashes.length - 1; i >= 0; i--) {
+      const f = flashes[i]; f.age += dt;
+      if (f.age > f.life) { flashes[i] = flashes[flashes.length - 1]; flashes.pop(); continue; }
+      const s = f.r * (1 + f.age * 2.2);
+      ctx.globalAlpha = 1 - f.age / f.life;
+      ctx.drawImage(whiteSpr, f.x - s, f.y - s, s * 2, s * 2);
+    }
+
+    // 불꽃 입자
+    // 잔상 레이어: 0.08초마다 한 번씩 페이드(약 2초 뒤 사라짐). 큰 단계로 지워야 8bit 반올림 잔여물이 안 남음
+    fadeT += dt;
+    if (fadeT >= .08) { tg.globalAlpha = 1 - Math.exp(-2.3 * fadeT); tg.fillStyle = '#000'; tg.fillRect(0, 0, W, H); tg.globalAlpha = 1; fadeT = 0; }
+    const dk = Math.exp(-2.2 * dt), G = 75 * S;
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i]; p.age += dt;
+      if (p.age >= p.life || p.y > H + 40 || p.x < -60 || p.x > W + 60) { particles[i] = particles[particles.length - 1]; particles.pop(); continue; }
+      p.vx = (p.vx + wind * dt) * dk; p.vy = p.vy * dk + G * (p.gm || 1) * dt;
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      const prog = p.age / p.life, a = Math.pow(1 - prog, .85), s = p.sz * (.4 + .6 * a);
+      ctx.globalAlpha = a;
+      ctx.drawImage(sprites[p.ci], p.x - s, p.y - s, s * 2, s * 2);
+      ctx.globalAlpha = a * .45;
+      ctx.drawImage(sprites[p.ci], p.x - p.vx * .035 - s * .7, p.y - p.vy * .035 - s * .7, s * 1.4, s * 1.4);
+      if (prog < .25) {
+        ctx.globalAlpha = (1 - prog / .25) * a;
+        ctx.drawImage(whiteSpr, p.x - s * .6, p.y - s * .6, s * 1.2, s * 1.2);
+      }
+      tg.globalAlpha = a * .55; // 잔상 레이어에 위치 기록
+      tg.drawImage(sprites[p.ci], p.x - s, p.y - s, s * 2, s * 2);
+    }
+    ctx.globalAlpha = 1; ctx.drawImage(trail, 0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  resize();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
