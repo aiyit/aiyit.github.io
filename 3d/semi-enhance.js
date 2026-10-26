@@ -261,34 +261,245 @@ loadStage(current);
 })();
 
 /* =========================================================
-   실제 장비 외형: 스테인리스 챔버·플랜지·펌프·제어반 등
-   (배경은 중간 톤으로 낮춰 은색 장비와 구분되게 함)
+   실제 장비 외형 (특허·장비 구조 자료 조사 기반)
+   ① 웨이퍼 제조: 멀티 와이어 쏘(가이드 롤러에 감긴 와이어 웹 + 슬러리 노즐 + 와이어 릴)
+   ② 산화: 수직 배치(Vertical Batch) 확산로 — 석영 반응관, 히터, 석영 보트(웨이퍼 적층), SUS 덮개·엘리베이터
+   ③ 포토: 스핀 코터 보울(트랙) + 스캐너(조명계→레티클 스테이지→축소투영렌즈→웨이퍼 스테이지)
+   ④ 식각: CCP 플라즈마 챔버(샤워헤드 상부전극, 정전척, 포커스링, 배기 펌프, RF 정합기)
+   ⑤ 증착: PVD(공초점 마그네트론 스퍼터 캐소드, 히터 페데스탈) / CVD(샤워헤드 가스 주입)
+   ⑥ 금속 배선: CMP(회전 플래튼 + 연마 패드 + 캐리어 헤드 + 슬러리 노즐)
+   ⑦ EDS: 프로버(고정 프로브카드 + XYZ 척 이동, 테스트 헤드)
+   ⑧ 패키징: 와이어 본더(히터 블록, 본딩 암·캐필러리) + 몰딩 프레스 플래튼
    ========================================================= */
 (()=>{
-const B=(w,h,d)=>new THREE.BoxGeometry(w,h,d), Y=(r,h,o)=>new THREE.CylinderGeometry(r,r,h,40,1,!!o);
-const steel=()=>new THREE.MeshStandardMaterial({color:0xaeb6c0,metalness:1,roughness:.32,envMapIntensity:1.3,side:THREE.DoubleSide});
-const dark=()=>new THREE.MeshStandardMaterial({color:0x2b323c,metalness:.6,roughness:.45});
-const paint=c=>new THREE.MeshStandardMaterial({color:c,metalness:.1,roughness:.5});
-const glass=()=>new THREE.MeshStandardMaterial({color:0xcfe6f2,metalness:0,roughness:.05,transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false});
-const glow=c=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:1.2});
-function add(g,geo,mat,x,y,z,rx,rz){ const o=new THREE.Mesh(geo,mat); o.position.set(x,y,z); o.rotation.set(rx||0,0,rz||0); o.castShadow=!mat.transparent; o.receiveShadow=true; g.add(o); return o; }
-const plate=(g,w,d)=>add(g,B(w,.2,d),dark(),0,-2.3,0);
-function cabinet(g,x,z){ add(g,B(1.5,2.6,1.2),paint(0xe3e8ee),x,-1,z); add(g,B(1.1,.6,.04),glow(0x1fae7a),x,-.4,z+.62); add(g,Y(.07,.4),glow(0x3ddc84),x+.5,.5,z); }
-function chamber(g,r,h,y){ add(g,Y(r,h,1),glass(),0,y,0); [y+h/2,y-h/2].forEach(v=>add(g,Y(r+.15,.18),steel(),0,v,0)); [-1,1].forEach(s=>add(g,Y(.16,1.2),steel(),s*(r+.6),y,0,0,Math.PI/2)); }
-function pump(g,x,y){ add(g,Y(.7,1.2),steel(),x,y,0); add(g,Y(.12,2),steel(),x,y+1.2,0); }
-const PI2=Math.PI/2;
-const EQ=[
- g=>{ plate(g,12,3.6); add(g,B(7.6,.2,.3),steel(),-1.2,2.3,-1.4); add(g,B(.3,4.6,.3),steel(),-4.9,0,-1.4); add(g,B(.3,4.6,.3),steel(),2.5,0,-1.4); add(g,Y(.5,.4),steel(),-4.7,0,0,0,PI2); cabinet(g,5,-.5); },
- g=>{ plate(g,12,3.6); [-1.7,1.7].forEach(x=>add(g,Y(2.35,.22),steel(),x,0,0,0,PI2)); add(g,Y(.14,1.6),steel(),-2.5,0,0,0,PI2); add(g,Y(.14,1.6),steel(),2.5,0,0,0,PI2); [-1,1].forEach(x=>add(g,B(.4,.3,2.6),dark(),x,-2.15,0)); cabinet(g,5,0); },
- g=>{ plate(g,9,6); add(g,Y(2.15,.6,1),steel(),0,.15,0); add(g,Y(.6,1.5),steel(),0,-.9,0); add(g,Y(.1,1.4),steel(),2.4,.5,0); add(g,Y(.06,2.4),steel(),1.2,1.2,0,0,PI2); cabinet(g,-4.2,0); },
- g=>{ plate(g,12,6); chamber(g,2.5,2.4,.2); add(g,Y(1.8,.12),steel(),0,1.2,0); add(g,Y(1.9,.6),steel(),0,-.45,0); add(g,Y(.12,1.6),steel(),0,-1.5,0); pump(g,3.2,-1.7); cabinet(g,5.4,0); },
- g=>{ plate(g,12,6); chamber(g,2.6,5.5,1.4); add(g,Y(1.8,.5),steel(),0,-.4,0); pump(g,3.2,-1.7); cabinet(g,5.4,0); },
- g=>{ plate(g,7,6); add(g,Y(.8,1.8),steel(),0,-1.25,0); },
- g=>{ plate(g,9,6); add(g,Y(1.95,.5),steel(),0,-.35,0); const t=new THREE.Mesh(new THREE.TorusGeometry(2.1,.09,12,48),steel()); t.position.y=1.7; t.rotation.x=PI2; t.castShadow=true; g.add(t);
-      [-1,1].forEach(s=>add(g,B(.2,4,.2),steel(),s*2.6,-.3,-1.6)); add(g,B(5.4,.2,.2),steel(),0,1.7,-1.6); cabinet(g,-4.2,0); },
- g=>{ plate(g,7,6); cabinet(g,-4,0); }
-];
+const M=THREE, PI=Math.PI, PI2=PI/2, cl=v=>Math.max(0,Math.min(1,v)), lerp=(a,b,t)=>a+(b-a)*t;
+const B=(w,h,d)=>new M.BoxGeometry(w,h,d);
+const Y=(r,h,o,rt,ts,tl)=>new M.CylinderGeometry(rt==null?r:rt,r,h,48,1,!!o,ts||0,tl||PI*2);
+const ring=(r1,r2,h)=>new M.LatheGeometry([[r1,-h/2],[r2,-h/2],[r2,h/2],[r1,h/2],[r1,-h/2]].map(a=>new M.Vector2(a[0],a[1])),48);
+const S=(c,m,r,e)=>new M.MeshStandardMaterial({color:c,metalness:m,roughness:r,side:M.DoubleSide,envMapIntensity:1.4,emissive:e||0});
+const mat={
+  steel:()=>S(0xb4bcc6,1,.28), brushed:()=>S(0x9aa3ad,1,.45), dark:()=>S(0x2b323c,.6,.45), black:()=>S(0x14181d,.3,.5),
+  paint:c=>S(c,.1,.5), copper:()=>S(0xb87333,1,.3), gold:()=>S(0xd4af37,1,.25), pcb:()=>S(0x1c6b4f,.1,.6),
+  wafer:()=>S(0xaab5c0,.95,.15),
+  glass:()=>new M.MeshStandardMaterial({color:0xcfe6f2,metalness:0,roughness:.05,transparent:true,opacity:.14,side:M.DoubleSide,depthWrite:false}),
+  quartz:()=>new M.MeshStandardMaterial({color:0xe8f4ff,metalness:0,roughness:.05,transparent:true,opacity:.2,side:M.DoubleSide,depthWrite:false}),
+  glow:(c,i)=>new M.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:i||1.2}),
+  beam:c=>new M.MeshBasicMaterial({color:c,transparent:true,opacity:0,depthWrite:false,side:M.DoubleSide})
+};
+function add(g,geo,m,x,y,z,rx,ry,rz){ const o=new M.Mesh(geo,m); o.position.set(x||0,y||0,z||0); o.rotation.set(rx||0,ry||0,rz||0); o.castShadow=!m.transparent; o.receiveShadow=true; g.add(o); return o; }
+function pipe(g,a,b,r,m){ const A=new M.Vector3(a[0],a[1],a[2]), Bv=new M.Vector3(b[0],b[1],b[2]), d=Bv.clone().sub(A), len=d.length();
+  const o=new M.Mesh(Y(r,len),m||mat.steel()); o.position.copy(A).add(Bv).multiplyScalar(.5); o.quaternion.setFromUnitVectors(new M.Vector3(0,1,0),d.normalize()); o.castShadow=true; g.add(o); return o; }
+const plate=(g,w,d)=>add(g,B(w,.2,d),mat.dark(),0,-2.3,0);
+function cabinet(g,x,z,h){ h=h||2.6; add(g,B(1.5,h,1.2),mat.paint(0xe3e8ee),x,-2.4+h/2,z);
+  add(g,B(1.1,.6,.04),mat.glow(0x1fae7a),x,-2.4+h*.62,z+.62); add(g,Y(.07,.4),mat.glow(0x3ddc84),x+.5,-2.4+h+.2,z);
+  for(let k=0;k<4;k++) add(g,B(1.1,.04,.03),mat.dark(),x,-2.4+h*.3-k*.12,z+.61); }
+function chamberShell(g,r,y0,y1){ const h=y1-y0, c=(y0+y1)/2;
+  add(g,Y(r,h,true),mat.glass(),0,c,0); add(g,Y(r+.2,.3),mat.steel(),0,y1+.15,0); add(g,Y(r+.2,.3),mat.steel(),0,y0-.15,0);
+  [y0,y1].forEach(v=>add(g,Y(r+.05,.12,true),mat.brushed(),0,v,0)); }
+function pump(g,x,y){ add(g,Y(.8,1.3),mat.steel(),x,y,0); add(g,Y(.95,.18),mat.dark(),x,y+.7,0); add(g,Y(.4,.5),mat.dark(),x,y-.8,0); }
+const BUILD=[];
+
+/* ① 멀티 와이어 쏘 */
+BUILD[0]=(g,L)=>{
+  plate(g,13,4.4); add(g,B(10,.5,3.4),mat.paint(0xdfe4ea),-.6,-2.05,0); add(g,B(10,5.2,.25),mat.paint(0xcfd6de),-.6,.3,-2.0);
+  add(g,B(5,.5,1.6),mat.brushed(),-2.4,-1.7,0); add(g,B(4.4,.25,.6),mat.black(),-2.4,-1.25,0);          /* 이송 테이블 + 잉곳 접착 빔 */
+  const web=new M.Group(); g.add(web); const wires=new M.Group(); web.add(wires);
+  for(let k=0;k<10;k++) add(wires,Y(.012,4.4),mat.steel(),-4.2+k*.4,0,0,PI2,0,0);
+  [-2.1,2.1].forEach(z=>{ add(web,Y(.32,4.6),mat.dark(),-2.4,0,z,0,0,PI2); for(let k=0;k<12;k++) add(web,Y(.33,.03),mat.steel(),-4.4+k*.4,0,z,0,0,PI2); });
+  add(web,B(4.6,.12,.25),S(0x3b82c4,.1,.4),-2.4,.55,0);                                                 /* 슬러리 노즐 바 */
+  const reels=[1.4,-.2].map(y=>{ const r=add(g,Y(.9,.5),mat.paint(0xe0702a),-6.0,y,-1.6,PI2,0,0); return r; });
+  cabinet(g,5.6,-1);
+  let t=0; return (dt,p)=>{ t+=dt; L.children[2].visible=false;
+    const sp=cl((p-.15)/.7); web.visible=p>.12; web.position.y=lerp(1.35,-1.1,sp);
+    wires.position.z=Math.sin(t*4)*.18; reels.forEach(r=>r.rotation.y+=dt*(p>.15&&p<.87?3:0)); };
+};
+
+/* ② 수직 배치 확산로 */
+BUILD[1]=(g,L)=>{
+  for(let i=0;i<=5;i++) L.children[i].visible=false; L.children[8].visible=false;
+  plate(g,11,6); add(g,Y(2.15,5.4,true),mat.quartz(),0,.2,0); add(g,new M.SphereGeometry(2.15,40,20,0,PI*2,0,PI2),mat.quartz(),0,2.9,0);
+  add(g,Y(2.9,5.2,true,undefined,.9,PI*2-1.8),mat.brushed(),0,.2,0); add(g,Y(2.6,5.0,true,undefined,.9,PI*2-1.8),S(0xe9dcc2,0,.95),0,.2,0);
+  add(g,new M.SphereGeometry(2.9,40,20,0,PI*2,0,PI2),mat.brushed(),0,2.8,0);
+  add(g,Y(3.1,.3),mat.steel(),0,-2.65,0);
+  const coils=[]; for(let k=0;k<9;k++){ const m=S(0xc0392b,.3,.5,0x000000); coils.push(m); add(g,new M.TorusGeometry(2.4,.05,10,64),m,0,-2.0+k*.55,0,PI2,0,0); }
+  pipe(g,[0,3.9,0],[0,5.0,0],.12); pipe(g,[0,5.0,0],[-3.6,5.0,0],.12); pipe(g,[-3.6,5.0,0],[-3.6,-1.4,0],.12); add(g,B(.7,.9,.7),mat.paint(0xe3e8ee),-3.6,.6,0);
+  pipe(g,[2.9,-2.6,0],[4.2,-2.6,0],.2);
+  const boat=new M.Group(); g.add(boat);
+  add(boat,Y(2.4,.22),mat.steel(),0,-2.45,0); add(boat,Y(1.0,.8),mat.quartz(),0,-2.0,0); add(boat,Y(1.9,.1),mat.quartz(),0,-1.75,0); add(boat,Y(1.9,.1),mat.quartz(),0,1.9,0);
+  [[1.3,-1.1],[-1.3,-1.1],[0,-1.75]].forEach(a=>add(boat,Y(.07,3.7),mat.quartz(),a[0],.1,a[1]));
+  for(let k=-4;k<=4;k++) if(k) add(boat,Y(1.6,.05),mat.wafer(),0,k*.38,0);
+  add(boat,B(3.3,.25,.4),mat.steel(),1.65,-2.55,0);
+  add(g,B(.4,7,.5),mat.steel(),3.3,.8,0);
+  cabinet(g,5.4,0);
+  return (dt,p)=>{
+    const ins=cl((p-.12)/.2), by=-2.8*(1-ins); boat.position.y=by;
+    L.children[6].position.set(0,by,0); L.children[7].position.set(0,by,0);
+    const heat=cl((p-.15)/.25); coils.forEach(m=>{ m.emissive.setHex(0xff5a1a); m.emissiveIntensity=heat*1.6; });
+  };
+};
+
+/* ③ 스핀 코터(트랙) + 스캐너 */
+BUILD[2]=(g,L)=>{
+  const mask=L.children[2], beam=L.children[3]; beam.visible=false;
+  plate(g,13,7);
+  const C=new M.Group(), Sc=new M.Group(); g.add(C); g.add(Sc);
+  add(C,Y(2.2,.7,true),mat.steel(),0,.1,0); add(C,Y(2.2,.1),mat.dark(),0,-.3,0); add(C,Y(.55,1.5),mat.steel(),0,-1.0,0);
+  pipe(C,[2.9,-.5,0],[2.9,1.5,0],.12); pipe(C,[2.9,1.5,0],[.2,1.5,0],.07); add(C,Y(.05,.4),mat.black(),.2,1.3,0);
+  add(Sc,Y(2.2,.5),mat.dark(),0,-.33,0); add(Sc,B(7,.2,.35),mat.brushed(),0,-.8,1.5); add(Sc,B(7,.2,.35),mat.brushed(),0,-.8,-1.5); add(Sc,B(.35,.2,5),mat.brushed(),2.8,-.8,0);
+  add(Sc,Y(.55,1.3,false,1.15),mat.steel(),0,1.05,0); add(Sc,Y(.5,.04),S(0x101830,.2,.05),0,.4,0);
+  [.55,.95,1.35].forEach(y=>add(Sc,Y(.9-(y-.55)*.2,.07,false,undefined),mat.brushed(),0,y,0));
+  [-1,1].forEach(s=>add(Sc,B(.35,7.4,.35),mat.steel(),s*2.9,1.3,-2.3)); add(Sc,B(6.2,.4,.4),mat.steel(),0,5.2,-2.3);
+  add(Sc,B(2.6,1.1,2.6),mat.paint(0xdfe4ea),0,6.3,0); add(Sc,Y(1.0,.9,true,1.1),mat.brushed(),0,5.5,0);
+  add(Sc,B(2,2.6,1.4),mat.paint(0xe3e8ee),-5.5,-1.1,0); pipe(Sc,[-5.5,.2,0],[-5.5,6.3,0],.1); pipe(Sc,[-5.5,6.3,0],[-1.3,6.3,0],.1);
+  const frame=new M.Group(); Sc.add(frame);
+  [[0,1.8],[0,-1.8]].forEach(a=>add(frame,B(3.8,.14,.2),mat.steel(),a[0],0,a[1])); [[1.9,0],[-1.9,0]].forEach(a=>add(frame,B(.2,.14,3.8),mat.steel(),a[0],0,a[1]));
+  const up=new M.Mesh(Y(1.4,1,true,1.1),mat.beam(0xcfa8ff)), lo=new M.Mesh(Y(.12,.35,true,.55),mat.beam(0xcfa8ff)); Sc.add(up); lo.position.y=.22; Sc.add(lo);
+  return (dt,p)=>{
+    C.visible=p<.3; Sc.visible=p>=.3; mask.visible=p>=.12;
+    frame.position.y=mask.position.y; const h=Math.max(.01,mask.position.y-1.7); up.scale.y=h; up.position.y=1.7+h/2;
+    const o=Math.min(.5,beam.material.opacity*2.5); up.material.opacity=o; lo.material.opacity=o;
+  };
+};
+
+/* ④ CCP 플라즈마 식각 챔버 */
+BUILD[3]=(g,L)=>{
+  plate(g,13,6.4); chamberShell(g,2.7,-1.1,1.9);
+  add(g,Y(1.72,.45),mat.dark(),0,-.375,0); add(g,Y(2.0,.5),mat.steel(),0,-.85,0); add(g,Y(.6,1.1),mat.steel(),0,-1.55,0);
+  add(g,ring(1.66,2.0,.22),mat.black(),0,-.04,0); add(g,ring(2.0,2.35,.2),S(0xe8ecef,.1,.4),0,-.12,0); add(g,ring(2.4,2.65,.12),mat.dark(),0,-.55,0);
+  add(g,Y(2.0,.25),mat.steel(),0,1.5,0); add(g,Y(.55,.6),mat.steel(),0,2.35,0);
+  for(let k=0;k<4;k++){ const n=k?6*k:1; for(let j=0;j<n;j++){ const a=j/n*PI*2; add(g,Y(.045,.27),mat.black(),Math.cos(a)*k*.38,1.5,Math.sin(a)*k*.38); } }
+  pipe(g,[0,2.65,0],[0,3.3,0],.1); pipe(g,[0,3.3,0],[-3.2,3.3,0],.1); pipe(g,[-3.2,3.3,0],[-3.2,-1.0,0],.1); add(g,B(.7,.9,.7),mat.paint(0xe3e8ee),-3.2,1.2,0);
+  pipe(g,[2.9,-.9,0],[4.4,-.9,0],.3); pump(g,4.4,-1.7);
+  add(g,B(1.2,.9,1.0),mat.paint(0xdfe4ea),-3.5,-1.9,1.4); pipe(g,[-3.5,-1.9,1.4],[0,-1.9,1.4],.07,mat.copper()); pipe(g,[0,-1.9,1.4],[0,-1.4,0],.07,mat.copper());
+  cabinet(g,5.8,1.8);
+  const pl=add(g,Y(1.9,1.1),mat.beam(0xb06cff),0,.7,0); let t=0;
+  return (dt,p,m)=>{ t+=dt; pl.material.opacity=(m===1&&p>.12&&p<.88)?.16+.08*Math.sin(t*18):0; };
+};
+
+/* ⑤ PVD(마그네트론 스퍼터) / CVD */
+BUILD[4]=(g,L)=>{
+  plate(g,13,6.4); chamberShell(g,2.7,-1.2,4.2);
+  add(g,Y(1.8,.35),mat.steel(),0,-.25,0); add(g,ring(1.5,1.85,.08),mat.brushed(),0,.1,0); add(g,Y(.5,1.2),mat.steel(),0,-.95,0);
+  add(g,Y(2.4,3.2,true,undefined,.9,PI*2-1.8),mat.brushed(),0,1.9,0);
+  add(g,B(.6,1.2,1.6),mat.dark(),3.1,.3,0); pipe(g,[0,-1.4,0],[0,-1.8,0],.4); pump(g,0,-2.0);
+  const pv=new M.Group(); pv.position.set(-2.4,2.85,0); pv.rotation.z=.75; g.add(pv);
+  add(pv,Y(1.0,.14),mat.gold(),0,0,0); add(pv,ring(1.05,1.3,.22),mat.dark(),0,.05,0); add(pv,Y(1.15,.5),mat.steel(),0,.45,0); add(pv,Y(.3,.5),mat.dark(),0,.95,0);
+  pipe(pv,[.7,.5,0],[1.6,1.4,0],.06,S(0x3b82c4,.2,.4));
+  const cv=new M.Group(); g.add(cv); add(cv,Y(1.9,.25),mat.steel(),0,3.6,0); pipe(cv,[0,3.7,0],[0,4.9,0],.12); pipe(cv,[0,4.9,0],[-3.4,4.9,0],.12); pipe(cv,[-3.4,4.9,0],[-3.4,-1,0],.12);
+  cabinet(g,5.8,1.8);
+  return (dt,p,m)=>{ L.children[1].visible=false; pv.visible=m===1; cv.visible=m!==1; };
+};
+
+/* ⑥ CMP / 금속 배선 */
+BUILD[5]=(g,L)=>{
+  plate(g,9,8); add(g,Y(3.2,.3),S(0xd8d0c0,0,.9),0,-.45,0); add(g,Y(1.0,1.6),mat.steel(),0,-1.45,0);
+  for(let k=1;k<=5;k++) add(g,new M.TorusGeometry(k*.55,.02,6,64),mat.dark(),0,-.29,0,PI2,0,0);
+  const head=new M.Group(); g.add(head); add(head,Y(2.0,.5),mat.steel(),0,.55,0); add(head,ring(1.7,2.0,.3),mat.black(),0,.15,0); add(head,Y(.4,.9),mat.dark(),0,1.2,0);
+  pipe(g,[3.6,1.6,0],[1.4,.5,1.2],.07,S(0x3b82c4,.2,.4)); add(g,B(.4,2.6,.4),mat.steel(),3.6,-.7,0);
+  cabinet(g,5.2,0);
+  return (dt,p,m)=>{ const cu=m===1; head.visible=cu&&p>.55; head.position.y=lerp(2.2,.3,cl((p-.55)/.15)); head.rotation.y+=dt*2; };
+};
+
+/* ⑦ 프로버(EDS) */
+BUILD[6]=(g,L)=>{
+  const probe=L.children[L.children.length-1];
+  plate(g,13,7); add(g,B(9,.6,6),mat.paint(0xdfe4ea),0,-2.0,0);
+  add(L,Y(1.8,.08),mat.wafer(),0,-.08,0); add(L,Y(1.95,.5),mat.steel(),0,-.35,0); for(let k=1;k<=3;k++) add(L,new M.TorusGeometry(k*.5,.015,6,48),mat.dark(),0,-.095,0,PI2,0,0);
+  add(L,B(3.2,.4,3.2),mat.dark(),0,-.8,0); add(L,Y(.8,1.0),mat.steel(),0,-1.5,0);
+  [-1,1].forEach(s=>{ add(g,B(.3,5,.3),mat.steel(),s*3.4,.1,-2.4); add(g,B(.3,5,.3),mat.steel(),s*3.4,.1,2.4); });
+  add(g,ring(1.7,3.4,.3),mat.steel(),0,1.95,0); add(g,Y(2.4,.12),mat.pcb(),0,1.75,0); add(g,Y(.7,.2),S(0xe8e0c8,0,.6),0,1.6,0); add(g,Y(2.0,.4),mat.dark(),0,2.15,0);
+  for(let k=0;k<60;k++){ const a=Math.random()*PI*2, r=Math.random()*.36; add(g,new M.ConeGeometry(.012,.9,6),mat.gold(),Math.cos(a)*r,1.01,Math.sin(a)*r,PI,0,0); }
+  add(g,Y(2.6,1.1),mat.paint(0xf0f2f5),0,3.0,0); add(g,Y(2.65,.12),mat.dark(),0,2.5,0);
+  pipe(g,[2.6,3.0,0],[3.6,3.0,0],.25); pipe(g,[3.6,3.0,0],[3.6,-.5,0],.25); pipe(g,[3.6,-.5,0],[5.0,-.5,0],.25);
+  cabinet(g,5.6,0,3.2);
+  return (dt,p)=>{ probe.visible=false; const lift=cl((3.0-probe.position.y)/2.6)*.48; L.position.set(-probe.position.x,lift,-probe.position.z); };
+};
+
+/* ⑧ 와이어 본더 + 몰딩 프레스 */
+BUILD[7]=(g,L)=>{
+  plate(g,13,7); add(g,B(3.2,.5,3.2),mat.brushed(),0,-.95,0);
+  [-1,1].forEach(s=>add(g,B(7.4,.25,.3),mat.steel(),.4,2.7,s*2.4)); add(g,B(.5,.5,5),mat.steel(),3.0,2.7,0);
+  add(g,B(1.0,.9,.9),mat.paint(0xdfe4ea),3.0,2.2,0); add(g,Y(.4,.2),mat.gold(),3.5,2.9,0,PI2,0,0);
+  const arm=new M.Mesh((()=>{ const q=Y(.1,1,false,.05); q.rotateX(PI2); q.translate(0,0,.5); return q; })(),mat.steel()); arm.position.set(3.0,2.0,0); arm.castShadow=true; g.add(arm);
+  const cap=add(g,Y(.04,.45,false,.015),mat.black(),0,1,0);
+  const pt=[[-.5,-.5,-1.2,-1.2],[.5,-.5,1.2,-1.2],[-.5,.5,-1.2,1.2],[.5,.5,1.2,1.2]];
+  const tp=add(g,B(3.6,.5,3.6),mat.steel(),0,2,0), bp=add(g,B(3.6,.5,3.6),mat.steel(),0,-1.5,0);
+  cabinet(g,5.4,0);
+  return (dt,p)=>{
+    const wp=cl((p-.4)/.3), k=Math.min(3,Math.floor(wp*4)), t=cl(wp*4-k); let cx=.4,cy=1,cz=0;
+    if(wp>0&&wp<1){ const a=pt[k]; cx=lerp(a[0],a[2],t); cz=lerp(a[1],a[3],t); cy=lerp(-.25,-.5,t)+.55*Math.sin(PI*t)+.1; }
+    cap.position.set(cx,cy+.2,cz); arm.position.set(3.0,2.0,0); arm.lookAt(cx,cy+.45,cz); arm.scale.z=Math.hypot(cx-3.0,cy+.45-2.0,cz);
+    const mo=cl((p-.7)/.3), pres=p>.62; tp.visible=bp.visible=pres;
+    tp.position.y=.44+.56*mo+.3+(1-cl((p-.62)/.08))*1.4;
+  };
+};
+
 const _q=loadStage;
-loadStage=function(i){ _q(i); const g=new THREE.Group(); EQ[i](g); stageGroup.add(g); };
-loadStage(current); camDist=12;
+loadStage=function(i){
+  _q(i); const L=stageGroup.children[0], g=new M.Group(); stageGroup.add(g);
+  const a=BUILD[i](g,L), u0=stageUpdate;
+  stageUpdate=(dt,p,m)=>{ u0(dt,p,m); a(dt,p,m); };
+};
+loadStage(current); camDist=13;
+})();
+
+/* =========================================================
+   반응형: PC / 모바일(세로·가로) 화면 설정
+   - 주소창 때문에 잘리는 100vh 대신 100dvh, 3D 화면을 위쪽(모바일)에 배치
+   - 화면 비율에 맞춰 카메라 거리·시선 높이 자동 보정, 두 손가락 확대/축소
+   ========================================================= */
+(()=>{
+const st=document.createElement('style');
+st.textContent=`
+html,body{height:100%;overscroll-behavior:none}
+#app{height:100vh;height:100dvh;grid-template-rows:auto minmax(0,1fr) auto}
+main{min-height:0} #viewport{min-height:0;overflow:hidden} #viewport canvas{touch-action:none;display:block}
+@media (max-width:760px){
+  header{padding:8px 12px 6px} .titlebar{margin-bottom:6px} .titlebar h1{font-size:15px} .titlebar span{display:none}
+  .node{min-width:58px} .node .label{font-size:10px} .connector{flex-basis:10px;margin-bottom:16px}
+  main{grid-template-columns:1fr!important;grid-template-rows:minmax(0,46%) minmax(0,1fr)!important}
+  #viewport{order:-1} #info{order:0;border-right:none;border-bottom:none;border-top:1px solid var(--line);max-height:none!important;padding:14px;overflow-y:auto}
+  #info h2{font-size:18px} #info p{font-size:13px;line-height:1.65}
+  footer{padding:8px 12px calc(8px + env(safe-area-inset-bottom))} .navbtn{padding:9px 12px;font-size:12.5px}
+  .hint{font-size:10px;left:8px;right:8px;bottom:8px;padding:5px 8px}
+}
+@media (max-height:480px){
+  header{padding:6px 12px 4px} .titlebar{display:none} footer{padding:6px 12px} #info{padding:12px 14px}
+}
+@media (max-width:900px) and (max-height:480px){
+  main{grid-template-columns:42% 58%!important;grid-template-rows:minmax(0,1fr)!important} #viewport{order:1} #info{order:0}
+}`;
+document.head.appendChild(st);
+
+const coarse=matchMedia('(pointer:coarse)').matches;
+if(coarse||matchMedia('(max-width:760px)').matches){
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  if(keyLight.shadow.map){ keyLight.shadow.map.dispose(); keyLight.shadow.map=null; }
+  keyLight.shadow.mapSize.set(1024,1024);
+}
+if(coarse) document.querySelector('.hint').textContent='드래그: 회전 · 두 손가락: 확대/축소 · 설비를 터치: 공정 작동';
+
+/* 화면 비율에 맞춘 카메라: 가로가 좁을수록 멀리, 높은 장비(스캐너 등)는 시선을 위로 */
+const SC=[1,1,1.3,1,1.1,1,1,1], TY=[0,.6,2.2,.4,1.2,0,.4,.4];
+function fit(i){ const a=holder.clientWidth/Math.max(1,holder.clientHeight); camDist=Math.min(28,Math.max(13,18/a))*SC[i]; }
+updateCamera=function(){
+  const ty=TY[current]||0;
+  camera.position.set(camDist*Math.sin(camAngleY)*Math.cos(camAngleX),ty+camDist*Math.sin(camAngleX),camDist*Math.cos(camAngleY)*Math.cos(camAngleX));
+  camera.lookAt(0,ty,0);
+};
+function size(){ const w=holder.clientWidth,h=holder.clientHeight; if(!w||!h) return; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); }
+let cls=''; 
+const ro=new ResizeObserver(()=>{ size(); const c=holder.clientWidth/Math.max(1,holder.clientHeight)<1.2?'p':'l'; if(c!==cls){ cls=c; fit(current); } });
+ro.observe(holder);
+
+/* 두 손가락 확대/축소 */
+let pd=0; const cv=renderer.domElement;
+cv.addEventListener('touchmove',e=>{ if(e.touches.length!==2){ pd=0; return; } e.preventDefault();
+  const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+  if(pd) camDist=Math.max(4,Math.min(34,camDist*pd/d)); pd=d; },{passive:false});
+cv.addEventListener('touchend',()=>{ pd=0; });
+
+const _r=loadStage;
+loadStage=function(i){ _r(i); fit(i); try{ const n=document.querySelector('.node.active'); if(n) n.scrollIntoView({inline:'center',block:'nearest'}); }catch(e){} };
+size(); fit(current);
 })();
