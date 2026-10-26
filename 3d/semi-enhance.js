@@ -160,7 +160,7 @@ sync();
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-scene.fog=new THREE.Fog(0xdde4ec,16,34);
+scene.fog=new THREE.Fog(0x6a7a8e,16,34);
 keyLight.intensity=.85; keyLight.castShadow=true;
 keyLight.shadow.mapSize.set(2048,2048); keyLight.shadow.bias=-.0005;
 Object.assign(keyLight.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:1,far:28});
@@ -175,8 +175,8 @@ const et=new THREE.CanvasTexture(ec); et.mapping=THREE.EquirectangularReflection
 const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromEquirectangular(et).texture; pm.dispose();
 
 /* 3) 클린룸 바닥: 격자 + 그림자 수신 */
-const grid=new THREE.GridHelper(36,36,0xaab6c4,0xc9d2dc); grid.position.y=-2.4; scene.add(grid);
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(36,36),new THREE.ShadowMaterial({opacity:.28}));
+const grid=new THREE.GridHelper(36,36,0x8191a6,0x74849a); grid.position.y=-2.4; scene.add(grid);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(36,36),new THREE.ShadowMaterial({opacity:.45}));
 floor.rotation.x=-Math.PI/2; floor.position.y=-2.39; floor.receiveShadow=true; scene.add(floor);
 
 /* 4) 웨이퍼 질감: 다이 격자 + 빛 회절 무지개 + 클리어코트 */
@@ -213,7 +213,7 @@ loadStage(current);   /* 새 렌더 설정으로 현재 공정 재생성 */
 const st=document.createElement('style');
 st.textContent=`:root{--bg:#eef2f6;--panel:#fff;--panel-2:#f1f4f8;--line:#d5dce5;--cyan:#0a7ea4;--amber:#c76d00;--text:#1b2430;--muted:#5d6b7a}
 header{background:linear-gradient(180deg,#fff,#eef2f6)} footer{background:#fff}
-#viewport{background:radial-gradient(ellipse at 50% 30%,#fff,#d6dee8 85%)}
+#viewport{background:radial-gradient(ellipse at 50% 30%,#9aa8b8,#5d6d82 85%)}
 #info p{color:#3a4756} .hint{background:rgba(255,255,255,.75)}
 .node.active .dot{box-shadow:0 0 8px 2px rgba(10,126,164,.35)}`;
 document.head.appendChild(st);
@@ -258,4 +258,37 @@ loadStage=function(i){
   });
 };
 loadStage(current);
+})();
+
+/* =========================================================
+   실제 장비 외형: 스테인리스 챔버·플랜지·펌프·제어반 등
+   (배경은 중간 톤으로 낮춰 은색 장비와 구분되게 함)
+   ========================================================= */
+(()=>{
+const B=(w,h,d)=>new THREE.BoxGeometry(w,h,d), Y=(r,h,o)=>new THREE.CylinderGeometry(r,r,h,40,1,!!o);
+const steel=()=>new THREE.MeshStandardMaterial({color:0xaeb6c0,metalness:1,roughness:.32,envMapIntensity:1.3,side:THREE.DoubleSide});
+const dark=()=>new THREE.MeshStandardMaterial({color:0x2b323c,metalness:.6,roughness:.45});
+const paint=c=>new THREE.MeshStandardMaterial({color:c,metalness:.1,roughness:.5});
+const glass=()=>new THREE.MeshStandardMaterial({color:0xcfe6f2,metalness:0,roughness:.05,transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false});
+const glow=c=>new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:1.2});
+function add(g,geo,mat,x,y,z,rx,rz){ const o=new THREE.Mesh(geo,mat); o.position.set(x,y,z); o.rotation.set(rx||0,0,rz||0); o.castShadow=!mat.transparent; o.receiveShadow=true; g.add(o); return o; }
+const plate=(g,w,d)=>add(g,B(w,.2,d),dark(),0,-2.3,0);
+function cabinet(g,x,z){ add(g,B(1.5,2.6,1.2),paint(0xe3e8ee),x,-1,z); add(g,B(1.1,.6,.04),glow(0x1fae7a),x,-.4,z+.62); add(g,Y(.07,.4),glow(0x3ddc84),x+.5,.5,z); }
+function chamber(g,r,h,y){ add(g,Y(r,h,1),glass(),0,y,0); [y+h/2,y-h/2].forEach(v=>add(g,Y(r+.15,.18),steel(),0,v,0)); [-1,1].forEach(s=>add(g,Y(.16,1.2),steel(),s*(r+.6),y,0,0,Math.PI/2)); }
+function pump(g,x,y){ add(g,Y(.7,1.2),steel(),x,y,0); add(g,Y(.12,2),steel(),x,y+1.2,0); }
+const PI2=Math.PI/2;
+const EQ=[
+ g=>{ plate(g,12,3.6); add(g,B(7.6,.2,.3),steel(),-1.2,2.3,-1.4); add(g,B(.3,4.6,.3),steel(),-4.9,0,-1.4); add(g,B(.3,4.6,.3),steel(),2.5,0,-1.4); add(g,Y(.5,.4),steel(),-4.7,0,0,0,PI2); cabinet(g,5,-.5); },
+ g=>{ plate(g,12,3.6); [-1.7,1.7].forEach(x=>add(g,Y(2.35,.22),steel(),x,0,0,0,PI2)); add(g,Y(.14,1.6),steel(),-2.5,0,0,0,PI2); add(g,Y(.14,1.6),steel(),2.5,0,0,0,PI2); [-1,1].forEach(x=>add(g,B(.4,.3,2.6),dark(),x,-2.15,0)); cabinet(g,5,0); },
+ g=>{ plate(g,9,6); add(g,Y(2.15,.6,1),steel(),0,.15,0); add(g,Y(.6,1.5),steel(),0,-.9,0); add(g,Y(.1,1.4),steel(),2.4,.5,0); add(g,Y(.06,2.4),steel(),1.2,1.2,0,0,PI2); cabinet(g,-4.2,0); },
+ g=>{ plate(g,12,6); chamber(g,2.5,2.4,.2); add(g,Y(1.8,.12),steel(),0,1.2,0); add(g,Y(1.9,.6),steel(),0,-.45,0); add(g,Y(.12,1.6),steel(),0,-1.5,0); pump(g,3.2,-1.7); cabinet(g,5.4,0); },
+ g=>{ plate(g,12,6); chamber(g,2.6,5.5,1.4); add(g,Y(1.8,.5),steel(),0,-.4,0); pump(g,3.2,-1.7); cabinet(g,5.4,0); },
+ g=>{ plate(g,7,6); add(g,Y(.8,1.8),steel(),0,-1.25,0); },
+ g=>{ plate(g,9,6); add(g,Y(1.95,.5),steel(),0,-.35,0); const t=new THREE.Mesh(new THREE.TorusGeometry(2.1,.09,12,48),steel()); t.position.y=1.7; t.rotation.x=PI2; t.castShadow=true; g.add(t);
+      [-1,1].forEach(s=>add(g,B(.2,4,.2),steel(),s*2.6,-.3,-1.6)); add(g,B(5.4,.2,.2),steel(),0,1.7,-1.6); cabinet(g,-4.2,0); },
+ g=>{ plate(g,7,6); cabinet(g,-4,0); }
+];
+const _q=loadStage;
+loadStage=function(i){ _q(i); const g=new THREE.Group(); EQ[i](g); stageGroup.add(g); };
+loadStage(current); camDist=12;
 })();
