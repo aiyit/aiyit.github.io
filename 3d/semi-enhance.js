@@ -2,7 +2,8 @@
    사용법: semiconductor-8-process.html 의 </body> 바로 위에
    <script src="semi-enhance.js"></script> 한 줄만 추가하세요. (원본 코드는 수정하지 않습니다)
    추가 기능: ① 설비 클릭/2초 응시 시 공정 자동 작동 ② 웨이퍼 단면 실시간 뷰
-              ③ 장비 계측값(온도·압력·두께 등) ④ 재생 속도 조절 */
+              ③ 장비 계측값(온도·압력·두께 등) ④ 재생 속도 조절
+   수정(v2): 자동 재시작 방지 · 숨은 설비 클릭 제외 · 터치 탭 좌표 · 그림자 범위 · 계측값/식각 가스 정정 · 모바일 화면 보정 */
 (()=>{
 const $=id=>document.getElementById(id), cl=v=>Math.max(0,Math.min(1,v));
 
@@ -26,10 +27,11 @@ $('substeps').insertAdjacentHTML('afterend',`
 <div class="toggle-block" id="xsBlock"><div class="tlabel">웨이퍼 단면 (실시간)</div><canvas id="xs" width="260" height="130"></canvas><div class="xscap" id="xscap"></div></div>
 <div class="toggle-block" id="roBlock"><div class="tlabel">장비 계측값 (시뮬레이션)</div><div id="ro"></div></div>`);
 $('viewport').insertAdjacentHTML('beforeend','<div id="dwell"></div>');
+if(getComputedStyle($('viewport')).position==='static') $('viewport').style.position='relative';
 document.querySelector('.hint').textContent='드래그: 회전 · 휠: 확대/축소 · 설비 클릭 또는 2초 응시: 공정 작동';
 
 /* ---------- 재생 제어 ---------- */
-const DURATION=16; let playing=false, dwell=0, inside=false, mx=0, my=0, dx0=0, dy0=0, roAcc=1;
+const DURATION=16; let playing=false, dwell=0, inside=false, mx=0, my=0, dx0=0, dy0=0, roAcc=1, armed=true, tapOK=false, hitT=0, hitV=false, lastCap='', lastKey='';
 function setNorm(n){
   const s=stages[current]; paramNorm=cl(n);
   const v=s.param.min+paramNorm*(s.param.max-s.param.min);
@@ -40,34 +42,39 @@ function sync(){
   $('playBtn').classList.toggle('run',playing);
   $('xsBlock').classList.toggle('hidden',!(current>=1&&current<=5));
 }
-function setPlay(v){ playing=v; if(playing&&paramNorm>=0.999) setNorm(0); sync(); }
+function setPlay(v){ playing=v; if(!v) armed=false; /* 멈춘 뒤엔 커서가 설비에서 벗어나야 다시 응시 인식 */ if(playing&&paramNorm>=0.999) setNorm(0); sync(); }
 $('playBtn').addEventListener('click',()=>setPlay(!playing));
 $('paramSlider').addEventListener('input',()=>{ if(playing) setPlay(false); });
 const _load=loadStage;
-loadStage=function(i){ _load(i); playing=false; dwell=0; roAcc=1; sync(); };
+loadStage=function(i){ _load(i); playing=false; dwell=0; roAcc=1; armed=false; lastKey=''; sync(); };
 
 /* ---------- 설비 클릭 / 2초 응시 ---------- */
 const dom=renderer.domElement, ray=new THREE.Raycaster(), m2=new THREE.Vector2();
+const vis=o=>{ for(;o;o=o.parent) if(!o.visible) return false; return true; };   /* 부모가 숨겨진 경우도 제외 */
 function hit(){
   m2.set(mx/dom.clientWidth*2-1,-(my/dom.clientHeight)*2+1);
   ray.setFromCamera(m2,camera);
-  return ray.intersectObjects(stageGroup.children,true).some(h=>h.object.visible);
+  return ray.intersectObjects(stageGroup.children,true).some(h=>{
+    const mt=[].concat(h.object.material)[0];
+    return vis(h.object)&&!(mt&&mt.transparent&&mt.opacity<.05);   /* 투명도 0 빔·플라즈마 제외 */
+  });
 }
-dom.addEventListener('pointermove',e=>{ const r=dom.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top; inside=true; });
+function setXY(e){ const r=dom.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top; }
+dom.addEventListener('pointermove',e=>{ setXY(e); inside=e.pointerType!=='touch'; });
 dom.addEventListener('pointerleave',()=>{ inside=false; });
-dom.addEventListener('pointerdown',e=>{ dx0=e.clientX; dy0=e.clientY; });
-dom.addEventListener('pointerup',e=>{ if(Math.hypot(e.clientX-dx0,e.clientY-dy0)<5&&hit()) setPlay(!playing); });
+dom.addEventListener('pointerdown',e=>{ if(!e.isPrimary){ tapOK=false; return; } setXY(e); dx0=e.clientX; dy0=e.clientY; tapOK=true; });   /* 두 번째 손가락(핀치)이면 탭 취소 */
+dom.addEventListener('pointerup',e=>{ if(!e.isPrimary||!tapOK) return; tapOK=false; setXY(e); if(Math.hypot(e.clientX-dx0,e.clientY-dy0)<5&&hit()) setPlay(!playing); });
 
 /* ---------- 계측값 ---------- */
 function readouts(n,m){
   const g=cl((n-.32)/.68), r=cl((n-.15)/.7), k=cl((n-.1)/.8);
   switch(current){
-  case 0: return [['톱날 회전',(n>.15&&n<.87?'2,400':'0')+' rpm'],['웨이퍼 두께','775 μm'],['표면 거칠기(Ra)',n<.85?'≈ 2 μm':(2000*(1-cl((n-.85)/.15))+.2).toFixed(1)+' nm']];
+  case 0: return [['와이어 속도',(n>.15&&n<.87?'≈ 10':'0')+' m/s'],['웨이퍼 두께','775 μm'],['표면 거칠기(Ra)',n<.85?'≈ 2 μm':(2000*(1-cl((n-.85)/.15))+.2).toFixed(1)+' nm']];
   case 1: return [['산화로 온도',Math.round(25+975*cl((n-.12)/.28))+' °C'],['분위기',n>.32?'O₂ / H₂O (습식 산화)':'N₂ 대기'],['SiO₂ 두께',Math.round(g>0?20+480*Math.sqrt(g):0)+' nm']];
   case 2: return [['스핀 속도',n<.15?Math.round(3000*Math.sin(cl(n/.15)*Math.PI))+' rpm':'0 rpm'],['노광원','ArF 193 nm'],['노광량',Math.round(30*cl((n-.35)/.4))+' mJ/cm²'],['현상액','TMAH 2.38 %']];
-  case 3: return [['방식',m?'건식 · CF₄/O₂ 플라즈마':'습식 · BOE 용액'],['식각 깊이',Math.round(r*160)+' nm'],['측벽 형상',m?'수직 (≈ 90°)':'등방성 · 언더컷']];
+  case 3: return [['방식',m?'건식 · CF₄/CHF₃/Ar 플라즈마':'습식 · BOE 용액'],['식각 깊이',Math.round(r*160)+' nm'],['측벽 형상',m?'수직 (≈ 90°)':'등방성 · 언더컷']];
   case 4: return [['챔버 압력',m?'3 mTorr (고진공)':'0.5 Torr (LPCVD)'],['공정 온도',m?'25 ~ 200 °C':'400 ~ 700 °C'],['박막 두께',Math.round(k*100)+' nm'],['피복 특성',m?'방향성 · 측벽 얇음':'등각 (Conformal)']];
-  case 5: return [['배선 금속',m?'구리 (Cu)':'알루미늄 (Al)'],['비저항',m?'1.7 μΩ·cm':'2.7 μΩ·cm'],['금속 두께',Math.round(cl((n-.15)/.55)*(m?170:100))+' nm']];
+  case 5: return [['배선 금속',m?'구리 (Cu)':'알루미늄 (Al)'],['성막 방식',m?'배리어/시드 + 전해도금(ECP)':'스퍼터링 (PVD)'],['비저항',m?'1.7 μΩ·cm':'2.7 μΩ·cm'],['금속 두께',Math.round(cl((n-.15)/.55)*(m?170:100))+' nm']];
   case 6: { const t=n>=.9?21:Math.min(21,Math.floor(cl((n-.1)/.8)*21)); return [['검사 다이',t+' / 21'],['프로브 접촉력','≈ 5 gf / 핀'],['수율',n>=.9?'85.7 % (불량 3개)':'측정 중…']]; }
   default: return [['현재 단계',stages[7].subSteps[activeSubStepIndex(stages[7],n)]],['와이어','Au Φ25 μm'],['몰딩 온도',n>.7?'175 °C':'—']];
   }
@@ -128,10 +135,11 @@ function drawXS(n,m){
     } else {
       const t=10*dp;
       WX.forEach(x=>R('#cdd6de',x-15-(1-fp)*15,y0-12-t,30+(1-fp)*30,t));
+      const ed=10*(1-fp); if(ed>0){ R('#cdd6de',0,y0-12-t,ed,t); R('#cdd6de',W-ed,y0-12-t,ed,t); }   /* 단면 양 끝까지 전면 증착 */
       cap=fp>0?'식각으로 불필요한 알루미늄 제거 → 배선만 남김':'알루미늄을 전면 증착(블랭킷)';
     }
   }
-  $('xscap').textContent=cap;
+  if(cap!==lastCap){ lastCap=cap; $('xscap').textContent=cap; }
 }
 
 /* ---------- 메인 루프 ---------- */
@@ -139,15 +147,18 @@ let last=performance.now();
 (function loop(now){
   requestAnimationFrame(loop);
   const dt=Math.min(.05,(now-last)/1000); last=now;
-  const over=inside&&!dragging&&hit();
-  dom.style.cursor=over?'pointer':'grab';
-  if(over&&!playing){ dwell+=dt; if(dwell>=2){ dwell=0; setPlay(true); } } else dwell=0;
+  hitT+=dt; if(hitT>.06){ hitT=0; hitV=inside&&!dragging&&hit(); }   /* 매 프레임 대신 약 16회/초만 판정 */
+  if(!inside||dragging) hitV=false;
+  const over=hitV;
+  dom.style.cursor=dragging?'grabbing':(over?'pointer':'grab');
+  if(!over) armed=true;
+  if(over&&!playing&&armed){ dwell+=dt; if(dwell>=2){ dwell=0; setPlay(true); } } else dwell=0;
   const dl=$('dwell');
   if(dwell>0){ dl.style.display='block'; dl.style.left=mx+'px'; dl.style.top=my+'px'; dl.style.background=`conic-gradient(var(--amber) ${dwell/2*360}deg,rgba(0,0,0,.12) 0)`; }
   else dl.style.display='none';
   if(playing){ setNorm(paramNorm+dt*parseFloat($('spd').value)/DURATION); if(paramNorm>=1) setPlay(false); }
   roAcc+=dt; if(roAcc>.1){ roAcc=0; renderRO(); }
-  if(current>=1&&current<=5) drawXS(paramNorm,toggleIndex);
+  if(current>=1&&current<=5){ const key=current+'|'+paramNorm.toFixed(4)+'|'+toggleIndex; if(key!==lastKey||current===2){ lastKey=key; drawXS(paramNorm,toggleIndex); } }   /* 값이 바뀔 때만 다시 그림(③은 노광 깜빡임 때문에 항상) */
 })(performance.now());
 sync();
 })();
@@ -157,24 +168,19 @@ sync();
    ========================================================= */
 (()=>{
 /* 1) 렌더러: sRGB 출력 + 필름 톤매핑 + 부드러운 그림자 */
-renderer.outputEncoding=THREE.sRGBEncoding;
+const NEWCS=('SRGBColorSpace' in THREE), srgb=t=>{ if(NEWCS) t.colorSpace=THREE.SRGBColorSpace; else t.encoding=THREE.sRGBEncoding; };   /* three 버전 호환 */
+if(NEWCS) renderer.outputColorSpace=THREE.SRGBColorSpace; else renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 scene.fog=new THREE.Fog(0x6a7a8e,16,34);
 keyLight.intensity=.85; keyLight.castShadow=true;
 keyLight.shadow.mapSize.set(2048,2048); keyLight.shadow.bias=-.0005;
 Object.assign(keyLight.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:1,far:28});
+keyLight.shadow.camera.updateProjectionMatrix();   /* 변경한 그림자 범위를 실제로 반영 */
 
-/* 2) 스튜디오 환경맵(소프트박스 조명) → 금속·유리 반사 */
-const ec=document.createElement('canvas'); ec.width=512; ec.height=256; const eg=ec.getContext('2d');
-const gr=eg.createLinearGradient(0,0,0,256); gr.addColorStop(0,'#cfe4f5'); gr.addColorStop(.5,'#46586b'); gr.addColorStop(1,'#10151d');
-eg.fillStyle=gr; eg.fillRect(0,0,512,256);
-eg.fillStyle='#fff'; [[60,40,90,30],[250,25,120,26],[400,50,70,40]].forEach(a=>eg.fillRect(...a));
-eg.fillStyle='#ffd9a0'; eg.fillRect(150,90,40,60);
-const et=new THREE.CanvasTexture(ec); et.mapping=THREE.EquirectangularReflectionMapping; et.encoding=THREE.sRGBEncoding;
-const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromEquirectangular(et).texture; pm.dispose();
+/* 2) 환경맵은 아래 '밝은 배경 테마' 블록에서 한 번만 생성 (중복 제거) */
 
-/* 3) 클린룸 바닥: 격자 + 그림자 수신 */
+/* 3) 클린룸 바닥/* 3) 클린룸 바닥: 격자 + 그림자 수신 */
 const grid=new THREE.GridHelper(36,36,0x8191a6,0x74849a); grid.position.y=-2.4; scene.add(grid);
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(36,36),new THREE.ShadowMaterial({opacity:.45}));
 floor.rotation.x=-Math.PI/2; floor.position.y=-2.39; floor.receiveShadow=true; scene.add(floor);
@@ -188,7 +194,7 @@ for(let i=0;i<=512;i+=34){ wg.beginPath(); wg.moveTo(i,0); wg.lineTo(i,512); wg.
 const hg=wg.createLinearGradient(0,0,512,512);
 ['255,60,90','255,200,60','60,255,150','60,150,255','190,80,255'].forEach((c,i)=>hg.addColorStop(i/4,`rgba(${c},.22)`));
 wg.fillStyle=hg; wg.fillRect(0,0,512,512);
-const waferTex=new THREE.CanvasTexture(wc); waferTex.encoding=THREE.sRGBEncoding; waferTex.anisotropy=8;
+const waferTex=new THREE.CanvasTexture(wc); srgb(waferTex); waferTex.anisotropy=8;
 
 function dress(){
   stageGroup.traverse(o=>{
@@ -225,8 +231,8 @@ const ec=document.createElement('canvas'); ec.width=512; ec.height=256; const eg
 const gr=eg.createLinearGradient(0,0,0,256); gr.addColorStop(0,'#ffffff'); gr.addColorStop(.5,'#9fb2c6'); gr.addColorStop(1,'#4d5b6b');
 eg.fillStyle=gr; eg.fillRect(0,0,512,256);
 eg.fillStyle='#fff'; [[40,30,110,34],[240,20,140,30],[410,45,80,44]].forEach(a=>eg.fillRect(...a));
-const et=new THREE.CanvasTexture(ec); et.mapping=THREE.EquirectangularReflectionMapping; et.encoding=THREE.sRGBEncoding;
-const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromEquirectangular(et).texture; pm.dispose();
+const et=new THREE.CanvasTexture(ec); et.mapping=THREE.EquirectangularReflectionMapping; if('SRGBColorSpace' in THREE) et.colorSpace=THREE.SRGBColorSpace; else et.encoding=THREE.sRGBEncoding;
+const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromEquirectangular(et).texture; pm.dispose(); et.dispose();
 
 /* 공정별 금속: 톱날=강, 히터코일=구리, 스퍼터 타겟·프로브=텅스텐/은, 리드프레임=구리 */
 const METAL=[0xcfd3d9,0xb86b3a,0xd5d9de,0xd5d9de,0xcfd3d9,0xd5d9de,0xc0c4ca,0xb87333];
@@ -298,6 +304,8 @@ function chamberShell(g,r,y0,y1){ const h=y1-y0, c=(y0+y1)/2;
   [y0,y1].forEach(v=>add(g,Y(r+.05,.12,true),mat.brushed(),0,v,0)); }
 function pump(g,x,y){ add(g,Y(.8,1.3),mat.steel(),x,y,0); add(g,Y(.95,.18),mat.dark(),x,y+.7,0); add(g,Y(.4,.5),mat.dark(),x,y-.8,0); }
 const BUILD=[];
+const hide=(L,...ix)=>ix.forEach(i=>{ if(L.children[i]) L.children[i].visible=false; });   /* 원본 구조가 달라져도 오류 없이 건너뜀 */
+const mv=(L,i,x,y,z)=>{ if(L.children[i]) L.children[i].position.set(x,y,z); };
 
 /* ① 멀티 와이어 쏘 */
 BUILD[0]=(g,L)=>{
@@ -309,14 +317,14 @@ BUILD[0]=(g,L)=>{
   add(web,B(4.6,.12,.25),S(0x3b82c4,.1,.4),-2.4,.55,0);                                                 /* 슬러리 노즐 바 */
   const reels=[1.4,-.2].map(y=>{ const r=add(g,Y(.9,.5),mat.paint(0xe0702a),-6.0,y,-1.6,PI2,0,0); return r; });
   cabinet(g,5.6,-1);
-  let t=0; return (dt,p)=>{ t+=dt; L.children[2].visible=false;
+  let t=0; return (dt,p)=>{ t+=dt; hide(L,2);
     const sp=cl((p-.15)/.7); web.visible=p>.12; web.position.y=lerp(1.35,-1.1,sp);
     wires.position.z=Math.sin(t*4)*.18; reels.forEach(r=>r.rotation.y+=dt*(p>.15&&p<.87?3:0)); };
 };
 
 /* ② 수직 배치 확산로 */
 BUILD[1]=(g,L)=>{
-  for(let i=0;i<=5;i++) L.children[i].visible=false; L.children[8].visible=false;
+  hide(L,0,1,2,3,4,5,8);
   plate(g,11,6); add(g,Y(2.15,5.4,true),mat.quartz(),0,.2,0); add(g,new M.SphereGeometry(2.15,40,20,0,PI*2,0,PI2),mat.quartz(),0,2.9,0);
   add(g,Y(2.9,5.2,true,undefined,.9,PI*2-1.8),mat.brushed(),0,.2,0); add(g,Y(2.6,5.0,true,undefined,.9,PI*2-1.8),S(0xe9dcc2,0,.95),0,.2,0);
   add(g,new M.SphereGeometry(2.9,40,20,0,PI*2,0,PI2),mat.brushed(),0,2.8,0);
@@ -333,14 +341,14 @@ BUILD[1]=(g,L)=>{
   cabinet(g,5.4,0);
   return (dt,p)=>{
     const ins=cl((p-.12)/.2), by=-2.8*(1-ins); boat.position.y=by;
-    L.children[6].position.set(0,by,0); L.children[7].position.set(0,by,0);
+    mv(L,6,0,by,0); mv(L,7,0,by,0);
     const heat=cl((p-.15)/.25); coils.forEach(m=>{ m.emissive.setHex(0xff5a1a); m.emissiveIntensity=heat*1.6; });
   };
 };
 
 /* ③ 스핀 코터(트랙) + 스캐너 */
 BUILD[2]=(g,L)=>{
-  const mask=L.children[2], beam=L.children[3]; beam.visible=false;
+  const mask=L.children[2]||new M.Object3D(), beam=L.children[3]||new M.Mesh(new M.BufferGeometry(),mat.beam(0xcfa8ff)); beam.visible=false;
   plate(g,13,7);
   const C=new M.Group(), Sc=new M.Group(); g.add(C); g.add(Sc);
   add(C,Y(2.2,.7,true),mat.steel(),0,.1,0); add(C,Y(2.2,.1),mat.dark(),0,-.3,0); add(C,Y(.55,1.5),mat.steel(),0,-1.0,0);
@@ -387,7 +395,7 @@ BUILD[4]=(g,L)=>{
   pipe(pv,[.7,.5,0],[1.6,1.4,0],.06,S(0x3b82c4,.2,.4));
   const cv=new M.Group(); g.add(cv); add(cv,Y(1.9,.25),mat.steel(),0,3.6,0); pipe(cv,[0,3.7,0],[0,4.9,0],.12); pipe(cv,[0,4.9,0],[-3.4,4.9,0],.12); pipe(cv,[-3.4,4.9,0],[-3.4,-1,0],.12);
   cabinet(g,5.8,1.8);
-  return (dt,p,m)=>{ L.children[1].visible=false; pv.visible=m===1; cv.visible=m!==1; };
+  return (dt,p,m)=>{ hide(L,1); pv.visible=m===1; cv.visible=m!==1; };
 };
 
 /* ⑥ CMP / 금속 배선 */
@@ -402,13 +410,14 @@ BUILD[5]=(g,L)=>{
 
 /* ⑦ 프로버(EDS) */
 BUILD[6]=(g,L)=>{
-  const probe=L.children[L.children.length-1];
+  const probe=L.children[L.children.length-1]||new M.Object3D();
   plate(g,13,7); add(g,B(9,.6,6),mat.paint(0xdfe4ea),0,-2.0,0);
   add(L,Y(1.8,.08),mat.wafer(),0,-.08,0); add(L,Y(1.95,.5),mat.steel(),0,-.35,0); for(let k=1;k<=3;k++) add(L,new M.TorusGeometry(k*.5,.015,6,48),mat.dark(),0,-.095,0,PI2,0,0);
   add(L,B(3.2,.4,3.2),mat.dark(),0,-.8,0); add(L,Y(.8,1.0),mat.steel(),0,-1.5,0);
   [-1,1].forEach(s=>{ add(g,B(.3,5,.3),mat.steel(),s*3.4,.1,-2.4); add(g,B(.3,5,.3),mat.steel(),s*3.4,.1,2.4); });
   add(g,ring(1.7,3.4,.3),mat.steel(),0,1.95,0); add(g,Y(2.4,.12),mat.pcb(),0,1.75,0); add(g,Y(.7,.2),S(0xe8e0c8,0,.6),0,1.6,0); add(g,Y(2.0,.4),mat.dark(),0,2.15,0);
-  for(let k=0;k<60;k++){ const a=Math.random()*PI*2, r=Math.random()*.36; add(g,new M.ConeGeometry(.012,.9,6),mat.gold(),Math.cos(a)*r,1.01,Math.sin(a)*r,PI,0,0); }
+  const coneG=new M.ConeGeometry(.012,.9,6), coneM=mat.gold();   /* 프로브 핀 60개가 geometry·재질 공유 */
+  for(let k=0;k<60;k++){ const a=Math.random()*PI*2, r=Math.random()*.36; add(g,coneG,coneM,Math.cos(a)*r,1.01,Math.sin(a)*r,PI,0,0); }
   add(g,Y(2.6,1.1),mat.paint(0xf0f2f5),0,3.0,0); add(g,Y(2.65,.12),mat.dark(),0,2.5,0);
   pipe(g,[2.6,3.0,0],[3.6,3.0,0],.25); pipe(g,[3.6,3.0,0],[3.6,-.5,0],.25); pipe(g,[3.6,-.5,0],[5.0,-.5,0],.25);
   cabinet(g,5.6,0,3.2);
@@ -435,9 +444,12 @@ BUILD[7]=(g,L)=>{
 };
 
 const _q=loadStage;
+function freeStage(){ try{ stageGroup.traverse(o=>{ if(o.geometry) o.geometry.dispose(); [].concat(o.material||[]).forEach(m=>m&&m.dispose&&m.dispose()); }); }catch(e){} }   /* 공정 전환 시 이전 모델 GPU 메모리 해제 */
 loadStage=function(i){
-  _q(i); const L=stageGroup.children[0], g=new M.Group(); stageGroup.add(g);
-  const a=BUILD[i](g,L), u0=stageUpdate;
+  freeStage(); _q(i);
+  const L=stageGroup.children[0]||new M.Group(), g=new M.Group(); stageGroup.add(g);
+  let a; try{ a=BUILD[i](g,L); }catch(err){ console.warn('장비 모델 생성 실패',i,err); a=()=>{}; }
+  const u0=stageUpdate;
   stageUpdate=(dt,p,m)=>{ u0(dt,p,m); a(dt,p,m); };
 };
 loadStage(current); camDist=13;
@@ -468,6 +480,11 @@ main{min-height:0} #viewport{min-height:0;overflow:hidden} #viewport canvas{touc
 }
 @media (max-width:900px) and (max-height:480px){
   main{grid-template-columns:42% 58%!important;grid-template-rows:minmax(0,1fr)!important} #viewport{order:1} #info{order:0}
+}
+@media (max-width:760px),(max-height:480px){
+  #info{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #playBlock{position:sticky;bottom:0;z-index:5;background:var(--panel);padding:8px 0;margin:0;box-shadow:0 -6px 8px -6px rgba(0,0,0,.2)}   /* 스크롤해도 '공정 시작' 버튼이 항상 보이게 */
+  .ro-row b{overflow-wrap:anywhere} #xs{max-width:100%}
 }`;
 document.head.appendChild(st);
 
@@ -478,18 +495,29 @@ if(coarse||matchMedia('(max-width:760px)').matches){
   keyLight.shadow.mapSize.set(1024,1024);
 }
 if(coarse) document.querySelector('.hint').textContent='드래그: 회전 · 두 손가락: 확대/축소 · 설비를 터치: 공정 작동';
+{ const hint=document.querySelector('.hint');   /* 작은 화면에서 안내문이 장비를 가리지 않도록 첫 터치 후/8초 뒤 숨김 */
+  if(hint&&(coarse||matchMedia('(max-width:760px)').matches)){
+    hint.style.transition='opacity .5s'; const off=()=>{ hint.style.opacity='0'; hint.style.pointerEvents='none'; };
+    renderer.domElement.addEventListener('pointerdown',off,{once:true}); setTimeout(off,8000); } }
 
 /* 화면 비율에 맞춘 카메라: 가로가 좁을수록 멀리, 높은 장비(스캐너 등)는 시선을 위로 */
 const SC=[1,1,1.3,1,1.1,1,1,1], TY=[0,.6,2.2,.4,1.2,0,.4,.4];
-function fit(i){ const a=holder.clientWidth/Math.max(1,holder.clientHeight); camDist=Math.min(28,Math.max(13,18/a))*SC[i]; }
+const EXT=[[7.1,3.4],[6.4,5.2],[6.6,4.9],[6.7,3.3],[6.8,4.0],[6.2,4.0],[6.6,3.3],[6.6,3.0]];   /* 공정별로 화면에 꼭 담겨야 할 반폭·반높이(시선 높이 기준) */
+function fit(i){
+  const a=holder.clientWidth/Math.max(1,holder.clientHeight), t=Math.tan((camera.fov||45)*Math.PI/360), e=EXT[i]||EXT[0];
+  const old=Math.min(28,Math.max(13,18/a))*SC[i];
+  const need=Math.max(e[0]/(t*a),e[1]/t)+2.2;   /* +2.2: 앞쪽 부품의 원근 확대 여유 */
+  camDist=Math.min(34,Math.max(old,need));
+}
 updateCamera=function(){
   const ty=TY[current]||0;
   camera.position.set(camDist*Math.sin(camAngleY)*Math.cos(camAngleX),ty+camDist*Math.sin(camAngleX),camDist*Math.cos(camAngleY)*Math.cos(camAngleX));
   camera.lookAt(0,ty,0);
 };
 function size(){ const w=holder.clientWidth,h=holder.clientHeight; if(!w||!h) return; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); }
-let cls=''; 
-const ro=new ResizeObserver(()=>{ size(); const c=holder.clientWidth/Math.max(1,holder.clientHeight)<1.2?'p':'l'; if(c!==cls){ cls=c; fit(current); } });
+let cls='', la=0;
+const ro=new ResizeObserver(()=>{ size(); const a=holder.clientWidth/Math.max(1,holder.clientHeight), c=a<1.2?'p':'l';
+  if(c!==cls||(la&&Math.abs(a-la)/la>.25)){ cls=c; la=a; fit(current); } else if(!la) la=a; });
 ro.observe(holder);
 
 /* 두 손가락 확대/축소 */
