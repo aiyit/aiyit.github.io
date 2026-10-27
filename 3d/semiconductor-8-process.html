@@ -159,7 +159,7 @@
   }
   #viewport{
     position:relative;
-    background:radial-gradient(ellipse at 50% 30%, #0f1420, #06080c 75%);
+    background:radial-gradient(ellipse at 50% 42%, #c9d4e0 0%, #8d9cb0 48%, #46556a 100%);   /* 클린룸 스튜디오 톤 */
   }
   #canvasHolder{ position:absolute; inset:0; }
   .loading{
@@ -263,27 +263,36 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(holder.clientWidth, holder.clientHeight);
 holder.appendChild(renderer.domElement);
 
-const keyLight = new THREE.DirectionalLight(0xbfe6ff, 1.1);
-keyLight.position.set(4,6,5);
+/* 렌더 품질: 선형 색공간 출력 + 필름 톤매핑 + 부드러운 그림자 (금속·도장·유리 질감의 기본 조건) */
+if('SRGBColorSpace' in THREE) renderer.outputColorSpace = THREE.SRGBColorSpace; else renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+/* 조명 3점 구성: 키(좌상단 전방, 그림자) + 림(후방 청백색, 금속 가장자리 하이라이트) + 하늘/바닥 반구광 */
+const keyLight = new THREE.DirectionalLight(0xfff3e4, 1.5);
+keyLight.position.set(-5,8,6);
+keyLight.castShadow = true; keyLight.shadow.mapSize.set(2048,2048);
 scene.add(keyLight);
-const rimLight = new THREE.DirectionalLight(0xf2a541, 0.5);
-rimLight.position.set(-5,-2,-4);
+const rimLight = new THREE.DirectionalLight(0x8fb8ff, 0.55);
+rimLight.position.set(6,4,-6);
 scene.add(rimLight);
-scene.add(new THREE.AmbientLight(0x445566, 0.6));
+scene.add(new THREE.HemisphereLight(0xdbe6f5, 0x59606b, 0.45));
+scene.add(new THREE.AmbientLight(0xffffff, 0.12));
 
 const stageGroup = new THREE.Group();
 scene.add(stageGroup);
 
 /* 간단한 수동 오빗 컨트롤 (드래그 회전 + 휠 줌) */
 let camAngleX = 0.5, camAngleY = 0.6, camDist = 9;
+const camTarget = new THREE.Vector3(0,0,0);   /* 오빗 회전 중심 = 각 공정 장면의 중심 (semi-enhance.js 가 공정마다 자동 계산) */
 let dragging = false, lastX=0, lastY=0;
 function updateCamera(){
   camera.position.set(
-    camDist*Math.sin(camAngleY)*Math.cos(camAngleX),
-    camDist*Math.sin(camAngleX),
-    camDist*Math.cos(camAngleY)*Math.cos(camAngleX)
+    camTarget.x + camDist*Math.sin(camAngleY)*Math.cos(camAngleX),
+    camTarget.y + camDist*Math.sin(camAngleX),
+    camTarget.z + camDist*Math.cos(camAngleY)*Math.cos(camAngleX)
   );
-  camera.lookAt(0,0,0);
+  camera.lookAt(camTarget);
 }
 renderer.domElement.addEventListener('pointerdown', e=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; });
 window.addEventListener('pointerup', ()=> dragging=false);
@@ -295,7 +304,7 @@ window.addEventListener('pointermove', e=>{
 });
 renderer.domElement.addEventListener('wheel', e=>{
   e.preventDefault();
-  camDist = Math.max(3, Math.min(20, camDist + e.deltaY*0.01));
+  camDist = Math.max(3, Math.min(70, camDist * (1 + e.deltaY*0.0012)));   /* 비율 기반 줌: 장비 크기와 무관하게 일정한 감도 */
 }, { passive:false });
 
 window.addEventListener('resize', ()=>{
@@ -353,8 +362,8 @@ const stages = [
     ingot.rotation.z = Math.PI/2; ingot.position.x = -2.4;
     g.add(ingot);
 
-    // 결정 방향 표시용 플랫(잉곳/웨이퍼 측면 평평한 노치) — 실제 웨이퍼 특징을 살짝 반영
-    const flat = new THREE.Mesh(new THREE.BoxGeometry(0.06,4,0.35), MAT.mask());
+    // 결정 방향 표시용 플랫(잉곳 측면의 평평한 띠) — 잉곳 축(x) 방향으로 눕혀서 배치
+    const flat = new THREE.Mesh(new THREE.BoxGeometry(4,0.35,0.06), MAT.mask());
     flat.position.set(-2.4, 0, 1.08);
     g.add(flat);
 
@@ -1101,6 +1110,6 @@ function animate(){
 loadStage(0);
 animate();
 </script>
-<script src="semi-enhance.js"></script>
+<script src="semi-enhance.js?v=3"></script>
 </body>
 </html>
