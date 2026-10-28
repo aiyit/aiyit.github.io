@@ -56,10 +56,10 @@ footer{background:var(--panel);border-top:1px solid var(--line);padding:8px 14px
   <aside id="left">
     <section>
       <h2>1단계 · 주회로 결선</h2>
-      <p>전원 R·S·T → MC-F → THR → 모터. MC-R은 R·T 두 상을 서로 교체해 같은 THR에 연결합니다.</p>
+      <p>이 화면은 주회로만 결선합니다. 전원 R·S·T → MC-F/MC-R → THR → 모터 순서이며, 역회전 MC-R은 R·T 두 상을 바꿉니다. 인터록 b접점은 메인 화면의 제어회로 오류 체험에서 확인하세요.</p>
     </section>
     <section>
-      <h2>체크리스트</h2>
+      <h2>필수 연결 체크리스트</h2>
       <ul id="checks"></ul>
     </section>
     <section>
@@ -87,8 +87,8 @@ footer{background:var(--panel);border-top:1px solid var(--line);padding:8px 14px
 </main>
 <footer>
   <button id="chk" class="primary">결선 검사</button>
-  <div id="msg" class="info">단자를 클릭해 주회로를 결선한 뒤 [결선 검사]를 누르세요.</div>
-  <div id="safe">교육용 시뮬레이션입니다. 실제 전기 작업은 관련 전기안전 규정 준수와 전문가 검토가 필요합니다.</div>
+  <div id="msg" class="info" role="status" aria-live="polite">단자를 클릭해 주회로를 결선한 뒤 [결선 검사]를 누르세요.</div>
+  <div id="safe">교육용 시뮬레이션이며 실제 설비의 안전 검증을 대체하지 않습니다. 실제 전기 작업은 전원을 차단하고 관련 안전 규정과 전문가 검토를 따라야 합니다.</div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -187,18 +187,20 @@ function cat(id){
   if(id[0]==='M')return 'M';
   const [p,n]=id.split('-');return p+(n%2?'in':'out');
 }
+// 구간 점수는 전선 수가 아니라 각 필수 단자쌍을 정확히 연결했는지 판정합니다.
 const GROUPS=[
-  ['전원 → MC-F 입력','P|MCFin'],
-  ['MC-F 출력 → THR 입력','MCFout|THRin'],
-  ['전원 → MC-R 입력','P|MCRin'],
-  ['MC-R 출력 → THR 입력 (두 상 교체)','MCRout|THRin'],
-  ['THR 출력 → 모터 U·V·W','M|THRout']
+  ['전원 → MC-F 입력',[['P-R','MCF-1'],['P-S','MCF-3'],['P-T','MCF-5']]],
+  ['MC-F 출력 → THR 입력',[['MCF-2','THR-1'],['MCF-4','THR-3'],['MCF-6','THR-5']]],
+  ['전원 → MC-R 입력',[['P-R','MCR-1'],['P-S','MCR-3'],['P-T','MCR-5']]],
+  ['MC-R 출력 → THR 입력 (R·T 교체)',[['MCR-2','THR-5'],['MCR-4','THR-3'],['MCR-6','THR-1']]],
+  ['THR 출력 → 모터 U·V·W',[['THR-2','M-U'],['THR-4','M-V'],['THR-6','M-W']]]
 ];
+const pairKey=(a,b)=>[a,b].sort().join('|');
+const requiredPairs=new Set(GROUPS.flatMap(g=>g[1].map(p=>pairKey(...p))));
 function updateUI(){
-  const key=w=>[cat(w.a),cat(w.b)].sort().join('|');
-  $('#checks').innerHTML=GROUPS.map(([t,k])=>{
-    const sk=k.split('|').sort().join('|');const n=wires.filter(w=>key(w)===sk).length;
-    return `<li class="${n>=3?'done':''}"><span class="mk">${n>=3?'✓':''}</span><span>${t}<br><small>${Math.min(n,3)} / 3선</small></span></li>`;
+  $('#checks').innerHTML=GROUPS.map(([t,pairs])=>{
+    const n=pairs.filter(([a,b])=>wires.some(w=>pairKey(w.a,w.b)===pairKey(a,b))).length;
+    return `<li class="${n===pairs.length?'done':''}"><span class="mk">${n===pairs.length?'✓':''}</span><span>${t}<br><small>${n} / ${pairs.length} 필수 연결</small></span></li>`;
   }).join('');
   $('#cnt').textContent=wires.length;
   $('#wlist').innerHTML=wires.map((w,i)=>`<li><span class="dot" style="background:#${w.color.toString(16).padStart(6,'0')}"></span>${nm(w.a)} → ${nm(w.b)}<button class="x" data-i="${i}" title="삭제">×</button></li>`).join('');
@@ -272,6 +274,11 @@ function check(){
   attempts++;$('#att').textContent=attempts;
   if(!wires.length){say('err','<b class="e">결선된 전선이 없습니다.</b> 전원 단자부터 연결하세요.');return}
   const errs=[],oks=[];
+  const actualPairs=new Set(wires.map(w=>pairKey(w.a,w.b)));
+  const missing=[...requiredPairs].filter(p=>!actualPairs.has(p));
+  const extra=[...actualPairs].filter(p=>!requiredPairs.has(p));
+  if(missing.length)errs.push(`필수 단자 연결 ${missing.length}개가 누락되었습니다. 왼쪽 체크리스트에서 미완료 구간을 확인하세요.`);
+  if(extra.length)errs.push(`기준 회로에 없는 연결 ${extra.length}개가 있습니다. 불필요하거나 잘못된 전선을 삭제하세요.`);
   const F=analyze('MCF'),B=analyze('MCR');
   const nameOf=(a,dir)=>{
     if(a.short.length){errs.push(`${dir}: MC가 투입되면 <b class="e">${a.short.join(', ')} 상간 단락</b>이 발생합니다. 전선이 잘못 연결되었습니다.`);return}
