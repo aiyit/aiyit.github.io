@@ -29,7 +29,7 @@ ul{margin:0;padding:0;list-style:none}
 #checks li.done .mk{background:var(--ok);border-color:var(--ok);color:#04121f}
 #checks small{color:var(--mute)}
 #view{flex:1;position:relative;min-width:0}
-#view canvas{display:block;width:100%;height:100%}
+#view canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #tip{position:absolute;pointer-events:none;background:#000c;border:1px solid var(--accent);padding:2px 8px;border-radius:4px;font-size:12px;display:none;white-space:nowrap}
 #wlist li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);color:var(--text);font-size:12px}
 #wlist .dot{width:10px;height:10px;border-radius:50%;border:1px solid #fff6;flex:none}
@@ -307,11 +307,21 @@ setInterval(()=>{if(t0){const s=Math.floor((Date.now()-t0)/1000);$('#tm').textCo
 let xrSession=null;
 $('#bVR').onclick=()=>{
   if(xrSession){xrSession.end();return}
-  if(!navigator.xr){say('err',location.protocol==='file:'||window.isSecureContext===false?'VR은 HTTPS 주소(GitHub Pages 등)에서만 동작합니다.':'이 브라우저는 WebXR을 지원하지 않습니다. (Quest 브라우저 등 사용)');return}
-  navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']})
+  if(!navigator.xr){say("err",location.protocol==='file:'||window.isSecureContext===false?'VR은 HTTPS 주소(GitHub Pages 등)에서만 동작합니다.':'이 브라우저는 WebXR을 지원하지 않습니다. VR 헤드셋(Quest 브라우저 등) 또는 WebXR 지원 브라우저에서 열어 주세요.');return}
+  const go=o=>navigator.xr.requestSession('immersive-vr',o);
+  // 클릭 직후 바로 요청. 옵션 때문에 거부되면 옵션 없이 한 번 더 시도합니다.
+  go({optionalFeatures:['local-floor']})
+    .catch(e=>e&&e.name==='NotSupportedError'?go({}):Promise.reject(e))
     .then(s=>{xrSession=s;s.addEventListener('end',()=>{xrSession=null});return renderer.xr.setSession(s)})
-    .catch(e=>{xrSession=null;console.error(e);
-      say('err',e&&e.name==='NotSupportedError'?'VR 장치(헤드셋)가 없거나 지원되지 않습니다.':(e&&(e.name==='SecurityError'||/not allowed|permission|policy/i.test(e.message||'')))?'브라우저가 VR 시작을 허용하지 않았습니다. 미리보기 창이 아닌 HTTPS 새 탭에서 열어 주세요.':'VR 시작 실패 ('+(e&&e.name||'오류')+'): '+(e&&e.message||''))});
+    .catch(e=>{
+      xrSession=null;console.error('VR 시작 실패',e);
+      const m=(e&&e.message)||'';
+      let t;
+      if(e&&e.name==='NotSupportedError')t='VR 세션 조건을 충족하는 VR 기기를 찾지 못했습니다. 헤드셋 연결과 VR 런타임(SteamVR·Meta Quest Link·Windows Mixed Reality 등) 실행을 확인하거나, Quest 브라우저에서 이 주소를 열어 주세요. PC 화면에서는 마우스로 3D 모델을 돌려 볼 수 있습니다.';
+      else if(e&&(e.name==='SecurityError'||/not allowed|permission|policy/i.test(m)))t='브라우저가 VR 시작을 허용하지 않았습니다. 미리보기 창이 아니라 HTTPS 주소의 새 탭에서 열고, VR 장치 권한을 허용해 주세요.';
+      else t='VR 시작 실패 ('+(e&&e.name||'오류')+'): '+m;
+      say("err",t);
+    });
 };
 $('#bPC').onclick=()=>{if(xrSession)xrSession.end()};
 renderer.xr.addEventListener('sessionstart',()=>{board.position.set(0,1.1,-2.4);board.scale.setScalar(.38);$('#bVR').classList.add('on');$('#bPC').classList.remove('on')});
@@ -326,8 +336,8 @@ for(let i=0;i<2;i++){
   });
   scene.add(c);
 }
-function resize(){if(renderer.xr.isPresenting)return;const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()}
-new ResizeObserver(resize).observe(wrap);resize();
+function resize(){if(renderer.xr.isPresenting)return;const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(()=>requestAnimationFrame(resize)).observe(wrap);resize();
 renderer.setAnimationLoop(()=>{if(!renderer.xr.isPresenting)controls.update();renderer.render(scene,camera)});
 updateUI();
 </script>
