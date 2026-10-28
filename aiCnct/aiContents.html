@@ -127,6 +127,13 @@ SECS.forEach(function(x,i){
     x.k.forEach(function(a){ h+='<a class="card" href="'+a[1]+'"><h2>'+a[0]+'</h2><p>'+a[2]+'</p><code>'+a[1]+'</code></a>'; });
     h+='</div>';
     if(x.l){ h+='<ul class="topics">'+x.l.map(function(t){return '<li>'+t+'</li>';}).join("")+'</ul>'; }
+  } else if(i===8){
+    h+='<div class="cards">'+
+       '<a class="card" href="portfolioSubmit.html"><h2>학생 작품 등록</h2><p>학번, 이름, 작품명, 작품 사이트 주소와 소개를 등록하는 페이지입니다.</p><code>portfolioSubmit.html</code></a>'+
+       '<a class="card" href="portfolioGallery.html"><h2>작품 갤러리 및 등록 내용 보기</h2><p>수강생 작품 목록을 확인하고 작품 사이트로 이동하는 갤러리 페이지입니다.</p><code>portfolioGallery.html</code></a>'+
+       '</div>'+
+       '<ul class="topics">'+x.l.map(function(t){return '<li>'+t+'</li>';}).join("")+'</ul>'+
+       '<p class="note">현재는 페이지 구조가 게시되어 있습니다. 실제 입력 저장과 작품 목록 표시는 Google Forms 및 Google Sheets 주소를 연결한 뒤 사용할 수 있습니다.</p>';
   } else {
     h+='<ul class="topics">'+x.l.map(function(t){return '<li>'+t+'</li>';}).join("")+'</ul>';
     h+='<p class="note">세부 강의 내용은 순차적으로 추가됩니다.</p>';
