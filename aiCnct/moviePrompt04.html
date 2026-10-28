@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="초보자를 위한 동영상 편집기 종류와 기본 사용법, 실습 순서 및 편집 체크리스트">
+<title>동영상 편집기 종류와 사용법 | AI 콘텐츠 활용</title>
+<style>
+:root{--bg:#f2f4f7;--panel:#fff;--ink:#172033;--muted:#5b6577;--line:#d9dee7;--accent:#2448e6;--soft:#e6ebfd}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Noto Sans KR","Malgun Gothic",sans-serif}
+header{background:#172033;color:white;padding:30px 20px}header>div,main{max-width:1000px;margin:auto}header a{color:#dbe3ff;text-decoration:none;font-size:14px}h1{font-size:clamp(28px,5vw,42px);line-height:1.25;margin:12px 0}header p{color:#d9dfed;margin:0}main{padding:28px 20px 65px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:17px}h2{font-size:24px;margin:0 0 13px}h3{font-size:19px;margin:18px 0 7px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}.card{background:#f8f9fc;border:1px solid var(--line);border-radius:9px;padding:16px}.card p{margin:6px 0}.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:3px 9px;border-radius:99px;font-size:13px;font-weight:700}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;vertical-align:top;padding:11px;border-bottom:1px solid var(--line)}th{background:#f7f8fb} .table-wrap{overflow-x:auto}.steps{padding-left:22px}.steps li{margin:7px 0}.callout{background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:13px 16px;margin:15px 0}
+label{display:block;font-weight:700;margin:12px 0 5px}input,select,textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid #c8ced9;border-radius:8px;background:white;color:var(--ink)}textarea{min-height:90px;resize:vertical}button{font:inherit;font-weight:700;border:1px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;padding:10px 15px;margin:10px 8px 0 0;cursor:pointer}.secondary{background:white;color:var(--accent)}.output{min-height:210px}.links{display:flex;flex-wrap:wrap;gap:12px}.links a{color:var(--accent)}:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media(max-width:600px){.panel{padding:16px}th,td{padding:8px;font-size:14px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head><body>
+<header><div><a href="aiContents.html#s3">← AI 콘텐츠 활용 / 프롬프트 작성법</a><h1>동영상 편집기 종류와 사용법</h1><p>AI로 만든 영상 클립을 자르고, 순서를 정하고, 자막과 음악을 더해 하나의 완성된 영상으로 편집합니다.</p></div></header>
+<main>
+<section class="panel"><span class="tag">학습 목표</span><h2>편집기의 역할 이해하기</h2><p>동영상 생성 AI는 장면을 만들고, 동영상 편집기는 여러 장면을 연결해 완성본을 만드는 데 사용합니다. 편집기마다 지원 기능과 요금, 운영체제가 다르므로 작업 목적과 장비에 맞게 선택하세요.</p>
+<div class="grid"><div class="card"><strong>기초 편집</strong><p>클립 자르기, 순서 변경, 화면 비율 설정</p></div><div class="card"><strong>중급 편집</strong><p>자막, 전환 효과, 배경음악, 음량 조절</p></div><div class="card"><strong>고급 편집</strong><p>색 보정, 다중 트랙, 키프레임, 오디오 믹싱</p></div></div></section>
+<section class="panel"><h2>1. 대표적인 동영상 편집기 종류</h2><p class="muted">아래는 대표적인 도구와 일반적인 용도입니다. 무료·유료 기능과 사용 조건은 변경될 수 있으므로 설치 또는 가입 전에 공식 페이지에서 확인하세요.</p>
+<div class="table-wrap"><table><thead><tr><th>편집기</th><th>추천 용도</th><th>특징</th><th>공식 사이트</th></tr></thead><tbody>
+<tr><td><strong>Clipchamp</strong></td><td>초급·수업 과제</td><td>웹 기반 작업 흐름, 템플릿과 자막 등 입문 기능</td><td><a href="https://clipchamp.com/" target="_blank" rel="noopener">clipchamp.com</a></td></tr>
+<tr><td><strong>CapCut</strong></td><td>숏폼·SNS 영상</td><td>세로 영상, 자동 자막 및 효과 중심의 편집 흐름</td><td><a href="https://www.capcut.com/" target="_blank" rel="noopener">capcut.com</a></td></tr>
+<tr><td><strong>DaVinci Resolve</strong></td><td>중급·고급 제작</td><td>편집, 색 보정, 시각 효과, 오디오 작업을 통합</td><td><a href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank" rel="noopener">공식 제품 페이지</a></td></tr>
+<tr><td><strong>Adobe Premiere</strong></td><td>전문 편집·협업</td><td>다중 트랙 편집, 오디오·색상 작업 및 다른 Adobe 도구와의 연계</td><td><a href="https://www.adobe.com/products/premiere.html" target="_blank" rel="noopener">공식 제품 페이지</a></td></tr>
+<tr><td><strong>iMovie</strong></td><td>Apple 기기 입문</td><td>Mac·iPhone·iPad에서 기본적인 영상 편집</td><td><a href="https://www.apple.com/imovie/" target="_blank" rel="noopener">apple.com/imovie</a></td></tr>
+<tr><td><strong>Kdenlive</strong></td><td>무료 오픈소스 편집</td><td>다중 트랙 타임라인과 다양한 편집 기능</td><td><a href="https://kdenlive.org/" target="_blank" rel="noopener">kdenlive.org</a></td></tr>
+</tbody></table></div>
+<div class="callout"><strong>선택 기준:</strong> 처음 배우는 경우에는 사용하기 쉬운 편집기로 컷 편집과 자막부터 연습하세요. 색 보정·다중 트랙·정교한 오디오 작업이 필요하면 전문 편집기를 고려합니다. 특정 기능의 무료 제공 여부는 서비스와 지역, 요금제에 따라 다를 수 있습니다.</div></section>
+<section class="panel"><h2>2. 공통 편집 작업 순서</h2><ol class="steps">
+<li><strong>프로젝트 만들기:</strong> 영상의 목적을 정하고 가로형 16:9 또는 세로형 9:16 등 목표 화면 비율을 선택합니다.</li>
+<li><strong>미디어 가져오기:</strong> 생성한 영상, 이미지, 음원, 내레이션 파일을 프로젝트에 불러옵니다.</li>
+<li><strong>타임라인에 배치:</strong> 클립을 이야기 순서대로 놓고 불필요한 앞뒤 구간을 자릅니다.</li>
+<li><strong>장면 연결:</strong> 컷 사이의 흐름을 확인하고 필요한 경우 간단한 전환 효과를 적용합니다. 모든 컷에 효과를 넣을 필요는 없습니다.</li>
+<li><strong>자막과 소리:</strong> 읽기 쉬운 자막을 넣고 음성·음악·효과음의 음량을 조절합니다. 대사가 음악에 묻히지 않도록 확인합니다.</li>
+<li><strong>색감과 화면 확인:</strong> 장면마다 밝기와 색감이 지나치게 달라지지 않는지 확인합니다.</li>
+<li><strong>내보내기:</strong> MP4 등 목적에 맞는 형식과 해상도를 선택하고 저장된 파일을 처음부터 끝까지 재생해 확인합니다.</li>
+</ol></section>
+<section class="panel"><h2>3. 초보자 실습 — 15초 영상 완성하기</h2><p>실습 주제: <strong>호숫가 벚꽃나무의 아침</strong>. 세 개의 짧은 클립을 준비해 15초짜리 영상으로 연결합니다.</p>
+<div class="grid"><div class="card"><span class="tag">클립 1 · 0–5초</span><h3>도입</h3><p>호수와 벚꽃나무를 넓게 보여 줍니다.</p></div><div class="card"><span class="tag">클립 2 · 5–10초</span><h3>전개</h3><p>카메라가 나무를 향해 천천히 다가가고 꽃잎이 흩날립니다.</p></div><div class="card"><span class="tag">클립 3 · 10–15초</span><h3>마무리</h3><p>꽃을 가까이 보여 주고 움직임을 부드럽게 끝냅니다.</p></div></div>
+<ol class="steps"><li>세 클립을 타임라인에 순서대로 배치합니다.</li><li>클립 사이에 검은 화면이나 불필요한 공백이 없는지 확인합니다.</li><li>배경음악을 추가하고 영상의 주요 움직임과 어울리도록 길이를 조절합니다.</li><li>필요한 경우 제목이나 짧은 자막을 추가합니다.</li><li>최종 영상을 내보낸 뒤 파일을 재생해 소리와 화면을 점검합니다.</li></ol></section>
+<section class="panel"><h2>4. 직접 작성하는 편집 계획 프롬프트</h2><p class="muted">AI에게 편집 순서와 작업 지시서를 요청할 때 활용합니다. 이 프롬프트는 편집 계획을 작성하는 용도이며, 편집기를 직접 조작하지는 않습니다.</p>
+<label for="purpose">영상 목적</label><input id="purpose" value="수업용 15초 시네마틱 배경 영상">
+<label for="clips">보유한 클립과 순서</label><textarea id="clips">클립 1: 호숫가 벚꽃나무 와이드 샷 (5초)
+클립 2: 나무 쪽으로 천천히 이동하는 장면 (5초)
+클립 3: 꽃잎과 꽃을 가까이 보여 주는 장면 (5초)</textarea>
+<label for="style">편집 스타일</label><select id="style"><option>차분하고 자연스러운 컷 연결</option><option>빠른 템포의 숏폼 편집</option><option>영화 같은 느린 전환</option><option>교육용 설명 영상</option></select>
+<label for="audio">음향 계획</label><input id="audio" value="보컬 없는 따뜻한 피아노와 부드러운 스트링">
+<label for="format">출력 형식</label><select id="format"><option>MP4, 16:9 가로형, 1080p</option><option>MP4, 9:16 세로형, 1080p</option><option>MP4, 1:1 정사각형</option></select>
+<div class="actions"><button id="generate">편집 계획 프롬프트 생성</button><button class="secondary" id="copy">복사</button></div>
+<label for="result">생성된 편집 계획</label><textarea id="result" class="output" placeholder="생성된 편집 계획이 여기에 표시됩니다."></textarea><p id="status" class="muted" aria-live="polite"></p>
+</section>
+<section class="panel"><h2>5. 내보내기 전 체크리스트</h2><ul class="steps">
+<li>영상 시작과 끝에 원치 않는 빈 구간이 없는가?</li><li>장면 순서와 움직임이 자연스럽게 이어지는가?</li><li>자막이 잘리지 않고 모바일에서도 읽을 수 있는가?</li><li>음악이 대사나 내레이션을 가리지 않는가?</li><li>영상 비율과 해상도가 게시할 플랫폼에 맞는가?</li><li>사용한 영상·음원·이미지의 이용 허가와 저작권 조건을 확인했는가?</li>
+</ul></section>
+<section class="panel"><h2>관련 실습</h2><div class="links"><a href="moviePrompt01.html">동영상 프롬프트 기초</a><a href="moviePrompt02.html">동영상 프롬프트 중급</a><a href="moviePrompt03.html">동영상 프롬프트 고급</a><a href="moviePrompt.html">전체 동영상 프롬프트 안내</a><a href="aiContents.html#s3">AI 콘텐츠 활용 강의 메뉴</a></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function generate(){const purpose=$("purpose").value.trim(),clips=$("clips").value.trim();if(!purpose||!clips){$("status").textContent="영상 목적과 클립 구성을 입력해 주세요.";return;}
+$("result").value="Create a practical step-by-step video editing plan.\n\nPROJECT PURPOSE: "+purpose+"\n\nSOURCE CLIPS AND ORDER:\n"+clips+"\n\nEDITING STYLE: "+$("style").value+". Preserve a clear narrative order, trim unnecessary pauses, and use transitions only where they improve continuity.\n\nAUDIO: "+$("audio").value+". Balance music and dialogue, add short fades at the beginning and end, and avoid clipping.\n\nOUTPUT: "+$("format").value+".\n\nDELIVERABLES: Provide a numbered timeline edit plan with approximate timecodes, clip trims, transition instructions, audio levels to check, title/subtitle placement if needed, export settings, and a final quality-control checklist. Do not assume unavailable features in the selected editor; identify any step that depends on the editor or paid plan.";
+$("status").textContent="편집 계획 프롬프트를 생성했습니다. 복사해 AI 도우미에 요청하거나 편집 작업 지시서로 활용하세요.";}
+$("generate").addEventListener("click",generate);
+$("copy").addEventListener("click",async()=>{if(!$("result").value){generate();if(!$("result").value)return;}try{await navigator.clipboard.writeText($("result").value);$("status").textContent="프롬프트를 복사했습니다.";}catch(e){$("result").focus();$("result").select();$("status").textContent="자동 복사가 제한되었습니다. 선택된 내용을 Ctrl+C로 복사하세요.";}});
+generate();
+</script></body></html>
