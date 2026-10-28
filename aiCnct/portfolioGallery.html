@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수강생 작품 갤러리 | AI 콘텐츠 활용</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#101b35;--blue:#3157e8;--cyan:#39c7d8;--bg:#f3f6fb;--ink:#1b2740;--muted:#647089;--line:#dce3ef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",sans-serif;line-height:1.7}
+header{background:linear-gradient(120deg,var(--navy),#203f88);color:white;padding:28px 22px}.wrap{max-width:1000px;margin:auto}header a{color:#dbe7ff;text-decoration:none;font-size:14px}header h1{font-size:clamp(28px,5vw,42px);margin:18px 0 6px}header p{margin:0;color:#dce7ff}
+main{max-width:1000px;margin:28px auto;padding:0 18px 50px}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:clamp(20px,4vw,34px);box-shadow:0 8px 28px #20345c0c}h2{font-size:21px;margin:0 0 12px}.notice{background:#fff8e6;border-left:4px solid #e3a82b;padding:14px 16px;border-radius:8px;font-size:14px;margin:20px 0}.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:20px}.step{border:1px solid var(--line);border-radius:12px;padding:18px;background:#fbfcff}.step strong{display:block;margin-bottom:6px}.step p{margin:0;color:var(--muted);font-size:14px}.action{display:inline-block;margin-top:20px;background:var(--blue);color:white;text-decoration:none;font-weight:700;border-radius:9px;padding:12px 18px}.foot{color:var(--muted);font-size:13px;margin:22px 4px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="aiContents.html#s10">← AI 콘텐츠 활용 / 도구 모음과 작품 갤러리</a><h1>수강생 작품 갤러리</h1><p>학생이 등록한 작품과 웹사이트를 함께 살펴보는 공간입니다.</p></div></header>
+<main><section class="panel">
+<h2>작품 목록</h2>
+<p>실제 작품 목록은 등록용 Google Forms의 응답이 저장되는 Google Sheets와 연결해 표시합니다.</p>
+<div class="notice"><strong>Google Sheets 연결 전</strong><br>현재는 작품 데이터 시트가 연결되지 않아 제출된 작품 목록을 표시할 수 없습니다. 담당자가 응답 시트를 만들고 공유 또는 게시 설정을 완료한 뒤 이 페이지에 연결해야 합니다.</div>
+<div class="steps">
+<div class="step"><strong>1. 작품 등록</strong><p>학생이 학번, 이름, 작품명, 사이트 주소와 작품 소개를 제출합니다.</p></div>
+<div class="step"><strong>2. 응답 확인</strong><p>담당자가 Google Forms 응답이 쌓이는 Google Sheets에서 등록 내용을 확인합니다.</p></div>
+<div class="step"><strong>3. 갤러리 공개</strong><p>공개해도 되는 항목만 골라 웹페이지에 연결하고 작품 링크를 확인합니다.</p></div>
+</div>
+<p class="foot">학번과 이름은 개인정보가 될 수 있습니다. 공개 갤러리에는 학생 동의를 받고 공개가 필요한 항목만 표시하는 것을 권장합니다.</p>
+</section></main>
+</body>
+</html>
