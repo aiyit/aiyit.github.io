@@ -26,7 +26,7 @@ function buildPrompt(){
  const subject=$("subject").value.trim(),action=$("action").value.trim();
  if(!subject||!action){$("status").textContent="대상과 행동을 입력해 주세요.";return;}
  const prompt="" + "";
- const parts=["Create a "+$("duration").value+" video of "+subject+".","Main action: "+action+". Show one clear action with natural motion.","Mood and lighting: "+$("lighting").value.trim()+".","Camera: "+$("camera").value+".","Format: "+$("duration").value+", "+$("ratio").value+".","Avoid: "+$("avoid").value.trim()+"."];
+ const parts=["Create a cinematic "+$("duration").value+" video of "+subject+".","Action and timing: "+action+". Use a clear beginning, continuous movement, and deliberate ending.","Camera movement: "+$("camera").value+". Keep movement smooth and intentional; distinguish camera movement from subject movement.","Lighting and color: "+$("lighting").value.trim()+". Maintain consistent exposure, shadows, and depth of field.","Composition: preserve a clear focal subject and finish on a deliberate final frame.","Format: "+$("duration").value+", "+$("ratio").value+".","Avoid: "+$("avoid").value.trim()+"."];
  $("result").value=parts.join("\n\n");$("status").textContent="프롬프트를 생성했습니다. 결과를 확인하고 필요한 조건을 수정하세요.";
 }
 $("build").addEventListener("click",buildPrompt);
