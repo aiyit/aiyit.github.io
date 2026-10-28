@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="캐릭터와 세계관을 유지하며 여러 화로 이어지는 AI 웹툰 연작 프롬프트와 예제">
+<title>AI 웹툰 연작 프롬프트 실습 | AI 콘텐츠 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4f7;--panel:#fff;--ink:#172033;--muted:#5b6577;--line:#d9dee7;--accent:#2448e6;--soft:#e6ebfd}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR","Noto Sans KR",sans-serif;line-height:1.7}
+header{background:#172033;color:#fff;padding:34px 20px}header .wrap,main{max-width:1000px;margin:auto}header a{color:#cbd5ff;text-decoration:none;font-size:14px}h1{font-size:clamp(28px,5vw,42px);line-height:1.25;margin:14px 0 8px}header p{margin:0;color:#d7dceb}
+main{padding:28px 20px 60px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;margin:0 0 18px}h2{font-size:22px;margin:0 0 12px}h3{font-size:17px;margin:16px 0 6px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+label{display:block;font-weight:700;margin:12px 0 5px}select,input,textarea{font:inherit;width:100%;padding:10px 12px;border:1px solid #c8ced9;border-radius:8px;background:#fff;color:var(--ink)}textarea{min-height:130px;resize:vertical}
+button{font:inherit;border:0;border-radius:8px;padding:11px 16px;cursor:pointer;background:var(--accent);color:#fff;font-weight:700;margin:10px 8px 0 0}button.secondary{background:var(--soft);color:var(--accent)}
+.output{background:#f7f8fb;border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere}.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:3px 9px;border-radius:999px;font-size:13px;margin:2px}.steps{padding-left:22px}.steps li{margin:6px 0}.sample{margin:10px 0 16px}.callout{background:#f7f8fb;border-left:4px solid var(--accent);padding:12px 16px;border-radius:6px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media(max-width:560px){.panel{padding:16px}header{padding:26px 18px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="aiContents.html#s6">← AI 콘텐츠 활용 / 실습 6. 웹툰 콘텐츠</a><h1>AI 웹툰 연작 프롬프트 실습</h1><p>한 편으로 끝나는 웹툰이 아니라, 캐릭터와 세계관을 유지하며 다음 화로 이어지는 연작을 설계합니다.</p></div></header>
+<main>
+<section class="panel"><h2>1. 웹툰 연작은 무엇이 다른가요?</h2><p>연작 웹툰은 각 화의 재미뿐 아니라, 화와 화 사이의 연결이 중요합니다. 먼저 전체 이야기의 방향과 캐릭터 기준표를 정하고, 각 화의 사건을 배치한 뒤 해당 화의 컷을 제작합니다.</p>
+<div class="grid"><div><span class="tag">시리즈 바이블</span><p>세계관 규칙, 시간·장소, 주요 인물, 작품의 핵심 주제를 기록합니다.</p></div><div><span class="tag">캐릭터 고정</span><p>얼굴, 머리, 의상, 체형, 소품, 말투와 성격을 기준표로 관리합니다.</p></div><div><span class="tag">화별 설계</span><p>각 화의 목표, 갈등, 변화, 핵심 장면을 미리 정합니다.</p></div><div><span class="tag">연속성 관리</span><p>이전 화의 사건·부상·소품·관계·미해결 단서를 다음 화에 반영합니다.</p></div></div>
+<div class="callout"><strong>핵심 원칙:</strong> 매번 처음부터 새 이야기를 요청하지 말고, 이전 화의 요약과 고정 설정을 다음 프롬프트에 함께 넣으세요. AI가 설정을 완벽하게 기억한다고 가정하지 않습니다.</div></section>
+<section class="panel"><h2>2. 연작 제작 프롬프트 생성기</h2><p class="muted">작품의 공통 설정과 이번 화의 내용을 입력하면, 여러 화에 반복해서 사용할 수 있는 프롬프트가 만들어집니다. 결과를 복사해 AI 대화에 붙여 넣고, 실제 설정에 맞게 수정하세요.</p>
+<div class="grid">
+<div><label for="genre">장르</label><select id="genre"><option>판타지 미스터리</option><option>현대 일상 드라마</option><option>로맨스</option><option>SF와 미래 도시</option><option>학원 성장물</option><option>모험과 액션</option><option>공포와 스릴러</option></select></div>
+<div><label for="style">그림 스타일</label><select id="style"><option>세련된 한국 세로형 웹툰</option><option>부드러운 수채화풍</option><option>선명한 애니메이션 스타일</option><option>어두운 시네마틱 누아르</option><option>따뜻한 파스텔 카툰</option><option>섬세한 판타지 일러스트</option></select></div>
+<div><label for="episode">이번 화 번호</label><select id="episode"><option>1화 — 세계관과 주인공 소개</option><option>2화 — 첫 번째 단서와 갈등</option><option>3화 — 위기와 새로운 사실</option><option>4화 — 선택과 반전</option><option>5화 — 중간 결말과 다음 이야기의 문</option><option>직접 지정한 화</option></select></div>
+<div><label for="panels">이번 화의 컷 구성</label><select id="panels"><option>6컷, 짧은 에피소드</option><option>8컷, 감정과 사건의 변화</option><option>12컷, 도입·전개·위기·클리프행어</option><option>세로 스크롤형 5개 주요 장면</option></select></div>
+<div><label for="ending">이번 화의 마무리</label><select id="ending"><option>다음 화가 궁금해지는 단서 공개</option><option>감정적인 여운</option><option>작은 사건 해결 후 더 큰 문제 등장</option><option>반전 또는 예상 밖의 인물 등장</option><option>한 화 안에서 사건을 완결</option></select></div>
+<div><label for="continuity">연속성 강도</label><select id="continuity"><option>매우 엄격 — 설정 변경 금지, 변경은 명시적으로 기록</option><option>엄격 — 핵심 설정과 캐릭터 유지</option><option>유연 — 작은 설정 변화는 이야기상 허용</option></select></div>
+</div>
+<label for="premise">시리즈 전체 줄거리 (시리즈 로그라인)</label><textarea id="premise">비 오는 밤, 대학생 서윤은 오래된 골목에서 빛나는 고양이를 만난다. 고양이는 도시 곳곳에 숨겨진 사라진 기억의 조각을 찾아가도록 이끈다. 기억을 모을수록 서윤은 자신의 어린 시절과 관련된 비밀에 가까워진다.</textarea>
+<label for="world">세계관과 배경 규칙</label><textarea id="world">현대 도시를 배경으로 한다. 비가 내리는 밤에만 기억의 조각이 푸른빛으로 보인다. 고양이는 조각을 찾는 길을 안내하지만 사람의 기억을 직접 바꾸지는 못한다. 초자연 현상은 한 화에서 정한 규칙을 이후 화에서도 지킨다.</textarea>
+<label for="characters">고정 캐릭터 설정</label><textarea id="characters">서윤: 20세 대학생, 짧은 검은 머리, 남색 재킷, 작은 갈색 어깨 가방. 호기심이 많지만 중요한 순간에는 망설인다.\n빛고양이: 작은 검은 고양이, 푸른 눈과 꼬리 끝의 은은한 빛. 말을 하지 않고 행동과 빛으로 의사를 표현한다.</textarea>
+<label for="recap">이전 화 요약 및 반드시 이어갈 사항</label><textarea id="recap">1화라면 '해당 없음'으로 둡니다. 2화 이후에는 이전 화에서 실제로 일어난 사건, 인물 관계 변화, 가지고 있는 물건, 아직 해결되지 않은 단서를 입력하세요.</textarea>
+<label for="episodePlot">이번 화에서 일어날 사건</label><textarea id="episodePlot">서윤은 고양이를 따라 폐쇄된 지하철 출입구에 도착한다. 물웅덩이에 비친 낯선 어린아이의 모습에서 첫 번째 기억 조각을 발견하지만, 조각에 손을 대자 누군가 뒤에서 이름을 부른다.</textarea>
+<label for="extra">추가 연출 조건 (선택)</label><input id="extra" placeholder="예: 푸른빛과 따뜻한 가로등 색 대비, 마지막 컷에서 정체는 보여 주지 않기">
+<button id="make">연작 프롬프트 생성</button><button id="copy" class="secondary">프롬프트 복사</button>
+<label for="result">완성된 프롬프트 (직접 편집 가능)</label><textarea id="result" placeholder="생성된 프롬프트가 여기에 표시됩니다."></textarea><p id="status" class="muted" aria-live="polite"></p></section>
+<section class="panel"><h2>3. 바로 활용하는 연작 프롬프트 예제</h2>
+<h3>예제 A — 1화: 세계관과 주인공 소개</h3><div class="output sample">You are the story editor and visual continuity supervisor for an original serialized Korean vertical webtoon titled “The Cat That Collects Rain.” Create Episode 1 of a continuing fantasy mystery series. Series premise: college student Seoyun meets a small black cat with glowing blue eyes in a rainy alley; together they discover fragments of lost memories hidden around the city.\n\nFIXED CHARACTER SHEET: Seoyun is 20 years old, with short black hair, a navy jacket, and a small brown shoulder bag. The cat is small and black, with blue eyes and a faint glow at the tip of its tail. The cat never speaks; it communicates through movement and light. Keep these designs unchanged.\n\nWORLD RULES: Memory fragments glow blue only on rainy nights. The cat can guide Seoyun but cannot directly alter anyone’s memories. Do not invent new rules without explicitly flagging them for approval.\n\nEPISODE 1: Introduce Seoyun’s ordinary life, show the rainy alley, reveal the cat, and end when the cat leads Seoyun toward a sealed subway entrance. Use 8 vertical-scroll panels with readable pacing, expressive close-ups, consistent clothing and props, and cinematic rain lighting. End with a compelling question that leads into Episode 2. Leave dialogue and sound effects for later lettering. No logos or watermarks. Output: episode summary, panel-by-panel plan, then image prompts for each panel.</div>
+<h3>예제 B — 2화: 이전 화를 이어가기</h3><div class="output sample">Continue the same serialized webtoon from Episode 1. Before drafting, treat the continuity notes below as canon. Do not restart the story or reintroduce the characters as if they had never met.\n\nCANON CHARACTER SHEET: Seoyun: 20, short black hair, navy jacket, brown shoulder bag. The small black cat has blue eyes and a faint glow at the tail tip, and never speaks.\n\nPREVIOUS EPISODE RECAP: Seoyun met the cat in a rainy alley. The cat led her to a sealed subway entrance. No memory fragment has been collected yet.\n\nEPISODE 2 GOAL: Seoyun finds a reflection of an unknown child in a puddle near the entrance. The first blue memory fragment appears, but a voice calls Seoyun by name from behind. Do not reveal who spoke. Preserve the established world rules, character appearance, timeline, props, and unresolved mystery. Use 8 vertical panels: arrival, investigation, clue, discovery, reaction, rising tension, mysterious voice, cliffhanger. End at the moment of uncertainty. First output a short episode summary and panel plan; then write a separate image-generation prompt for each panel.\n\nIf any new detail conflicts with canon, keep canon and list the conflict instead of silently changing it.</div>
+<h3>예제 C — 화별 이미지 프롬프트를 일관되게 만드는 지시</h3><div class="output sample">Using the approved series bible and episode panel plan, write one image-generation prompt per panel. Repeat the relevant fixed character descriptions verbatim in every prompt. Specify panel number, action, facial expression, camera distance, background, lighting, color palette, and vertical-scroll composition. Keep character identity, hairstyle, clothing, accessories, weather, time of day, and screen direction consistent unless the script explicitly changes them. Do not ask the image model to render long Korean dialogue; leave clear blank space for lettering to be added during editing. After the prompts, provide a continuity checklist comparing all panels against the series bible.</div>
+</section>
+<section class="panel"><h2>4. 연작 제작 권장 순서</h2><ol class="steps"><li><strong>시리즈 바이블 작성:</strong> 작품 제목, 장르, 로그라인, 세계관 규칙, 캐릭터 설정을 고정합니다.</li><li><strong>시즌 또는 전체 줄거리 설계:</strong> 시작, 주요 갈등, 중간 전환, 결말의 방향을 정합니다.</li><li><strong>화별 개요 작성:</strong> 각 화의 목표, 사건, 인물의 변화, 다음 화로 이어지는 질문을 정합니다.</li><li><strong>이전 화 요약 전달:</strong> 다음 화를 만들 때 확정된 설정과 미해결 단서를 함께 제공합니다.</li><li><strong>컷별 생성:</strong> 화 전체를 한 번에 그리기보다 컷별 프롬프트를 만들고 기준 이미지를 활용합니다.</li><li><strong>연속성 검수:</strong> 인물 외형, 의상, 소품, 시간, 장소, 사건 순서가 맞는지 확인하고 설정 기록을 갱신합니다.</li></ol>
+<h3>연작 점검표</h3><ul class="steps"><li>주인공의 외형·의상·소품이 이전 화와 같은가?</li><li>이전 화의 사건과 인물 관계가 정확하게 이어지는가?</li><li>이미 공개된 정보와 아직 감춰야 할 단서를 구분했는가?</li><li>이번 화 자체의 변화가 있으며 다음 화를 볼 이유도 있는가?</li><li>새로 확정된 설정을 시리즈 바이블과 다음 화 요약에 기록했는가?</li></ul>
+<p class="muted">중요: 프롬프트는 연속성을 높이는 지침이지 완벽한 기억 보장 기능은 아닙니다. 확정된 설정표, 이전 화 요약, 캐릭터 기준 이미지, 컷별 결과를 파일로 보관해 다음 작업에 다시 제공하세요.</p></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+$("make").addEventListener("click",()=>{
+ const extra=$("extra").value.trim();
+ const prompt=[
+ "You are a writer, episode planner, and visual continuity supervisor for an original serialized webtoon. Create the requested episode using the series canon below.",
+ "SERIES GENRE: "+$("genre").value+". VISUAL STYLE: "+$("style").value+". EPISODE: "+$("episode").value+". PANEL PLAN: "+$("panels").value+". ENDING: "+$("ending").value+". CONTINUITY RULE: "+$("continuity").value+".",
+ "SERIES PREMISE / LOGLINE:\n"+$("premise").value.trim(),
+ "WORLD BIBLE — treat these rules as canon:\n"+$("world").value.trim(),
+ "FIXED CHARACTER SHEET — preserve names, ages, faces, hairstyles, outfits, props, personality, and abilities unless a change is explicitly written into the story:\n"+$("characters").value.trim(),
+ "PREVIOUS EPISODE RECAP AND OPEN THREADS:\n"+$("recap").value.trim(),
+ "THIS EPISODE'S EVENTS:\n"+$("episodePlot").value.trim(),
+ "SERIAL CONTINUITY INSTRUCTIONS: Continue from the previous episode rather than restarting. Do not contradict established events, character relationships, timeline, locations, objects, or world rules. Distinguish confirmed canon from new proposals. If information is missing or contradictory, flag it instead of silently inventing a permanent fact. Preserve mysteries that are meant to remain unrevealed.",
+ "OUTPUT FORMAT: 1) episode purpose and short summary; 2) panel-by-panel outline with each panel's action, expression, setting, and story function; 3) a separate image-generation prompt for each panel that repeats the relevant fixed character descriptions; 4) dialogue/lettering notes separately from image prompts; 5) continuity checklist and a short updated recap to reuse in the next episode. Use clear vertical mobile reading order, deliberate pacing, and a meaningful ending that supports the series arc. Avoid unreadable text, logos, and watermarks.",
+ extra ? "ADDITIONAL CREATIVE DIRECTION:\n"+extra : ""
+ ].join("\n\n");
+ $("result").value=prompt;
+ $("status").textContent="연작 프롬프트를 만들었습니다. 설정과 이전 화 요약을 확인한 뒤 사용하세요.";
+});
+$("copy").addEventListener("click",async()=>{
+ const value=$("result").value;
+ if(!value){$("status").textContent="먼저 연작 프롬프트를 생성해 주세요.";return;}
+ try{await navigator.clipboard.writeText(value);$("status").textContent="프롬프트를 복사했습니다.";}
+ catch(e){$("result").select();$("status").textContent="자동 복사가 제한되었습니다. 선택된 내용을 직접 복사해 주세요.";}
+});
+</script>
+</body>
+</html>
