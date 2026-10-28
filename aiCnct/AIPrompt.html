@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3단계 프롬프트 작성법 | AI 콘텐츠 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F2F4F7;--panel:#fff;--ink:#172033;--muted:#5B6577;--line:#D9DEE7;--accent:#2448E6;--soft:#E6EBFD;--font:"IBM Plex Sans KR","Noto Sans KR","Malgun Gothic",sans-serif}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);background:var(--paper);color:var(--ink);line-height:1.8}a{color:var(--accent)}:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bar{background:#fff;border-bottom:1px solid var(--line);padding:12px clamp(20px,5vw,48px)}.bar a{text-decoration:none;font-weight:500}
+.wrap{max-width:1100px;margin:auto;padding:48px 22px 76px}h1{font-size:clamp(30px,5vw,44px);line-height:1.25;letter-spacing:-.03em;margin:0 0 14px}h2{font-size:26px;letter-spacing:-.02em;margin:44px 0 14px}h3{margin:0 0 8px;font-size:20px}.lead{font-size:18px;color:var(--muted);max-width:780px;margin-bottom:28px}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.step,.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px}.num{display:inline-grid;place-items:center;width:34px;height:34px;background:var(--soft);color:var(--accent);border-radius:50%;font-weight:700;margin-bottom:10px}.step p,.muted{color:var(--muted);margin:0}
+.callout{background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:16px 20px;margin:22px 0}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff}table{width:100%;border-collapse:collapse;min-width:800px;font-size:15px}th,td{text-align:left;vertical-align:top;padding:13px 14px;border-bottom:1px solid var(--line)}th{background:#E9EDF4;font-weight:700}tbody tr:last-child td{border-bottom:0}td:first-child{font-weight:700;white-space:nowrap}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#111827;color:#F3F4F6;padding:16px;border-radius:8px;font:14px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;margin:12px 0}button{font:inherit;cursor:pointer;border:1px solid var(--accent);border-radius:7px;padding:8px 13px;background:var(--accent);color:#fff}.secondary{background:#fff;color:var(--accent)}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.lab{display:grid;grid-template-columns:1fr 1fr;gap:16px}.lab label{display:block;font-weight:700;margin:8px 0 4px}.lab input,.lab textarea,.lab select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff;color:var(--ink)}.lab textarea{min-height:90px;resize:vertical}.output{min-height:240px}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:760px){.steps,.lab{grid-template-columns:1fr}.wrap{padding-top:32px}.step{padding:16px}}
+</style>
+</head>
+<body>
+<div class="bar"><a href="aiContents.html#s3">← AI 콘텐츠 활용 강의 메뉴</a></div>
+<main class="wrap">
+<h1>3단계 프롬프트 작성법</h1>
+<p class="lead">글쓰기, HTML 문서, 프로그램, 이미지, 동영상 등 어떤 미디어를 만들든 핵심은 같습니다. <strong>목표를 정하고(Aim), 조건과 맥락을 설명하고(Provide context), 결과 형식을 지정한다(Template).</strong> 이 페이지에서는 이를 A-P-T 3단계로 연습합니다.</p>
+
+<div class="steps">
+ <section class="step"><div class="num">1</div><h3>A — Aim: 목적</h3><p>AI에게 무엇을 만들어 달라는지 구체적인 동사로 시작합니다. 예: 작성, 분석, 수정, 비교, 생성, 디버깅.</p></section>
+ <section class="step"><div class="num">2</div><h3>P — Provide context: 조건·맥락</h3><p>대상, 수준, 자료, 환경, 스타일, 분량, 제한 사항을 알려 줍니다. 모르는 사실은 지어내지 말라고 지정할 수 있습니다.</p></section>
+ <section class="step"><div class="num">3</div><h3>T — Template: 결과 형식</h3><p>표, 단계별 절차, 전체 HTML 코드, 실행 가능한 파일, 이미지 비율, 영상 길이·장면 구성처럼 결과물의 형태를 정합니다.</p></section>
+</div>
+<div class="callout"><strong>기억할 공식:</strong> “무엇을 만들지 + 어떤 조건으로 만들지 + 어떤 형태로 받을지.” 첫 결과가 부족하면 빠진 조건을 추가해 다시 요청합니다.</div>
+
+<h2>미디어별 최적화 프롬프트 비교표</h2>
+<p class="muted">아래 예시는 그대로 복사해 시작할 수 있는 기본형입니다. 대괄호 안의 내용을 자신의 주제와 조건으로 바꾸세요.</p>
+<div class="scroll"><table>
+<thead><tr><th>미디어·작업</th><th>1단계: 목적(Aim)</th><th>2단계: 조건·맥락(Provide context)</th><th>3단계: 결과 형식(Template)</th><th>추가로 지정하면 좋은 항목</th></tr></thead>
+<tbody>
+<tr><td>글쓰기·보고서</td><td>[주제]에 대한 글을 작성해 주세요.</td><td>독자는 [대상], 목적은 [설명/설득/보고], 문체는 [전문적/친근한], 분량은 [글자 수]입니다. 제공 자료 밖의 사실은 추측하지 마세요.</td><td>제목, 도입, 소제목이 있는 본문, 결론 순서로 작성하고 핵심 요점을 마지막에 정리하세요.</td><td>독자 수준, 근거·출처, 문체, 분량, 금지 표현</td></tr>
+<tr><td>HTML 문서·웹페이지</td><td>[주제]를 설명하는 교육용 HTML 페이지를 만들어 주세요.</td><td>학습자는 HTML 초보자입니다. 모바일 반응형, 접근성, 읽기 쉬운 한국어를 적용하고 [색상/디자인]을 사용하세요. 외부 라이브러리는 [허용/금지]입니다.</td><td>완성된 전체 HTML 파일을 하나의 코드 블록으로 출력하세요. CSS와 JavaScript를 포함하고 저장 파일명은 [파일명.html]로 안내하세요.</td><td>기존 파일 유지 여부, 브라우저, 반응형, 버튼 동작, 콘솔 오류 확인</td></tr>
+<tr><td>프로그램 작성·디버깅</td><td>[기능]을 수행하는 [Python/JavaScript 등] 프로그램을 작성하거나 오류를 수정해 주세요.</td><td>실행 환경은 [버전/OS], 입력은 [예시], 출력은 [예시]입니다. 초보자도 이해할 수 있게 주석을 달고 기존 기능은 유지하세요.</td><td>전체 코드, 실행 방법, 예상 출력, 테스트 사례 3개, 오류 처리 설명 순서로 답하세요. 수정 작업이면 변경점도 요약하세요.</td><td>언어·버전, 입력/출력, 예외 상황, 성능, 테스트, 기존 코드</td></tr>
+<tr><td>이미지 생성</td><td>[주제와 장면]을 표현한 이미지를 생성해 주세요.</td><td>주요 대상은 [대상], 배경은 [장소], 분위기는 [감성/사실적/판타지], 조명은 [종류], 색감은 [팔레트], 시점은 [각도]입니다.</td><td>가로형 16:9 또는 세로형 9:16, 고해상도 이미지로 생성하세요. 이미지 안에 글자는 [넣지 않기/정확한 문구만 넣기]로 설정하세요.</td><td>대상·행동, 배경, 구도, 카메라, 조명, 재질, 색감, 비율, 제외할 요소</td></tr>
+<tr><td>동영상 생성</td><td>[주제]를 담은 [초] 길이의 짧은 영상을 만들어 주세요.</td><td>장면은 [장소/시간], 대상은 [대상], 움직임은 [구체적 동작], 카메라는 [고정/천천히 이동/따라가기], 분위기는 [스타일]입니다.</td><td>장면별 타임라인을 작성하고 각 장면의 시작·끝 동작, 카메라 움직임, 전환, 화면 비율을 지정하세요. 대사·자막·음악은 [조건]으로 처리하세요.</td><td>길이, 초당 프레임, 화면비, 동작 연속성, 카메라 이동, 사운드, 장면 전환</td></tr>
+<tr><td>발표자료·슬라이드</td><td>[주제]로 발표자료를 만들어 주세요.</td><td>청중은 [대상], 발표 시간은 [분], 슬라이드 수는 [장], 핵심 메시지는 [메시지]입니다.</td><td>각 슬라이드마다 제목, 핵심 문장 3개 이하, 추천 시각자료, 발표자 노트를 표로 작성하세요.</td><td>발표 시간, 슬라이드 수, 핵심 메시지, 시각자료, 출처</td></tr>
+<tr><td>데이터 분석·시각화</td><td>[데이터]를 분석해 [질문]에 답해 주세요.</td><td>열의 의미는 [설명], 분석 대상 기간은 [기간], 결측값은 [처리 방식]입니다. 상관관계를 인과관계로 단정하지 마세요.</td><td>데이터 정리, 분석 방법, 결과 표, 적절한 그래프, 해석, 한계 순서로 제시하세요. 코드가 필요하면 재현 가능한 전체 코드를 포함하세요.</td><td>데이터 사전, 결측치, 단위, 표본 수, 그래프 목적, 한계</td></tr>
+<tr><td>음성·내레이션</td><td>[주제]에 대한 내레이션 대본을 작성해 주세요.</td><td>청취자는 [대상], 톤은 [차분/활기/전문적], 길이는 [초/분], 발음이 어려운 용어는 [설명 방식]으로 처리하세요.</td><td>말하기 자연스러운 문장으로 작성하고, 문단별 예상 시간과 [쉼표/강조/발음 지침]을 표시하세요.</td><td>청취자, 말하기 속도, 감정, 발음, 휴지, 배경음</td></tr>
+<tr><td>웹툰·스토리보드</td><td>[주제]의 짧은 웹툰 또는 영상 스토리보드를 구성해 주세요.</td><td>등장인물은 [특징], 배경은 [장소], 장르는 [장르], 분위기는 [분위기]이며 캐릭터 외형과 의상은 모든 장면에서 일관되게 유지하세요.</td><td>컷 번호, 장면 설명, 인물 행동, 대사, 카메라 구도, 이미지 프롬프트를 표로 작성하세요.</td><td>캐릭터 시트, 컷 수, 대사 길이, 장면 연결, 시각적 일관성</td></tr>
+<tr><td>자료 조사·검색</td><td>[질문]에 대한 최신 정보를 조사해 주세요.</td><td>기간은 [기간], 지역·범위는 [범위], 신뢰할 자료의 우선순위는 [공식 문서/논문/통계]입니다. 확인할 수 없는 내용은 불확실하다고 표시하세요.</td><td>핵심 요약, 비교표, 출처 링크와 날짜, 확인이 필요한 쟁점으로 정리하세요.</td><td>기간, 출처 품질, 발행일, 원문 링크, 사실과 해석 구분</td></tr>
+</tbody></table></div>
+
+<h2>실습: 나만의 프롬프트 만들기</h2>
+<p class="muted">목표·조건·결과 형식을 입력하면 하나의 프롬프트로 합쳐집니다. 완성된 문장을 복사해 원하는 AI 서비스에 붙여 넣으세요.</p>
+<div class="panel lab">
+ <div>
+  <label for="media">만들 콘텐츠</label>
+  <select id="media">
+   <option value="글쓰기">글쓰기·보고서</option><option value="HTML 문서">HTML 문서·웹페이지</option><option value="프로그램">프로그램 작성</option><option value="이미지">이미지 생성</option><option value="동영상">동영상 생성</option><option value="발표자료">발표자료</option><option value="데이터 분석">데이터 분석</option><option value="음성">음성·내레이션</option><option value="웹툰">웹툰·스토리보드</option>
+  </select>
+  <label for="aim">1단계 — 무엇을 만들까요?</label><textarea id="aim" placeholder="예: 초보자에게 태양계를 설명하는 콘텐츠를 만들어 주세요."></textarea>
+  <label for="context">2단계 — 대상과 조건은 무엇인가요?</label><textarea id="context" placeholder="예: 중학생 대상, 쉬운 한국어, 과학적 사실을 정확히, 5분 분량"></textarea>
+  <label for="format">3단계 — 어떤 형태로 받을까요?</label><textarea id="format" placeholder="예: 제목과 소제목, 표 1개, 요약 및 출처를 포함"></textarea>
+  <div class="toolbar"><button id="build">프롬프트 만들기</button><button class="secondary" id="sample">예시 채우기</button><button class="secondary" id="reset">초기화</button></div>
+ </div>
+ <div>
+  <label for="result">완성된 프롬프트</label>
+  <textarea id="result" class="output" placeholder="왼쪽 항목을 입력하고 ‘프롬프트 만들기’를 누르세요." readonly></textarea>
+  <div class="toolbar"><button id="copy">프롬프트 복사</button></div>
+  <p id="status" class="muted" aria-live="polite" style="margin-top:10px;font-size:14px"></p>
+ </div>
+</div>
+
+<h2>좋은 프롬프트인지 확인하기</h2>
+<div class="scroll"><table>
+<thead><tr><th>점검 항목</th><th>확인 질문</th><th>개선 예시</th></tr></thead>
+<tbody>
+<tr><td>목적이 명확한가?</td><td>“좋게 만들어 줘”보다 구체적인 결과를 요청했나요?</td><td>“학생용 HTML 실습 페이지를 만들어 줘.”</td></tr>
+<tr><td>맥락이 충분한가?</td><td>누가 사용할지, 어떤 환경인지, 무엇을 피해야 하는지 적었나요?</td><td>“프로그래밍 초보자 대상, 모바일에서도 동작, 외부 라이브러리 없이.”</td></tr>
+<tr><td>형식이 명확한가?</td><td>표·코드·파일·비율·길이 등 결과 기준이 있나요?</td><td>“전체 HTML을 제공하고 실행 절차와 테스트 방법을 덧붙여 줘.”</td></tr>
+<tr><td>검증 방법이 있는가?</td><td>사실 확인, 실행 테스트, 결과 검토 기준을 지정했나요?</td><td>“오류 가능성과 한계를 표시하고 테스트 사례 3개를 포함해 줘.”</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>실무 팁:</strong> 프롬프트를 한 번에 완벽하게 작성하려고 하기보다 ① 초안 생성 → ② 부족한 점 확인 → ③ 조건을 구체화해 재요청 → ④ 결과 검증의 순환으로 개선하세요. 이미지·영상은 대상과 움직임을 구체적으로, 코드는 실행 환경과 입력·출력을 구체적으로 지정하는 것이 특히 중요합니다.</div>
+
+<footer><a href="aiContents.html#s3">← 3단계 프롬프트 작성법 메뉴</a><a href="AIservice.html">주요 AI 서비스 보기 →</a></footer>
+</main>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const examples={
+ "글쓰기":["AI 활용 교육의 장점을 설명하는 글을 작성해 주세요.","대학생 초보자 대상, 쉬운 한국어, 과장하지 말고 확인 가능한 사실과 의견을 구분하세요.","제목, 도입, 소제목 3개, 결론 순서로 작성하고 마지막에 핵심 요점 3개를 정리하세요."],
+ "HTML 문서":["AI 프롬프트 학습용 HTML 문서를 만들어 주세요.","HTML 초보자 대상, 모바일 반응형, 접근성을 고려하고 한국어로 설명하세요. 외부 라이브러리는 사용하지 마세요.","완성된 전체 HTML 파일을 하나의 코드 블록으로 제공하고 저장·실행 방법과 주요 코드 설명을 포함하세요."],
+ "프로그램":["Python으로 학생 점수의 평균과 등급을 계산하는 프로그램을 작성해 주세요.","프로그래밍 초보자 대상, Python 3 환경, 잘못된 입력도 처리하고 각 단계에 한국어 주석을 작성하세요.","전체 코드, 입력 예시, 예상 출력, 테스트 사례 3개와 실행 방법을 순서대로 제시하세요."],
+ "이미지":["미래형 AI 학습 공간의 이미지를 생성해 주세요.","학생들이 대형 투명 디스플레이로 3D 모델을 탐색하는 장면, 푸른 계열 조명, 사실적인 재질, 시네마틱 구도입니다.","가로형 16:9 고해상도로 생성하고 이미지 안에는 글자나 로고를 넣지 마세요."],
+ "동영상":["밤하늘에서 지구와 달을 보여 주는 짧은 영상을 만들어 주세요.","우주 공간, 사실적인 행성 질감, 카메라는 지구를 향해 천천히 이동하고 달은 자연스럽게 공전합니다. 장면 변화는 부드럽게 유지하세요.","8초, 가로형 16:9, 장면별 동작과 카메라 움직임을 명확히 지정하고 자막과 로고는 넣지 마세요."],
+ "발표자료":["생성형 AI의 기본 개념을 소개하는 발표자료를 만들어 주세요.","대학생 초보자 대상, 발표 5분, 6장, 핵심 메시지는 AI를 목적에 맞게 안전하게 활용하는 것입니다.","각 장의 제목, 핵심 문장 3개 이하, 추천 시각자료와 발표자 노트를 표로 작성하세요."],
+ "데이터 분석":["학생 설문 결과를 분석하고 시각화해 주세요.","열의 의미와 단위를 먼저 확인하고 결측값을 표시하세요. 상관관계를 인과관계로 단정하지 마세요.","요약 통계표, 적절한 그래프, 해석, 한계, 재현 가능한 Python 코드 순서로 제시하세요."],
+ "음성":["AI 학습 소개를 위한 내레이션 대본을 작성해 주세요.","대학생 대상, 친근하고 명확한 톤, 약 60초, 전문 용어는 쉬운 말로 풀어 주세요.","말하기 자연스러운 문장으로 쓰고 문단별 예상 시간과 강조할 단어를 표시하세요."],
+ "웹툰":["AI를 처음 배우는 학생의 하루를 4컷 웹툰으로 구성해 주세요.","주인공의 헤어스타일·옷·색상을 모든 컷에서 유지하고, 따뜻하고 유머러스한 분위기로 만드세요.","컷 번호, 장면, 행동, 짧은 대사, 구도, 이미지 생성 프롬프트를 표로 작성하세요."]
+ };
+ $("build").addEventListener("click",function(){
+   const media=$("media").value, aim=$("aim").value.trim(), context=$("context").value.trim(), format=$("format").value.trim();
+   if(!aim){$("status").textContent="먼저 1단계 목적을 입력해 주세요."; $("aim").focus();return;}
+   $("result").value="당신은 "+media+" 제작 전문가입니다.\n\n[1. 목적]\n"+aim+"\n\n[2. 조건과 맥락]\n"+(context||"필요한 전제와 제한 사항을 먼저 확인하고, 불확실한 정보는 추측하지 마세요.")+"\n\n[3. 결과 형식]\n"+(format||"결과를 명확한 제목과 단계로 정리하고, 검토·수정할 사항을 함께 알려 주세요.")+"\n\n완성 전에 요청 조건을 점검하고, 충족하지 못한 조건이나 한계가 있으면 명시해 주세요.";
+   $("status").textContent="완성되었습니다. 내용을 확인한 뒤 복사해서 사용하세요.";
+ });
+ $("sample").addEventListener("click",function(){const e=examples[$("media").value];$("aim").value=e[0];$("context").value=e[1];$("format").value=e[2];$("build").click();});
+ $("reset").addEventListener("click",function(){["aim","context","format","result"].forEach(id=>$(id).value="");$("status").textContent="입력 내용을 초기화했습니다.";});
+ $("media").addEventListener("change",function(){const e=examples[this.value];if(e){$("aim").value=e[0];$("context").value=e[1];$("format").value=e[2];}});
+ $("copy").addEventListener("click",async function(){const val=$("result").value;if(!val){$("status").textContent="먼저 프롬프트를 만들어 주세요.";return;}try{await navigator.clipboard.writeText(val);$("status").textContent="프롬프트를 클립보드에 복사했습니다.";}catch(e){$("result").focus();$("result").select();$("status").textContent="자동 복사가 제한되었습니다. 선택된 텍스트를 Ctrl+C로 복사하세요.";}});
+})();
+</script>
+</body>
+</html>
