@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이미지 콘텐츠 실습 | AI 콘텐츠 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4f7;--card:#fff;--ink:#172033;--muted:#5b6577;--line:#d9dee7;--blue:#2448e6;--soft:#e6ebfd}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "IBM Plex Sans KR","Noto Sans KR",sans-serif}a{color:var(--blue);text-decoration:none}.top{background:#fff;border-bottom:1px solid var(--line);padding:12px max(20px,calc((100% - 1120px)/2))}.wrap{max-width:1120px;margin:auto;padding:38px 22px 72px}h1{font-size:clamp(30px,5vw,44px);line-height:1.25;margin:0 0 12px;letter-spacing:-.03em}h2{font-size:26px;margin:42px 0 12px}h3{font-size:19px;margin:0 0 7px}.lead{font-size:18px;color:var(--muted);max-width:900px}.muted{color:var(--muted)}.callout{margin:20px 0;background:var(--soft);border-left:4px solid var(--blue);border-radius:8px;padding:16px 20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card,.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;min-width:0}.card p{margin:5px 0;color:var(--muted)}.tag{display:inline-block;padding:2px 8px;margin:3px 3px 0 0;border-radius:5px;background:#eef1f6;color:#39445a;font-size:13px}.time{color:var(--blue);font-weight:700;font-size:14px}.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.step{background:#fff;border:1px solid var(--line);border-radius:9px;padding:15px}.step p{margin:4px 0;color:var(--muted);font-size:14px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#111827;color:#f3f4f6;border-radius:8px;padding:15px;font:14px/1.75 ui-monospace,Consolas,monospace;margin:12px 0}button{font:inherit;cursor:pointer;border:1px solid var(--blue);border-radius:7px;padding:8px 13px;background:var(--blue);color:#fff}.secondary{background:#fff;color:var(--blue)}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%;min-width:700px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{background:#e9edf4}tr:last-child td{border:0}td:first-child{font-weight:700}.lab{display:grid;grid-template-columns:1fr 1fr;gap:18px}.lab label{display:block;font-weight:700;margin:10px 0 4px}.lab input,.lab select,.lab textarea{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}.lab textarea{min-height:78px}.output{min-height:350px}.checklist label{display:flex;gap:10px;align-items:flex-start;padding:7px 0}.checklist input{margin-top:7px}footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}@media(max-width:760px){.grid,.lab{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding-top:28px}.card,.panel{padding:16px}}
+</style>
+</head>
+<body>
+<div class="top"><a href="aiContents.html#s4">← AI 콘텐츠 활용 강의 메뉴</a></div>
+<main class="wrap">
+<h1>이미지 콘텐츠 제작 실습</h1>
+<p class="lead">이미지 생성 AI를 처음 사용하는 학습자를 위한 2시간 30분 실습입니다. 단순히 프롬프트 한 줄을 입력하는 데서 끝내지 않고, 구도·조명·색상·스타일·텍스트·부분 수정·일관성·평가 기법을 단계별로 연습합니다.</p>
+<div class="callout"><strong>학습 결과</strong><br>실습이 끝나면 ① 목적에 맞는 이미지 프롬프트를 작성하고 ② 스타일과 구도를 통제하며 ③ 생성 결과를 수정·개선하고 ④ 포스터 또는 SNS용 시각 콘텐츠 1종을 완성할 수 있습니다. 서비스별 기능·무료 사용량은 계정과 시점에 따라 다를 수 있습니다.</div>
+
+<h2>1. 이미지 생성에 특화된 AI 추천</h2>
+<div class="grid">
+<section class="card"><h3><a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT 이미지 생성</a></h3><p><strong>추천 용도:</strong> 자연어로 자세히 지시하고, 대화로 수정하며, 기존 이미지의 일부를 바꾸는 작업</p><p>초보자는 원하는 장면을 평이한 말로 설명하고 “구도는 유지하고 조명만 바꿔 주세요”처럼 반복 수정하기 좋습니다.</p><span class="tag">초보자 친화</span><span class="tag">대화형 수정</span><span class="tag">콘셉트 시안</span><p><a href="https://help.openai.com/" target="_blank" rel="noopener">공식 도움말 ↗</a></p></section>
+<section class="card"><h3><a href="https://gemini.google.com/" target="_blank" rel="noopener">Google Gemini</a></h3><p><strong>추천 용도:</strong> 대화형 이미지 생성·수정, 아이디어를 빠르게 시각화하는 작업</p><p>이미지에 넣을 대상과 분위기를 설명한 뒤 결과를 보고 세부 조건을 추가하는 실습에 적합합니다.</p><span class="tag">아이디어 시각화</span><span class="tag">대화형 작업</span><p><a href="https://support.google.com/gemini/" target="_blank" rel="noopener">공식 도움말 ↗</a></p></section>
+<section class="card"><h3><a href="https://www.adobe.com/products/firefly.html" target="_blank" rel="noopener">Adobe Firefly</a></h3><p><strong>추천 용도:</strong> 디자인 시안, 광고 이미지, 생성형 채우기 등 디자인 작업 흐름</p><p>배경 교체, 이미지 확장, 영역 수정 등 디자인 편집 중심의 실습을 계획할 때 검토할 만합니다.</p><span class="tag">디자인 편집</span><span class="tag">생성형 채우기</span><span class="tag">광고 시안</span><p><a href="https://helpx.adobe.com/firefly.html" target="_blank" rel="noopener">공식 도움말 ↗</a></p></section>
+<section class="card"><h3><a href="https://www.midjourney.com/" target="_blank" rel="noopener">Midjourney</a></h3><p><strong>추천 용도:</strong> 예술적 콘셉트 아트, 분위기 있는 장면, 스타일 탐색</p><p>색감·조명·화풍·카메라 구도를 구체적으로 묘사하고 다양한 시각 스타일을 비교하는 데 유용합니다.</p><span class="tag">콘셉트 아트</span><span class="tag">시각 스타일</span><p><a href="https://docs.midjourney.com/" target="_blank" rel="noopener">공식 문서 ↗</a></p></section>
+<section class="card"><h3><a href="https://ideogram.ai/" target="_blank" rel="noopener">Ideogram</a></h3><p><strong>추천 용도:</strong> 포스터·타이틀·짧은 문구가 포함된 이미지 시안</p><p>이미지 속 문구 표현이 중요한 과제에 후보로 사용하고, 한글 정확도는 생성 후 반드시 검수합니다.</p><span class="tag">포스터</span><span class="tag">문구 포함 이미지</span><p><a href="https://ideogram.ai/" target="_blank" rel="noopener">공식 사이트 ↗</a></p></section>
+<section class="card"><h3><a href="https://www.canva.com/" target="_blank" rel="noopener">Canva AI</a></h3><p><strong>추천 용도:</strong> 생성한 이미지를 포스터·카드뉴스·SNS 콘텐츠로 배치하고 완성</p><p>이미지 생성뿐 아니라 글자, 레이아웃, 브랜드 요소를 함께 편집하는 후속 작업에 적합합니다.</p><span class="tag">레이아웃 편집</span><span class="tag">SNS 콘텐츠</span><p><a href="https://www.canva.com/magic-studio/" target="_blank" rel="noopener">Magic Studio ↗</a></p></section>
+</div>
+<div class="callout"><strong>선택 기준:</strong> 초보자 수업은 ChatGPT 또는 Gemini 중 접근 가능한 도구 하나로 이미지 생성·수정 원리를 익힌 뒤, Firefly·Midjourney·Ideogram·Canva를 목적별로 비교하는 방식을 권장합니다. 무료 제공 여부, 생성 횟수, 상업적 이용 조건은 서비스별 공식 안내에서 수업 전에 확인하세요.</div>
+
+<h2>2. 2시간 30분 실습 일정</h2>
+<div class="tablewrap"><table><thead><tr><th>시간</th><th>실습</th><th>핵심 기법</th><th>산출물</th></tr></thead><tbody>
+<tr><td>0–15분</td><td>AI 이미지 생성 첫 경험</td><td>대상·장소·행동을 구체적으로 묘사, 결과 비교</td><td>기본 이미지 1장</td></tr>
+<tr><td>15–35분</td><td>프롬프트 구조화</td><td>대상 + 배경 + 스타일 + 조명 + 색상 + 구도 + 비율</td><td>개선 프롬프트 1개</td></tr>
+<tr><td>35–55분</td><td>구도·시점 실험</td><td>클로즈업, 와이드 샷, 로우 앵글, 대칭, 여백</td><td>구도 비교 이미지 2장 이상</td></tr>
+<tr><td>55–75분</td><td>조명·색감·분위기</td><td>역광, 골든아워, 소프트 라이트, 제한된 색상 팔레트</td><td>동일 장면 스타일 변형 2장</td></tr>
+<tr><td>75–85분</td><td>휴식 및 중간 점검</td><td>좋은 결과와 실패 원인 기록</td><td>개선할 조건 2개</td></tr>
+<tr><td>85–105분</td><td>부분 수정·배경 변경</td><td>전체를 다시 만들지 않고 변경 요소를 좁혀 지시</td><td>수정 전·후 비교</td></tr>
+<tr><td>105–125분</td><td>일관성 있는 시리즈 제작</td><td>공통 스타일 문장 유지, 대상·팔레트·조명 통일</td><td>같은 주제 이미지 3장</td></tr>
+<tr><td>125–150분</td><td>최종 작품 완성·평가</td><td>포스터 또는 SNS 카드 제작, 텍스트·비율 검수</td><td>최종 작품 1개와 프롬프트</td></tr>
+</tbody></table></div>
+
+<h2>3. 반드시 연습할 이미지 기법</h2>
+<div class="grid">
+<section class="card"><h3>① 구도와 카메라 시점</h3><p>“대상을 화면 중앙에 배치”와 “왼쪽 1/3 지점에 배치하고 오른쪽은 문구를 위한 여백으로 남긴다”를 비교합니다.</p><span class="tag">Rule of thirds</span><span class="tag">Wide shot</span><span class="tag">Close-up</span><span class="tag">Negative space</span></section>
+<section class="card"><h3>② 조명과 그림자</h3><p>동일한 장면에 부드러운 확산광, 역광, 측면 조명을 적용해 형태와 분위기가 어떻게 달라지는지 비교합니다.</p><span class="tag">Soft diffused light</span><span class="tag">Backlighting</span><span class="tag">Rim light</span><span class="tag">Golden hour</span></section>
+<section class="card"><h3>③ 색상 팔레트와 감정</h3><p>색상 2~3개를 지정해 통일감을 줍니다. 예: 파스텔 핑크+하늘색은 부드러운 분위기, 남색+시안은 미래적인 분위기.</p><span class="tag">Color palette</span><span class="tag">Warm / cool</span><span class="tag">High contrast</span></section>
+<section class="card"><h3>④ 재질과 세부 묘사</h3><p>유리·금속·나무·천 등 재질을 지정하고 반사, 표면 질감, 미세한 디테일을 요청합니다.</p><span class="tag">Glass</span><span class="tag">Brushed metal</span><span class="tag">Wood grain</span><span class="tag">Fabric texture</span></section>
+<section class="card"><h3>⑤ 스타일 변환</h3><p>같은 장면을 사진, 3D 렌더, 수채화, 편집 일러스트 등으로 바꾸되 대상과 구도는 유지하도록 지시합니다.</p><span class="tag">Photorealistic</span><span class="tag">3D render</span><span class="tag">Watercolor</span></section>
+<section class="card"><h3>⑥ 부분 수정과 배경 교체</h3><p>“전체를 바꾸지 말고 배경만 바꿔 주세요”, “인물과 의상은 유지하고 조명만 수정해 주세요”처럼 변경 범위를 제한합니다.</p><span class="tag">Edit region</span><span class="tag">Background replacement</span><span class="tag">Preserve subject</span></section>
+<section class="card"><h3>⑦ 이미지 시리즈 일관성</h3><p>모든 프롬프트에 캐릭터 특징, 의상, 팔레트, 광원 방향을 공통 문장으로 반복합니다. 도구가 참조 이미지 기능을 지원하면 함께 활용합니다.</p><span class="tag">Visual consistency</span><span class="tag">Reference image</span></section>
+<section class="card"><h3>⑧ 텍스트와 출력 규격</h3><p>이미지 안 글자가 중요하면 문구를 짧게 지정하고 결과를 검수합니다. 텍스트가 필요 없다면 “no text, no logo”를 명시합니다.</p><span class="tag">Typography</span><span class="tag">Aspect ratio</span><span class="tag">No text</span></section>
+</div>
+
+<h2>4. 따라 하기: 같은 장면을 3가지 스타일로 만들기</h2>
+<p class="muted">아래 프롬프트를 복사해 이미지 생성 AI에 입력하세요. 각 결과를 비교하고, 한 번에 한 요소씩 바꾸는 방식으로 개선합니다.</p>
+<section class="panel"><h3>실습 A — 사실적인 사진 스타일</h3><pre id="pA">A highly realistic photograph of a cherry blossom tree beside a quiet lake at dawn. Wide establishing shot, the tree positioned slightly left of center with open negative space on the right, soft golden-hour backlight, delicate rim light on pale pink blossoms, cool blue reflections on the water, thin atmospheric mist, realistic bark and petals, natural depth of field, balanced exposure, calm cinematic mood. Landscape 16:9. No text, no logo, no watermark.</pre><div class="toolbar"><button class="secondary copy" data-target="pA">프롬프트 복사</button></div></section>
+<section class="panel" style="margin-top:12px"><h3>실습 B — 판타지 3D 렌더 스타일</h3><pre id="pB">Create a polished fantasy 3D render of the same cherry blossom tree beside the same quiet lake at dawn. Preserve the wide composition and tree placement. Soft volumetric mist between foreground and distant mountains, elegant pink blossoms, subtle luminous particles, physically based bark and water materials, soft backlight and delicate rim lighting, pastel pink and deep teal color palette, detailed but not cluttered, dreamy cinematic atmosphere. Landscape 16:9. No text, no logo, no watermark.</pre><div class="toolbar"><button class="secondary copy" data-target="pB">프롬프트 복사</button></div></section>
+<section class="panel" style="margin-top:12px"><h3>실습 C — 수채화 일러스트 스타일</h3><pre id="pC">A refined watercolor illustration of a cherry blossom tree beside a quiet lake at dawn. Keep the same wide composition and place the tree slightly left of center. Soft transparent washes, delicate pigment blooms, loose but readable branches, pale pink blossoms, muted blue water, warm cream highlights, gentle atmospheric haze, generous negative space on the right, elegant storybook mood. Landscape 16:9. No lettering, no logo, no watermark.</pre><div class="toolbar"><button class="secondary copy" data-target="pC">프롬프트 복사</button></div></section>
+
+<h2>5. 직접 만드는 이미지 프롬프트 도구</h2>
+<div class="panel lab">
+<div>
+<label for="subject">주요 대상</label><input id="subject" value="벚꽃이 만개한 호숫가의 나무">
+<label for="background">장소와 배경</label><input id="background" value="고요한 호수와 먼 산, 새벽의 얇은 안개">
+<label for="style">이미지 스타일</label><select id="style"><option>사실적인 사진 (photorealistic)</option><option>영화 같은 3D 렌더 (cinematic 3D render)</option><option>수채화 일러스트 (watercolor illustration)</option><option>애니메이션 배경 (anime background art)</option><option>미니멀한 광고 이미지 (minimal commercial photography)</option><option>미래적인 SF 콘셉트 아트 (sci-fi concept art)</option></select>
+<label for="composition">구도와 시점</label><select id="composition"><option>와이드 샷, 대상은 화면 중앙</option><option>와이드 샷, 대상은 왼쪽 1/3, 오른쪽은 여백</option><option>클로즈업, 세부 질감 강조</option><option>로우 앵글, 아래에서 위로 바라봄</option><option>대칭 구도, 정면 시점</option><option>3/4 시점, 입체감을 강조</option></select>
+<label for="lighting">조명</label><select id="lighting"><option>부드러운 확산광과 자연스러운 그림자</option><option>따뜻한 골든아워 역광과 섬세한 림 라이트</option><option>강한 측면 조명과 극적인 명암</option><option>푸른 달빛과 은은한 안개</option><option>스튜디오 소프트박스 조명과 제어된 반사</option><option>볼류메트릭 라이트와 빛줄기</option></select>
+<label for="palette">색상 팔레트</label><select id="palette"><option>파스텔 핑크와 차분한 푸른색</option><option>남색, 시안, 자홍 네온</option><option>골든 옐로와 따뜻한 오렌지</option><option>저채도 베이지와 브라운</option><option>흰색, 은색, 딥 블루</option><option>자연스러운 녹색과 흙빛</option></select>
+<label for="mood">분위기</label><input id="mood" value="몽환적이고 평온한 영화적 분위기">
+<label for="ratio">화면 비율</label><select id="ratio"><option>가로형 16:9</option><option>세로형 9:16</option><option>세로형 4:5</option><option>정사각형 1:1</option><option>가로형 3:2</option></select>
+<label for="details">추가 세부 조건</label><textarea id="details">자연스러운 질감, 명확한 초점, 균형 잡힌 노출, 복잡하지 않은 배경</textarea>
+<label for="exclude">제외할 요소</label><input id="exclude" value="불필요한 글자, 로고, 워터마크, 왜곡된 형태">
+<div class="toolbar"><button id="build">프롬프트 만들기</button><button class="secondary" id="sample">예시 복원</button><button class="secondary" id="reset">초기화</button></div>
+</div>
+<div><label for="result">완성된 프롬프트</label><textarea id="result" class="output" readonly></textarea><div class="toolbar"><button id="copyResult">프롬프트 복사</button></div><p id="status" class="muted" aria-live="polite"></p></div>
+</div>
+
+<h2>6. 최종 프로젝트: SNS 홍보 이미지 만들기</h2>
+<div class="panel">
+<p><strong>과제:</strong> 관심 있는 주제(학교 행사, 카페, 게임, 여행, 환경 캠페인 등)를 골라 SNS 게시용 이미지를 완성합니다.</p>
+<div class="checklist">
+<label><input type="checkbox"> 1. 대상과 전달할 메시지를 한 문장으로 정했습니다.</label>
+<label><input type="checkbox"> 2. 이미지 생성 프롬프트에 스타일·구도·조명·색상을 지정했습니다.</label>
+<label><input type="checkbox"> 3. 첫 결과와 개선 결과를 비교하고 변경 이유를 기록했습니다.</label>
+<label><input type="checkbox"> 4. 필요하면 배경이나 일부 요소를 수정했습니다.</label>
+<label><input type="checkbox"> 5. 글자가 있다면 오탈자·가독성을 확인했습니다.</label>
+<label><input type="checkbox"> 6. 화면 비율을 플랫폼에 맞추고 최종 파일을 저장했습니다.</label>
+<label><input type="checkbox"> 7. 사용한 AI 도구와 최종 프롬프트를 함께 제출할 준비를 했습니다.</label>
+</div>
+<h3 style="margin-top:16px">평가 기준 (100점)</h3>
+<div class="tablewrap"><table><thead><tr><th>평가 항목</th><th>배점</th><th>평가 내용</th></tr></thead><tbody><tr><td>프롬프트 구체성</td><td>25</td><td>대상·배경·스타일·구도·조명 조건이 구체적인가</td></tr><tr><td>시각적 완성도</td><td>25</td><td>주제 전달, 색상 조화, 구도, 가독성이 적절한가</td></tr><tr><td>수정·개선 과정</td><td>20</td><td>초기 결과를 분석하고 변경 이유를 설명했는가</td></tr><tr><td>기법 적용</td><td>20</td><td>구도·조명·색감·스타일 중 3가지 이상을 의도적으로 활용했는가</td></tr><tr><td>출처·윤리</td><td>10</td><td>도구와 프롬프트를 기록하고 권리·개인정보를 고려했는가</td></tr></tbody></table></div>
+</div>
+<h2>7. 제출 전 점검</h2>
+<div class="callout">이미지 생성 AI는 프롬프트를 모두 정확하게 따르지 않을 수 있습니다. 특히 한글 문구, 손과 작은 세부 요소, 반복되는 캐릭터의 동일성은 결과를 확인해야 합니다. 실제 인물의 얼굴이나 저작권이 있는 캐릭터를 사용할 때는 권리와 동의 여부를 고려하고, 상업적 사용 전에는 해당 서비스의 최신 이용 약관을 확인하세요.</div>
+<footer><a href="aiContents.html#s4">← 이미지 콘텐츠 메뉴</a><a href="AIImagePrompt.html">이미지 생성 프롬프트 예시 →</a></footer>
+</main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+async function copyText(value,button,status){
+ try{await navigator.clipboard.writeText(value);if(status)status.textContent="클립보드에 복사했습니다.";if(button){const old=button.textContent;button.textContent="복사 완료";setTimeout(()=>button.textContent=old,1400);}}
+ catch(e){const t=document.createElement("textarea");t.value=value;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();if(status)status.textContent="복사했습니다.";}
+}
+document.querySelectorAll(".copy").forEach(b=>b.addEventListener("click",()=>copyText($(b.dataset.target).textContent,b,null)));
+function build(){
+ const subject=$("subject").value.trim();
+ if(!subject){$("status").textContent="주요 대상을 입력해 주세요.";return;}
+ $("result").value="Create an image of "+subject+".\n\nSetting and background: "+$("background").value+".\n\nStyle: "+$("style").value+".\n\nComposition and viewpoint: "+$("composition").value+".\n\nLighting: "+$("lighting").value+".\n\nColor palette: "+$("palette").value+".\n\nMood: "+$("mood").value+".\n\nDetails: "+$("details").value+".\n\nOutput: "+$("ratio").value+".\n\nAvoid: "+$("exclude").value+".";
+ $("status").textContent="프롬프트를 만들었습니다. 생성 결과를 확인하고 한 번에 한두 조건씩 수정해 보세요.";
+}
+$("build").addEventListener("click",build);
+$("sample").addEventListener("click",()=>{$("subject").value="벚꽃이 만개한 호숫가의 나무";$("background").value="고요한 호수와 먼 산, 새벽의 얇은 안개";$("style").selectedIndex=0;$("composition").selectedIndex=1;$("lighting").selectedIndex=1;$("palette").selectedIndex=0;$("mood").value="몽환적이고 평온한 영화적 분위기";$("ratio").selectedIndex=0;$("details").value="자연스러운 질감, 명확한 초점, 균형 잡힌 노출, 복잡하지 않은 배경";$("exclude").value="불필요한 글자, 로고, 워터마크, 왜곡된 형태";build();});
+$("reset").addEventListener("click",()=>{["subject","background","mood","details","exclude","result"].forEach(id=>$(id).value="");$("status").textContent="입력 내용을 초기화했습니다.";});
+$("copyResult").addEventListener("click",()=>{if(!$("result").value){$("status").textContent="먼저 프롬프트를 만들어 주세요.";return;}copyText($("result").value,null,$("status"));});
+build();
+})();
+</script>
+</body>
+</html>
