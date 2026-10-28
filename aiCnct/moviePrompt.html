@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>동영상 제작 프롬프트와 필수 기법 | AI 콘텐츠 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F2F4F7;--panel:#fff;--ink:#172033;--muted:#5B6577;--line:#D9DEE7;--accent:#2448E6;--soft:#E6EBFD;--font:"IBM Plex Sans KR","Noto Sans KR","Malgun Gothic",sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.75 var(--font)}a{color:var(--accent);text-decoration:none}:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bar{padding:12px clamp(20px,5vw,48px);background:#fff;border-bottom:1px solid var(--line)}.bar a{font-weight:500}.wrap{max-width:1120px;margin:auto;padding:42px 22px 76px}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.25;letter-spacing:-.03em;margin:0 0 12px}h2{font-size:26px;letter-spacing:-.02em;margin:42px 0 12px}h3{font-size:19px;margin:0 0 8px}.lead{font-size:18px;color:var(--muted);max-width:900px;margin:0 0 26px}.muted{color:var(--muted)}
+.callout{background:var(--soft);border-left:4px solid var(--accent);border-radius:7px;padding:16px 20px;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;min-width:0}.card p{margin:6px 0;color:var(--muted)}
+.num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:700;margin-right:8px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#111827;color:#F3F4F6;border-radius:8px;padding:15px;margin:12px 0;font:14px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace}
+button{font:inherit;cursor:pointer;border:1px solid var(--accent);border-radius:7px;padding:8px 13px;background:var(--accent);color:#fff}.secondary{background:#fff;color:var(--accent)}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff}table{border-collapse:collapse;width:100%;min-width:700px;font-size:15px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{background:#E9EDF4}tr:last-child td{border-bottom:0}td:first-child{font-weight:700}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.step{background:#fff;border:1px solid var(--line);border-radius:9px;padding:16px}.step p{margin:4px 0 0;color:var(--muted)}
+.lab{display:grid;grid-template-columns:1fr 1fr;gap:18px}.lab label{display:block;font-weight:700;margin:10px 0 4px}.lab input,.lab textarea,.lab select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font:inherit}.lab textarea{min-height:76px;resize:vertical}.output{min-height:360px}.tag{display:inline-block;background:#EEF1F6;border-radius:5px;padding:2px 8px;margin:2px;font-size:13px;color:#39445A}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:20px;border-top:1px solid var(--line)}
+@media(max-width:760px){.grid,.lab,.steps{grid-template-columns:1fr}.wrap{padding-top:30px}.card,.panel{padding:16px}}
+</style>
+</head>
+<body>
+<div class="bar"><a href="aiContents.html#s3">← AI 콘텐츠 활용 강의 메뉴</a></div>
+<main class="wrap">
+<h1>동영상 제작 프롬프트: 필수 기법과 예시</h1>
+<p class="lead">AI 동영상은 장면을 묘사하는 것만으로 충분하지 않습니다. <strong>대상의 움직임, 카메라 움직임, 시간 흐름, 장면 연속성, 조명·스타일, 화면 비율과 길이</strong>를 함께 지정해야 의도에 가까운 영상을 만들기 쉽습니다.</p>
+<div class="callout"><strong>핵심 원칙</strong><br>한 장면에는 중심 행동을 명확하게 지정하고, 카메라가 어떻게 움직이는지 별도로 적으세요. 짧은 클립은 한 번에 많은 사건을 넣기보다 시작 상태 → 주요 움직임 → 마지막 상태 순으로 설계하는 것이 좋습니다. 각 생성 서비스가 지원하는 길이·비율·카메라 제어 기능은 다를 수 있습니다.</div>
+
+<h2>1. 동영상 제작에 꼭 필요한 기법</h2>
+<div class="grid">
+<section class="card"><h3><span class="num">1</span>시간에 따른 행동 설계</h3><p>대상이 무엇을 하는지, 움직임이 어떤 순서로 진행되는지 씁니다. “나비가 날아다닌다”보다 “나비가 꽃 위에 앉아 날개를 두 번 천천히 펼친 뒤 오른쪽으로 날아간다”가 구체적입니다.</p><div class="tags"><span class="tag">시작</span><span class="tag">주요 행동</span><span class="tag">마무리</span></div></section>
+<section class="card"><h3><span class="num">2</span>카메라 움직임 지정</h3><p>대상 움직임과 카메라 움직임을 구분합니다. 카메라가 고정인지, 천천히 다가가는지, 옆으로 이동하는지, 대상을 따라가는지 지정합니다.</p><div class="tags"><span class="tag">Static shot</span><span class="tag">Dolly-in</span><span class="tag">Pan</span><span class="tag">Tracking shot</span></div></section>
+<section class="card"><h3><span class="num">3</span>장면 연속성 유지</h3><p>인물·캐릭터의 얼굴, 의상, 소품, 배경, 시간대, 색감을 일정하게 유지하도록 지시합니다. 여러 클립을 이어 붙일 때는 다음 장면의 시작 상태를 앞 장면의 끝 상태와 맞춥니다.</p><div class="tags"><span class="tag">Character consistency</span><span class="tag">Match cut</span></div></section>
+<section class="card"><h3><span class="num">4</span>샷 크기와 시점</h3><p>장면이 보여 줄 정보에 맞춰 화면 크기를 선택합니다. 넓은 풍경은 와이드 샷, 감정 표현은 클로즈업, 제품이나 장비의 구조는 3/4 시점 등이 적합합니다.</p><div class="tags"><span class="tag">Wide shot</span><span class="tag">Medium shot</span><span class="tag">Close-up</span></div></section>
+<section class="card"><h3><span class="num">5</span>조명·색감·시각 스타일</h3><p>광원 방향, 빛의 부드러움, 색상 팔레트, 대비와 재질을 지정합니다. 클립마다 다른 색감이 나오지 않도록 공통 스타일 설명을 반복해 사용합니다.</p><div class="tags"><span class="tag">Golden hour</span><span class="tag">Rim lighting</span><span class="tag">Cinematic color</span></div></section>
+<section class="card"><h3><span class="num">6</span>시간·비율·속도</h3><p>영상 길이와 화면 방향을 정하고, 동작 속도와 장면 전환을 명시합니다. 도구가 지원하지 않는 길이는 여러 클립으로 나누어 제작한 뒤 편집합니다.</p><div class="tags"><span class="tag">5–8 seconds</span><span class="tag">16:9</span><span class="tag">9:16</span></div></section>
+<section class="card"><h3><span class="num">7</span>물리적 움직임과 환경 반응</h3><p>머리카락·옷자락·나뭇잎·물·연기 등이 바람, 중력, 충돌에 어떻게 반응하는지 씁니다. “자연스럽게”라는 말만 쓰기보다 반응 대상을 구체적으로 지정합니다.</p><div class="tags"><span class="tag">Natural motion</span><span class="tag">Wind interaction</span></div></section>
+<section class="card"><h3><span class="num">8</span>제외 조건과 오류 방지</h3><p>원하지 않는 자막, 로고, 워터마크, 불필요한 인물 추가, 갑작스러운 카메라 흔들림 등을 명시합니다. 단, 제외 조건을 써도 모든 생성 오류가 완전히 사라지는 것은 아닙니다.</p><div class="tags"><span class="tag">No text</span><span class="tag">No logo</span><span class="tag">Stable anatomy</span></div></section>
+</div>
+
+<h2>2. 카메라 기법 빠른 참고표</h2>
+<div class="scroll"><table><thead><tr><th>기법</th><th>뜻</th><th>프롬프트 예시</th><th>주요 효과</th></tr></thead><tbody>
+<tr><td>Static shot</td><td>고정 촬영</td><td>카메라는 삼각대에 고정되어 움직이지 않는다.</td><td>안정적인 관찰, 작은 움직임 강조</td></tr>
+<tr><td>Pan</td><td>카메라가 좌우로 회전</td><td>카메라가 왼쪽에서 오른쪽으로 천천히 팬하며 풍경을 보여 준다.</td><td>넓은 공간 소개</td></tr>
+<tr><td>Tilt</td><td>카메라가 위아래로 회전</td><td>카메라가 바닥에서 건물 꼭대기까지 천천히 틸트 업한다.</td><td>높이와 규모 강조</td></tr>
+<tr><td>Dolly-in / Push-in</td><td>카메라가 대상 쪽으로 이동</td><td>카메라가 인물을 향해 부드럽게 전진하며 얼굴에 가까워진다.</td><td>몰입감과 집중도 상승</td></tr>
+<tr><td>Dolly-out / Pull-back</td><td>카메라가 대상에서 멀어짐</td><td>카메라가 천천히 뒤로 물러나 인물과 주변 풍경을 함께 드러낸다.</td><td>공간과 맥락 공개</td></tr>
+<tr><td>Tracking shot</td><td>대상과 나란히 이동</td><td>카메라가 달리는 인물을 옆에서 일정한 거리로 따라간다.</td><td>속도감과 동행감</td></tr>
+<tr><td>Orbit / Arc shot</td><td>대상 주위를 곡선으로 이동</td><td>카메라가 제품 주위를 천천히 90도 회전하며 형태를 보여 준다.</td><td>입체감, 제품·캐릭터 소개</td></tr>
+<tr><td>Rack focus</td><td>초점을 한 대상에서 다른 대상으로 이동</td><td>전경의 꽃에서 배경의 인물로 초점을 부드럽게 옮긴다.</td><td>시선 유도, 깊이 표현</td></tr>
+</tbody></table></div>
+<p class="muted">주의: 카메라 기법은 서로 다른 의미를 가집니다. 예를 들어 pan은 카메라 위치를 유지한 채 회전하는 움직임이고, dolly는 카메라 자체가 공간 안에서 이동하는 움직임입니다. AI가 정확히 구현하지 못할 수 있으므로 결과를 확인하세요.</p>
+
+<h2>3. 완성형 예시 프롬프트</h2>
+<section class="panel"><h3>예시 A — 벚꽃 나무를 향해 이동하는 영화적 장면</h3><p class="muted">대상 움직임, 카메라 이동, 바람 반응, 조명, 마지막 프레임을 한꺼번에 명시한 예시입니다.</p><pre id="exA">Create a cinematic 8-second video of a magnificent cherry blossom tree beside a quiet lake at dawn. The tree remains rooted and structurally stable. Individual branches and clusters of blossoms sway gently in a light breeze, while a few petals drift slowly across the frame and ripple reflections move naturally on the water.
+
+Camera: begin with a wide establishing shot from a slightly low angle, then perform a slow, smooth dolly-in toward the tree. Keep the tree centered throughout the move; no sudden zooms, no handheld shake. Use subtle parallax to reveal depth between foreground petals, the tree, and distant mountains.
+
+Lighting and look: soft dawn backlight, delicate rim light on the blossoms, pastel pink petals contrasted with cool blue water, thin atmospheric mist, cinematic depth of field, realistic natural motion.
+
+Continuity: preserve the tree's shape, branch positions, lake shoreline, and mountain background throughout the clip. End on a closer view of the blossoms with a few petals passing in the foreground.
+
+Format: 16:9 landscape, 8 seconds, smooth motion, high visual detail. No text, captions, logos, or watermark.</pre><div class="toolbar"><button class="secondary copy" data-target="exA">예시 프롬프트 복사</button></div></section>
+<section class="panel" style="margin-top:14px"><h3>예시 B — 태양계 영상의 카메라 이동</h3><p class="muted">행성의 움직임과 카메라의 움직임을 분리하고, 첫 장면과 마지막 장면을 명확하게 지정합니다.</p><pre id="exB">Create a cinematic 10-second space video. Start with the Sun and several planets visible in a wide composition, with Earth and the Moon clearly recognizable in the foreground. The camera looks down at the solar system from an elevated angle of approximately 25–30 degrees.
+
+Motion: the camera glides forward slowly toward Earth, then arcs gently to reveal the Moon moving along a smooth orbital path around Earth. Planetary motion should remain slow and continuous; do not make planets wobble, stretch, change size randomly, or collide. Keep the Sun visible in the opening shot and return to a wide view of the solar system at the end.
+
+Visual style: scientifically inspired scale relationships, luminous Sun, realistic planetary textures, subtle star field, controlled highlights, deep navy space, clean cinematic contrast.
+
+Camera: one continuous, stable move; no abrupt cuts, no fast zoom, no shake. End on a wide elevated view with the Sun and planets visible.
+
+Format: 16:9 landscape, 10 seconds. No titles, labels, text, or logos.</pre><div class="toolbar"><button class="secondary copy" data-target="exB">예시 프롬프트 복사</button></div></section>
+<section class="panel" style="margin-top:14px"><h3>예시 C — 제품 광고 영상</h3><p class="muted">제품 형태를 유지하면서 카메라 궤도, 조명 반사, 배경을 통제합니다.</p><pre id="exC">Create a premium 6-second product advertisement featuring a transparent glass perfume bottle on a dark matte surface. The bottle remains perfectly stable and keeps the same shape, proportions, cap, and label-free design throughout the shot.
+
+Camera: start in a front three-quarter view and slowly orbit 20 degrees around the bottle. Maintain a consistent distance and keep the bottle centered. No cuts or sudden camera movements.
+
+Lighting: a soft key light from the upper left, a narrow rim light along the glass edges, subtle amber highlights in the liquid, and a controlled reflection on the surface. Preserve realistic transparency, refraction, and shadows without excessive glare.
+
+End frame: a clean hero shot of the bottle, sharply focused against a simple dark background. Premium, minimal, cinematic look.
+
+Format: 4:5 vertical, 6 seconds. No text, brand names, extra objects, logos, or watermark.</pre><div class="toolbar"><button class="secondary copy" data-target="exC">예시 프롬프트 복사</button></div></section>
+
+<h2>4. 직접 만드는 동영상 프롬프트</h2>
+<p class="muted">아래 항목을 입력하면 영상 제작 프롬프트를 자동으로 구성합니다. 영상 생성 서비스의 입력창에 복사해 활용하세요.</p>
+<div class="panel lab">
+<div>
+<label for="topic">주요 대상과 장면</label><textarea id="topic">벚꽃이 만개한 호숫가의 나무를 향해 카메라가 천천히 이동한다</textarea>
+<label for="action">대상의 움직임 (시작 → 진행 → 끝)</label><textarea id="action">처음에는 나무 전체를 보여 주고, 가지와 꽃잎이 바람에 흔들리며, 마지막에는 꽃잎을 가까이 보여 준다</textarea>
+<label for="camera">카메라 기법</label><select id="camera"><option value="고정된 와이드 샷에서 시작해 대상을 향해 부드럽게 dolly-in 한다">고정 샷 → 천천히 전진 (Dolly-in)</option><option value="대상을 따라 일정한 거리로 부드럽게 이동하는 tracking shot">대상 따라가기 (Tracking)</option><option value="대상 주위를 천천히 90도 회전하는 orbit shot">대상 주위 회전 (Orbit)</option><option value="왼쪽에서 오른쪽으로 천천히 pan 하며 장면을 보여 준다">좌우 회전 (Pan)</option><option value="카메라는 삼각대에 고정하고 대상의 움직임만 보여 준다">카메라 고정 (Static)</option><option value="넓은 장면에서 시작해 부드럽게 뒤로 이동하며 주변 공간을 드러낸다">뒤로 이동 (Dolly-out)</option></select>
+<label for="continuity">연속성 유지 조건</label><textarea id="continuity">대상 형태와 위치, 배경, 조명 방향, 색감이 영상 전체에서 일관되게 유지된다</textarea>
+<label for="light">조명과 색감</label><input id="light" value="부드러운 새벽 역광, 파스텔 핑크와 차분한 푸른색">
+<label for="mood">분위기와 스타일</label><input id="mood" value="몽환적이고 평온한 영화적 분위기, 사실적인 움직임">
+<label for="length">영상 길이</label><select id="length"><option>6초</option><option selected>8초</option><option>10초</option><option>15초</option></select>
+<label for="ratio">화면 비율</label><select id="ratio"><option>가로형 16:9</option><option>세로형 9:16</option><option>정사각형 1:1</option><option>세로형 4:5</option></select>
+<label for="exclude">제외할 요소</label><input id="exclude" value="자막, 로고, 워터마크, 갑작스러운 줌과 카메라 흔들림">
+<div class="toolbar"><button id="build">프롬프트 만들기</button><button class="secondary" id="sample">예시 채우기</button><button class="secondary" id="reset">초기화</button></div>
+</div>
+<div><label for="result">완성된 프롬프트</label><textarea id="result" class="output" readonly></textarea><div class="toolbar"><button id="copy">프롬프트 복사</button></div><p id="status" class="muted" aria-live="polite"></p></div>
+</div>
+
+<h2>5. 장면을 여러 개 연결하는 방법</h2>
+<div class="steps">
+<section class="step"><h3><span class="num">1</span>공통 스타일 작성</h3><p>인물 외형, 의상, 색감, 조명, 세계관 등 모든 장면에 공통으로 적용할 설명을 먼저 정합니다.</p></section>
+<section class="step"><h3><span class="num">2</span>장면별 동작 설계</h3><p>각 클립은 한 가지 주요 행동과 하나의 명확한 카메라 움직임을 중심으로 설계합니다.</p></section>
+<section class="step"><h3><span class="num">3</span>끝과 시작 맞추기</h3><p>앞 장면의 마지막 구도·대상 위치를 다음 장면의 시작 구도와 맞추고, 편집에서 전환을 확인합니다.</p></section>
+</div>
+<div class="callout"><strong>마지막 점검:</strong> ① 누가/무엇이 움직이는가? ② 어떻게 움직이는가? ③ 카메라는 어떻게 움직이는가? ④ 장면 전후에 무엇이 유지되는가? ⑤ 몇 초·어떤 비율인가? ⑥ 원하지 않는 요소는 무엇인가? 이 여섯 가지를 확인하면 프롬프트가 훨씬 명확해집니다.</div>
+<footer><a href="aiContents.html#s3">← 프롬프트 작성법 메뉴</a><a href="AIPrompt.html">미디어별 3단계 프롬프트 작성법 →</a></footer>
+</main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+document.querySelectorAll(".copy").forEach(btn=>btn.addEventListener("click",async()=>{
+ const value=$(btn.dataset.target).textContent;
+ try{await navigator.clipboard.writeText(value);btn.textContent="복사 완료";setTimeout(()=>btn.textContent="예시 프롬프트 복사",1500);}
+ catch(e){const t=document.createElement("textarea");t.value=value;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();btn.textContent="복사 완료";setTimeout(()=>btn.textContent="예시 프롬프트 복사",1500);}
+}));
+function build(){
+ const topic=$("topic").value.trim(), action=$("action").value.trim();
+ if(!topic||!action){$("status").textContent="주요 장면과 대상의 움직임을 입력해 주세요.";return;}
+ $("result").value="Create a "+$("length").value+" video of "+topic+".\n\nAction and timing: "+action+". Make the movement continuous, physically plausible, and easy to follow.\n\nCamera: "+$("camera").selectedOptions[0].textContent+" ("+$("camera").value+"). Keep camera motion smooth and intentional.\n\nContinuity: "+$("continuity").value+". Preserve the subject's identity, shape, position, environment, and visual style unless a change is explicitly requested.\n\nLighting and color: "+$("light").value+".\n\nMood and style: "+$("mood").value+".\n\nEnding: finish on a clear, stable final composition that follows naturally from the action.\n\nFormat: "+$("ratio").value+", "+$("length").value+".\n\nAvoid: "+$("exclude").value+".";
+ $("status").textContent="프롬프트를 만들었습니다. 생성 서비스의 기능과 길이 제한에 맞는지 확인한 뒤 복사하세요.";
+}
+$("build").addEventListener("click",build);
+$("sample").addEventListener("click",()=>{$("topic").value="벚꽃이 만개한 호숫가의 나무를 향해 카메라가 천천히 이동한다";$("action").value="처음에는 나무 전체를 보여 주고, 가지와 꽃잎이 바람에 흔들리며, 마지막에는 꽃잎을 가까이 보여 준다";$("camera").selectedIndex=0;$("continuity").value="나무의 형태, 가지 위치, 호숫가와 먼 산의 배경, 조명 방향, 색감이 영상 전체에서 일관되게 유지된다";$("light").value="부드러운 새벽 역광, 파스텔 핑크와 차분한 푸른색";$("mood").value="몽환적이고 평온한 영화적 분위기, 사실적인 움직임";$("length").value="8초";$("ratio").selectedIndex=0;$("exclude").value="자막, 로고, 워터마크, 갑작스러운 줌과 카메라 흔들림";build();});
+$("reset").addEventListener("click",()=>{["topic","action","continuity","light","mood","exclude","result"].forEach(id=>$(id).value="");$("status").textContent="입력 내용을 초기화했습니다.";});
+$("copy").addEventListener("click",async()=>{const value=$("result").value;if(!value){$("status").textContent="먼저 프롬프트를 만들어 주세요.";return;}try{await navigator.clipboard.writeText(value);$("status").textContent="프롬프트를 클립보드에 복사했습니다.";}catch(e){$("result").focus();$("result").select();$("status").textContent="자동 복사가 제한되었습니다. 선택한 텍스트를 Ctrl+C로 복사하세요."; }});
+build();
+})();
+</script>
+</body>
+</html>
