@@ -3,333 +3,397 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정·역회전 인터록 결선 실습 - 1단계 주회로</title>
+<title>정·역회전 인터록 결선 실습</title>
 <style>
-/* 색상은 여기서만 바꾸면 됩니다. motor3State와 맞추려면 이 변수 값만 교체하세요. */
-:root{--bg:#0f1722;--panel:#162234;--panel2:#1c2b42;--line:#2b3d57;--text:#e6edf6;--mute:#8fa3bd;--accent:#2ea8ff;--ok:#2ecc71;--err:#ff5252;--warn:#ffb84d}
+:root{--bg:#060e1b;--glass:rgba(9,24,44,.8);--line:#1f4a78;--text:#e8f1fb;--mute:#9db3cc;--accent:#29b6ff;--ok:#33d17a;--err:#ff4d4d;--warn:#ffc233}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--text);font:14px/1.5 "Noto Sans KR","Malgun Gothic",system-ui,sans-serif;display:flex;flex-direction:column}
-header{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
-header h1{font-size:16px;margin:0;flex:1}
-button{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font:14px/1.55 "Noto Sans KR","Malgun Gothic",system-ui,sans-serif;overflow:hidden}
+#app{position:fixed;inset:0}
+#view{position:absolute;inset:0}
+#view canvas{display:block;width:100%;height:100%}
+.col{position:absolute;top:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;overflow:auto;scrollbar-width:thin;padding-right:2px}
+#left{left:16px;width:310px}
+#right{right:16px;width:290px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:10px;padding:10px 14px;backdrop-filter:blur(6px)}
+.card h2{margin:0 0 4px;font-size:15px;color:var(--accent)}
+.card.bad h2{color:var(--err)}
+.card ul{margin:0;padding-left:18px;color:var(--mute)}
+#head h1{margin:0;font-size:22px;line-height:1.3}
+#head p{margin:4px 0 0;color:var(--mute);font-size:13px}
+#steps{list-style:none;padding:0;margin:0}
+#steps li{display:flex;gap:10px;padding:5px 0;color:var(--mute);align-items:flex-start}
+#steps .n{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);text-align:center;font-size:12px;line-height:18px}
+#steps li.cur{color:var(--text)}
+#steps li.cur .n{border-color:var(--accent);background:var(--accent);color:#04121f;font-weight:700}
+#steps li.done .n{background:var(--ok);border-color:var(--ok);color:#04121f}
+#steps small{display:block;color:var(--accent);font-size:12px}
+button{font:inherit;color:var(--text);background:#10294a;border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
 button:hover{border-color:var(--accent)}
 button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-button.on,button.primary{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:700}
-main{flex:1;display:flex;min-height:0}
-aside{width:260px;background:var(--panel);padding:12px;overflow:auto;flex:none}
-#left{border-right:1px solid var(--line)}
-#right{border-left:1px solid var(--line)}
-aside h2{font-size:14px;margin:0 0 6px;color:var(--accent)}
-aside section{margin-bottom:14px}
-aside p,aside li{color:var(--mute);font-size:13px;margin:2px 0}
-ul{margin:0;padding:0;list-style:none}
-#checks li{display:flex;gap:8px;align-items:flex-start;padding:4px 0;color:var(--text)}
-#checks .mk{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px;text-align:center;font-size:11px;line-height:14px}
-#checks li.done .mk{background:var(--ok);border-color:var(--ok);color:#04121f}
-#checks small{color:var(--mute)}
-#view{flex:1;position:relative;min-width:0}
-#view canvas{display:block;width:100%;height:100%}
-#tip{position:absolute;pointer-events:none;background:#000c;border:1px solid var(--accent);padding:2px 8px;border-radius:4px;font-size:12px;display:none;white-space:nowrap}
-#wlist li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);color:var(--text);font-size:12px}
-#wlist .dot{width:10px;height:10px;border-radius:50%;border:1px solid #fff6;flex:none}
-#wlist .x{margin-left:auto;padding:0 6px;line-height:1.3}
-.row{display:flex;gap:6px;margin-bottom:8px}
-.row button{flex:1}
-footer{background:var(--panel);border-top:1px solid var(--line);padding:8px 14px;display:flex;gap:12px;align-items:stretch}
-#msg{flex:1;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:6px 10px;background:var(--bg);min-height:64px;max-height:120px;overflow:auto;font-size:13px}
-#msg.ok{border-left-color:var(--ok)}#msg.err{border-left-color:var(--err)}
-#msg ul li{color:var(--text);margin:2px 0}
-#msg b.e{color:var(--err)}#msg b.o{color:var(--ok)}
-#safe{font-size:11px;color:var(--mute);width:210px}
-#chk{padding:0 22px;font-size:15px}
-@media(max-width:900px){main{flex-direction:column}aside{width:auto;max-height:26%}#left{border-right:0;border-bottom:1px solid var(--line)}#right{border-left:0;border-top:1px solid var(--line)}footer{flex-wrap:wrap}#safe{width:100%}}
+.btns{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.btns button{flex:1;min-width:84px}
+.run{display:grid;grid-template-columns:1fr;gap:8px}
+.run button{font-weight:700;padding:10px}
+#bF{background:#12633a;border-color:#33d17a}
+#bR{background:#7a1d1d;border-color:#ff6b6b}
+#bS{background:#6b5a12;border-color:var(--warn)}
+.st{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px}
+.st span:nth-child(odd){color:var(--mute)}
+.on{color:var(--ok);font-weight:700}.off{color:var(--mute)}.bad{color:var(--err);font-weight:700}
+label.sw{display:flex;gap:8px;align-items:flex-start;padding:4px 0;cursor:pointer;color:var(--text);font-size:13px}
+#alert{display:none;border-color:var(--err);background:rgba(90,10,10,.88)}
+#alert b{color:#ff8a8a}
+#alert small{color:#ffd0d0;display:block;margin-top:4px}
+#msg{min-height:44px;font-size:13px}
+#note{font-size:11px;color:var(--mute)}
+dialog{background:#0b1f38;color:var(--text);border:1px solid var(--accent);border-radius:12px;max-width:560px;padding:18px 22px}
+dialog::backdrop{background:#000a}
+dialog h3{margin:0 0 8px;color:var(--accent)}
+dialog p{margin:6px 0}
+#toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);max-width:min(560px,92vw);background:#3a1010;border:1px solid var(--err);color:#ffd6d6;padding:10px 16px;border-radius:10px;z-index:50;display:none;font-size:13px}
+#toast.ok{background:#0e2e1c;border-color:var(--ok);color:#c9f7da}
+#wire{padding:0;width:min(1100px,96vw);height:90vh;background:#0b1f38;color:var(--text);border:1px solid var(--accent);border-radius:12px}
+#wire[open]{display:flex;flex-direction:column}
+#wire .bar{display:flex;gap:12px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}
+#wire .bar b{flex:1}
+#wire a{color:var(--accent)}
+#wire iframe{flex:1;border:0;background:#0f1722;width:100%}
+#wire .hint{margin:0;padding:6px 12px;font-size:12px;color:var(--mute)}
+@media(max-width:900px){
+  body{overflow:auto}
+  #app{position:static}
+  #view{position:relative;height:58vh}
+  .col{position:static;width:auto!important;padding:10px;overflow:visible}
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>정·역회전 인터록 결선 실습 <span style="color:var(--mute);font-weight:400">1단계 · 주회로</span></h1>
-  <button id="bPC" class="on">PC 모드</button>
-  <button id="bVR">VR 모드</button>
-</header>
-<main>
-  <aside id="left">
-    <section>
-      <h2>1단계 · 주회로 결선</h2>
-      <p>전원 R·S·T → MC-F → THR → 모터. MC-R은 R·T 두 상을 서로 교체해 같은 THR에 연결합니다.</p>
-    </section>
-    <section>
-      <h2>체크리스트</h2>
-      <ul id="checks"></ul>
-    </section>
-    <section>
-      <h2>조작 방법</h2>
-      <ul>
-        <li>단자 클릭 → 다른 단자 클릭: 전선 생성</li>
-        <li>전선 우클릭: 삭제 / 같은 단자 재클릭: 취소</li>
-        <li>왼쪽 드래그: 회전, 오른쪽 드래그: 이동, 휠: 확대</li>
-        <li>전선 색: 시작 단자의 상 색 (R적·S백·T청)</li>
-      </ul>
-    </section>
-    <section>
-      <h2>기록</h2>
-      <p>검사 횟수: <b id="att" style="color:var(--text)">0</b>회 · 경과: <b id="tm" style="color:var(--text)">00:00</b></p>
-    </section>
-  </aside>
-  <div id="view"><div id="tip"></div></div>
-  <aside id="right">
-    <section>
-      <h2>결선 목록 (<span id="cnt">0</span>)</h2>
-      <div class="row"><button id="bUndo">되돌리기</button><button id="bReset">초기화</button></div>
-      <ul id="wlist"></ul>
-    </section>
-  </aside>
-</main>
-<footer>
-  <button id="chk" class="primary">결선 검사</button>
-  <div id="msg" class="info">단자를 클릭해 주회로를 결선한 뒤 [결선 검사]를 누르세요.</div>
-  <div id="safe">교육용 시뮬레이션입니다. 실제 전기 작업은 관련 전기안전 규정 준수와 전문가 검토가 필요합니다.</div>
-</footer>
+<div id="app">
+  <div id="view"></div>
+
+  <div id="left" class="col">
+    <div id="head" class="card">
+      <h1>정·역회전 인터록 결선 실습</h1>
+      <p>정회전·역회전 접촉기를 동시에 투입하지 못하게 하는 인터록 회로를 결선합니다.</p>
+    </div>
+    <div class="card"><h2>학습 포인트</h2><ul><li>MC 2개</li><li>인터록(b접점)</li><li>주회로 상 교체</li></ul></div>
+    <div class="card bad"><h2>체험 오류</h2><ul><li>인터록 누락 → 상간 단락</li><li>주회로 상 교체 오류</li></ul></div>
+    <div class="card">
+      <h2>실습 절차</h2>
+      <ul id="steps"></ul>
+      <div class="btns">
+        <button id="bOpen">결선 실습 열기</button>
+        <button id="bVR">VR 모드 시작</button>
+        <button id="bSpin">3D 모델 보기</button>
+        <button id="bGuide">실습 가이드</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="right" class="col">
+    <div class="card">
+      <h2>운전 패널</h2>
+      <div class="run">
+        <button id="bF">정회전 기동</button>
+        <button id="bR">역회전 기동</button>
+        <button id="bS">정지 / 비상정지</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>설비 상태</h2>
+      <div class="st">
+        <span>MC1 (정회전)</span><span id="sM1" class="off">소자</span>
+        <span>MC2 (역회전)</span><span id="sM2" class="off">소자</span>
+        <span>모터</span><span id="sMot" class="off">정지</span>
+        <span>차단기</span><span id="sBrk" class="on">정상</span>
+      </div>
+      <div id="msg" style="margin-top:8px;color:var(--mute)">버튼을 눌러 동작을 확인하세요.</div>
+    </div>
+    <div class="card">
+      <h2>오류 체험</h2>
+      <label class="sw"><input type="checkbox" id="swI"> 인터록(b접점) 누락</label>
+      <label class="sw"><input type="checkbox" id="swP"> MC2 주회로 상 교체 누락</label>
+      <div class="btns"><button id="bReset">차단기 복귀 / 초기화</button></div>
+    </div>
+    <div id="alert" class="card">
+      <b>⚠ 인터록 누락 시 오류 발생</b><br>상간 단락으로 인한 과전류 발생 (R-T 단락, 차단기 트립)
+      <small>안전조치: 전원 차단 → 인터록 b접점 설치 확인 → 결선·절연 점검 후 재투입</small>
+    </div>
+    <div id="note" class="card">교육용 시뮬레이션입니다. 실제 전기 작업은 관련 전기안전 규정 준수와 전문가 검토가 필요합니다.</div>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+<dialog id="wire">
+  <div class="bar"><b>1단계 · 주회로 결선 실습</b><button id="wNew">새 탭에서 열기</button><button id="wClose">닫기</button></div>
+  <iframe id="wFrame" title="주회로 결선 실습"></iframe>
+  <p class="hint">단자를 클릭-클릭해 전선을 연결하고 [결선 검사]를 누르세요. 정답 결선을 마치면 이 창을 닫고 운전 동작을 확인합니다.</p>
+</dialog>
+<dialog id="guide">
+  <h3>실습 가이드</h3>
+  <p><b>쉽게 말하면</b> 정회전 스위치와 역회전 스위치가 동시에 켜지면 전원선끼리 붙어 버립니다. 인터록은 한쪽이 켜져 있으면 다른 쪽이 켜지지 않게 막는 안전장치입니다.</p>
+  <p><b>전문 설명</b> 각 MC 코일 회로에 상대 MC의 b접점(상시 닫힘)을 직렬로 넣어, 상대가 투입되면 코일 회로가 열리게 합니다. 역회전 MC는 주회로에서 두 상(R·T)을 바꿔 모터 회전 방향을 반전시킵니다. 인터록이 없고 상 교체가 있으면 동시 투입 시 R-T가 단락됩니다.</p>
+  <p><b>진행</b> ① 결선 실습에서 주회로 연결 → ② 정회전 → ③ 역회전 → ④ 정회전 중 역회전 버튼(인터록 동작) → ⑤ 오류 체험 체크 후 다시 시도</p>
+  <p style="color:var(--mute);font-size:12px">교육용 시뮬레이션이며 실제 작업은 전기안전 규정과 전문가 검토가 필요합니다.</p>
+  <div class="btns"><button id="gClose">닫기</button></div>
+</dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-const PH={R:0xe53935,S:0xf5f5f5,T:0x1e88e5};
-const wrap=$('#view');
+const view=$('#view');
+const COL={R:0xe53935,S:0xf5f5f5,T:0x1e88e5};
+const KEYS=['R','S','T'];
 
 /* ---------- 장면 ---------- */
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x0b121c);
-const camera=new THREE.PerspectiveCamera(45,1,0.1,100);camera.position.set(0,0.3,15);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x07111f);
+const camera=new THREE.PerspectiveCamera(40,1,.1,100);camera.position.set(0,-.3,22);
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.xr.enabled=true;
-wrap.appendChild(renderer.domElement);
-const cv=renderer.domElement;
+view.appendChild(renderer.domElement);const cv=renderer.domElement;
 const controls=new THREE.OrbitControls(camera,cv);
-controls.target.set(0,0.2,0);controls.minDistance=5;controls.maxDistance=28;controls.update();
-scene.add(new THREE.AmbientLight(0xffffff,.75));
-const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(4,8,10);scene.add(dl);
-const board=new THREE.Group();scene.add(board);
+controls.target.set(0,-.8,0);controls.minDistance=9;controls.maxDistance=40;controls.autoRotateSpeed=1.5;controls.update();
+scene.add(new THREE.AmbientLight(0xffffff,.8));
+const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(5,8,12);scene.add(dl);
+const flash=new THREE.PointLight(0xaac4ff,0,14);flash.position.set(0,-.6,2.5);scene.add(flash);
+const root=new THREE.Group();scene.add(root);
+const grid=new THREE.GridHelper(36,36,0x1f4a78,0x10243d);grid.position.y=-6.6;root.add(grid);
 
-function label(t,sx,sy,px,col){
-  const c=document.createElement('canvas');c.width=256;c.height=Math.round(256*sy/sx);
-  const g=c.getContext('2d');g.font='bold '+px+'px "Malgun Gothic",sans-serif';
-  g.textAlign='center';g.textBaseline='middle';g.fillStyle=col||'#e6edf6';g.fillText(t,128,c.height/2);
+function label(t,sx,sy,px,col,bg,bd){
+  const c=document.createElement('canvas');c.width=384;c.height=Math.round(384*sy/sx);
+  const g=c.getContext('2d');
+  if(bg){g.fillStyle=bg;g.fillRect(0,0,c.width,c.height)}
+  if(bd){g.strokeStyle=bd;g.lineWidth=8;g.strokeRect(4,4,c.width-8,c.height-8)}
+  g.font='bold '+px+'px "Malgun Gothic",sans-serif';g.textAlign='center';g.textBaseline='middle';
+  g.fillStyle=col||'#fff';g.fillText(t,c.width/2,c.height/2);
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));
   s.scale.set(sx,sy,1);return s;
 }
-function box(cx,cy,w,h,col,title,px){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.4),new THREE.MeshStandardMaterial({color:col,roughness:.6}));
-  m.position.set(cx,cy,.15);board.add(m);
-  if(title){const l=label(title,w,.5,px||34);l.position.set(cx,cy,.4);board.add(l);}
-}
+const std=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6},o));
+function box(x,y,z,w,h,d,c,par,o){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),std(c,o));m.position.set(x,y,z);(par||root).add(m);return m}
 
-/* ---------- 단자 ---------- */
-const terms={},tpos={},tmeshes=[];
-function term(id,x,y,ph,name,num,dy){
-  const mat=new THREE.MeshStandardMaterial({color:0xb8c0cc,metalness:.6,roughness:.35,emissive:0x000000});
-  const g=new THREE.CylinderGeometry(.18,.18,.14,16);g.rotateX(Math.PI/2);
-  const m=new THREE.Mesh(g,mat);m.position.set(x,y,.42);m.userData.id=id;board.add(m);
-  const r=new THREE.Mesh(new THREE.TorusGeometry(.22,.035,8,24),new THREE.MeshBasicMaterial({color:PH[ph]}));
-  r.position.set(x,y,.38);board.add(r);
-  if(num){const l=label(num,.5,.25,40);l.position.set(x,y+dy,.4);board.add(l);}
-  terms[id]={m,mat,name,ph};tpos[id]=new THREE.Vector3(x,y,.42);tmeshes.push(m);
-}
-const PHS=['R','S','T'];
-function dev3(prefix,dname,cx,cy,w,h,col,title){
-  box(cx,cy,w,h,col,title);
-  [-0.8,0,0.8].forEach((dx,k)=>{
-    term(prefix+'-'+(2*k+1),cx+dx,cy+h*.32,PHS[k],dname+' '+(2*k+1)+'번 (입력)',String(2*k+1),-.32);
-    term(prefix+'-'+(2*k+2),cx+dx,cy-h*.32,PHS[k],dname+' '+(2*k+2)+'번 (출력)',String(2*k+2),.32);
-  });
-}
-// 배전반 판
-box(0,-0.2,11.4,11,0x1d2d44);
+/* 제어반 본체 */
+box(0,.45,-.1,8.4,7.7,.2,0x8a929c,null,{metalness:.4});
+[[0,4.4,8.8,.3],[0,-3.5,8.8,.3]].forEach(([x,y,w,h])=>box(x,y,.3,w,h,.7,0x5b636d));
+[[-4.35],[4.35]].forEach(([x])=>box(x,.45,.3,.3,8,.7,0x5b636d));
+box(0,-3.05,.1,6.4,.1,.12,0x4a525c); // 바닥 레일 느낌
 // 전원 MCCB
-box(0,4.45,2.9,1.0,0x3a3f4b,'MCCB 전원 (R·S·T)',30);
-PHS.forEach((p,k)=>term('P-'+p,[-0.8,0,0.8][k],3.6,p,'전원 '+p+'상',p,-.32));
-// 접촉기·열동계전기
-dev3('MCF','MC-F',-3.2,2.0,2.6,2.2,0x35516e,'MC-F 정회전');
-dev3('MCR','MC-R',3.2,2.0,2.6,2.2,0x6e4a35,'MC-R 역회전');
-dev3('THR','THR',0,-0.6,2.6,1.8,0x5a5230,'THR');
-// 모터 단자대 + 모터
-box(0,-2.55,2.6,1.0,0x3a3f4b);
-['U','V','W'].forEach((u,k)=>term('M-'+u,[-0.8,0,0.8][k],-2.55,PHS[k],'모터 '+u+' 단자',u,-.32));
-const motor=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,3.2,32).rotateZ(Math.PI/2),new THREE.MeshStandardMaterial({color:0x4b5563,metalness:.5,roughness:.5}));
-motor.position.set(0,-4.3,.1);board.add(motor);
-const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,1,16).rotateZ(Math.PI/2),new THREE.MeshStandardMaterial({color:0xcfd4dc,metalness:.8,roughness:.3}));
-shaft.position.set(2.3,-4.3,.1);board.add(shaft);
-const ml=label('3상 유도전동기',3,.5,34);ml.position.set(0,-4.3,1.25);board.add(ml);
+box(0,3.75,.25,3.2,.8,.5,0x20242b);
+const lq=label('전원 MCCB',2.2,.4,36);lq.position.set(0,3.75,.6);root.add(lq);
 
-/* ---------- 결선 데이터 ---------- */
-const wires=[];let sel=null,hover=null,t0=null,attempts=0;
-const nm=id=>terms[id].name;
-function rebuild(){
-  wires.forEach(w=>{if(w.mesh){board.remove(w.mesh);w.mesh.geometry.dispose()}});
-  wires.forEach((w,k)=>{
-    const A=tpos[w.a],B=tpos[w.b],M=A.clone().add(B).multiplyScalar(.5);M.z=.75+.09*(k%10);
-    const c=new THREE.CatmullRomCurve3([A.clone(),A.clone().setZ(.62),M,B.clone().setZ(.62),B.clone()]);
-    const m=new THREE.Mesh(new THREE.TubeGeometry(c,40,.045,8),
-      new THREE.MeshStandardMaterial({color:w.color,roughness:.5,emissive:w.color,emissiveIntensity:.12}));
-    m.userData.wire=w;w.mesh=m;board.add(m);
-  });
-  updateUI();
+/* 접촉기 */
+const MX=2.1,lamps={};
+function mc(id,x,title){
+  box(x,.8,.25,1.8,2.2,.5,0xe4e7eb);
+  box(x,.8,.52,1.5,.9,.05,0xc7ccd3);
+  const t=label(title,1.9,.55,34,'#111','#f4f6f8','#22252b');t.position.set(x,2.35,.6);root.add(t);
+  const l=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),std(0x1d3b26,{emissive:0x000000}));
+  l.position.set(x,.8,.62);root.add(l);lamps[id]=l;
+  [-.5,0,.5].forEach(dx=>{[1.7,-.1].forEach(y=>{
+    const s=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.12,12).rotateX(Math.PI/2),std(0xb8c0cc,{metalness:.7}));
+    s.position.set(x+dx,y,.55);root.add(s)})});
 }
-function refresh(){
-  const used=new Set();wires.forEach(w=>{used.add(w.a);used.add(w.b)});
-  for(const id in terms){
-    terms[id].mat.emissive.setHex(id===sel?0xffd54a:id===hover?0x2ea8ff:used.has(id)?0x1f4d2a:0);
+mc('m1',-MX,'MC1 (정회전)');mc('m2',MX,'MC2 (역회전)');
+
+/* 인터록 표시 */
+const ilkOn=new THREE.Group(),ilkOff=new THREE.Group();root.add(ilkOn,ilkOff);
+const ilkBox=box(0,.8,.3,1.7,.8,.4,0x7a1d1d,ilkOn,{emissive:0x000000});
+const il=label('인터록(b접점)',1.7,.5,30,'#ffd6d6',null,'#ff4d4d');il.position.set(0,.8,.55);ilkOn.add(il);
+[[-1.05],[1.05]].forEach(([x])=>box(x,.8,.4,.4,.08,.08,0xff4d4d,ilkOn,{emissive:0xff2020,emissiveIntensity:.6}));
+const lo=label('인터록 없음!',1.9,.55,34,'#ff8a8a','#2a1212','#ff4d4d');lo.position.set(0,.8,.6);ilkOff.add(lo);
+
+/* 단자대 + 모터 */
+box(0,-2.7,.25,3.6,.7,.5,0x2d333b);
+[-.8,0,.8].forEach((x,k)=>{const s=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.12,12).rotateX(Math.PI/2),std(COL[KEYS[k]],{emissive:COL[KEYS[k]],emissiveIntensity:.3}));s.position.set(x,-2.7,.55);root.add(s)});
+const lm=label('모터',1.1,.4,34,'#fff','#2a4a6e','#29b6ff');lm.position.set(2,-3.7,.8);root.add(lm);
+const motor=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.15,1.6,32).rotateX(Math.PI/2),std(0x1f5fbf,{metalness:.5,roughness:.4}));
+motor.position.set(0,-5.1,.3);root.add(motor);
+const rotor=new THREE.Group();rotor.position.set(0,-5.1,1.15);root.add(rotor);
+for(let i=0;i<4;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(.3,1.7,.1),std(i?0x9ec4ff:0xff6b6b));b.rotation.z=i*Math.PI/2;b.position.z=0;rotor.add(b)}
+rotor.children.forEach((b,i)=>{b.geometry=new THREE.BoxGeometry(.3,1.9,.1)});
+rotor.add(new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.2,16).rotateX(Math.PI/2),std(0xcfd4dc,{metalness:.8})));
+const dirLabel=label('정지',2.2,.5,36,'#9db3cc');dirLabel.position.set(0,-6.35,.8);root.add(dirLabel);
+function setDirLabel(t,c){const n=label(t,2.2,.5,36,c);dirLabel.material.map=n.material.map;dirLabel.material.needsUpdate=true}
+
+/* 도어 + 버튼 */
+const door=new THREE.Group();door.position.set(6.4,.45,.3);door.rotation.y=-.2;root.add(door);
+box(0,0,0,2.6,7.7,.2,0xaeb4bd,door,{metalness:.4});
+const acts=[];
+function pb(y,r,c,action,txt,base){
+  if(base)box(0,y,.15,1.2,1.2,.12,0xe0b400,door);
+  const g=new THREE.CylinderGeometry(r,r,.28,24).rotateX(Math.PI/2);
+  const m=new THREE.Mesh(g,std(c,{emissive:c,emissiveIntensity:.15,roughness:.35}));
+  m.position.set(0,y,.22);m.userData.action=action;door.add(m);acts.push(m);
+  const l=label(txt,1.9,.45,32,'#111');l.position.set(0,y-.95,.2);door.add(l);return m;
+}
+const pF=pb(2.3,.5,0x1fae55,'fwd','정회전 기동'),pR=pb(.6,.5,0xd13030,'rev','역회전 기동'),pS=pb(-1.4,.55,0xe53935,'stop','비상정지',true);
+
+/* 배선 */
+const wireGrp=new THREE.Group();root.add(wireGrp);
+function tube(pts,col,z){
+  const c=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],z)));
+  wireGrp.add(new THREE.Mesh(new THREE.TubeGeometry(c,32,.06,8),std(col,{emissive:col,emissiveIntensity:.15})));
+}
+function buildWires(swapOK){
+  while(wireGrp.children.length)wireGrp.remove(wireGrp.children[0]);
+  const src=[-.5,0,.5],blk=[-.8,0,.8];
+  [-MX,MX].forEach((cx,ci)=>KEYS.forEach((p,k)=>{
+    const x=cx+src[k],z=.62+k*.07+ci*.03;
+    tube([[src[k],3.3],[(src[k]+x)/2,2.7],[x,1.9],[x,1.7]],COL[p],z);
+    const tk=(ci===1&&swapOK)?2-k:k; // MC2는 R·T 교체
+    tube([[x,-.1],[x,-.8],[(x+blk[tk])/2,-1.6],[blk[tk],-2.7]],COL[p],z);
+  }));
+  KEYS.forEach((p,k)=>{const x=[-.8,0,.8][k];tube([[x,-2.7],[x*.8,-3.3],[x*.4,-3.8],[x*.2,-4.0]],COL[p],.8+k*.03)});
+}
+
+/* 스파크 */
+const N=140,sGeo=new THREE.BufferGeometry(),sPos=new Float32Array(N*3),sVel=new Float32Array(N*3),sLife=new Float32Array(N);
+sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+const sparks=new THREE.Points(sGeo,new THREE.PointsMaterial({color:0xcfe0ff,size:.2,transparent:true,opacity:0}));
+root.add(sparks);let sparkT=0;
+function emit(i){sPos.set([0,-.5,.9],i*3);const a=Math.random()*6.28,s=2+Math.random()*5;sVel.set([Math.cos(a)*s,Math.random()*5,Math.sin(a)*s*.5],i*3);sLife[i]=.3+Math.random()*.7}
+
+/* ---------- 상태·시뮬레이션 ---------- */
+const S={fwd:false,rev:false,tripped:false,interlock:true,swapOK:true};
+const done=[false,false,false,false,false,false];
+const STEPS=['회로도 확인 후 결선하기','전원을 투입하고 정회전 동작 확인','역회전 동작 확인','인터록 동작 확인 (동시 투입 불가)','오류 상황 체험하기 (인터록 누락, 상 교체 오류)'];
+const HINTS=['[결선 실습 열기]에서 주회로를 먼저 결선합니다.','초록 [정회전 기동]을 누르세요.','[정지] 후 [역회전 기동]을 누르세요.','정회전 중에 [역회전 기동]을 눌러 보세요.','[오류 체험]을 체크한 뒤 4번 동작을 다시 해 보세요.'];
+let ilkFlash=0,omega=0;
+function log(t,k){const m=$('#msg');m.textContent=t;m.style.color=k==='err'?'#ff8a8a':k==='ok'?'#7be8a5':'#9db3cc'}
+function dirNow(){return(S.rev&&!S.fwd)?(S.swapOK?-1:1):1}
+function sync(){
+  const set=(id,t,c)=>{const e=$(id);e.textContent=t;e.className=c};
+  set('#sM1',S.fwd?'투입':'소자',S.fwd?'on':'off');
+  set('#sM2',S.rev?'투입':'소자',S.rev?'on':'off');
+  const run=(S.fwd||S.rev)&&!S.tripped;
+  const d=dirNow();
+  set('#sMot',!run?'정지':(S.fwd&&S.rev)?'동시 투입(위험)':d>0?'정회전 ↻':'역회전 ↺',!run?'off':(S.fwd&&S.rev)?'bad':'on');
+  set('#sBrk',S.tripped?'트립':'정상',S.tripped?'bad':'on');
+  lamps.m1.material.emissive.setHex(S.fwd?0x33ff77:0);lamps.m1.material.color.setHex(S.fwd?0x33ff77:0x1d3b26);
+  lamps.m2.material.emissive.setHex(S.rev?0x33ff77:0);lamps.m2.material.color.setHex(S.rev?0x33ff77:0x1d3b26);
+  setDirLabel(!run?'정지':d>0?'정회전 ↻':'역회전 ↺',!run?'#9db3cc':d>0?'#7be8a5':'#7bc4ff');
+  $('#alert').style.display=S.tripped?'block':'none';
+  renderSteps();
+}
+function renderSteps(){
+  const cur=done.findIndex((d,i)=>i>0&&!d);
+  $('#steps').innerHTML=STEPS.map((t,i)=>{const n=i+1;
+    return `<li class="${done[n]?'done':n===cur?'cur':''}"><span class="n">${done[n]?'✓':n}</span><span>${t}${n===cur?`<small>${HINTS[i]}</small>`:''}</span></li>`}).join('');
+}
+function trip(){
+  S.tripped=true;S.fwd=S.rev=true;sparkT=2.4;for(let i=0;i<N;i++)emit(i);done[5]=true;
+  log('MC1·MC2 동시 투입 → R-T 상간 단락! 차단기 트립. 인터록(b접점)이 없으면 이 사고가 발생합니다.','err');
+  sync();
+  setTimeout(()=>{S.fwd=S.rev=false;sync()},900);
+}
+function press(a){
+  if(S.tripped){log('차단기가 트립되었습니다. [차단기 복귀 / 초기화] 후 다시 조작하세요.','err');return}
+  if(a==='stop'){S.fwd=S.rev=false;log('정지: 모든 접촉기가 소자되었습니다.');return sync()}
+  const o=a==='fwd'?'rev':'fwd';
+  if(S[o]){
+    if(S.interlock){done[4]=true;ilkFlash=1.2;log('인터록 동작: 상대 MC의 b접점이 코일 회로를 열어 동시 투입이 차단되었습니다. 먼저 [정지]를 누르세요.','ok');return sync()}
+    S[a]=true;
+    if(S.swapOK)return trip();
+    done[5]=true;log('인터록 누락: 정·역 접촉기가 동시에 투입되었습니다. (상 교체가 없어 단락은 없지만 위험한 결선입니다.)','err');return sync();
   }
+  S[a]=true;
+  if(a==='fwd'){done[2]=true;log('정회전 동작: MC1 투입, 모터가 정회전(↻)합니다.','ok')}
+  else if(S.swapOK){done[3]=true;log('역회전 동작: MC2 투입, R·T 상이 교체되어 모터가 역회전(↺)합니다.','ok')}
+  else{done[5]=true;log('역회전 불가: MC2 주회로에 상 교체가 없어 정회전과 같은 방향으로 회전합니다.','err')}
+  sync();
 }
-/* 체크리스트: 전선 양끝 단자의 종류로 구간을 분류 */
-function cat(id){
-  if(id[0]==='P')return 'P';
-  if(id[0]==='M')return 'M';
-  const [p,n]=id.split('-');return p+(n%2?'in':'out');
+function config(){
+  S.interlock=!$('#swI').checked;S.swapOK=!$('#swP').checked;
+  S.fwd=S.rev=S.tripped=false;
+  ilkOn.visible=S.interlock;ilkOff.visible=!S.interlock;
+  buildWires(S.swapOK);
+  log(S.interlock&&S.swapOK?'정상 결선 상태입니다.':'오류 결선 상태로 설정했습니다. 정회전 중 역회전 버튼을 눌러 보세요.');
+  sync();
 }
-const GROUPS=[
-  ['전원 → MC-F 입력','P|MCFin'],
-  ['MC-F 출력 → THR 입력','MCFout|THRin'],
-  ['전원 → MC-R 입력','P|MCRin'],
-  ['MC-R 출력 → THR 입력 (두 상 교체)','MCRout|THRin'],
-  ['THR 출력 → 모터 U·V·W','M|THRout']
-];
-function updateUI(){
-  const key=w=>[cat(w.a),cat(w.b)].sort().join('|');
-  $('#checks').innerHTML=GROUPS.map(([t,k])=>{
-    const sk=k.split('|').sort().join('|');const n=wires.filter(w=>key(w)===sk).length;
-    return `<li class="${n>=3?'done':''}"><span class="mk">${n>=3?'✓':''}</span><span>${t}<br><small>${Math.min(n,3)} / 3선</small></span></li>`;
-  }).join('');
-  $('#cnt').textContent=wires.length;
-  $('#wlist').innerHTML=wires.map((w,i)=>`<li><span class="dot" style="background:#${w.color.toString(16).padStart(6,'0')}"></span>${nm(w.a)} → ${nm(w.b)}<button class="x" data-i="${i}" title="삭제">×</button></li>`).join('');
-  refresh();
-}
-$('#wlist').addEventListener('click',e=>{const i=e.target.dataset.i;if(i!==undefined){wires.splice(+i,1);rebuild();say('info','전선을 삭제했습니다.')}});
-$('#bUndo').onclick=()=>{if(wires.length){wires.pop();rebuild();say('info','마지막 전선을 되돌렸습니다.')}};
-$('#bReset').onclick=()=>{wires.length=0;sel=null;rebuild();say('info','결선을 모두 초기화했습니다.')};
-function say(kind,html){const m=$('#msg');m.className=kind;m.innerHTML=html}
+$('#swI').onchange=$('#swP').onchange=config;
+$('#bReset').onclick=config;
+$('#bF').onclick=()=>press('fwd');$('#bR').onclick=()=>press('rev');$('#bS').onclick=()=>press('stop');
+let toastT;
+function toast(t,ok){const e=$('#toast');e.textContent=t;e.className=ok?'ok':'';e.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>e.style.display='none',6000)}
+const WIRE_HTML="<!DOCTYPE html>\n<html lang=\"ko\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>정·역회전 인터록 결선 실습 - 1단계 주회로<\/title>\n<style>\n/* 색상은 여기서만 바꾸면 됩니다. motor3State와 맞추려면 이 변수 값만 교체하세요. */\n:root{--bg:#0f1722;--panel:#162234;--panel2:#1c2b42;--line:#2b3d57;--text:#e6edf6;--mute:#8fa3bd;--accent:#2ea8ff;--ok:#2ecc71;--err:#ff5252;--warn:#ffb84d}\n*{box-sizing:border-box}\nhtml,body{height:100%;margin:0}\nbody{background:var(--bg);color:var(--text);font:14px/1.5 \"Noto Sans KR\",\"Malgun Gothic\",system-ui,sans-serif;display:flex;flex-direction:column}\nheader{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line)}\nheader h1{font-size:16px;margin:0;flex:1}\nbutton{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}\nbutton:hover{border-color:var(--accent)}\nbutton:focus-visible{outline:2px solid var(--accent);outline-offset:2px}\nbutton.on,button.primary{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:700}\nmain{flex:1;display:flex;min-height:0}\naside{width:260px;background:var(--panel);padding:12px;overflow:auto;flex:none}\n#left{border-right:1px solid var(--line)}\n#right{border-left:1px solid var(--line)}\naside h2{font-size:14px;margin:0 0 6px;color:var(--accent)}\naside section{margin-bottom:14px}\naside p,aside li{color:var(--mute);font-size:13px;margin:2px 0}\nul{margin:0;padding:0;list-style:none}\n#checks li{display:flex;gap:8px;align-items:flex-start;padding:4px 0;color:var(--text)}\n#checks .mk{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px;text-align:center;font-size:11px;line-height:14px}\n#checks li.done .mk{background:var(--ok);border-color:var(--ok);color:#04121f}\n#checks small{color:var(--mute)}\n#view{flex:1;position:relative;min-width:0}\n#view canvas{position:absolute;inset:0;width:100%;height:100%;display:block}\n#tip{position:absolute;pointer-events:none;background:#000c;border:1px solid var(--accent);padding:2px 8px;border-radius:4px;font-size:12px;display:none;white-space:nowrap}\n#wlist li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);color:var(--text);font-size:12px}\n#wlist .dot{width:10px;height:10px;border-radius:50%;border:1px solid #fff6;flex:none}\n#wlist .x{margin-left:auto;padding:0 6px;line-height:1.3}\n.row{display:flex;gap:6px;margin-bottom:8px}\n.row button{flex:1}\nfooter{background:var(--panel);border-top:1px solid var(--line);padding:8px 14px;display:flex;gap:12px;align-items:stretch}\n#msg{flex:1;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:6px 10px;background:var(--bg);min-height:64px;max-height:120px;overflow:auto;font-size:13px}\n#msg.ok{border-left-color:var(--ok)}#msg.err{border-left-color:var(--err)}\n#msg ul li{color:var(--text);margin:2px 0}\n#msg b.e{color:var(--err)}#msg b.o{color:var(--ok)}\n#safe{font-size:11px;color:var(--mute);width:210px}\n#chk{padding:0 22px;font-size:15px}\n@media(max-width:900px){main{flex-direction:column}aside{width:auto;max-height:26%}#left{border-right:0;border-bottom:1px solid var(--line)}#right{border-left:0;border-top:1px solid var(--line)}footer{flex-wrap:wrap}#safe{width:100%}}\n<\/style>\n<\/head>\n<body>\n<header>\n  <h1>정·역회전 인터록 결선 실습 <span style=\"color:var(--mute);font-weight:400\">1단계 · 주회로<\/span><\/h1>\n  <button id=\"bPC\" class=\"on\">PC 모드<\/button>\n  <button id=\"bVR\">VR 모드<\/button>\n<\/header>\n<main>\n  <aside id=\"left\">\n    <section>\n      <h2>1단계 · 주회로 결선<\/h2>\n      <p>전원 R·S·T → MC-F → THR → 모터. MC-R은 R·T 두 상을 서로 교체해 같은 THR에 연결합니다.<\/p>\n    <\/section>\n    <section>\n      <h2>체크리스트<\/h2>\n      <ul id=\"checks\"><\/ul>\n    <\/section>\n    <section>\n      <h2>조작 방법<\/h2>\n      <ul>\n        <li>단자 클릭 → 다른 단자 클릭: 전선 생성<\/li>\n        <li>전선 우클릭: 삭제 / 같은 단자 재클릭: 취소<\/li>\n        <li>왼쪽 드래그: 회전, 오른쪽 드래그: 이동, 휠: 확대<\/li>\n        <li>전선 색: 시작 단자의 상 색 (R적·S백·T청)<\/li>\n      <\/ul>\n    <\/section>\n    <section>\n      <h2>기록<\/h2>\n      <p>검사 횟수: <b id=\"att\" style=\"color:var(--text)\">0<\/b>회 · 경과: <b id=\"tm\" style=\"color:var(--text)\">00:00<\/b><\/p>\n    <\/section>\n  <\/aside>\n  <div id=\"view\"><div id=\"tip\"><\/div><\/div>\n  <aside id=\"right\">\n    <section>\n      <h2>결선 목록 (<span id=\"cnt\">0<\/span>)<\/h2>\n      <div class=\"row\"><button id=\"bUndo\">되돌리기<\/button><button id=\"bReset\">초기화<\/button><\/div>\n      <ul id=\"wlist\"><\/ul>\n    <\/section>\n  <\/aside>\n<\/main>\n<footer>\n  <button id=\"chk\" class=\"primary\">결선 검사<\/button>\n  <div id=\"msg\" class=\"info\">단자를 클릭해 주회로를 결선한 뒤 [결선 검사]를 누르세요.<\/div>\n  <div id=\"safe\">교육용 시뮬레이션입니다. 실제 전기 작업은 관련 전기안전 규정 준수와 전문가 검토가 필요합니다.<\/div>\n<\/footer>\n\n<script src=\"https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js\"><\/script>\n<script src=\"https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js\"><\/script>\n<script>\nconst $=s=>document.querySelector(s);\nconst PH={R:0xe53935,S:0xf5f5f5,T:0x1e88e5};\nconst wrap=$('#view');\n\n/* ---------- 장면 ---------- */\nconst scene=new THREE.Scene();scene.background=new THREE.Color(0x0b121c);\nconst camera=new THREE.PerspectiveCamera(45,1,0.1,100);camera.position.set(0,0.3,15);\nconst renderer=new THREE.WebGLRenderer({antialias:true});\nrenderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.xr.enabled=true;\nwrap.appendChild(renderer.domElement);\nconst cv=renderer.domElement;\nconst controls=new THREE.OrbitControls(camera,cv);\ncontrols.target.set(0,0.2,0);controls.minDistance=5;controls.maxDistance=28;controls.update();\nscene.add(new THREE.AmbientLight(0xffffff,.75));\nconst dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(4,8,10);scene.add(dl);\nconst board=new THREE.Group();scene.add(board);\n\nfunction label(t,sx,sy,px,col){\n  const c=document.createElement('canvas');c.width=256;c.height=Math.round(256*sy/sx);\n  const g=c.getContext('2d');g.font='bold '+px+'px \"Malgun Gothic\",sans-serif';\n  g.textAlign='center';g.textBaseline='middle';g.fillStyle=col||'#e6edf6';g.fillText(t,128,c.height/2);\n  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));\n  s.scale.set(sx,sy,1);return s;\n}\nfunction box(cx,cy,w,h,col,title,px){\n  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.4),new THREE.MeshStandardMaterial({color:col,roughness:.6}));\n  m.position.set(cx,cy,.15);board.add(m);\n  if(title){const l=label(title,w,.5,px||34);l.position.set(cx,cy,.4);board.add(l);}\n}\n\n/* ---------- 단자 ---------- */\nconst terms={},tpos={},tmeshes=[];\nfunction term(id,x,y,ph,name,num,dy){\n  const mat=new THREE.MeshStandardMaterial({color:0xb8c0cc,metalness:.6,roughness:.35,emissive:0x000000});\n  const g=new THREE.CylinderGeometry(.18,.18,.14,16);g.rotateX(Math.PI/2);\n  const m=new THREE.Mesh(g,mat);m.position.set(x,y,.42);m.userData.id=id;board.add(m);\n  const r=new THREE.Mesh(new THREE.TorusGeometry(.22,.035,8,24),new THREE.MeshBasicMaterial({color:PH[ph]}));\n  r.position.set(x,y,.38);board.add(r);\n  if(num){const l=label(num,.5,.25,40);l.position.set(x,y+dy,.4);board.add(l);}\n  terms[id]={m,mat,name,ph};tpos[id]=new THREE.Vector3(x,y,.42);tmeshes.push(m);\n}\nconst PHS=['R','S','T'];\nfunction dev3(prefix,dname,cx,cy,w,h,col,title){\n  box(cx,cy,w,h,col,title);\n  [-0.8,0,0.8].forEach((dx,k)=>{\n    term(prefix+'-'+(2*k+1),cx+dx,cy+h*.32,PHS[k],dname+' '+(2*k+1)+'번 (입력)',String(2*k+1),-.32);\n    term(prefix+'-'+(2*k+2),cx+dx,cy-h*.32,PHS[k],dname+' '+(2*k+2)+'번 (출력)',String(2*k+2),.32);\n  });\n}\n// 배전반 판\nbox(0,-0.2,11.4,11,0x1d2d44);\n// 전원 MCCB\nbox(0,4.45,2.9,1.0,0x3a3f4b,'MCCB 전원 (R·S·T)',30);\nPHS.forEach((p,k)=>term('P-'+p,[-0.8,0,0.8][k],3.6,p,'전원 '+p+'상',p,-.32));\n// 접촉기·열동계전기\ndev3('MCF','MC-F',-3.2,2.0,2.6,2.2,0x35516e,'MC-F 정회전');\ndev3('MCR','MC-R',3.2,2.0,2.6,2.2,0x6e4a35,'MC-R 역회전');\ndev3('THR','THR',0,-0.6,2.6,1.8,0x5a5230,'THR');\n// 모터 단자대 + 모터\nbox(0,-2.55,2.6,1.0,0x3a3f4b);\n['U','V','W'].forEach((u,k)=>term('M-'+u,[-0.8,0,0.8][k],-2.55,PHS[k],'모터 '+u+' 단자',u,-.32));\nconst motor=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,3.2,32).rotateZ(Math.PI/2),new THREE.MeshStandardMaterial({color:0x4b5563,metalness:.5,roughness:.5}));\nmotor.position.set(0,-4.3,.1);board.add(motor);\nconst shaft=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,1,16).rotateZ(Math.PI/2),new THREE.MeshStandardMaterial({color:0xcfd4dc,metalness:.8,roughness:.3}));\nshaft.position.set(2.3,-4.3,.1);board.add(shaft);\nconst ml=label('3상 유도전동기',3,.5,34);ml.position.set(0,-4.3,1.25);board.add(ml);\n\n/* ---------- 결선 데이터 ---------- */\nconst wires=[];let sel=null,hover=null,t0=null,attempts=0;\nconst nm=id=>terms[id].name;\nfunction rebuild(){\n  wires.forEach(w=>{if(w.mesh){board.remove(w.mesh);w.mesh.geometry.dispose()}});\n  wires.forEach((w,k)=>{\n    const A=tpos[w.a],B=tpos[w.b],M=A.clone().add(B).multiplyScalar(.5);M.z=.75+.09*(k%10);\n    const c=new THREE.CatmullRomCurve3([A.clone(),A.clone().setZ(.62),M,B.clone().setZ(.62),B.clone()]);\n    const m=new THREE.Mesh(new THREE.TubeGeometry(c,40,.045,8),\n      new THREE.MeshStandardMaterial({color:w.color,roughness:.5,emissive:w.color,emissiveIntensity:.12}));\n    m.userData.wire=w;w.mesh=m;board.add(m);\n  });\n  updateUI();\n}\nfunction refresh(){\n  const used=new Set();wires.forEach(w=>{used.add(w.a);used.add(w.b)});\n  for(const id in terms){\n    terms[id].mat.emissive.setHex(id===sel?0xffd54a:id===hover?0x2ea8ff:used.has(id)?0x1f4d2a:0);\n  }\n}\n/* 체크리스트: 전선 양끝 단자의 종류로 구간을 분류 */\nfunction cat(id){\n  if(id[0]==='P')return 'P';\n  if(id[0]==='M')return 'M';\n  const [p,n]=id.split('-');return p+(n%2?'in':'out');\n}\nconst GROUPS=[\n  ['전원 → MC-F 입력','P|MCFin'],\n  ['MC-F 출력 → THR 입력','MCFout|THRin'],\n  ['전원 → MC-R 입력','P|MCRin'],\n  ['MC-R 출력 → THR 입력 (두 상 교체)','MCRout|THRin'],\n  ['THR 출력 → 모터 U·V·W','M|THRout']\n];\nfunction updateUI(){\n  const key=w=>[cat(w.a),cat(w.b)].sort().join('|');\n  $('#checks').innerHTML=GROUPS.map(([t,k])=>{\n    const sk=k.split('|').sort().join('|');const n=wires.filter(w=>key(w)===sk).length;\n    return `<li class=\"${n>=3?'done':''}\"><span class=\"mk\">${n>=3?'✓':''}<\/span><span>${t}<br><small>${Math.min(n,3)} / 3선<\/small><\/span><\/li>`;\n  }).join('');\n  $('#cnt').textContent=wires.length;\n  $('#wlist').innerHTML=wires.map((w,i)=>`<li><span class=\"dot\" style=\"background:#${w.color.toString(16).padStart(6,'0')}\"><\/span>${nm(w.a)} → ${nm(w.b)}<button class=\"x\" data-i=\"${i}\" title=\"삭제\">×<\/button><\/li>`).join('');\n  refresh();\n}\n$('#wlist').addEventListener('click',e=>{const i=e.target.dataset.i;if(i!==undefined){wires.splice(+i,1);rebuild();say('info','전선을 삭제했습니다.')}});\n$('#bUndo').onclick=()=>{if(wires.length){wires.pop();rebuild();say('info','마지막 전선을 되돌렸습니다.')}};\n$('#bReset').onclick=()=>{wires.length=0;sel=null;rebuild();say('info','결선을 모두 초기화했습니다.')};\nfunction say(kind,html){const m=$('#msg');m.className=kind;m.innerHTML=html}\n\nfunction clickTerm(id){\n  if(!sel){sel=id;refresh();say('info','시작: <b>'+nm(id)+'<\/b> → 연결할 단자를 클릭하세요. (같은 단자를 다시 클릭하면 취소)');return}\n  if(sel===id){sel=null;refresh();say('info','선택을 취소했습니다.');return}\n  const a=sel;sel=null;\n  if(wires.some(w=>(w.a===a&&w.b===id)||(w.a===id&&w.b===a))){refresh();say('err','이미 연결된 전선입니다.');return}\n  if(!t0)t0=Date.now();\n  wires.push({a,b:id,color:PH[terms[a].ph]});rebuild();\n  say('info',nm(a)+' → '+nm(id)+' 연결했습니다.');\n}\n\n/* ---------- 입력 (PC) ---------- */\nconst rc=new THREE.Raycaster();let down=null;\nconst ndc=e=>{const r=cv.getBoundingClientRect();return new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1)};\nconst pickT=e=>{rc.setFromCamera(ndc(e),camera);const h=rc.intersectObjects(tmeshes,false);return h.length?h[0].object.userData.id:null};\nconst moved=e=>down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>5;\ncv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY}});\ncv.addEventListener('pointerup',e=>{if(e.button!==0||!down||moved(e))return;const id=pickT(e);if(id)clickTerm(id)});\ncv.addEventListener('contextmenu',e=>{\n  e.preventDefault();if(moved(e))return;\n  rc.setFromCamera(ndc(e),camera);\n  const h=rc.intersectObjects(wires.map(w=>w.mesh),false);\n  if(h.length){wires.splice(wires.indexOf(h[0].object.userData.wire),1);rebuild();say('info','전선을 삭제했습니다.')}\n});\nconst tip=$('#tip');\ncv.addEventListener('pointermove',e=>{\n  const id=pickT(e);\n  if(id!==hover){hover=id;refresh();cv.style.cursor=id?'pointer':'default'}\n  if(id){const r=wrap.getBoundingClientRect();tip.style.display='block';tip.textContent=nm(id);tip.style.left=(e.clientX-r.left+14)+'px';tip.style.top=(e.clientY-r.top+14)+'px'}\n  else tip.style.display='none';\n});\ncv.addEventListener('pointerleave',()=>{tip.style.display='none'});\n\n/* ---------- 검사 로직 ---------- */\nfunction graph(active){\n  const g={},add=(a,b)=>{(g[a]=g[a]||[]).push(b);(g[b]=g[b]||[]).push(a)};\n  wires.forEach(w=>add(w.a,w.b));\n  ['THR',active].forEach(p=>[[1,2],[3,4],[5,6]].forEach(([i,o])=>add(p+'-'+i,p+'-'+o)));\n  return g;\n}\nfunction reach(g,s){const seen=new Set([s]),q=[s];while(q.length){const n=q.pop();(g[n]||[]).forEach(m=>{if(!seen.has(m)){seen.add(m);q.push(m)}})}return seen}\nfunction analyze(active){\n  const g=graph(active),r={R:reach(g,'P-R'),S:reach(g,'P-S'),T:reach(g,'P-T')},out={short:[],map:{}};\n  if(r.R.has('P-S'))out.short.push('R-S');\n  if(r.R.has('P-T'))out.short.push('R-T');\n  if(r.S.has('P-T'))out.short.push('S-T');\n  ['U','V','W'].forEach(u=>out.map[u]=PHS.filter(p=>r[p].has('M-'+u)));\n  return out;\n}\nfunction kind(map){\n  const v=['U','V','W'].map(u=>map[u]);\n  if(v.some(x=>x.length===0))return {k:'none'};\n  if(v.some(x=>x.length>1)||new Set(v.map(x=>x[0])).size<3)return {k:'multi'};\n  const s=v.map(x=>x[0]),idx=s.map(p=>'RST'.indexOf(p));\n  let inv=0;for(let i=0;i<3;i++)for(let j=i+1;j<3;j++)if(idx[i]>idx[j])inv++;\n  if(inv===0)return {k:'identity'};\n  if(inv===2)return {k:'cycle',s};\n  return {k:'swap',s,pair:PHS.filter((p,i)=>s[i]!==p)};\n}\nconst fmt=s=>'U='+s[0]+', V='+s[1]+', W='+s[2];\nfunction check(){\n  attempts++;$('#att').textContent=attempts;\n  if(!wires.length){say('err','<b class=\"e\">결선된 전선이 없습니다.<\/b> 전원 단자부터 연결하세요.');return}\n  const errs=[],oks=[];\n  const F=analyze('MCF'),B=analyze('MCR');\n  const nameOf=(a,dir)=>{\n    if(a.short.length){errs.push(`${dir}: MC가 투입되면 <b class=\"e\">${a.short.join(', ')} 상간 단락<\/b>이 발생합니다. 전선이 잘못 연결되었습니다.`);return}\n    const k=kind(a.map);\n    if(k.k==='none'){const miss=['U','V','W'].filter(u=>!a.map[u].length).join('·');errs.push(`${dir}: 모터 <b>${miss}<\/b> 단자에 전원이 도달하지 않습니다. 미결선 구간을 확인하세요.`);return}\n    if(k.k==='multi'){errs.push(`${dir}: 한 모터 단자에 여러 상이 연결되었거나 같은 상이 중복되었습니다.`);return}\n    return k;\n  };\n  const kf=nameOf(F,'정회전(MC-F)');\n  if(kf){\n    if(kf.k==='identity')oks.push('정회전: U-V-W = R-S-T 정상');\n    else errs.push('정회전(MC-F): 상순이 R-S-T와 다릅니다 ('+fmt(kf.s)+'). 정회전은 상을 교체하지 않습니다.');\n  }\n  const kb=nameOf(B,'역회전(MC-R)');\n  if(kb){\n    if(kb.k==='identity')errs.push('역회전(MC-R): <b class=\"e\">주회로 상 교체 누락<\/b> - 정회전과 같은 방향으로 돕니다. 두 상(R·T)을 서로 교체하세요.');\n    else if(kb.k==='cycle')errs.push('역회전(MC-R): 상이 순환 배열('+fmt(kb.s)+')이라 회전 방향이 바뀌지 않습니다. 세 상이 아니라 두 상만 서로 바꾸세요.');\n    else{\n      oks.push('역회전: '+fmt(kb.s)+' → 두 상('+kb.pair.join('·')+') 교체, 방향 반전');\n      if(kb.pair.join('')!=='RT')errs.push('역회전: 방향은 바뀌지만 시험 기준은 <b>R·T<\/b> 두 상 교체입니다. (현재 '+kb.pair.join('·')+')');\n    }\n  }\n  const li=a=>a.map(x=>'<li>'+x+'<\/li>').join('');\n  if(!errs.length){\n    const sec=t0?Math.round((Date.now()-t0)/1000):0;\n    say('ok','<b class=\"o\">주회로 결선 정상 ✔<\/b> ('+attempts+'회 시도, '+Math.floor(sec/60)+'분 '+sec%60+'초)<ul>'+li(oks)+'<\/ul>');\n  }else say('err','<b class=\"e\">결선 오류 '+errs.length+'건<\/b><ul>'+li(errs)+li(oks.map(o=>'✔ '+o))+'<\/ul>');\n}\n$('#chk').onclick=check;\nsetInterval(()=>{if(t0){const s=Math.floor((Date.now()-t0)/1000);$('#tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}},500);\n\n/* ---------- VR / 크기 / 루프 ---------- */\nlet xrSession=null;\n$('#bVR').onclick=()=>{\n  if(xrSession){xrSession.end();return}\n  if(!navigator.xr){say(\"err\",location.protocol==='file:'||window.isSecureContext===false?'VR은 HTTPS 주소(GitHub Pages 등)에서만 동작합니다.':'이 브라우저는 WebXR을 지원하지 않습니다. VR 헤드셋(Quest 브라우저 등) 또는 WebXR 지원 브라우저에서 열어 주세요.');return}\n  const go=o=>navigator.xr.requestSession('immersive-vr',o);\n  // 클릭 직후 바로 요청. 옵션 때문에 거부되면 옵션 없이 한 번 더 시도합니다.\n  go({optionalFeatures:['local-floor']})\n    .catch(e=>e&&e.name==='NotSupportedError'?go({}):Promise.reject(e))\n    .then(s=>{xrSession=s;s.addEventListener('end',()=>{xrSession=null});return renderer.xr.setSession(s)})\n    .catch(e=>{\n      xrSession=null;console.error('VR 시작 실패',e);\n      const m=(e&&e.message)||'';\n      let t;\n      if(e&&e.name==='NotSupportedError')t='VR 세션 조건을 충족하는 VR 기기를 찾지 못했습니다. 헤드셋 연결과 VR 런타임(SteamVR·Meta Quest Link·Windows Mixed Reality 등) 실행을 확인하거나, Quest 브라우저에서 이 주소를 열어 주세요. PC 화면에서는 마우스로 3D 모델을 돌려 볼 수 있습니다.';\n      else if(e&&(e.name==='SecurityError'||/not allowed|permission|policy/i.test(m)))t='브라우저가 VR 시작을 허용하지 않았습니다. 미리보기 창이 아니라 HTTPS 주소의 새 탭에서 열고, VR 장치 권한을 허용해 주세요.';\n      else t='VR 시작 실패 ('+(e&&e.name||'오류')+'): '+m;\n      say(\"err\",t);\n    });\n};\n$('#bPC').onclick=()=>{if(xrSession)xrSession.end()};\nrenderer.xr.addEventListener('sessionstart',()=>{board.position.set(0,1.1,-2.4);board.scale.setScalar(.38);$('#bVR').classList.add('on');$('#bPC').classList.remove('on')});\nrenderer.xr.addEventListener('sessionend',()=>{xrSession=null;board.position.set(0,0,0);board.scale.setScalar(1);$('#bVR').classList.remove('on');$('#bPC').classList.add('on')});\nfor(let i=0;i<2;i++){\n  const c=renderer.xr.getController(i);\n  c.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,0,-5)]),new THREE.LineBasicMaterial({color:0x2ea8ff})));\n  c.addEventListener('selectstart',()=>{\n    const m=new THREE.Matrix4().extractRotation(c.matrixWorld);\n    rc.ray.origin.setFromMatrixPosition(c.matrixWorld);rc.ray.direction.set(0,0,-1).applyMatrix4(m);\n    const h=rc.intersectObjects(tmeshes,false);if(h.length)clickTerm(h[0].object.userData.id);\n  });\n  scene.add(c);\n}\nfunction resize(){if(renderer.xr.isPresenting)return;const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}\nnew ResizeObserver(()=>requestAnimationFrame(resize)).observe(wrap);resize();\nrenderer.setAnimationLoop(()=>{if(!renderer.xr.isPresenting)controls.update();renderer.render(scene,camera)});\nupdateUI();\n<\/script>\n<\/body>\n<\/html>\n";
+$('#bOpen').onclick=()=>{
+  const f=$('#wFrame');if(!f.getAttribute('srcdoc'))f.srcdoc=WIRE_HTML;
+  $('#wire').showModal();done[1]=true;sync();
+};
+$('#wNew').onclick=()=>window.open(URL.createObjectURL(new Blob([WIRE_HTML],{type:'text/html'})),'_blank');
+$('#wClose').onclick=()=>$('#wire').close();
+$('#bGuide').onclick=()=>$('#guide').showModal();$('#gClose').onclick=()=>$('#guide').close();
+$('#bSpin').onclick=()=>{controls.autoRotate=!controls.autoRotate;if(!controls.autoRotate){camera.position.set(0,-.3,22);controls.target.set(0,-.8,0);controls.update()}$('#bSpin').textContent=controls.autoRotate?'정면으로 복귀':'3D 모델 보기'};
 
-function clickTerm(id){
-  if(!sel){sel=id;refresh();say('info','시작: <b>'+nm(id)+'</b> → 연결할 단자를 클릭하세요. (같은 단자를 다시 클릭하면 취소)');return}
-  if(sel===id){sel=null;refresh();say('info','선택을 취소했습니다.');return}
-  const a=sel;sel=null;
-  if(wires.some(w=>(w.a===a&&w.b===id)||(w.a===id&&w.b===a))){refresh();say('err','이미 연결된 전선입니다.');return}
-  if(!t0)t0=Date.now();
-  wires.push({a,b:id,color:PH[terms[a].ph]});rebuild();
-  say('info',nm(a)+' → '+nm(id)+' 연결했습니다.');
-}
-
-/* ---------- 입력 (PC) ---------- */
+/* ---------- 3D 버튼 입력 ---------- */
 const rc=new THREE.Raycaster();let down=null;
 const ndc=e=>{const r=cv.getBoundingClientRect();return new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1)};
-const pickT=e=>{rc.setFromCamera(ndc(e),camera);const h=rc.intersectObjects(tmeshes,false);return h.length?h[0].object.userData.id:null};
-const moved=e=>down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>5;
-cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY}});
-cv.addEventListener('pointerup',e=>{if(e.button!==0||!down||moved(e))return;const id=pickT(e);if(id)clickTerm(id)});
-cv.addEventListener('contextmenu',e=>{
-  e.preventDefault();if(moved(e))return;
-  rc.setFromCamera(ndc(e),camera);
-  const h=rc.intersectObjects(wires.map(w=>w.mesh),false);
-  if(h.length){wires.splice(wires.indexOf(h[0].object.userData.wire),1);rebuild();say('info','전선을 삭제했습니다.')}
-});
-const tip=$('#tip');
-cv.addEventListener('pointermove',e=>{
-  const id=pickT(e);
-  if(id!==hover){hover=id;refresh();cv.style.cursor=id?'pointer':'default'}
-  if(id){const r=wrap.getBoundingClientRect();tip.style.display='block';tip.textContent=nm(id);tip.style.left=(e.clientX-r.left+14)+'px';tip.style.top=(e.clientY-r.top+14)+'px'}
-  else tip.style.display='none';
-});
-cv.addEventListener('pointerleave',()=>{tip.style.display='none'});
+function hitAct(e){rc.setFromCamera(ndc(e),camera);const h=rc.intersectObjects(acts,false);return h.length?h[0].object:null}
+function pulse(m){m.material.emissiveIntensity=1;setTimeout(()=>m.material.emissiveIntensity=.15,200)}
+cv.addEventListener('pointerdown',e=>down={x:e.clientX,y:e.clientY});
+cv.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>5)return;const m=hitAct(e);if(m){pulse(m);press(m.userData.action)}});
+cv.addEventListener('pointermove',e=>{cv.style.cursor=hitAct(e)?'pointer':'default'});
 
-/* ---------- 검사 로직 ---------- */
-function graph(active){
-  const g={},add=(a,b)=>{(g[a]=g[a]||[]).push(b);(g[b]=g[b]||[]).push(a)};
-  wires.forEach(w=>add(w.a,w.b));
-  ['THR',active].forEach(p=>[[1,2],[3,4],[5,6]].forEach(([i,o])=>add(p+'-'+i,p+'-'+o)));
-  return g;
-}
-function reach(g,s){const seen=new Set([s]),q=[s];while(q.length){const n=q.pop();(g[n]||[]).forEach(m=>{if(!seen.has(m)){seen.add(m);q.push(m)}})}return seen}
-function analyze(active){
-  const g=graph(active),r={R:reach(g,'P-R'),S:reach(g,'P-S'),T:reach(g,'P-T')},out={short:[],map:{}};
-  if(r.R.has('P-S'))out.short.push('R-S');
-  if(r.R.has('P-T'))out.short.push('R-T');
-  if(r.S.has('P-T'))out.short.push('S-T');
-  ['U','V','W'].forEach(u=>out.map[u]=PHS.filter(p=>r[p].has('M-'+u)));
-  return out;
-}
-function kind(map){
-  const v=['U','V','W'].map(u=>map[u]);
-  if(v.some(x=>x.length===0))return {k:'none'};
-  if(v.some(x=>x.length>1)||new Set(v.map(x=>x[0])).size<3)return {k:'multi'};
-  const s=v.map(x=>x[0]),idx=s.map(p=>'RST'.indexOf(p));
-  let inv=0;for(let i=0;i<3;i++)for(let j=i+1;j<3;j++)if(idx[i]>idx[j])inv++;
-  if(inv===0)return {k:'identity'};
-  if(inv===2)return {k:'cycle',s};
-  return {k:'swap',s,pair:PHS.filter((p,i)=>s[i]!==p)};
-}
-const fmt=s=>'U='+s[0]+', V='+s[1]+', W='+s[2];
-function check(){
-  attempts++;$('#att').textContent=attempts;
-  if(!wires.length){say('err','<b class="e">결선된 전선이 없습니다.</b> 전원 단자부터 연결하세요.');return}
-  const errs=[],oks=[];
-  const F=analyze('MCF'),B=analyze('MCR');
-  const nameOf=(a,dir)=>{
-    if(a.short.length){errs.push(`${dir}: MC가 투입되면 <b class="e">${a.short.join(', ')} 상간 단락</b>이 발생합니다. 전선이 잘못 연결되었습니다.`);return}
-    const k=kind(a.map);
-    if(k.k==='none'){const miss=['U','V','W'].filter(u=>!a.map[u].length).join('·');errs.push(`${dir}: 모터 <b>${miss}</b> 단자에 전원이 도달하지 않습니다. 미결선 구간을 확인하세요.`);return}
-    if(k.k==='multi'){errs.push(`${dir}: 한 모터 단자에 여러 상이 연결되었거나 같은 상이 중복되었습니다.`);return}
-    return k;
-  };
-  const kf=nameOf(F,'정회전(MC-F)');
-  if(kf){
-    if(kf.k==='identity')oks.push('정회전: U-V-W = R-S-T 정상');
-    else errs.push('정회전(MC-F): 상순이 R-S-T와 다릅니다 ('+fmt(kf.s)+'). 정회전은 상을 교체하지 않습니다.');
-  }
-  const kb=nameOf(B,'역회전(MC-R)');
-  if(kb){
-    if(kb.k==='identity')errs.push('역회전(MC-R): <b class="e">주회로 상 교체 누락</b> - 정회전과 같은 방향으로 돕니다. 두 상(R·T)을 서로 교체하세요.');
-    else if(kb.k==='cycle')errs.push('역회전(MC-R): 상이 순환 배열('+fmt(kb.s)+')이라 회전 방향이 바뀌지 않습니다. 세 상이 아니라 두 상만 서로 바꾸세요.');
-    else{
-      oks.push('역회전: '+fmt(kb.s)+' → 두 상('+kb.pair.join('·')+') 교체, 방향 반전');
-      if(kb.pair.join('')!=='RT')errs.push('역회전: 방향은 바뀌지만 시험 기준은 <b>R·T</b> 두 상 교체입니다. (현재 '+kb.pair.join('·')+')');
-    }
-  }
-  const li=a=>a.map(x=>'<li>'+x+'</li>').join('');
-  if(!errs.length){
-    const sec=t0?Math.round((Date.now()-t0)/1000):0;
-    say('ok','<b class="o">주회로 결선 정상 ✔</b> ('+attempts+'회 시도, '+Math.floor(sec/60)+'분 '+sec%60+'초)<ul>'+li(oks)+'</ul>');
-  }else say('err','<b class="e">결선 오류 '+errs.length+'건</b><ul>'+li(errs)+li(oks.map(o=>'✔ '+o))+'</ul>');
-}
-$('#chk').onclick=check;
-setInterval(()=>{if(t0){const s=Math.floor((Date.now()-t0)/1000);$('#tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}},500);
-
-/* ---------- VR / 크기 / 루프 ---------- */
-let xrSession=null;
+/* ---------- VR ---------- */
+let xr=null;
 $('#bVR').onclick=()=>{
-  if(xrSession){xrSession.end();return}
-  if(!navigator.xr){say('err',location.protocol==='file:'||window.isSecureContext===false?'VR은 HTTPS 주소(GitHub Pages 등)에서만 동작합니다.':'이 브라우저는 WebXR을 지원하지 않습니다. (Quest 브라우저 등 사용)');return}
-  navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor','bounded-floor']})
-    .then(s=>{xrSession=s;s.addEventListener('end',()=>{xrSession=null});return renderer.xr.setSession(s)})
-    .catch(e=>{xrSession=null;console.error(e);
-      say('err',e&&e.name==='NotSupportedError'?'VR 장치(헤드셋)가 없거나 지원되지 않습니다.':(e&&(e.name==='SecurityError'||/not allowed|permission|policy/i.test(e.message||'')))?'브라우저가 VR 시작을 허용하지 않았습니다. 미리보기 창이 아닌 HTTPS 새 탭에서 열어 주세요.':'VR 시작 실패 ('+(e&&e.name||'오류')+'): '+(e&&e.message||''))});
+  if(xr){xr.end();return}
+  if(!navigator.xr){toast(location.protocol==='file:'||window.isSecureContext===false?'VR은 HTTPS 주소(GitHub Pages 등)에서만 동작합니다.':'이 브라우저는 WebXR을 지원하지 않습니다. VR 헤드셋(Quest 브라우저 등) 또는 WebXR 지원 브라우저에서 열어 주세요.');return}
+  const go=o=>navigator.xr.requestSession('immersive-vr',o);
+  // 클릭 직후 바로 요청. 옵션 때문에 거부되면 옵션 없이 한 번 더 시도합니다.
+  go({optionalFeatures:['local-floor']})
+    .catch(e=>e&&e.name==='NotSupportedError'?go({}):Promise.reject(e))
+    .then(s=>{xr=s;s.addEventListener('end',()=>{xr=null});return renderer.xr.setSession(s)})
+    .catch(e=>{
+      xr=null;console.error('VR 시작 실패',e);
+      const m=(e&&e.message)||'';
+      let t;
+      if(e&&e.name==='NotSupportedError')t='VR 세션 조건을 충족하는 VR 기기를 찾지 못했습니다. 헤드셋 연결과 VR 런타임(SteamVR·Meta Quest Link·Windows Mixed Reality 등) 실행을 확인하거나, Quest 브라우저에서 이 주소를 열어 주세요. PC 화면에서는 마우스로 3D 모델을 돌려 볼 수 있습니다.';
+      else if(e&&(e.name==='SecurityError'||/not allowed|permission|policy/i.test(m)))t='브라우저가 VR 시작을 허용하지 않았습니다. 미리보기 창이 아니라 HTTPS 주소의 새 탭에서 열고, VR 장치 권한을 허용해 주세요.';
+      else t='VR 시작 실패 ('+(e&&e.name||'오류')+'): '+m;
+      toast(t);
+    });
 };
-$('#bPC').onclick=()=>{if(xrSession)xrSession.end()};
-renderer.xr.addEventListener('sessionstart',()=>{board.position.set(0,1.1,-2.4);board.scale.setScalar(.38);$('#bVR').classList.add('on');$('#bPC').classList.remove('on')});
-renderer.xr.addEventListener('sessionend',()=>{xrSession=null;board.position.set(0,0,0);board.scale.setScalar(1);$('#bVR').classList.remove('on');$('#bPC').classList.add('on')});
+renderer.xr.addEventListener('sessionstart',()=>{root.position.set(0,1.6,-3);root.scale.setScalar(.14);$('#bVR').textContent='VR 종료'});
+renderer.xr.addEventListener('sessionend',()=>{xr=null;root.position.set(0,0,0);root.scale.setScalar(1);$('#bVR').textContent='VR 모드 시작'});
 for(let i=0;i<2;i++){
   const c=renderer.xr.getController(i);
-  c.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,0,-5)]),new THREE.LineBasicMaterial({color:0x2ea8ff})));
+  c.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3(0,0,-6)]),new THREE.LineBasicMaterial({color:0x29b6ff})));
   c.addEventListener('selectstart',()=>{
     const m=new THREE.Matrix4().extractRotation(c.matrixWorld);
     rc.ray.origin.setFromMatrixPosition(c.matrixWorld);rc.ray.direction.set(0,0,-1).applyMatrix4(m);
-    const h=rc.intersectObjects(tmeshes,false);if(h.length)clickTerm(h[0].object.userData.id);
+    const h=rc.intersectObjects(acts,false);if(h.length){pulse(h[0].object);press(h[0].object.userData.action)}
   });
   scene.add(c);
 }
-function resize(){if(renderer.xr.isPresenting)return;const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()}
-new ResizeObserver(resize).observe(wrap);resize();
-renderer.setAnimationLoop(()=>{if(!renderer.xr.isPresenting)controls.update();renderer.render(scene,camera)});
-updateUI();
+
+/* ---------- 루프 ---------- */
+function resize(){if(renderer.xr.isPresenting)return;const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(()=>requestAnimationFrame(resize)).observe(view);resize();
+const clock=new THREE.Clock();
+renderer.setAnimationLoop(()=>{
+  const dt=Math.min(clock.getDelta(),.05);
+  const run=(S.fwd||S.rev)&&!S.tripped;
+  omega+=((run?dirNow()*5:0)-omega)*Math.min(1,dt*(S.tripped?6:2.5));
+  rotor.rotation.z-=omega*dt;
+  if(ilkFlash>0){ilkFlash-=dt;const on=Math.floor(ilkFlash*6)%2===0;ilkBox.material.emissive.setHex(on?0xff3030:0);ilkBox.material.emissiveIntensity=.9;if(ilkFlash<=0)ilkBox.material.emissive.setHex(0)}
+  if(sparkT>0){
+    sparkT-=dt;
+    for(let i=0;i<N;i++){
+      sLife[i]-=dt;
+      if(sLife[i]<=0){if(sparkT>.8)emit(i);else sPos[i*3+1]=-99;continue}
+      sVel[i*3+1]-=9*dt;
+      for(let k=0;k<3;k++)sPos[i*3+k]+=sVel[i*3+k]*dt;
+    }
+    sGeo.attributes.position.needsUpdate=true;sparks.material.opacity=Math.min(1,sparkT);
+    flash.intensity=sparkT>.8?Math.random()*4:0;
+  }else{sparks.material.opacity=0;flash.intensity=0}
+  if(!renderer.xr.isPresenting)controls.update();
+  renderer.render(scene,camera);
+});
+config();
 </script>
 </body>
 </html>
