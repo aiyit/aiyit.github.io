@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사운드 제작 프롬프트와 필수 기법 | AI 콘텐츠 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F2F4F7;--panel:#fff;--ink:#172033;--muted:#5B6577;--line:#D9DEE7;--accent:#2448E6;--soft:#E6EBFD;--font:"IBM Plex Sans KR","Noto Sans KR","Malgun Gothic",sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.75 var(--font)}a{color:var(--accent);text-decoration:none}:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bar{padding:12px clamp(20px,5vw,48px);background:#fff;border-bottom:1px solid var(--line)}.bar a{font-weight:500}.wrap{max-width:1120px;margin:auto;padding:42px 22px 76px}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.25;letter-spacing:-.03em;margin:0 0 12px}h2{font-size:26px;letter-spacing:-.02em;margin:42px 0 12px}h3{font-size:19px;margin:0 0 8px}.lead{font-size:18px;color:var(--muted);max-width:900px;margin:0 0 26px}.muted{color:var(--muted)}
+.callout{background:var(--soft);border-left:4px solid var(--accent);border-radius:7px;padding:16px 20px;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;min-width:0}.card p{margin:6px 0;color:var(--muted)}
+.num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--soft);color:var(--accent);font-weight:700;margin-right:8px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#111827;color:#F3F4F6;border-radius:8px;padding:15px;margin:12px 0;font:14px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace}
+button{font:inherit;cursor:pointer;border:1px solid var(--accent);border-radius:7px;padding:8px 13px;background:var(--accent);color:#fff}.secondary{background:#fff;color:var(--accent)}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff}table{border-collapse:collapse;width:100%;min-width:680px;font-size:15px}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{background:#E9EDF4}tr:last-child td{border-bottom:0}td:first-child{font-weight:700}
+.lab{display:grid;grid-template-columns:1fr 1fr;gap:18px}.lab label{display:block;font-weight:700;margin:10px 0 4px}.lab input,.lab textarea,.lab select{width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font:inherit}.lab textarea{min-height:76px;resize:vertical}.output{min-height:360px}.tag{display:inline-block;background:#EEF1F6;border-radius:5px;padding:2px 8px;margin:2px;font-size:13px;color:#39445A}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.step{background:#fff;border:1px solid var(--line);border-radius:9px;padding:16px}.step p{margin:4px 0 0;color:var(--muted)}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:48px;padding-top:20px;border-top:1px solid var(--line)}
+@media(max-width:760px){.grid,.lab,.steps{grid-template-columns:1fr}.wrap{padding-top:30px}.card,.panel{padding:16px}}
+</style>
+</head>
+<body>
+<div class="bar"><a href="aiContents.html#s3">← AI 콘텐츠 활용 강의 메뉴</a></div>
+<main class="wrap">
+<h1>사운드 제작 프롬프트: 필수 기법과 예시</h1>
+<p class="lead">AI로 음악·효과음·내레이션을 만들 때는 단순히 장르만 지정하지 말고 <strong>목적, 장르와 분위기, 템포, 악기·음색, 보컬, 구조와 변화, 길이, 음향 품질, 제외 조건</strong>을 함께 지정해야 결과를 더 정확하게 설계할 수 있습니다.</p>
+<div class="callout"><strong>핵심 원칙</strong><br>무엇을 위한 소리인지 먼저 정하고, 듣는 사람이 느껴야 할 분위기와 소리의 움직임을 구체적으로 설명하세요. 음악 생성 도구마다 BPM·길이·가사·악기 제어 지원이 다르므로, 지원되지 않는 조건은 프롬프트에 적어도 완전히 반영되지 않을 수 있습니다.</div>
+
+<h2>1. 사운드 제작에 꼭 필요한 기법</h2>
+<div class="grid">
+<section class="card"><h3><span class="num">1</span>목적과 사용 장면</h3><p>영상 배경음악, 게임 효과음, 명상 음악, 광고 징글, 교육용 내레이션 등 소리가 사용될 맥락을 먼저 정합니다. 목적에 따라 에너지와 소리의 밀도가 달라집니다.</p><div><span class="tag">Background music</span><span class="tag">Sound effect</span><span class="tag">Voice-over</span></div></section>
+<section class="card"><h3><span class="num">2</span>장르와 감정</h3><p>장르만 쓰기보다 감정과 에너지 수준을 함께 지정합니다. 예를 들어 “전자음악” 대신 “차분하게 시작해 점차 고조되는 미래적인 앰비언트 전자음악”처럼 설명합니다.</p><div><span class="tag">Cinematic</span><span class="tag">Ambient</span><span class="tag">Playful</span></div></section>
+<section class="card"><h3><span class="num">3</span>템포·리듬·박자</h3><p>빠르기(BPM), 박자의 느낌, 리듬의 밀도를 정합니다. 빠른 템포는 활동성과 긴장감을, 느린 템포는 여유와 안정감을 만드는 데 도움이 됩니다.</p><div><span class="tag">Slow 60–80 BPM</span><span class="tag">Mid-tempo</span><span class="tag">Driving beat</span></div></section>
+<section class="card"><h3><span class="num">4</span>악기와 음색</h3><p>악기 이름뿐 아니라 음색과 연주법을 설명합니다. “피아노”보다 “부드러운 펠트 피아노, 긴 잔향, 간결한 멜로디”처럼 쓰면 원하는 질감을 전달하기 쉽습니다.</p><div><span class="tag">Warm piano</span><span class="tag">Soft strings</span><span class="tag">Analog synth</span></div></section>
+<section class="card"><h3><span class="num">5</span>음악의 구조와 변화</h3><p>인트로, 전개, 고조, 클라이맥스, 아웃트로를 순서대로 설계합니다. 짧은 영상용 음악은 시작과 끝이 자연스럽게 이어지는 루프 구조를 요청할 수 있습니다.</p><div><span class="tag">Intro</span><span class="tag">Build-up</span><span class="tag">Outro</span><span class="tag">Seamless loop</span></div></section>
+<section class="card"><h3><span class="num">6</span>보컬과 가사 조건</h3><p>보컬 유무, 음역, 성별 표현, 전달 방식, 언어와 가사 주제를 명시합니다. 가사가 필요 없으면 “instrumental, no vocals”라고 분명히 적습니다.</p><div><span class="tag">Instrumental</span><span class="tag">Soft spoken narration</span><span class="tag">Clear diction</span></div></section>
+<section class="card"><h3><span class="num">7</span>효과음의 동작과 시간</h3><p>효과음은 소리의 원인, 시작 시점, 지속 시간, 변화와 소멸을 적습니다. “마법 소리”보다 “짧은 고음의 반짝임으로 시작해 부드러운 저음 잔향으로 사라지는 소리”가 구체적입니다.</p><div><span class="tag">Attack</span><span class="tag">Decay</span><span class="tag">Reverb tail</span></div></section>
+<section class="card"><h3><span class="num">8</span>믹싱·음향 품질·제외 조건</h3><p>보컬과 배경음의 균형, 잔향, 왜곡 여부, 주변 소음, 클리핑 방지 등을 지정합니다. 영상용이라면 내레이션이 음악에 묻히지 않도록 요청하세요.</p><div><span class="tag">Clean mix</span><span class="tag">No clipping</span><span class="tag">Low background noise</span></div></section>
+</div>
+
+<h2>2. 사운드 프롬프트 구성 요소</h2>
+<div class="scroll"><table><thead><tr><th>항목</th><th>표현 예시</th><th>어울리는 활용</th></tr></thead><tbody>
+<tr><td>목적</td><td>짧은 제품 광고용 배경음악 / 자연 다큐멘터리용 앰비언트 사운드</td><td>사용 장면에 맞는 소리 설계</td></tr>
+<tr><td>장르·분위기</td><td>cinematic orchestral, dreamy ambient, upbeat pop, tense electronic</td><td>전체 감정과 스타일 결정</td></tr>
+<tr><td>템포·리듬</td><td>slow 70 BPM, steady 4/4 beat, syncopated rhythm, gradual build-up</td><td>속도와 에너지 조절</td></tr>
+<tr><td>악기·음색</td><td>warm felt piano, soft strings, deep synth bass, delicate bells</td><td>소리의 질감과 개성 형성</td></tr>
+<tr><td>구조·변화</td><td>gentle intro, gradual build, brief climax, soft fade-out</td><td>시간에 따른 감정 흐름</td></tr>
+<tr><td>보컬</td><td>instrumental only, no vocals, clear Korean narration, calm female voice</td><td>보컬과 말소리의 유무·전달 방식 지정</td></tr>
+<tr><td>공간감</td><td>dry close-mic sound, spacious reverb, subtle stereo ambience</td><td>가깝고 선명한 소리 또는 넓은 공간감</td></tr>
+<tr><td>제외 조건</td><td>no speech, no crowd noise, no harsh distortion, no abrupt ending</td><td>불필요한 소리와 급작스러운 변화를 줄임</td></tr>
+</tbody></table></div>
+
+<h2>3. 완성형 예시 프롬프트</h2>
+<section class="panel"><h3>예시 A — 영상용 몽환적 배경음악</h3><p class="muted">벚꽃, 호수, 별빛 등 감성적인 영상에 어울리는 음악입니다.</p><pre id="exA">Create an original 30-second instrumental background track for a dreamy nature video showing cherry blossoms beside a quiet lake at dawn.
+
+Mood and genre: peaceful, delicate, cinematic ambient, gently magical but not sad.
+Tempo and rhythm: slow, around 72 BPM, with a light flowing pulse and no heavy percussion.
+Instruments and texture: warm felt piano, soft airy pads, delicate bell accents, subtle string swells, and a few sparkling high notes. Keep the arrangement spacious and uncluttered.
+Structure: begin with a soft piano motif; gradually introduce airy pads and light bells; reach a gentle emotional lift near the middle; end with a smooth, lingering reverb tail that can fade naturally.
+Mix: warm and clean, balanced frequencies, gentle stereo width, no harsh high frequencies, no clipping.
+Restrictions: instrumental only, no vocals, no spoken words, no sudden loud hits, no abrupt ending.
+Target use: background music under visuals; leave enough space for natural ambience.</pre><div class="toolbar"><button class="secondary copy" data-target="exA">예시 프롬프트 복사</button></div></section>
+<section class="panel" style="margin-top:14px"><h3>예시 B — 짧고 선명한 마법 효과음</h3><p class="muted">반짝이는 빛, 별똥별, 판타지 전환 장면 등에 사용할 수 있습니다.</p><pre id="exB">Create a single 3-second magical sparkle sound effect, with no music and no voice.
+
+Sound sequence: start with a tiny bright chime; add a quick upward shimmering sweep; finish with several delicate crystal-like twinkles that decay into a soft airy reverb tail.
+Timbre: glassy, crystalline, light, elegant, high-frequency sparkle balanced by a subtle warm low layer.
+Timing: a clear transient at the beginning, a smooth rising motion in the middle, and a gentle decay at the end.
+Mix: clean, detailed, centered initial hit with a subtle stereo spread in the tail; no clipping.
+Restrictions: no speech, no background ambience, no harsh metallic impact, no abrupt cutoff.</pre><div class="toolbar"><button class="secondary copy" data-target="exB">예시 프롬프트 복사</button></div></section>
+<section class="panel" style="margin-top:14px"><h3>예시 C — 교육용 한국어 내레이션</h3><p class="muted">수업 안내 영상이나 설명 콘텐츠에 활용할 수 있습니다.</p><pre id="exC">Generate a clear Korean educational voice-over reading the supplied script exactly as written.
+
+Voice: warm, calm, professional Korean-speaking adult voice, natural standard Korean pronunciation, friendly but not overly dramatic.
+Delivery: medium-slow pace, clear articulation, short pauses between sentences, slightly emphasize key terms. Maintain a consistent volume and tone.
+Recording quality: clean studio sound, close-mic presence, low room noise, minimal reverb, no clipping or distortion.
+Background: no music and no sound effects so the narration remains easy to understand.
+Important: do not add, omit, paraphrase, or translate words. Do not invent an introduction or conclusion. If the tool supports script input, use this script: [여기에 읽을 한국어 원고를 입력하세요].</pre><div class="toolbar"><button class="secondary copy" data-target="exC">예시 프롬프트 복사</button></div></section>
+<section class="panel" style="margin-top:14px"><h3>예시 D — 긴장감 있는 SF 배경음악</h3><p class="muted">미래 도시, 우주, 기술 소개 영상에 적합한 예시입니다.</p><pre id="exD">Create a 20-second original futuristic cinematic electronic instrumental for a science-fiction city reveal.
+
+Mood: mysterious, sleek, suspenseful, gradually becoming powerful but never chaotic.
+Tempo: steady mid-tempo pulse around 100 BPM.
+Sound palette: deep controlled synth bass, pulsing analog synths, airy metallic textures, subtle digital ticks, and a restrained low orchestral swell.
+Structure: begin with a quiet atmospheric drone; introduce a steady pulse after a few seconds; slowly layer rhythmic elements; reach a short dramatic peak; finish with a clean sustained tone and a natural decay.
+Mix: wide but controlled stereo image, clear low end, detailed textures, no harsh distortion.
+Restrictions: no vocals, no dialogue, no recognizable existing melody, no sudden volume spikes, no abrupt cutoff.</pre><div class="toolbar"><button class="secondary copy" data-target="exD">예시 프롬프트 복사</button></div></section>
+
+<h2>4. 직접 만드는 사운드 프롬프트</h2>
+<p class="muted">아래 항목을 선택하고 입력하면 음악 또는 효과음 제작용 프롬프트를 자동으로 구성합니다.</p>
+<div class="panel lab">
+<div>
+<label for="type">사운드 종류</label><select id="type"><option>영상 배경음악</option><option>효과음</option><option>내레이션·음성</option><option>인트로·로고 사운드</option><option>명상·환경 사운드</option></select>
+<label for="purpose">사용 장면과 목적</label><textarea id="purpose">벚꽃이 만개한 호숫가를 보여 주는 감성적인 영상</textarea>
+<label for="mood">장르와 분위기</label><input id="mood" value="몽환적이고 평온한 시네마틱 앰비언트">
+<label for="tempo">템포와 리듬</label><input id="tempo" value="느린 템포 약 72 BPM, 가벼운 흐름, 강한 타악기 없음">
+<label for="instruments">악기·음색</label><input id="instruments" value="따뜻한 펠트 피아노, 부드러운 패드, 섬세한 벨 소리">
+<label for="structure">구조와 시간 변화</label><textarea id="structure">부드럽게 시작하고 중간에 감정이 살짝 고조된 뒤 잔향을 남기며 자연스럽게 끝난다</textarea>
+<label for="voice">보컬·음성</label><select id="voice"><option>보컬과 말소리 없음</option><option>차분하고 명료한 한국어 내레이션</option><option>부드러운 노래 보컬</option><option>속삭이는 듯한 음성</option><option>해당 없음 또는 도구에서 별도 설정</option></select>
+<label for="length">길이</label><select id="length"><option>3초</option><option>5초</option><option>10초</option><option selected>20초</option><option>30초</option><option>60초</option></select>
+<label for="mix">음향 품질과 믹싱</label><input id="mix" value="깨끗한 믹스, 부드러운 고음, 균형 잡힌 저음, 클리핑 없음">
+<label for="exclude">제외할 소리</label><input id="exclude" value="갑작스러운 큰 소리, 왜곡, 불필요한 말소리, 급작스러운 끝맺음">
+<div class="toolbar"><button id="build">프롬프트 만들기</button><button class="secondary" id="sample">예시 채우기</button><button class="secondary" id="reset">초기화</button></div>
+</div>
+<div><label for="result">완성된 프롬프트</label><textarea id="result" class="output" readonly></textarea><div class="toolbar"><button id="copy">프롬프트 복사</button></div><p id="status" class="muted" aria-live="polite"></p></div>
+</div>
+
+<h2>5. 생성 결과 확인 체크리스트</h2>
+<div class="panel"><ul style="padding-left:22px">
+<li>사용 목적과 장면에 맞는 분위기인가요?</li>
+<li>템포와 리듬이 영상의 움직임과 어울리나요?</li>
+<li>원하는 악기와 음색이 잘 들리나요?</li>
+<li>인트로와 끝부분이 자연스럽고, 필요하다면 루프가 매끄럽게 이어지나요?</li>
+<li>내레이션이 있다면 배경음에 묻히지 않고 말이 명료하게 들리나요?</li>
+<li>갑작스러운 큰 소리, 왜곡, 원치 않는 말소리나 잡음이 있나요?</li>
+<li>생성 도구의 이용 약관과 상업적 사용 조건을 확인했나요?</li>
+</ul></div>
+<div class="callout"><strong>개선 팁:</strong> 결과가 맞지 않을 때는 모든 조건을 한꺼번에 바꾸지 말고 한 번에 한두 요소씩 수정하세요. 예를 들어 “템포를 조금 낮추기”, “타악기 제거”, “내레이션보다 배경음을 더 낮게”처럼 구체적으로 요청하면 원인을 비교하기 쉽습니다. AI가 기존 곡과 유사한 결과를 만들지 않도록 특정 곡의 멜로디를 복제하기보다 장르·악기·리듬·분위기를 설명해 독창적인 결과를 요청하세요.</div>
+<footer><a href="aiContents.html#s3">← 프롬프트 작성법 메뉴</a><a href="AIPrompt.html">미디어별 3단계 프롬프트 작성법 →</a></footer>
+</main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+document.querySelectorAll(".copy").forEach(btn=>btn.addEventListener("click",async()=>{
+ const value=$(btn.dataset.target).textContent;
+ try{await navigator.clipboard.writeText(value);btn.textContent="복사 완료";setTimeout(()=>btn.textContent="예시 프롬프트 복사",1500);}
+ catch(e){const t=document.createElement("textarea");t.value=value;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();btn.textContent="복사 완료";setTimeout(()=>btn.textContent="예시 프롬프트 복사",1500);}
+}));
+function build(){
+ const purpose=$("purpose").value.trim();
+ if(!purpose){$("status").textContent="사용 장면과 목적을 입력해 주세요.";return;}
+ $("result").value="Create "+$("length").value+" of "+$("type").value+".\n\nPurpose and scene: "+purpose+".\n\nGenre and mood: "+$("mood").value+".\n\nTempo and rhythm: "+$("tempo").value+".\n\nInstruments and timbre: "+$("instruments").value+".\n\nStructure and progression: "+$("structure").value+".\n\nVoice: "+$("voice").value+".\n\nMix and audio quality: "+$("mix").value+".\n\nAvoid: "+$("exclude").value+".\n\nCreate an original result with a coherent sound, smooth transitions, and a natural ending. Follow the selected audio tool's supported duration and controls.";
+ $("status").textContent="프롬프트를 만들었습니다. 생성 도구의 지원 기능과 길이 제한을 확인한 뒤 복사하세요.";
+}
+$("build").addEventListener("click",build);
+$("sample").addEventListener("click",()=>{$("type").selectedIndex=0;$("purpose").value="벚꽃이 만개한 호숫가를 보여 주는 감성적인 영상의 배경음악";$("mood").value="몽환적이고 평온한 시네마틱 앰비언트";$("tempo").value="느린 템포 약 72 BPM, 가벼운 흐름, 강한 타악기 없음";$("instruments").value="따뜻한 펠트 피아노, 부드러운 패드, 섬세한 벨 소리";$("structure").value="부드럽게 시작하고 중간에 감정이 살짝 고조된 뒤 잔향을 남기며 자연스럽게 끝난다";$("voice").selectedIndex=0;$("length").value="30초";$("mix").value="깨끗한 믹스, 부드러운 고음, 균형 잡힌 저음, 클리핑 없음";$("exclude").value="갑작스러운 큰 소리, 왜곡, 불필요한 말소리, 급작스러운 끝맺음";build();});
+$("reset").addEventListener("click",()=>{["purpose","mood","tempo","instruments","structure","mix","exclude","result"].forEach(id=>$(id).value="");$("status").textContent="입력 내용을 초기화했습니다.";});
+$("copy").addEventListener("click",async()=>{const value=$("result").value;if(!value){$("status").textContent="먼저 프롬프트를 만들어 주세요.";return;}try{await navigator.clipboard.writeText(value);$("status").textContent="프롬프트를 클립보드에 복사했습니다.";}catch(e){$("result").focus();$("result").select();$("status").textContent="자동 복사가 제한되었습니다. 선택한 텍스트를 Ctrl+C로 복사하세요."; }});
+build();
+})();
+</script>
+</body>
+</html>
