@@ -1,0 +1,2521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>정·역회전 인터록 결선 실습 · INDUSTRIAL SCADA DIGITAL TWIN</title>
+  <style id="tw-static">*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.visible{visibility:visible}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0}.bottom-3{bottom:.75rem}.left-1\/2{left:50%}.top-16{top:4rem}.top-4{top:1rem}.z-20{z-index:20}.z-30{z-index:30}.z-50{z-index:50}.col-span-2{grid-column:span 2/span 2}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-2{margin-bottom:.5rem}.mb-2\.5{margin-bottom:.625rem}.mr-0\.5{margin-right:.125rem}.mr-1{margin-right:.25rem}.mr-1\.5{margin-right:.375rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-2\.5{margin-top:.625rem}.mt-3{margin-top:.75rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-14{height:3.5rem}.h-2\.5{height:.625rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-auto{height:auto}.h-full{height:100%}.max-h-48{max-height:12rem}.max-h-52{max-height:13rem}.max-h-\[42vh\]{max-height:42vh}.max-h-\[45vh\]{max-height:45vh}.max-h-\[90vh\]{max-height:90vh}.min-h-\[52px\]{min-height:52px}.w-10{width:2.5rem}.w-2\.5{width:.625rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-8{width:2rem}.w-\[540px\]{width:540px}.w-full{width:100%}.w-screen{width:100vw}.min-w-\[115px\]{min-width:115px}.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.max-w-\[92vw\]{max-width:92vw}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.border-collapse{border-collapse:collapse}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes bounce{0%,to{transform:translateY(-25%);animation-timing-function:cubic-bezier(.8,0,1,1)}50%{transform:none;animation-timing-function:cubic-bezier(0,0,.2,1)}}.animate-bounce{animation:bounce 1s infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;-moz-user-select:none;user-select:none}.resize{resize:both}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-2\.5{gap:.625rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.space-y-0\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.125rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.125rem*var(--tw-space-y-reverse))}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.375rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-2\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.625rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.625rem*var(--tw-space-y-reverse))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem*var(--tw-space-y-reverse))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px*var(--tw-divide-y-reverse))}.divide-slate-800>:not([hidden])~:not([hidden]){--tw-divide-opacity:1;border-color:rgb(30 41 59/var(--tw-divide-opacity,1))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-md{border-radius:.375rem}.rounded-xl{border-radius:.75rem}.rounded-b-lg{border-bottom-right-radius:.5rem;border-bottom-left-radius:.5rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-l-4{border-left-width:4px}.border-t{border-top-width:1px}.border-\[\#263346\]{--tw-border-opacity:1;border-color:rgb(38 51 70/var(--tw-border-opacity,1))}.border-\[\#2e3c50\]{--tw-border-opacity:1;border-color:rgb(46 60 80/var(--tw-border-opacity,1))}.border-amber-500\/40{border-color:rgba(245,158,11,.4)}.border-amber-500\/50{border-color:rgba(245,158,11,.5)}.border-amber-500\/60{border-color:rgba(245,158,11,.6)}.border-amber-800{--tw-border-opacity:1;border-color:rgb(146 64 14/var(--tw-border-opacity,1))}.border-blue-400\/40{border-color:rgba(96,165,250,.4)}.border-blue-500\/50{border-color:rgba(59,130,246,.5)}.border-emerald-400{--tw-border-opacity:1;border-color:rgb(52 211 153/var(--tw-border-opacity,1))}.border-emerald-500{--tw-border-opacity:1;border-color:rgb(16 185 129/var(--tw-border-opacity,1))}.border-emerald-500\/60{border-color:rgba(16,185,129,.6)}.border-emerald-600\/40{border-color:rgba(5,150,105,.4)}.border-purple-400\/50{border-color:rgba(192,132,252,.5)}.border-red-500{--tw-border-opacity:1;border-color:rgb(239 68 68/var(--tw-border-opacity,1))}.border-red-500\/40{border-color:rgba(239,68,68,.4)}.border-red-500\/50{border-color:rgba(239,68,68,.5)}.border-red-700\/60{border-color:rgba(185,28,28,.6)}.border-red-800{--tw-border-opacity:1;border-color:rgb(153 27 27/var(--tw-border-opacity,1))}.border-sky-400{--tw-border-opacity:1;border-color:rgb(56 189 248/var(--tw-border-opacity,1))}.border-sky-500{--tw-border-opacity:1;border-color:rgb(14 165 233/var(--tw-border-opacity,1))}.border-sky-500\/30{border-color:rgba(14,165,233,.3)}.border-sky-500\/40{border-color:rgba(14,165,233,.4)}.border-sky-500\/60{border-color:rgba(14,165,233,.6)}.border-slate-600{--tw-border-opacity:1;border-color:rgb(71 85 105/var(--tw-border-opacity,1))}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85/var(--tw-border-opacity,1))}.border-slate-700\/80{border-color:rgba(51,65,85,.8)}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59/var(--tw-border-opacity,1))}.border-slate-800\/80{border-color:rgba(30,41,59,.8)}.border-white\/20{border-color:hsla(0,0%,100%,.2)}.border-white\/30{border-color:hsla(0,0%,100%,.3)}.bg-\[\#05080c\]{--tw-bg-opacity:1;background-color:rgb(5 8 12/var(--tw-bg-opacity,1))}.bg-\[\#070a0f\]{--tw-bg-opacity:1;background-color:rgb(7 10 15/var(--tw-bg-opacity,1))}.bg-\[\#080c12\]{--tw-bg-opacity:1;background-color:rgb(8 12 18/var(--tw-bg-opacity,1))}.bg-\[\#090d14\]\/95{background-color:rgba(9,13,20,.95)}.bg-\[\#0c1118\]{--tw-bg-opacity:1;background-color:rgb(12 17 24/var(--tw-bg-opacity,1))}.bg-\[\#0c121b\]{--tw-bg-opacity:1;background-color:rgb(12 18 27/var(--tw-bg-opacity,1))}.bg-\[\#0f1622\]\/90{background-color:rgba(15,22,34,.9)}.bg-\[\#131d2b\]{--tw-bg-opacity:1;background-color:rgb(19 29 43/var(--tw-bg-opacity,1))}.bg-\[\#182232\]{--tw-bg-opacity:1;background-color:rgb(24 34 50/var(--tw-bg-opacity,1))}.bg-\[\#1e88e5\]{--tw-bg-opacity:1;background-color:rgb(30 136 229/var(--tw-bg-opacity,1))}.bg-\[\#261216\]{--tw-bg-opacity:1;background-color:rgb(38 18 22/var(--tw-bg-opacity,1))}.bg-\[\#e53935\]{--tw-bg-opacity:1;background-color:rgb(229 57 53/var(--tw-bg-opacity,1))}.bg-\[\#f5f5f5\]{--tw-bg-opacity:1;background-color:rgb(245 245 245/var(--tw-bg-opacity,1))}.bg-amber-500\/20{background-color:rgba(245,158,11,.2)}.bg-amber-600{--tw-bg-opacity:1;background-color:rgb(217 119 6/var(--tw-bg-opacity,1))}.bg-amber-950{--tw-bg-opacity:1;background-color:rgb(69 26 3/var(--tw-bg-opacity,1))}.bg-amber-950\/80{background-color:rgba(69,26,3,.8)}.bg-black\/25{background-color:rgba(0,0,0,.25)}.bg-black\/40{background-color:rgba(0,0,0,.4)}.bg-black\/50{background-color:rgba(0,0,0,.5)}.bg-black\/85{background-color:rgba(0,0,0,.85)}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235/var(--tw-bg-opacity,1))}.bg-blue-950\/90{background-color:rgba(23,37,84,.9)}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129/var(--tw-bg-opacity,1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.bg-emerald-950{--tw-bg-opacity:1;background-color:rgb(2 44 34/var(--tw-bg-opacity,1))}.bg-emerald-950\/30{background-color:rgba(2,44,34,.3)}.bg-emerald-950\/95{background-color:rgba(2,44,34,.95)}.bg-purple-950\/90{background-color:rgba(59,7,100,.9)}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38/var(--tw-bg-opacity,1))}.bg-red-700{--tw-bg-opacity:1;background-color:rgb(185 28 28/var(--tw-bg-opacity,1))}.bg-red-950{--tw-bg-opacity:1;background-color:rgb(69 10 10/var(--tw-bg-opacity,1))}.bg-red-950\/70{background-color:rgba(69,10,10,.7)}.bg-red-950\/80{background-color:rgba(69,10,10,.8)}.bg-red-950\/90{background-color:rgba(69,10,10,.9)}.bg-red-950\/95{background-color:rgba(69,10,10,.95)}.bg-sky-400{--tw-bg-opacity:1;background-color:rgb(56 189 248/var(--tw-bg-opacity,1))}.bg-sky-950\/40{background-color:rgba(8,47,73,.4)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.bg-gradient-to-b{background-image:linear-gradient(to bottom,var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops))}.from-\[\#0b0f17\]{--tw-gradient-from:#0b0f17 var(--tw-gradient-from-position);--tw-gradient-to:rgba(11,15,23,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-\[\#0d131c\]{--tw-gradient-from:#0d131c var(--tw-gradient-from-position);--tw-gradient-to:rgba(13,19,28,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.from-\[\#2563eb\],.from-blue-600{--tw-gradient-from:#2563eb var(--tw-gradient-from-position);--tw-gradient-to:rgba(37,99,235,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.via-\[\#131b26\]{--tw-gradient-to:rgba(19,27,38,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),#131b26 var(--tw-gradient-via-position),var(--tw-gradient-to)}.to-\[\#06090e\]{--tw-gradient-to:#06090e var(--tw-gradient-to-position)}.to-\[\#0b0f17\]{--tw-gradient-to:#0b0f17 var(--tw-gradient-to-position)}.to-\[\#1d4ed8\]{--tw-gradient-to:#1d4ed8 var(--tw-gradient-to-position)}.to-sky-500{--tw-gradient-to:#0ea5e9 var(--tw-gradient-to-position)}.p-1{padding:.25rem}.p-1\.5{padding:.375rem}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-3\.5{padding:.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.px-1{padding-left:.25rem;padding-right:.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-2\.5{padding-left:.625rem;padding-right:.625rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-3\.5{padding-left:.875rem;padding-right:.875rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.pb-2\.5{padding-bottom:.625rem}.pl-4{padding-left:1rem}.pr-1{padding-right:.25rem}.pt-2{padding-top:.5rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.font-sans{font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xs{font-size:.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.tracking-tight{letter-spacing:-.025em}.tracking-wide{letter-spacing:.025em}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77/var(--tw-text-opacity,1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.text-blue-300{--tw-text-opacity:1;color:rgb(147 197 253/var(--tw-text-opacity,1))}.text-emerald-200{--tw-text-opacity:1;color:rgb(167 243 208/var(--tw-text-opacity,1))}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183/var(--tw-text-opacity,1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153/var(--tw-text-opacity,1))}.text-purple-200{--tw-text-opacity:1;color:rgb(233 213 255/var(--tw-text-opacity,1))}.text-red-100{--tw-text-opacity:1;color:rgb(254 226 226/var(--tw-text-opacity,1))}.text-red-200{--tw-text-opacity:1;color:rgb(254 202 202/var(--tw-text-opacity,1))}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165/var(--tw-text-opacity,1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113/var(--tw-text-opacity,1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68/var(--tw-text-opacity,1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28/var(--tw-text-opacity,1))}.text-rose-400{--tw-text-opacity:1;color:rgb(251 113 133/var(--tw-text-opacity,1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252/var(--tw-text-opacity,1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248/var(--tw-text-opacity,1))}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249/var(--tw-text-opacity,1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139/var(--tw-text-opacity,1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105/var(--tw-text-opacity,1))}.text-slate-950{--tw-text-opacity:1;color:rgb(2 6 23/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.text-yellow-400{--tw-text-opacity:1;color:rgb(250 204 21/var(--tw-text-opacity,1))}.accent-amber-500{accent-color:#f59e0b}.accent-red-500{accent-color:#ef4444}.shadow{--tw-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);--tw-shadow-colored:0 1px 3px 0 var(--tw-shadow-color),0 1px 2px -1px var(--tw-shadow-color)}.shadow,.shadow-2xl{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-lg,.shadow-md{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-blue-600\/30{--tw-shadow-color:rgba(37,99,235,.3);--tw-shadow:var(--tw-shadow-colored)}.ring{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.blur{--tw-blur:blur(8px)}.blur,.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px)}.backdrop-blur-md,.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.hover\:border-amber-500\/70:hover{border-color:rgba(245,158,11,.7)}.hover\:border-red-500\/70:hover{border-color:rgba(239,68,68,.7)}.hover\:bg-\[\#223046\]:hover{--tw-bg-opacity:1;background-color:rgb(34 48 70/var(--tw-bg-opacity,1))}.hover\:bg-amber-900:hover{--tw-bg-opacity:1;background-color:rgb(120 53 15/var(--tw-bg-opacity,1))}.hover\:bg-blue-900:hover{--tw-bg-opacity:1;background-color:rgb(30 58 138/var(--tw-bg-opacity,1))}.hover\:bg-purple-900:hover{--tw-bg-opacity:1;background-color:rgb(88 28 135/var(--tw-bg-opacity,1))}.hover\:bg-red-900:hover{--tw-bg-opacity:1;background-color:rgb(127 29 29/var(--tw-bg-opacity,1))}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85/var(--tw-bg-opacity,1))}.hover\:text-amber-400:hover{--tw-text-opacity:1;color:rgb(251 191 36/var(--tw-text-opacity,1))}.hover\:text-red-200:hover{--tw-text-opacity:1;color:rgb(254 202 202/var(--tw-text-opacity,1))}.hover\:text-sky-300:hover{--tw-text-opacity:1;color:rgb(125 211 252/var(--tw-text-opacity,1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.hover\:opacity-95:hover{opacity:.95}@media (min-width:640px){.sm\:inline{display:inline}.sm\:gap-2{gap:.5rem}.sm\:p-6{padding:1.5rem}.sm\:px-3{padding-left:.75rem;padding-right:.75rem}.sm\:px-5{padding-left:1.25rem;padding-right:1.25rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-sm{font-size:.875rem;line-height:1.25rem}}@media (min-width:768px){.md\:flex{display:flex}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:1024px){.lg\:absolute{position:absolute}.lg\:bottom-3{bottom:.75rem}.lg\:left-3{left:.75rem}.lg\:right-3{right:.75rem}.lg\:top-3{top:.75rem}.lg\:inline{display:inline}.lg\:max-h-none{max-height:none}.lg\:w-\[320px\]{width:320px}.lg\:w-\[340px\]{width:340px}.lg\:flex-row{flex-direction:row}.lg\:p-0{padding:0}}@media (min-width:1280px){.xl\:block{display:block}}</style>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+
+    :root {
+      --bg-dark: #090d12;
+      --hmi-panel: rgba(18, 23, 31, 0.92);
+      --hmi-surface: #18202c;
+      --hmi-border: #2e3c50;
+      --hmi-highlight: #3b82f6;
+      --amber: #f59e0b;
+      --emerald: #10b981;
+      --crimson: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg-dark);
+      color: #e2e8f0;
+      font-family: 'Noto Sans KR', system-ui, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* 모바일 3D 표시 수정: 캔버스를 컨테이너에 맞춤 + 주소창 대응(dvh) */
+    #viewContainer canvas { display: block; width: 100% !important; height: 100% !important; touch-action: none; }
+    body { height: 100vh; height: 100dvh; }
+    @media (max-width: 1023px) {
+      /* 3D는 상단 고정, 패널은 그 아래에서 자연스럽게 스크롤 */
+      #mainWorkspace { overflow-y: auto !important; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+      #viewContainer { position: sticky !important; top: 0; z-index: 30; flex: 0 0 auto !important; height: 46dvh !important; min-height: 260px; }
+      #leftCol, #rightCol { position: static !important; flex: 0 0 auto !important; width: 100% !important; max-height: none !important; overflow: visible !important; }
+      #leftCol > *, #rightCol > * { flex-shrink: 0; }
+      body.stereo-on #viewContainer { height: 100% !important; }
+    }
+    @media (max-width: 639px) {
+      header { padding-left: 8px; padding-right: 8px; }
+      header > div:first-child > div:last-child { display: none; }
+    }
+
+    /* Industrial Brushed Metal & Carbon HMI Panels */
+    .hmi-card {
+      background: linear-gradient(145deg, rgba(24, 32, 44, 0.94), rgba(14, 19, 27, 0.96));
+      border: 1px solid #2e3c50;
+      border-top: 1px solid #435570;
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+    }
+
+    .hmi-header-strip {
+      background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+      border-bottom: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 9px 9px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Screw Rivets on Panel Corners */
+    .rivet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #64748b 20%, #1e293b 90%);
+      border: 1px solid #0f172a;
+      display: inline-block;
+    }
+
+    /* Digital 7-Segment Style Readout Box */
+    .digital-meter {
+      background: #05080c;
+      border: 1px solid #1e293b;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.9);
+      border-radius: 6px;
+      padding: 4px 10px;
+    }
+
+    /* Realistic Skeuomorphic Industrial Pushbuttons */
+    .ind-pb-bezel {
+      background: linear-gradient(145deg, #334155, #0f172a);
+      border: 2px solid #475569;
+      border-radius: 12px;
+      padding: 4px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.15);
+      transition: transform 0.08s ease;
+    }
+    .ind-pb-bezel:active { transform: translateY(2px); }
+
+    .ind-pb-green {
+      background: radial-gradient(circle at 35% 35%, #22c55e, #15803d 70%, #052e16 100%);
+      border: 1px solid #4ade80;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.35), 0 0 12px rgba(34, 197, 94, 0.25);
+    }
+    .ind-pb-green.active-glow {
+      box-shadow: inset 0 2px 6px rgba(255,255,255,0.6), 0 0 22px rgba(34, 197, 94, 0.85);
+    }
+
+    .ind-pb-red {
+      background: radial-gradient(circle at 35% 35%, #ef4444, #b91c1c 70%, #450a0a 100%);
+      border: 1px solid #f87171;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.35), 0 0 12px rgba(239, 68, 68, 0.25);
+    }
+    .ind-pb-red.active-glow {
+      box-shadow: inset 0 2px 6px rgba(255,255,255,0.6), 0 0 22px rgba(239, 68, 68, 0.85);
+    }
+
+    .ind-pb-estop {
+      background: radial-gradient(circle at 35% 35%, #f59e0b, #b45309 75%, #451a03 100%);
+      border: 2px solid #fde047;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.35);
+    }
+
+    /* Pilot Lamps */
+    .pilot-lamp {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #334155;
+      transition: all 0.2s ease;
+    }
+    .pilot-rl-on { background: #ef4444; box-shadow: 0 0 14px #ef4444, inset 0 0 4px #fff; border-color: #fca5a5; }
+    .pilot-rl-off { background: #3b1216; }
+    .pilot-gl-on { background: #22c55e; box-shadow: 0 0 14px #22c55e, inset 0 0 4px #fff; border-color: #86efac; }
+    .pilot-gl-off { background: #0e2e1c; }
+    .pilot-yl-on { background: #f59e0b; box-shadow: 0 0 16px #f59e0b, inset 0 0 4px #fff; border-color: #fde047; animation: pulse-warn 0.5s infinite alternate; }
+    .pilot-yl-off { background: #332409; }
+
+    @keyframes pulse-warn {
+      from { opacity: 0.6; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1.08); }
+    }
+
+    /* Animated SVG Current Flow */
+    @keyframes dash-flow {
+      to { stroke-dashoffset: -24; }
+    }
+    .current-flow-active {
+      stroke-dasharray: 6, 6;
+      animation: dash-flow 0.4s linear infinite;
+    }
+
+    @keyframes camera-shake {
+      0%, 100% { transform: translate(0, 0); }
+      15% { transform: translate(-10px, 7px); }
+      30% { transform: translate(9px, -8px); }
+      45% { transform: translate(-8px, -5px); }
+      60% { transform: translate(7px, 6px); }
+      75% { transform: translate(-5px, 3px); }
+    }
+    .shake-screen { animation: camera-shake 0.55s ease-out; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #090d12; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+    /* Mobile VR Overlay */
+    #vrStereoOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 40;
+    }
+    #vrStereoOverlay.active { display: block; }
+    .vr-divider {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: rgba(59, 130, 246, 0.7);
+      transform: translateX(-50%);
+    }
+    .vr-reticle {
+      position: absolute;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #38bdf8;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #38bdf8;
+    }
+  </style>
+</head>
+<body class="flex flex-col w-screen relative">
+
+  <!-- ================= TOP INDUSTRIAL SCADA TELEMETRY HEADER ================= -->
+  <header class="h-14 px-3 sm:px-5 bg-gradient-to-r from-[#0b0f17] via-[#131b26] to-[#0b0f17] border-b-2 border-[#263346] flex items-center justify-between z-30 shrink-0 shadow-xl">
+    <!-- Left Brand & Equipment Tag -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg bg-gradient-to-b from-[#2563eb] to-[#1d4ed8] flex items-center justify-center shadow-md border border-blue-400/40">
+        <i class="fa-solid fa-industry text-white text-lg"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40">MCC-PNL-04</span>
+          <h1 class="font-black text-sm sm:text-base tracking-tight text-white">3상 유도전동기 정·역회전 인터록 디지털 트윈</h1>
+        </div>
+        <p class="text-[11px] text-slate-400 hidden xl:block">LS Metasol MC-22b × 2EA · b접점 상호쇄정(Interlock) · 주회로 R↔T 상교체 실기 시뮬레이터</p>
+      </div>
+    </div>
+
+    <!-- Center Live Digital Telemetry Meters (Volt, Amp, RPM) -->
+    <div class="hidden md:flex items-center gap-2">
+      <div class="digital-meter flex items-center gap-2">
+        <span class="text-[10px] text-slate-400 font-bold">선간전압</span>
+        <span id="meterVolt" class="font-mono text-xs font-extrabold text-amber-400">380V</span>
+      </div>
+      <div class="digital-meter flex items-center gap-2">
+        <span class="text-[10px] text-slate-400 font-bold">부하전류</span>
+        <span id="meterAmp" class="font-mono text-xs font-extrabold text-emerald-400">0.0 A</span>
+      </div>
+      <div class="digital-meter flex items-center gap-2 min-w-[115px] justify-between">
+        <span class="text-[10px] text-slate-400 font-bold">회전수</span>
+        <span id="meterRPM" class="font-mono text-xs font-extrabold text-sky-400">0 RPM</span>
+      </div>
+    </div>
+
+    <!-- Right Mode Switcher & Action Buttons -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <div class="flex bg-[#070a0f] p-1 rounded-lg border border-[#2e3c50]">
+        <button id="btnModeTwin" class="px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-blue-600 text-white shadow">
+          <i class="fa-solid fa-sliders mr-1"></i>3D 운전·고장
+        </button>
+        <button id="btnModeWire" class="px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-bold transition-all text-slate-400 hover:text-white">
+          <i class="fa-solid fa-plug-circle-bolt mr-1"></i>1단계 결선실습
+        </button>
+      </div>
+
+      <button id="btnExpandSchematicModal" class="px-2.5 py-1.5 rounded-lg bg-[#182232] hover:bg-[#223046] border border-sky-500/40 text-xs font-bold text-sky-300 flex items-center gap-1.5 transition" title="대화형 전체 회로도">
+        <i class="fa-solid fa-diagram-project"></i>
+        <span class="hidden lg:inline">회로도</span>
+      </button>
+
+      <button id="btnOpenTheory" class="px-2.5 py-1.5 rounded-lg bg-[#182232] hover:bg-[#223046] border border-amber-500/40 text-xs font-bold text-amber-300 flex items-center gap-1.5 transition" title="이론설명서 및 12핀 핀맵">
+        <i class="fa-solid fa-book"></i>
+        <span class="hidden lg:inline">이론·핀맵</span>
+      </button>
+
+      <button id="btnStartVR" class="px-2.5 py-1.5 rounded-lg bg-purple-950/90 hover:bg-purple-900 border border-purple-400/50 text-xs font-bold text-purple-200 flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-vr-cardboard"></i>
+        <span id="vrBtnLabel" class="hidden sm:inline">모바일 VR</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE ================= -->
+  <div id="mainWorkspace" class="flex-1 relative overflow-hidden flex flex-col lg:flex-row">
+
+    <!-- 3D VIEWPORT CANVAS -->
+    <div id="viewContainer" class="flex-1 relative h-full w-full overflow-hidden bg-gradient-to-b from-[#0d131c] to-[#06090e]">
+      <!-- Hover Terminal Tooltip -->
+      <div id="termTooltip" class="fixed pointer-events-none bg-[#090d14]/95 border border-sky-400 text-white px-3 py-1.5 rounded-md text-xs font-mono z-50 hidden shadow-2xl"></div>
+
+      <!-- Top Center Toast Notification -->
+      <div id="toastBanner" class="fixed left-1/2 top-16 -translate-x-1/2 z-50 max-w-[92vw] w-[540px] px-4 py-2.5 rounded-lg border text-xs sm:text-sm font-bold shadow-2xl hidden transition-all"></div>
+
+      <!-- Mobile VR Split-Screen Reticle Overlay -->
+      <div id="vrStereoOverlay">
+        <div class="vr-divider"></div>
+        <div class="vr-reticle" style="left: 25%;"></div>
+        <div class="vr-reticle" style="left: 75%;"></div>
+        <div class="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-auto flex gap-3 bg-black/85 px-4 py-2 rounded-full border border-sky-500">
+          <span class="text-xs text-sky-400 font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-vr-cardboard"></i> 모바일 VR 스테레오 뷰 (화면 터치 시 정회전→역회전→정지 순환)
+          </span>
+          <button id="btnExitStereoVR" class="text-xs bg-red-600 text-white px-2.5 py-0.5 rounded-full font-bold">VR 종료</button>
+        </div>
+      </div>
+
+      <!-- Bottom Floating Camera Preset & Cable Legend Toolbar -->
+      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-[#0f1622]/90 border border-[#2e3c50] px-3.5 py-1.5 rounded-full text-[11px] text-slate-300 backdrop-blur-md shadow-2xl whitespace-nowrap">
+        <span class="font-mono text-[10px] text-slate-400 hidden sm:inline">KEC 상색상:</span>
+        <span class="flex items-center gap-1 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-[#e53935] inline-block border border-white/30"></span>R(L1)</span>
+        <span class="flex items-center gap-1 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-[#f5f5f5] inline-block border border-white/30"></span>S(L2)</span>
+        <span class="flex items-center gap-1 font-bold"><span class="w-2.5 h-2.5 rounded-full bg-[#1e88e5] inline-block border border-white/30"></span>T(L3)</span>
+        <span class="text-slate-600">|</span>
+        <button id="btnToggleFlowParticles" class="text-sky-400 hover:text-sky-300 font-bold flex items-center gap-1">
+          <i class="fa-solid fa-bolt"></i> 전류펄스: ON
+        </button>
+        <span class="text-slate-600">|</span>
+        <button id="btnCamFront" class="hover:text-white px-1">정면</button>
+        <button id="btnCamAngle" class="hover:text-white px-1 hidden sm:inline">입체각</button>
+        <button id="btnCamMotor" class="hover:text-white px-1 hidden sm:inline">모터확대</button>
+        <button id="btnAutoSpinCam" class="hover:text-amber-400 px-1 flex items-center gap-1">
+          <i class="fa-solid fa-rotate"></i> 자동회전
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= LEFT FLOATING CONSOLE: MISSIONS, FAULT INJECTION & LIVE SCHEMATIC ================= -->
+    <div id="leftCol" class="lg:w-[340px] lg:absolute lg:left-3 lg:top-3 lg:bottom-3 z-20 flex flex-col gap-2.5 overflow-y-auto p-2.5 lg:p-0 max-h-[42vh] lg:max-h-none">
+
+      <!-- TWIN MODE LEFT CONTENT -->
+      <div id="leftTwinContent" class="flex flex-col gap-2.5">
+        <!-- Mission Steps Card -->
+        <div class="hmi-card">
+          <div class="hmi-header-strip">
+            <div class="flex items-center gap-2">
+              <span class="rivet"></span>
+              <h2 class="text-xs font-extrabold tracking-wide text-slate-200 uppercase">
+                <i class="fa-solid fa-list-check text-sky-400 mr-1"></i> 실습 절차 가이드 (5단계)
+              </h2>
+            </div>
+            <span id="stepCountBadge" class="text-[11px] font-mono bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded border border-emerald-600/40 font-bold">0 / 5 완료</span>
+          </div>
+          <div class="p-3">
+            <ul id="stepsListUI" class="space-y-1.5 text-xs"></ul>
+          </div>
+        </div>
+
+        <!-- Fault Injection Console (고장 주입 스위치) -->
+        <div class="hmi-card border-amber-500/40">
+          <div class="hmi-header-strip">
+            <div class="flex items-center gap-2">
+              <span class="rivet"></span>
+              <h2 class="text-xs font-extrabold tracking-wide text-amber-400 uppercase">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> 고장 모의 (Fault Injection)
+              </h2>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400">안전 교육용</span>
+          </div>
+          <div class="p-3 space-y-2 text-xs">
+            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-[#0c1118] border border-slate-700/80 cursor-pointer hover:border-red-500/70 transition">
+              <input type="checkbox" id="swI" class="mt-0.5 w-4 h-4 accent-red-500">
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-100">인터록(b접점) 누락 오결선</span>
+                  <span class="text-[10px] font-mono px-1.5 rounded bg-red-950 text-red-400 border border-red-800">위험</span>
+                </div>
+                <span class="text-[11px] text-slate-400 block mt-0.5">상대 MC b접점 제거 → 동시 투입 시 <b class="text-red-300">R·T 상간 단락 폭발</b></span>
+              </div>
+            </label>
+
+            <label class="flex items-start gap-2.5 p-2 rounded-lg bg-[#0c1118] border border-slate-700/80 cursor-pointer hover:border-amber-500/70 transition">
+              <input type="checkbox" id="swP" class="mt-0.5 w-4 h-4 accent-amber-500">
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-100">MC2 주회로 상교체(R↔T) 누락</span>
+                  <span class="text-[10px] font-mono px-1.5 rounded bg-amber-950 text-amber-400 border border-amber-800">오작동</span>
+                </div>
+                <span class="text-[11px] text-slate-400 block mt-0.5">MC2 투입 시에도 R-S-T 정회전 상순이 그대로 인가됨</span>
+              </div>
+            </label>
+
+            <button id="bReset" class="w-full py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-sky-300 transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-rotate"></i> 차단기(MCCB) 복귀 및 정상 회로 리셋
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIRING MODE LEFT CONTENT (1단계 주회로 + 인터록 직접 결선) -->
+      <div id="leftWireContent" class="hidden flex-col gap-2.5">
+        <div class="hmi-card border-sky-500/60">
+          <div class="hmi-header-strip">
+            <div class="flex items-center gap-2">
+              <span class="rivet"></span>
+              <h2 class="text-xs font-extrabold text-sky-400">1단계 · 주회로 & 인터록 3D 결선</h2>
+            </div>
+            <span class="text-xs font-mono text-amber-400 font-bold" id="wireTimerUI">00:00</span>
+          </div>
+          <div class="p-3">
+            <p class="text-xs text-slate-300 leading-relaxed">
+              주회로(R·S·T)와 함께 <b class="text-amber-300">상대 MC의 b접점(5·11번)을 교차 연결하는 인터록 제어회로</b>를 결선하세요.
+              <span class="block mt-1 text-[11px] text-sky-300">• 정회전: PB-F(출력) → <b>MCR-b(5→11)</b> → MCF-A1(6)<br>• 역회전: PB-R(출력) → <b>MCF-b(5→11)</b> → MCR-A1(6)</span>
+            </p>
+            <div class="flex items-center justify-between text-xs font-bold text-white mt-2.5 mb-1.5">
+              <span>필수 구간 체크리스트 (주회로+인터록)</span>
+              <span id="wireCheckSummary" class="text-emerald-400 font-mono">0 / 23 완료</span>
+            </div>
+            <ul id="wireChecklistUI" class="space-y-1 text-[11px] max-h-52 overflow-y-auto pr-1"></ul>
+
+            <div class="mt-2.5 pt-2 border-t border-slate-700/80 grid grid-cols-3 gap-1">
+              <button id="btnAutoCompleteWire" class="py-1.5 px-1.5 rounded-lg bg-blue-950/90 hover:bg-blue-900 border border-blue-500/50 text-[10px] font-bold text-blue-300 transition">
+                <i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i>정답 자동결선
+              </button>
+              <button id="btnNoInterlockWire" class="py-1.5 px-1.5 rounded-lg bg-red-950/80 hover:bg-red-900 border border-red-500/50 text-[10px] font-bold text-red-300 transition">
+                <i class="fa-solid fa-link-slash mr-0.5"></i>인터록 누락예시
+              </button>
+              <button id="btnSwapErrorWire" class="py-1.5 px-1.5 rounded-lg bg-amber-950/80 hover:bg-amber-900 border border-amber-500/50 text-[10px] font-bold text-amber-300 transition">
+                <i class="fa-solid fa-bug mr-0.5"></i>상 미교체예시
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE INTERACTIVE SCHEMATIC DOCK -->
+      <div id="schematicDrawer" class="hmi-card flex flex-col">
+        <div class="hmi-header-strip">
+          <div class="flex items-center gap-2">
+            <span class="rivet"></span>
+            <h2 class="text-xs font-extrabold text-slate-200">
+              <i class="fa-solid fa-microchip text-sky-400 mr-1"></i> 실시간 시퀀스 & 전류 흐름도
+            </h2>
+          </div>
+          <button id="btnExpandSchematicInner" class="text-[11px] text-sky-400 hover:text-white font-bold">
+            <i class="fa-solid fa-up-right-and-down-left-from-center mr-1"></i>확대
+          </button>
+        </div>
+
+        <div class="p-2 bg-[#070a0f] rounded-b-lg">
+          <div id="miniSchematicWrap" class="rounded border border-slate-800 p-1 overflow-hidden">
+            <svg id="liveCircuitSVG" viewBox="0 0 680 350" class="w-full h-auto select-none">
+              <!-- POWER CIRCUIT (Left: x=10..310) -->
+              <text x="155" y="20" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">[주회로 · R↔T 상교체]</text>
+              <text x="55" y="42" fill="#ef4444" font-size="11" font-weight="bold" text-anchor="middle">R</text>
+              <text x="105" y="42" fill="#f8fafc" font-size="11" font-weight="bold" text-anchor="middle">S</text>
+              <text x="155" y="42" fill="#3b82f6" font-size="11" font-weight="bold" text-anchor="middle">T</text>
+
+              <line x1="55" y1="48" x2="55" y2="85" stroke="#e53935" stroke-width="2.5"/>
+              <line x1="105" y1="48" x2="105" y2="85" stroke="#f5f5f5" stroke-width="2.5"/>
+              <line x1="155" y1="48" x2="155" y2="85" stroke="#1e88e5" stroke-width="2.5"/>
+
+              <rect id="svgMCCB" x="38" y="62" width="134" height="22" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+              <text id="svgMCCBTxt" x="105" y="77" fill="#e2e8f0" font-size="10" font-weight="bold" text-anchor="middle">MCCB (정상 ON)</text>
+
+              <g id="svgPowerMC1" opacity="0.4">
+                <line id="pF_R" x1="55" y1="85" x2="55" y2="215" stroke="#e53935" stroke-width="2.5"/>
+                <line id="pF_S" x1="105" y1="85" x2="105" y2="215" stroke="#f5f5f5" stroke-width="2.5"/>
+                <line id="pF_T" x1="155" y1="85" x2="155" y2="215" stroke="#1e88e5" stroke-width="2.5"/>
+              </g>
+              <rect id="svgBoxMC1" x="42" y="130" width="126" height="32" rx="4" fill="#0f172a" stroke="#334155" stroke-width="2" class="cursor-pointer"/>
+              <text x="105" y="150" fill="#22c55e" font-size="11" font-weight="bold" text-anchor="middle" class="pointer-events-none">MC1 (정회전)</text>
+
+              <g id="svgPowerMC2" opacity="0.4">
+                <path id="pR_inR" d="M 55 100 L 205 100 L 205 130" fill="none" stroke="#e53935" stroke-width="2"/>
+                <path id="pR_inS" d="M 105 106 L 245 106 L 245 130" fill="none" stroke="#f5f5f5" stroke-width="2"/>
+                <path id="pR_inT" d="M 155 112 L 285 112 L 285 130" fill="none" stroke="#1e88e5" stroke-width="2"/>
+                <path id="pR_out1" d="M 205 162 L 205 198 L 155 198" fill="none" stroke="#e53935" stroke-width="2"/>
+                <path id="pR_out2" d="M 245 162 L 245 190 L 105 190" fill="none" stroke="#f5f5f5" stroke-width="2"/>
+                <path id="pR_out3" d="M 285 162 L 285 182 L 55 182" fill="none" stroke="#1e88e5" stroke-width="2"/>
+              </g>
+              <rect id="svgBoxMC2" x="192" y="130" width="106" height="32" rx="4" fill="#0f172a" stroke="#334155" stroke-width="2" class="cursor-pointer"/>
+              <text x="245" y="150" fill="#f87171" font-size="11" font-weight="bold" text-anchor="middle" class="pointer-events-none">MC2 (역회전)</text>
+              <text id="svgSwapBadge" x="245" y="176" fill="#f59e0b" font-size="9" font-weight="bold" text-anchor="middle">★ R↔T 상교체</text>
+
+              <g id="svgShortAlert" class="hidden">
+                <circle cx="155" cy="190" r="26" fill="#ef4444" opacity="0.45"/>
+                <text x="155" y="194" fill="#fde047" font-size="12" font-weight="900" text-anchor="middle">⚡R-T 단락폭발!</text>
+              </g>
+
+              <rect x="42" y="215" width="126" height="24" rx="4" fill="#1e1b10" stroke="#f59e0b" stroke-width="1.5"/>
+              <text x="105" y="231" fill="#f59e0b" font-size="10" font-weight="bold" text-anchor="middle">THR / EOCR</text>
+
+              <g id="svgMotorLines" opacity="0.4">
+                <line id="pM_U" x1="55" y1="239" x2="80" y2="285" stroke="#e53935" stroke-width="2.5"/>
+                <line id="pM_V" x1="105" y1="239" x2="105" y2="285" stroke="#f5f5f5" stroke-width="2.5"/>
+                <line id="pM_W" x1="155" y1="239" x2="130" y2="285" stroke="#1e88e5" stroke-width="2.5"/>
+              </g>
+              <circle id="svgMotorCircle" cx="105" cy="305" r="28" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5"/>
+              <text x="105" y="303" fill="#ffffff" font-size="12" font-weight="bold" text-anchor="middle">3Φ M</text>
+              <text id="svgMotorDirTxt" x="105" y="319" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">정지</text>
+
+              <line x1="322" y1="15" x2="322" y2="335" stroke="#334155" stroke-dasharray="4,4"/>
+
+              <!-- CONTROL CIRCUIT -->
+              <text x="505" y="20" fill="#38bdf8" font-size="12" font-weight="bold" text-anchor="middle">[제어회로 · 상대 b접점 인터록]</text>
+              <line x1="350" y1="38" x2="650" y2="38" stroke="#e53935" stroke-width="2"/>
+              <text x="342" y="42" fill="#ef4444" font-size="10" font-weight="bold">R</text>
+              <line x1="350" y1="325" x2="650" y2="325" stroke="#1e88e5" stroke-width="2"/>
+              <text x="342" y="329" fill="#3b82f6" font-size="10" font-weight="bold">T</text>
+
+              <line id="c_top" x1="430" y1="38" x2="430" y2="95" stroke="#10b981" stroke-width="2"/>
+              <rect x="405" y="55" width="50" height="22" rx="3" fill="#3a2e10" stroke="#f59e0b" stroke-width="1.2" class="cursor-pointer" id="svgBtnStop"/>
+              <text x="430" y="70" fill="#f59e0b" font-size="10" font-weight="bold" text-anchor="middle" class="pointer-events-none">PB-S(정지)</text>
+
+              <line x1="430" y1="95" x2="585" y2="95" stroke="#10b981" stroke-width="2"/>
+
+              <!-- FORWARD COIL BRANCH -->
+              <g id="svgBranchFwd">
+                <line id="c_f1" x1="430" y1="95" x2="430" y2="125" stroke="#64748b" stroke-width="2"/>
+                <rect id="svgBtnFwd" x="385" y="125" width="52" height="24" rx="4" fill="#064e3b" stroke="#22c55e" stroke-width="1.5" class="cursor-pointer"/>
+                <text x="411" y="141" fill="#4ade80" font-size="10" font-weight="bold" text-anchor="middle" class="pointer-events-none">PB-F(기동)</text>
+
+                <path id="c_f_hold" d="M 430 112 L 475 112 L 475 162 L 430 162" fill="none" stroke="#64748b" stroke-width="1.8"/>
+                <rect id="svgContactMC1a" x="453" y="126" width="44" height="22" rx="3" fill="#0f172a" stroke="#334155"/>
+                <text x="475" y="141" fill="#94a3b8" font-size="9" font-weight="bold" text-anchor="middle">MC1-a</text>
+
+                <line id="c_f2" x1="430" y1="149" x2="430" y2="195" stroke="#64748b" stroke-width="2"/>
+
+                <rect id="svgIlkMC2b" x="392" y="195" width="76" height="30" rx="5" fill="#2a1215" stroke="#ef4444" stroke-width="2"/>
+                <line id="svgIlkMC2bBar" x1="402" y1="202" x2="458" y2="218" stroke="#ef4444" stroke-width="2.5"/>
+                <text id="svgIlkMC2bTxt" x="430" y="214" fill="#fecaca" font-size="10" font-weight="bold" text-anchor="middle">MC2-b (닫힘)</text>
+
+                <line id="c_f3" x1="430" y1="225" x2="430" y2="265" stroke="#64748b" stroke-width="2"/>
+                <circle id="svgCoilMC1" cx="430" cy="285" r="20" fill="#0f172a" stroke="#334155" stroke-width="2.5"/>
+                <text x="430" y="289" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">MC1</text>
+                <line x1="430" y1="305" x2="430" y2="325" stroke="#1e88e5" stroke-width="2"/>
+              </g>
+
+              <!-- REVERSE COIL BRANCH -->
+              <g id="svgBranchRev">
+                <line id="c_r1" x1="585" y1="95" x2="585" y2="125" stroke="#64748b" stroke-width="2"/>
+                <rect id="svgBtnRev" x="540" y="125" width="52" height="24" rx="4" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" class="cursor-pointer"/>
+                <text x="566" y="141" fill="#fca5a5" font-size="10" font-weight="bold" text-anchor="middle" class="pointer-events-none">PB-R(역)</text>
+
+                <path id="c_r_hold" d="M 585 112 L 630 112 L 630 162 L 585 162" fill="none" stroke="#64748b" stroke-width="1.8"/>
+                <rect id="svgContactMC2a" x="608" y="126" width="44" height="22" rx="3" fill="#0f172a" stroke="#334155"/>
+                <text x="630" y="141" fill="#94a3b8" font-size="9" font-weight="bold" text-anchor="middle">MC2-a</text>
+
+                <line id="c_r2" x1="585" y1="149" x2="585" y2="195" stroke="#64748b" stroke-width="2"/>
+
+                <rect id="svgIlkMC1b" x="547" y="195" width="76" height="30" rx="5" fill="#2a1215" stroke="#ef4444" stroke-width="2"/>
+                <line id="svgIlkMC1bBar" x1="557" y1="202" x2="613" y2="218" stroke="#ef4444" stroke-width="2.5"/>
+                <text id="svgIlkMC1bTxt" x="585" y="214" fill="#fecaca" font-size="10" font-weight="bold" text-anchor="middle">MC1-b (닫힘)</text>
+
+                <line id="c_r3" x1="585" y1="225" x2="585" y2="265" stroke="#64748b" stroke-width="2"/>
+                <circle id="svgCoilMC2" cx="585" cy="285" r="20" fill="#0f172a" stroke="#334155" stroke-width="2.5"/>
+                <text x="585" y="289" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">MC2</text>
+                <line x1="585" y1="305" x2="585" y2="325" stroke="#1e88e5" stroke-width="2"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= RIGHT FLOATING CONSOLE: SKEUOMORPHIC CONTROL STATION & DIAGNOSTICS ================= -->
+    <div id="rightCol" class="lg:w-[320px] lg:absolute lg:right-3 lg:top-3 lg:bottom-3 z-20 flex flex-col gap-2.5 overflow-y-auto p-2.5 lg:p-0 max-h-[45vh] lg:max-h-none">
+
+      <!-- TWIN OPERATION PANEL -->
+      <div id="rightTwinContent" class="flex flex-col gap-2.5">
+
+        <!-- Industrial Local Control Box (현장 조작반) -->
+        <div class="hmi-card">
+          <div class="hmi-header-strip">
+            <div class="flex items-center gap-2">
+              <span class="rivet"></span>
+              <h2 class="text-xs font-extrabold tracking-wide text-slate-200 uppercase">
+                <i class="fa-solid fa-gamepad text-emerald-400 mr-1"></i> 현장 조작반 (LOCAL OP BOX)
+              </h2>
+            </div>
+            <!-- Pilot Lamps Indicator Row -->
+            <div class="flex items-center gap-2 bg-black/50 px-2 py-1 rounded border border-slate-700">
+              <div class="flex items-center gap-1" title="적색 운전램프 (RL)">
+                <span id="lampRL" class="pilot-lamp pilot-rl-off"></span>
+                <span class="text-[9px] font-mono text-slate-400">RL</span>
+              </div>
+              <div class="flex items-center gap-1" title="녹색 정지램프 (GL)">
+                <span id="lampGL" class="pilot-lamp pilot-gl-on"></span>
+                <span class="text-[9px] font-mono text-slate-400">GL</span>
+              </div>
+              <div class="flex items-center gap-1" title="황색 고장/트립램프 (YL)">
+                <span id="lampYL" class="pilot-lamp pilot-yl-off"></span>
+                <span class="text-[9px] font-mono text-slate-400">YL</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3.5 space-y-2.5">
+            <!-- PB-F Forward Button -->
+            <div class="ind-pb-bezel">
+              <button id="bF" class="w-full py-2.5 px-3.5 rounded-lg ind-pb-green text-white font-black text-xs sm:text-sm flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-rotate-right text-base"></i>
+                  <span>정회전 기동 (PB-F)</span>
+                </span>
+                <span class="text-[10px] font-mono bg-black/40 px-2 py-0.5 rounded border border-white/20">MC1 ON</span>
+              </button>
+            </div>
+
+            <!-- PB-R Reverse Button -->
+            <div class="ind-pb-bezel">
+              <button id="bR" class="w-full py-2.5 px-3.5 rounded-lg ind-pb-red text-white font-black text-xs sm:text-sm flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-rotate-left text-base"></i>
+                  <span>역회전 기동 (PB-R)</span>
+                </span>
+                <span class="text-[10px] font-mono bg-black/40 px-2 py-0.5 rounded border border-white/20">MC2 ON</span>
+              </button>
+            </div>
+
+            <!-- PB-S Emergency Stop Mushroom Button -->
+            <div class="ind-pb-bezel">
+              <button id="bS" class="w-full py-2 px-3.5 rounded-lg ind-pb-estop text-slate-950 font-black text-xs sm:text-sm flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-circle-stop text-red-700 text-base"></i>
+                  <span>비상정지 / 정지 (PB-S)</span>
+                </span>
+                <span class="text-[10px] font-mono bg-black/25 text-white px-2 py-0.5 rounded">OFF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLC / Relay Status Diagnostic Matrix -->
+        <div class="hmi-card">
+          <div class="hmi-header-strip">
+            <div class="flex items-center gap-2">
+              <span class="rivet"></span>
+              <h2 class="text-xs font-extrabold tracking-wide text-slate-200 uppercase">
+                <i class="fa-solid fa-server text-sky-400 mr-1"></i> 접점 및 시퀀스 상태 모니터
+              </h2>
+            </div>
+          </div>
+          <div class="p-3">
+            <div class="grid grid-cols-2 gap-1.5 text-xs font-mono">
+              <div class="bg-[#080c12] p-2 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-sans">MC1 (정회전 접촉기)</span>
+                <span id="sM1" class="font-bold text-slate-400">소자 (OFF)</span>
+              </div>
+              <div class="bg-[#080c12] p-2 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-sans">MC2 (역회전 접촉기)</span>
+                <span id="sM2" class="font-bold text-slate-400">소자 (OFF)</span>
+              </div>
+              <div class="bg-[#080c12] p-2 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-sans">상호 인터록 (b접점)</span>
+                <span id="sIlkState" class="font-bold text-emerald-400">양쪽 닫힘(NC)</span>
+              </div>
+              <div class="bg-[#080c12] p-2 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-sans">배선용 차단기(MCCB)</span>
+                <span id="sBrk" class="font-bold text-emerald-400">정상 투입(ON)</span>
+              </div>
+              <div class="col-span-2 bg-[#080c12] p-2 rounded border border-slate-800 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400 font-sans">유도전동기 회전상태:</span>
+                <span id="sMot" class="font-bold text-slate-400 text-xs">정지 (0 RPM)</span>
+              </div>
+            </div>
+
+            <div id="msg" role="status" aria-live="polite" class="mt-2.5 p-2.5 rounded bg-[#05080c] border-l-4 border-sky-500 text-xs text-slate-300 leading-relaxed min-h-[52px]">
+              현장 조작반 또는 3D 캐비닛 도어의 푸시버튼을 눌러 정·역회전 및 인터록 동작을 확인하세요.
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency Short-Circuit Alert Box -->
+        <div id="alertBox" class="hmi-card border-2 border-red-500 bg-red-950/90 hidden">
+          <div class="p-3.5">
+            <div class="font-black text-sm text-red-300 flex items-center gap-1.5 mb-1">
+              <i class="fa-solid fa-bolt-lightning text-yellow-400 animate-bounce"></i> ⚠ R-T 상간 단락(Short-Circuit) 폭발!
+            </div>
+            <p class="text-xs text-red-100 leading-relaxed">
+              인터록(b접점)이 누락된 상태에서 MC1과 MC2가 동시에 투입되어 <b>전원 R상과 T상이 직결 단락</b>되었고, 대전류 아크가 발생하며 MCCB 차단기가 즉시 트립(TRIP)되었습니다!
+            </p>
+            <div class="mt-2 p-2 rounded bg-black/50 text-[11px] text-amber-300 font-mono">
+              복구절차: 주전원 차단 → 상대 MC b접점(5-11번) 직렬 결선 → 절연저항 측정 후 [차단기 복귀] 클릭
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WIRING MODE RIGHT CONTENT (결선 목록 & 결선 검사) -->
+      <div id="rightWireContent" class="hidden flex-col gap-2.5">
+        <div class="hmi-card">
+          <div class="hmi-header-strip">
+            <div class="flex items-center gap-2">
+              <span class="rivet"></span>
+              <h2 class="text-xs font-extrabold text-sky-400">포설 전선 리스트 (<span id="wireCountUI">0</span>/23)</h2>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono">검사: <b id="wireAttemptUI" class="text-white">0</b>회</span>
+          </div>
+          <div class="p-3">
+            <div class="flex gap-1.5 mb-2.5">
+              <button id="btnWireUndo" class="flex-1 py-1.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold">
+                <i class="fa-solid fa-rotate-left mr-1"></i>되돌리기
+              </button>
+              <button id="btnWireClear" class="flex-1 py-1.5 rounded bg-red-950/70 hover:bg-red-900 border border-red-700/60 text-xs font-bold text-red-200">
+                <i class="fa-solid fa-trash-can mr-1"></i>전체 철거
+              </button>
+            </div>
+            <ul id="wireListUI" class="max-h-48 overflow-y-auto space-y-1 text-xs pr-1"></ul>
+
+            <button id="btnCheckWiring" class="w-full mt-3 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-sky-500 hover:opacity-95 text-white font-black text-sm shadow-lg shadow-blue-600/30 transition">
+              <i class="fa-solid fa-clipboard-check mr-1.5"></i>벨테스터 도통 & 결선 검사
+            </button>
+
+            <div id="wireInspectResult" class="mt-2.5 p-2.5 rounded bg-[#05080c] border border-slate-800 text-xs text-slate-300 leading-relaxed max-h-48 overflow-y-auto">
+              3D 단자 나사를 클릭해 전선을 연결한 뒤 [결선 검사]를 누르세요. (전선 우클릭 시 개별 삭제)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hmi-card p-2.5 text-[11px] text-slate-400 flex items-center gap-2">
+        <i class="fa-solid fa-helmet-safety text-amber-400 text-sm"></i>
+        <span>실제 전기 작업 시에는 반드시 LOTO(잠금·표지) 및 검전기로 무전압을 확인 후 작업하십시오.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 1: THEORY MANUAL & CRAFTSMAN ELECTRICAL PINOUT GUIDE ================= -->
+  <div id="modalTheory" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="hmi-card w-full max-w-4xl max-h-[90vh] flex flex-col border-amber-500/60 overflow-hidden">
+      <div class="hmi-header-strip py-3 px-4">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-book-open-reader text-amber-400 text-lg"></i>
+          <div>
+            <h3 class="font-bold text-base text-white">전기기능사 실기 대비 · 정·역회전 인터록 이론설명서 및 12핀 핀맵</h3>
+            <p class="text-[11px] text-slate-400">3상 회전자계 원리 · R↔T 상교체 · 상대 b접점 인터록 · LS Metasol MC/EOCR 표준 핀 번호</p>
+          </div>
+        </div>
+        <button id="btnCloseTheory" class="w-8 h-8 rounded bg-slate-800 hover:bg-slate-700 text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-5 text-xs sm:text-sm leading-relaxed">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-[#0c121b] p-4 rounded-xl border border-slate-700">
+            <h4 class="font-bold text-sky-400 text-sm mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-spin"></i> 1. 3상 유도전동기 회전 원리와 2상 교체(R↔T)
+            </h4>
+            <p class="text-slate-300">
+              3상 교류 전원(R·S·T)이 120° 위상차로 고정자 권선에 흐르면 동기속도 $N_s = \frac{120f}{P}$로 회전하는 <b class="text-white">회전자계</b>가 형성됩니다.
+            </p>
+            <div class="mt-2.5 p-2.5 rounded-lg bg-[#131d2b] border border-sky-500/30 text-xs space-y-1">
+              <div>✔ <b class="text-emerald-400">정회전(CW) 상순:</b> (U, V, W) = <span class="font-mono text-white">R - S - T</span></div>
+              <div>✔ <b class="text-rose-400">역회전(CCW) 상순 (2상 교체):</b> <span class="font-mono text-amber-300">T - S - R</span> (R↔T 교차), <span class="font-mono">S-R-T</span>, <span class="font-mono">R-T-S</span></div>
+              <div>❌ <b class="text-red-400">주의 (3상 모두 순환 시):</b> <span class="font-mono">S-T-R</span> 또는 <span class="font-mono">T-R-S</span>는 회전 방향이 바뀌지 않고 <b>정회전</b>합니다!</div>
+            </div>
+          </div>
+
+          <div class="bg-[#0c121b] p-4 rounded-xl border border-slate-700">
+            <h4 class="font-bold text-rose-400 text-sm mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-lock"></i> 2. 상호쇄정(Interlock) 회로 설계 원리
+            </h4>
+            <p class="text-slate-300">
+              정회전(MC1)과 역회전(MC2) 주접점이 동시에 닫히면 주회로에서 교차된 <b class="text-red-300">R상과 T상이 직접 충돌하여 단락(Short) 사고</b>가 일어납니다.
+            </p>
+            <div class="mt-2.5 p-2.5 rounded-lg bg-[#261216] border border-red-500/40 text-xs space-y-1">
+              <div>🔒 <b class="text-white">이중 안전 인터록 구성:</b></div>
+              <div>• <b>전기적 인터록:</b> MC1 코일 전단에 <b>MC2-b접점(5-11번)</b> 직렬 연결, MC2 코일 전단에 <b>MC1-b접점(5-11번)</b> 직렬 연결</div>
+              <div>• <b>기구적 인터록:</b> 두 전자접촉기 사이에 기계식 인터록 유닛 장착</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pinout Table -->
+        <div class="bg-[#0c121b] p-4 rounded-xl border border-amber-500/40">
+          <h4 class="font-bold text-amber-400 text-sm mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-table"></i> 3. 전기기능사 실기 표준 12핀 기구 핀 번호표 (MC / EOCR)
+          </h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-800 text-sky-300 border-b border-slate-600">
+                  <th class="p-2">기구 명칭</th>
+                  <th class="p-2">주회로 1차(입력)</th>
+                  <th class="p-2">주회로 2차(출력)</th>
+                  <th class="p-2">전원 코일(A1·A2)</th>
+                  <th class="p-2">자기유지 (a접점)</th>
+                  <th class="p-2">인터록/트립 (b접점)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 font-mono">
+                <tr>
+                  <td class="p-2 font-bold text-white">MC1 / MC2 (12핀)</td>
+                  <td class="p-2 text-emerald-400">1, 2, 3 (또는 1,3,5)</td>
+                  <td class="p-2 text-emerald-400">7, 8, 9 (또는 2,4,6)</td>
+                  <td class="p-2 text-amber-300">6번 - 12번</td>
+                  <td class="p-2 text-sky-300">4번 - 10번 (NO)</td>
+                  <td class="p-2 text-rose-400 font-bold">5번 - 11번 (NC ★인터록)</td>
+                </tr>
+                <tr>
+                  <td class="p-2 font-bold text-white">EOCR / THR (12핀)</td>
+                  <td class="p-2 text-emerald-400">1, 2, 3번 관통</td>
+                  <td class="p-2 text-emerald-400">7, 8, 9번</td>
+                  <td class="p-2 text-amber-300">6번 - 12번</td>
+                  <td class="p-2 text-sky-300">5번 - 11번 (경보)</td>
+                  <td class="p-2 text-rose-400">4번 - 10번 (과부하 차단)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 2: LARGE INTERACTIVE SCHEMATIC VIEWER ================= -->
+  <div id="modalLargeSchematic" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="hmi-card w-full max-w-5xl p-4 border-sky-500/60 flex flex-col gap-3">
+      <div class="flex items-center justify-between border-b border-slate-700 pb-2.5">
+        <h3 class="font-bold text-base text-sky-400 flex items-center gap-2">
+          <i class="fa-solid fa-diagram-project"></i> 정·역회전 인터록 주회로 및 제어회로 전체 도면 (실시간 전류 동기화)
+        </h3>
+        <button id="btnCloseLargeSchematic" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white">닫기</button>
+      </div>
+      <div id="largeSchematicContainer" class="bg-[#05080c] rounded-xl p-3 border border-slate-800"></div>
+      <div class="flex justify-between items-center text-xs text-slate-400">
+        <span>• 흐르는 점선은 실시간 <b>전류(Current Flow)</b> 경로이며, 접점 상태가 3D 수배전반과 1:1 연동됩니다.</span>
+        <div class="flex gap-2">
+          <button onclick="press('fwd')" class="px-3 py-1.5 rounded bg-emerald-700 text-white font-bold">정회전 기동 (PB-F)</button>
+          <button onclick="press('rev')" class="px-3 py-1.5 rounded bg-red-700 text-white font-bold">역회전 기동 (PB-R)</button>
+          <button onclick="press('stop')" class="px-3 py-1.5 rounded bg-amber-600 text-slate-950 font-bold">정지 (PB-S)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CORE APPLICATION & ULTRA-REALISTIC 3D DIGITAL TWIN SCRIPT ================= -->
+  <script>
+    const $ = s => document.querySelector(s);
+    const viewContainer = $('#viewContainer');
+    const COL = { R: 0xe53935, S: 0xf5f5f5, T: 0x1e88e5, C: 0xfacc15 };
+    const KEYS = ['R', 'S', 'T'];
+
+    /* ==========================================================================
+       1. WEB AUDIO SYNTHESIZER (Contactor Clack, Arc Blast)
+       ========================================================================== */
+    class SoundFX {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      clack() {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(190, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(42, this.ctx.currentTime + 0.065);
+          g.gain.setValueAtTime(0.4, this.ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.075);
+          osc.connect(g); g.connect(this.ctx.destination);
+          osc.start(); osc.stop(this.ctx.currentTime + 0.075);
+        } catch(e) {}
+      }
+      arcBlast() {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const len = this.ctx.sampleRate * 0.55;
+          const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+          const data = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.35));
+          const src = this.ctx.createBufferSource();
+          src.buffer = buf;
+          const g = this.ctx.createGain();
+          g.gain.setValueAtTime(0.9, this.ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.55);
+          src.connect(g); g.connect(this.ctx.destination);
+          src.start();
+        } catch(e) {}
+      }
+    }
+    const sfx = new SoundFX();
+
+    /* ==========================================================================
+       2. THREE.JS SCENE, INDUSTRIAL LIGHTING & PROCEDURAL METAL TEXTURES
+       ========================================================================== */
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xe6edf5);
+    scene.fog = new THREE.FogExp2(0xe6edf5, 0.005);
+
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, -0.4, 21.5);
+
+    const cameraL = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    const cameraR = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.xr.enabled = true;
+    viewContainer.appendChild(renderer.domElement);
+    const cv = renderer.domElement;
+
+    const controls = new THREE.OrbitControls(camera, cv);
+    controls.target.set(0.5, -0.8, 0);
+    controls.minDistance = 7;
+    controls.maxDistance = 36;
+    controls.autoRotateSpeed = 1.4;
+    controls.enableDamping = true;
+    controls.update();
+
+    // Studio & Industrial Enclosure Lighting
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xb9c6d4, 0.95));
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+    keyLight.position.set(7, 12, 15);
+    keyLight.castShadow = true;
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.35);
+    rimLight.position.set(-10, -5, 8);
+    scene.add(rimLight);
+
+    const flash = new THREE.PointLight(0xffea79, 0, 18);
+    flash.position.set(0, -0.5, 2.8);
+    scene.add(flash);
+
+    const rootTwin = new THREE.Group();
+    scene.add(rootTwin);
+
+    const boardWire = new THREE.Group();
+    boardWire.visible = false;
+    scene.add(boardWire);
+
+    // Industrial Floor Grid
+    const grid = new THREE.GridHelper(40, 40, 0x26354a, 0x131c29);
+    grid.position.y = -6.7;
+    grid.visible = false; // 밝은 실습실 바닥 타일로 대체
+    scene.add(grid);
+
+    // Procedural Brushed Galvanized Steel Texture (아연도금 속판 질감)
+    function createBrushedMetalTex() {
+      const c = document.createElement('canvas');
+      c.width = 256; c.height = 256;
+      const g = c.getContext('2d');
+      g.fillStyle = '#9aa3ad';
+      g.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 900; i++) {
+        g.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        g.fillRect(0, Math.random() * 256, 256, 1);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(3, 3);
+      return tex;
+    }
+    const steelTex = createBrushedMetalTex();
+
+    // High-contrast Nameplate / Label Generator
+    function label(t, sx, sy, px, col, bg, bd) {
+      const c = document.createElement('canvas');
+      c.width = 420;
+      c.height = Math.round(420 * sy / sx);
+      const g = c.getContext('2d');
+      if (bg) {
+        g.fillStyle = bg;
+        g.fillRect(0, 0, c.width, c.height);
+      }
+      if (bd) {
+        g.strokeStyle = bd;
+        g.lineWidth = 8;
+        g.strokeRect(4, 4, c.width - 8, c.height - 8);
+      }
+      g.font = 'bold ' + px + 'px "Noto Sans KR","Malgun Gothic",sans-serif';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.fillStyle = col || '#fff';
+      g.fillText(t, c.width / 2, c.height / 2);
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+      s.scale.set(sx, sy, 1);
+      s.renderOrder = 10;
+      return s;
+    }
+
+    const std = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.45, metalness: 0.2 }, o));
+    function box(x, y, z, w, h, d, c, par, o) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), std(c, o));
+      m.position.set(x, y, z);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      (par || rootTwin).add(m);
+      return m;
+    }
+
+    // Realistic Philips Screw Head Helper
+    function addScrew(x, y, z, r, par, ringColor) {
+      const g = new THREE.Group();
+      g.position.set(x, y, z);
+      if (ringColor !== undefined) {
+        const ring = new THREE.Mesh(
+          new THREE.CylinderGeometry(r * 1.35, r * 1.35, 0.06, 16).rotateX(Math.PI / 2),
+          std(ringColor, { roughness: 0.3 })
+        );
+        ring.position.z = -0.03;
+        g.add(ring);
+      }
+      const head = new THREE.Mesh(
+        new THREE.CylinderGeometry(r, r, 0.12, 16).rotateX(Math.PI / 2),
+        std(0xd4d8de, { metalness: 0.85, roughness: 0.2 })
+      );
+      g.add(head);
+      // Cross slot
+      const s1 = new THREE.Mesh(new THREE.BoxGeometry(r * 1.3, 0.03, 0.03), std(0x222222));
+      const s2 = new THREE.Mesh(new THREE.BoxGeometry(0.03, r * 1.3, 0.03), std(0x222222));
+      s1.position.z = s2.position.z = 0.065;
+      g.add(s1, s2);
+      (par || rootTwin).add(g);
+      return head;
+    }
+
+
+    /* ==========================================================================
+       2-B. 밝은 실습실 공간 (바닥·벽·천장) + 좌/우 출입문 (클릭하면 열림/닫힘)
+       ========================================================================== */
+    const labRoom = new THREE.Group();
+    scene.add(labRoom);
+    const ROOM = { W: 13, zBack: -7, zFront: 24, yFloor: -6.7, yCeil: 10 };
+    const plain = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85, metalness: 0.02 }, o));
+    function rbox(x, y, z, w, h, d, mat, par) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      m.position.set(x, y, z);
+      (par || labRoom).add(m);
+      return m;
+    }
+    function makeTileTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 256;
+      const g = c.getContext('2d');
+      g.fillStyle = '#eef2f6'; g.fillRect(0, 0, 256, 256);
+      g.strokeStyle = '#c3ccd6'; g.lineWidth = 3; g.strokeRect(0, 0, 256, 256);
+      g.strokeStyle = 'rgba(255,255,255,0.8)'; g.lineWidth = 1; g.strokeRect(4, 4, 248, 248);
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      return t;
+    }
+    // 바닥 (밝은 타일)
+    const rW = ROOM.W * 2, rD = ROOM.zFront - ROOM.zBack;
+    const floorTex = makeTileTex(); floorTex.repeat.set(rW / 3, rD / 3);
+    const floorM = new THREE.Mesh(new THREE.PlaneGeometry(rW, rD), plain(0xffffff, { map: floorTex, roughness: 0.55 }));
+    floorM.rotation.x = -Math.PI / 2;
+    floorM.position.set(0, ROOM.yFloor - 0.01, (ROOM.zBack + ROOM.zFront) / 2);
+    labRoom.add(floorM);
+    // 천장 + 형광등 패널
+    const ceilM = new THREE.Mesh(new THREE.PlaneGeometry(rW, rD), plain(0xf8fafc));
+    ceilM.rotation.x = Math.PI / 2;
+    ceilM.position.set(0, ROOM.yCeil, (ROOM.zBack + ROOM.zFront) / 2);
+    labRoom.add(ceilM);
+    [-7, 0, 7].forEach(lx => [-1, 8, 17].forEach(lz => {
+      const pn = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 1.4), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      pn.rotation.x = Math.PI / 2; pn.position.set(lx, ROOM.yCeil - 0.02, lz); labRoom.add(pn);
+    }));
+
+    const wallMat = plain(0xf4f7fb);
+    const bandMat = plain(0x9db7d3);   // 하단 띠
+    const baseMat = plain(0x64748b);   // 걸레받이
+    const frameMat = plain(0x334155, { roughness: 0.5, metalness: 0.4 });
+    const wallH = ROOM.yCeil - ROOM.yFloor;
+
+    // 뒷벽
+    rbox(0, ROOM.yFloor + wallH / 2, ROOM.zBack - 0.25, rW + 1, wallH, 0.5, wallMat);
+    rbox(0, ROOM.yFloor + 1.6, ROOM.zBack + 0.02, rW, 3.2, 0.06, bandMat);
+    rbox(0, ROOM.yFloor + 0.2, ROOM.zBack + 0.05, rW, 0.4, 0.1, baseMat);
+    // 앞벽 (카메라 뒤쪽)
+    rbox(0, ROOM.yFloor + wallH / 2, ROOM.zFront + 0.25, rW + 1, wallH, 0.5, wallMat);
+
+    // 간판 텍스처 평면 (depth 정상 처리)
+    function signPlane(txt, w, h, fg, bg, glow) {
+      const c = document.createElement('canvas'); c.width = 512; c.height = Math.round(512 * h / w);
+      const g = c.getContext('2d');
+      g.fillStyle = bg; g.fillRect(0, 0, c.width, c.height);
+      g.strokeStyle = fg; g.lineWidth = 8; g.strokeRect(6, 6, c.width - 12, c.height - 12);
+      g.font = 'bold 84px "Noto Sans KR","Malgun Gothic",sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = fg;
+      g.fillText(txt, c.width / 2, c.height / 2);
+      const t = new THREE.CanvasTexture(c);
+      return new THREE.Mesh(new THREE.PlaneGeometry(w, h), glow ? new THREE.MeshBasicMaterial({ map: t }) : plain(0xffffff, { map: t }));
+    }
+
+    // ---- 측벽 + 출입문 ----
+    const DOOR = { w: 3.2, h: 9.6, z: -2.5 };       // 개구부 크기/위치(z 중심)
+    const DOOR_LINKS = { left: 'motor3State.html', right: 'consistency.html' }; // 이동할 페이지
+    const GAZE_SEC = 2;                                                       // 바라보기 대기 시간(초)
+    const doors = [];
+    const doorHit = [];
+    function buildSideWall(side) {                    // side: -1 (왼쪽), +1 (오른쪽)
+      const wx = side * ROOM.W;
+      const t = 0.5, cx = wx + side * t / 2;
+      const z0 = ROOM.zBack, z1 = ROOM.zFront;
+      const dz0 = DOOR.z - DOOR.w / 2, dz1 = DOOR.z + DOOR.w / 2;
+      const topY = ROOM.yFloor + DOOR.h;
+      // 문 뒤쪽 벽 / 문 앞쪽 벽 / 문 위 인방
+      rbox(cx, ROOM.yFloor + wallH / 2, (z0 + dz0) / 2, t, wallH, dz0 - z0, wallMat);
+      rbox(cx, ROOM.yFloor + wallH / 2, (dz1 + z1) / 2, t, wallH, z1 - dz1, wallMat);
+      rbox(cx, (topY + ROOM.yCeil) / 2, DOOR.z, t, ROOM.yCeil - topY, DOOR.w, wallMat);
+      // 하단 띠 + 걸레받이 (벽 안쪽 면)
+      const ix = wx - side * 0.03;
+      rbox(ix, ROOM.yFloor + 1.6, (z0 + dz0) / 2, 0.06, 3.2, dz0 - z0, bandMat);
+      rbox(ix, ROOM.yFloor + 1.6, (dz1 + z1) / 2, 0.06, 3.2, z1 - dz1, bandMat);
+      rbox(ix, ROOM.yFloor + 0.2, (z0 + dz0) / 2, 0.1, 0.4, dz0 - z0, baseMat);
+      rbox(ix, ROOM.yFloor + 0.2, (dz1 + z1) / 2, 0.1, 0.4, z1 - dz1, baseMat);
+
+      // 문틀 (좌·우 기둥 + 상단)
+      const fx = wx - side * 0.05;
+      rbox(fx, ROOM.yFloor + DOOR.h / 2, dz0 - 0.1, 0.5, DOOR.h + 0.2, 0.2, frameMat);
+      rbox(fx, ROOM.yFloor + DOOR.h / 2, dz1 + 0.1, 0.5, DOOR.h + 0.2, 0.2, frameMat);
+      rbox(fx, topY + 0.1, DOOR.z, 0.5, 0.2, DOOR.w + 0.4, frameMat);
+
+      // 문밖 복도 (문을 열면 밝은 복도가 보임)
+      const hall = new THREE.Group(); labRoom.add(hall);
+      const hx = wx + side * 3.2;
+      rbox(wx + side * 1.6, ROOM.yFloor - 0.02, DOOR.z, 3.2, 0.04, DOOR.w + 0.4, plain(0xdbe3ec), hall);
+      const hallBack = new THREE.Mesh(new THREE.PlaneGeometry(DOOR.w + 0.4, DOOR.h + 0.4), new THREE.MeshBasicMaterial({ color: 0xfffaf0 }));
+      hallBack.position.set(hx, ROOM.yFloor + DOOR.h / 2, DOOR.z);
+      hallBack.rotation.y = -side * Math.PI / 2; hall.add(hallBack);
+      rbox(wx + side * 1.6, ROOM.yFloor + DOOR.h + 0.15, DOOR.z, 3.2, 0.1, DOOR.w + 0.4, plain(0xf1f5f9), hall);
+      [dz0 - 0.2, dz1 + 0.2].forEach(zz => rbox(wx + side * 1.6, ROOM.yFloor + DOOR.h / 2, zz, 3.2, DOOR.h, 0.1, plain(0xe2e8f0), hall));
+
+      // 문짝 (경첩: 앞쪽 기둥, 안쪽으로 열림)
+      const lw = DOOR.w - 0.1;
+      const pivot = new THREE.Group();
+      pivot.position.set(wx - side * 0.1, ROOM.yFloor, dz1 - 0.05);
+      labRoom.add(pivot);
+      const leafMat = plain(0x8fa6bf, { roughness: 0.45, metalness: 0.35 });
+      const leaf = rbox(0, (DOOR.h - 0.1) / 2, -lw / 2, 0.24, DOOR.h - 0.1, lw, leafMat, pivot);
+      const glass = new THREE.MeshStandardMaterial({ color: 0xbfe6f7, transparent: true, opacity: 0.55, roughness: 0.1, metalness: 0.1 });
+      const g1 = rbox(0.13, DOOR.h * 0.66, -lw / 2, 0.02, 3.4, lw * 0.5, glass, pivot);
+      const g2 = rbox(-0.13, DOOR.h * 0.66, -lw / 2, 0.02, 3.4, lw * 0.5, glass, pivot);
+      const hMat = plain(0xe2e8f0, { metalness: 0.9, roughness: 0.25 });
+      const h1 = rbox(0.28, DOOR.h * 0.42, -lw + 0.35, 0.08, 0.16, 0.8, hMat, pivot);
+      const h2 = rbox(-0.28, DOOR.h * 0.42, -lw + 0.35, 0.08, 0.16, 0.8, hMat, pivot);
+      [DOOR.h * 0.2, DOOR.h * 0.8].forEach(hy => rbox(0, hy, -0.05, 0.3, 0.5, 0.12, hMat, pivot)); // 경첩
+      const D = { pivot, angle: 0, target: 0, open: side * -1.5 * -1, side };
+      D.open = side < 0 ? -1.5 : 1.5;
+      D.url = side < 0 ? DOOR_LINKS.left : DOOR_LINKS.right;
+      D.name = side < 0 ? '3상모터 실습' : '자기유지 실습';                 // 실습실 안쪽으로 열림
+      [leaf, g1, g2, h1, h2].forEach(m => { m.userData.door = D; doorHit.push(m); });
+      doors.push(D);
+
+      // 문 위 현판 (실습 이름)
+      const sg = signPlane(side < 0 ? '3상모터 실습' : '자기유지 실습', 5.6, 1.5, '#fde68a', '#1e293b', true);
+      sg.position.set(wx - side * 0.1, topY + 2.3, DOOR.z);
+      sg.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+      labRoom.add(sg);
+      const sgFrame = rbox(wx - side * 0.07, topY + 2.3, DOOR.z, 0.08, 1.7, 5.8, plain(0x92400e, { roughness: 0.6 }));
+    }
+    buildSideWall(-1);
+    buildSideWall(+1);
+
+    let navigating = false;
+    function enterDoor(D) {
+      if (navigating) return;
+      navigating = true;
+      D.target = D.open;
+      try { sfx.clack(); } catch (e) {}
+      gazeHUD.textContent = D.name + ' 으로 이동합니다…';
+      gazeHUD.style.display = 'block';
+      setTimeout(() => { location.href = D.url; }, 700);
+    }
+    const toggleDoor = enterDoor; // 클릭 = 입장
+
+    // 바라보기(시선) 감지: 화면 중앙 / VR 시선
+    const gazeHUD = document.createElement('div');
+    gazeHUD.style.cssText = 'position:fixed;z-index:60;pointer-events:none;display:none;padding:6px 12px;border-radius:999px;background:rgba(15,23,42,.88);color:#fde68a;font:700 13px "Noto Sans KR","Malgun Gothic",sans-serif;border:1px solid #fbbf24;transform:translate(-50%,0);white-space:nowrap';
+    document.body.appendChild(gazeHUD);
+    let gazeDoor = null, gazeT = 0;
+    const gzV = new THREE.Vector2(0, 0), gzO = new THREE.Vector3(), gzD = new THREE.Vector3();
+    function updateGaze(dt) {
+      if (navigating) return;
+      if (renderer.xr.isPresenting) {
+        const xc = renderer.xr.getCamera();
+        xc.getWorldPosition(gzO); xc.getWorldDirection(gzD);
+        rc.set(gzO, gzD);
+      } else {
+        rc.setFromCamera(gzV, camera);
+      }
+      const h = rc.intersectObjects(doorHit, false);
+      const D = h.length ? h[0].object.userData.door : null;
+      if (D !== gazeDoor) { gazeDoor = D; gazeT = 0; }
+      if (D) {
+        gazeT += dt;
+        D.target = D.open * 0.3;                       // 바라보면 문이 살짝 열림
+        const left = Math.max(0, GAZE_SEC - gazeT);
+        const r = viewContainer.getBoundingClientRect();
+        gazeHUD.style.left = (r.left + r.width / 2) + 'px';
+        gazeHUD.style.top = (r.top + r.height / 2 + 24) + 'px';
+        gazeHUD.textContent = D.name + ' · ' + left.toFixed(1) + '초 후 이동';
+        gazeHUD.style.display = 'block';
+        if (gazeT >= GAZE_SEC) enterDoor(D);
+      } else {
+        gazeHUD.style.display = 'none';
+        doors.forEach(d => { d.target = 0; });
+      }
+    }
+    function updateDoors(dt) {
+      updateGaze(dt);
+      doors.forEach(D => {
+        D.angle += (D.target - D.angle) * Math.min(1, dt * 4.5);
+        D.pivot.rotation.y = D.angle;
+      });
+    }
+
+    /* ==========================================================================
+       3. BUILD REALISTIC 3D INDUSTRIAL ENCLOSURE & COMPONENTS (rootTwin)
+       ========================================================================== */
+    // 1) Outer Powder-Coated Steel Enclosure Cabinet (RAL 7035) & Galvanized Inner Plate
+    box(0, 0.45, -0.28, 9.4, 8.5, 0.2, 0x3b4452, rootTwin, { metalness: 0.5, roughness: 0.5 }); // Outer Cabinet Back
+    const backPlate = new THREE.Mesh(
+      new THREE.BoxGeometry(8.5, 7.8, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0xb0b8c2, map: steelTex, metalness: 0.65, roughness: 0.38 })
+    );
+    backPlate.position.set(0, 0.45, -0.1);
+    backPlate.receiveShadow = true;
+    rootTwin.add(backPlate);
+
+    // 2) Slotted PVC Wiring Ducts (배선 덕트 - 상/하/좌/우 슬롯 디테일)
+    function createSlottedDuct(x, y, w, h, isVertical) {
+      const ductGrp = new THREE.Group();
+      box(x, y, 0.24, w, h, 0.55, 0x64707d, ductGrp, { roughness: 0.6 });
+      // Top cover ridge
+      box(x, y, 0.53, w * 0.98, h * 0.98, 0.04, 0x778492, ductGrp);
+      const count = isVertical ? Math.floor(h / 0.35) : Math.floor(w / 0.35);
+      for (let i = -count / 2; i <= count / 2; i++) {
+        if (isVertical) {
+          box(x, y + i * 0.32, 0.28, w + 0.04, 0.09, 0.35, 0x262d36, ductGrp);
+        } else {
+          box(x + i * 0.32, y, 0.28, 0.09, h + 0.04, 0.35, 0x262d36, ductGrp);
+        }
+      }
+      rootTwin.add(ductGrp);
+    }
+    createSlottedDuct(0, 4.4, 8.8, 0.38, false);
+    createSlottedDuct(0, -3.5, 8.8, 0.38, false);
+    createSlottedDuct(-4.35, 0.45, 0.38, 8.1, true);
+    createSlottedDuct(4.35, 0.45, 0.38, 8.1, true);
+
+    // 3) Aluminum DIN Rails (알루미늄 딘레일 3단)
+    [3.75, 0.8, -1.35, -2.7].forEach(ry => {
+      box(0, ry, -0.01, 7.6, 0.42, 0.08, 0xcbd5e1, rootTwin, { metalness: 0.85, roughness: 0.25 });
+      box(0, ry, 0.02, 7.6, 0.24, 0.05, 0x64748b, rootTwin, { metalness: 0.8, roughness: 0.3 });
+    });
+
+    // 4) Realistic LS Metasol MCCB (3상 배선용 차단기 ABN53c 스타일)
+    const mccbGrp = new THREE.Group();
+    rootTwin.add(mccbGrp);
+    box(0, 3.75, 0.28, 2.5, 1.15, 0.56, 0x1e2229, mccbGrp, { roughness: 0.4 }); // Charcoal body
+    box(0, 3.75, 0.58, 2.2, 0.65, 0.08, 0x2c333f, mccbGrp); // Escutcheon faceplate
+    // Phase barriers (상간 절연 격벽)
+    [-0.28, 0.28].forEach(bx => box(bx, 4.35, 0.28, 0.05, 0.25, 0.5, 0x15181e, mccbGrp));
+    // Toggle Handle Base & Lever
+    box(0, 3.75, 0.64, 0.55, 0.45, 0.1, 0x111317, mccbGrp);
+    const mccbHandle = box(0, 3.82, 0.74, 0.42, 0.22, 0.24, 0x22c55e, mccbGrp, { roughness: 0.3 });
+    // Yellow Trip Test Button
+    box(0.65, 3.62, 0.63, 0.14, 0.14, 0.08, 0xfacc15, mccbGrp);
+    // R, S, T load screws
+    [-0.5, 0, 0.5].forEach((dx, k) => addScrew(dx, 3.3, 0.55, 0.12, mccbGrp, COL[KEYS[k]]));
+    const lq = label('MCCB 3P 30A', 2.0, 0.36, 30, '#f8fafc', '#0f172a', '#38bdf8');
+    lq.position.set(-2.2, 3.75, 0.65);
+    rootTwin.add(lq);
+
+    // 5) Realistic LS Metasol Magnetic Contactors (MC1 & MC2 + Side Aux Contact Blocks)
+    const MX = 2.1, lamps = {}, plungers = {}, bContactBars = {};
+    function mc(id, x, title, tagCode) {
+      const g = new THREE.Group();
+      rootTwin.add(g);
+
+      // Main Contactor Lower Housing
+      box(x, 0.8, 0.25, 1.9, 2.25, 0.52, 0x1f2631, g, { roughness: 0.42 });
+      // Upper Arc Chute Tower (Metasol signature stepped top)
+      box(x, 0.8, 0.58, 1.55, 1.35, 0.24, 0x2b3544, g, { roughness: 0.38 });
+      // White Identification Tag Plate
+      box(x - 0.48, 1.25, 0.72, 0.42, 0.22, 0.03, 0xf8fafc, g);
+
+      // Center Plunger Window & Moving Indicator Core (흡착 시 물리적으로 들어감)
+      box(x, 0.8, 0.71, 0.52, 0.42, 0.04, 0x0f1319, g);
+      const plg = box(x, 0.8, 0.74, 0.36, 0.28, 0.08, 0xea580c, g, { roughness: 0.3 });
+      plungers[id] = plg;
+
+      // Side-Mounted Auxiliary Contact Unit (1a1b 보조접점 블록)
+      const sideX = id === 'm1' ? x + 1.08 : x - 1.08;
+      box(sideX, 0.8, 0.28, 0.32, 1.65, 0.46, 0x334155, g);
+      // Physical b-Contact Bridge Bar (Transparent window effect)
+      const bBar = box(sideX, 0.8, 0.53, 0.22, 0.12, 0.06, 0xef4444, g, { emissive: 0xef4444, emissiveIntensity: 0.45 });
+      bContactBars[id] = bBar;
+
+      // Top Label Sprite
+      const t = label(title, 2.0, 0.48, 32, '#0f172a', '#f8fafc', '#38bdf8');
+      t.position.set(x, 2.32, 0.65);
+      rootTwin.add(t);
+
+      // Operation LED Indicator
+      const l = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 12), std(0x143321, { emissive: 0x000000 }));
+      l.position.set(x + 0.48, 1.25, 0.73);
+      rootTwin.add(l);
+      lamps[id] = l;
+
+      // 1,3,5 (Input) & 2,4,6 (Output) Clamp Screws with Phase Sleeves
+      [-0.5, 0, 0.5].forEach((dx, k) => {
+        addScrew(x + dx, 1.72, 0.55, 0.13, g, COL[KEYS[k]]);
+        addScrew(x + dx, -0.12, 0.55, 0.13, g, COL[KEYS[k]]);
+      });
+    }
+    mc('m1', -MX, 'MC1 · 정회전', 'MC-F');
+    mc('m2', MX, 'MC2 · 역회전', 'MC-R');
+
+    // 6) Interlock Unit (b접점 상호 인터록 브릿지 모듈)
+    const ilkOn = new THREE.Group(), ilkOff = new THREE.Group();
+    rootTwin.add(ilkOn, ilkOff);
+    const ilkBox = box(0, 0.8, 0.32, 1.65, 0.85, 0.42, 0x1e293b, ilkOn, { emissive: 0x000000 });
+    box(0, 0.8, 0.54, 1.45, 0.65, 0.04, 0x450a0a, ilkOn);
+    const il = label('b접점 인터록 (NC)', 1.75, 0.46, 28, '#fecaca', null, '#ef4444');
+    il.position.set(0, 0.8, 0.62);
+    ilkOn.add(il);
+    [[-0.95], [0.95]].forEach(([x]) => box(x, 0.8, 0.42, 0.35, 0.09, 0.09, 0xef4444, ilkOn, { emissive: 0xef4444, emissiveIntensity: 0.6 }));
+
+    const lo = label('⚠ 인터록 제거됨!', 1.9, 0.52, 32, '#fca5a5', '#450a0a', '#ef4444');
+    lo.position.set(0, 0.8, 0.65);
+    ilkOff.add(lo);
+
+    // 7) Realistic THR / EOCR (열동형 과부하계전기 - 전류 정정 다이얼 & TEST/RESET 버튼)
+    const thrGrp = new THREE.Group();
+    rootTwin.add(thrGrp);
+    box(0, -1.35, 0.28, 2.35, 0.92, 0.52, 0x1f242d, thrGrp);
+    // Current dial (전류 정정 다이얼)
+    const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.08, 16).rotateX(Math.PI / 2), std(0xfacc15));
+    dial.position.set(-0.55, -1.35, 0.56);
+    thrGrp.add(dial);
+    // Reset (Blue) & Stop/Test (Red) small buttons
+    box(0.2, -1.35, 0.56, 0.16, 0.16, 0.1, 0x3b82f6, thrGrp);
+    box(0.55, -1.35, 0.56, 0.16, 0.16, 0.1, 0xef4444, thrGrp);
+    const lThr = label('THR (과부하계전기)', 1.95, 0.38, 28, '#fde047', '#1e1b10', '#f59e0b');
+    lThr.position.set(2.35, -1.35, 0.6);
+    rootTwin.add(lThr);
+
+    // 8) Phenolic Barrier Terminal Block (6P 단자대 & 투명 보호커버)
+    const tbGrp = new THREE.Group();
+    rootTwin.add(tbGrp);
+    box(0, -2.7, 0.24, 3.4, 0.68, 0.46, 0x111318, tbGrp, { roughness: 0.35 });
+    // Barrier fins
+    [-1.2, -0.4, 0.4, 1.2].forEach(bx => box(bx, -2.7, 0.32, 0.06, 0.72, 0.56, 0x090b0e, tbGrp));
+    // Screw terminals with R/S/T sleeves
+    [-0.8, 0, 0.8].forEach((x, k) => addScrew(x, -2.7, 0.52, 0.15, tbGrp, COL[KEYS[k]]));
+
+    // 9) Realistic 3-Phase Finned Cast-Iron Induction Motor (방열핀 주물 유도전동기)
+    const motorGrp = new THREE.Group();
+    motorGrp.position.set(0, -5.15, 0.35);
+    rootTwin.add(motorGrp);
+
+    // Stator core cylinder
+    const stator = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.18, 1.18, 1.75, 32).rotateX(Math.PI / 2),
+      std(0x25384e, { metalness: 0.65, roughness: 0.35 })
+    );
+    motorGrp.add(stator);
+
+    // Cooling Fins (16 radial cast-iron ribs around the motor frame)
+    for (let i = 0; i < 16; i++) {
+      const ang = (i / 16) * Math.PI * 2;
+      const fin = new THREE.Mesh(
+        new THREE.BoxGeometry(0.07, 0.18, 1.55),
+        std(0x1e2f42, { metalness: 0.7, roughness: 0.4 })
+      );
+      fin.position.set(Math.cos(ang) * 1.22, Math.sin(ang) * 1.22, 0);
+      fin.rotation.z = ang + Math.PI / 2;
+      motorGrp.add(fin);
+    }
+
+    // Front End-Bell Flange & Bolts
+    const flange = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.02, 1.02, 0.18, 24).rotateX(Math.PI / 2),
+      std(0x334155, { metalness: 0.75, roughness: 0.3 })
+    );
+    flange.position.z = 0.88;
+    motorGrp.add(flange);
+
+    // Top Terminal Box (모터 단자함) & Mounting Feet
+    box(0, 1.25, -0.1, 0.85, 0.45, 0.85, 0x1e2f42, motorGrp, { metalness: 0.6 });
+    box(-0.85, -1.15, 0, 0.55, 0.22, 1.4, 0x1a2636, motorGrp, { metalness: 0.7 });
+    box(0.85, -1.15, 0, 0.55, 0.22, 1.4, 0x1a2636, motorGrp, { metalness: 0.7 });
+
+    const lm = label('3Φ 유도전동기 (380V · 2.2kW)', 2.4, 0.42, 28, '#f8fafc', '#0f172a', '#38bdf8');
+    lm.position.set(2.55, -4.45, 0.8);
+    rootTwin.add(lm);
+
+    // Rotor Shaft & High-Visibility Impeller Blades
+    const rotor = new THREE.Group();
+    rotor.position.set(0, -5.15, 1.32);
+    rootTwin.add(rotor);
+    for (let i = 0; i < 4; i++) {
+      const b = new THREE.Mesh(
+        new THREE.BoxGeometry(0.28, 1.95, 0.08),
+        std(i === 0 ? 0xef4444 : 0x38bdf8, { metalness: 0.3, roughness: 0.3 })
+      );
+      b.rotation.z = i * Math.PI / 2;
+      rotor.add(b);
+    }
+    // Directional Arrow Ring on Rotor Hub
+    const hub = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.36, 0.36, 0.26, 20).rotateX(Math.PI / 2),
+      std(0xe2e8f0, { metalness: 0.85, roughness: 0.2 })
+    );
+    rotor.add(hub);
+
+    const dirLabel = label('정지 (0 RPM)', 2.5, 0.48, 32, '#94a3b8', '#090d14', '#334155');
+    dirLabel.position.set(0, -6.45, 0.85);
+    rootTwin.add(dirLabel);
+    function setDirLabel(t, c, bd) {
+      const n = label(t, 2.5, 0.48, 32, c, '#090d14', bd || '#334155');
+      dirLabel.material.map = n.material.map;
+      dirLabel.material.needsUpdate = true;
+    }
+
+    // 10) Local Control Door Station (우측 도어 패널 + 파일럿 램프 + 푸시버튼)
+    const door = new THREE.Group();
+    door.position.set(6.55, 0.45, 0.35);
+    door.rotation.y = -0.24;
+    rootTwin.add(door);
+
+    // Metallic Door Enclosure Box
+    box(0, 0, -0.05, 2.75, 7.8, 0.28, 0x334155, door, { metalness: 0.55, roughness: 0.4 });
+    box(0, 0, 0.1, 2.45, 7.4, 0.06, 0xcbd5e1, door, { metalness: 0.65, roughness: 0.35 });
+
+    // 3D Pilot Lamps on Top of Door (RL 적색, GL 녹색)
+    const doorLampRL = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.22, 20).rotateX(Math.PI / 2), std(0x450a0a, { emissive: 0x000000 }));
+    doorLampRL.position.set(-0.55, 3.05, 0.22);
+    door.add(doorLampRL);
+    const doorLampGL = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.22, 20).rotateX(Math.PI / 2), std(0x22c55e, { emissive: 0x22c55e, emissiveIntensity: 0.6 }));
+    doorLampGL.position.set(0.55, 3.05, 0.22);
+    door.add(doorLampGL);
+
+    const acts = [];
+    function pb(y, r, c, action, txt, isEstop) {
+      if (isEstop) {
+        // Yellow Emergency Stop Legend Collar
+        const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 24).rotateX(Math.PI / 2), std(0xfacc15));
+        collar.position.set(0, y, 0.15);
+        door.add(collar);
+      }
+      // Chrome Bezel Ring
+      const bezel = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.18, r * 1.22, 0.18, 24).rotateX(Math.PI / 2), std(0x94a3b8, { metalness: 0.85, roughness: 0.2 }));
+      bezel.position.set(0, y, 0.18);
+      door.add(bezel);
+
+      const g = new THREE.CylinderGeometry(r, r, 0.28, 24).rotateX(Math.PI / 2);
+      const m = new THREE.Mesh(g, std(c, { emissive: c, emissiveIntensity: 0.18, roughness: 0.3 }));
+      m.position.set(0, y, 0.26);
+      m.userData.action = action;
+      door.add(m);
+      acts.push(m);
+
+      const l = label(txt, 1.95, 0.42, 30, '#f8fafc', '#0f172a', '#475569');
+      l.position.set(0, y - 0.92, 0.25);
+      door.add(l);
+      return m;
+    }
+    pb(1.65, 0.46, 0x16a34a, 'fwd', 'PB-F (정회전)');
+    pb(-0.05, 0.46, 0xdc2626, 'rev', 'PB-R (역회전)');
+    pb(-1.85, 0.54, 0xef4444, 'stop', 'PB-S (비상정지)', true);
+
+    /* ---------- 3D 배선 및 실시간 전류 흐름 입자 (Current Flow Particles) ---------- */
+    const wireGrp = new THREE.Group();
+    rootTwin.add(wireGrp);
+    const flowParticleGrp = new THREE.Group();
+    rootTwin.add(flowParticleGrp);
+
+    let activeFlowPaths = { fwd: [], rev: [], motor: [] };
+    let showFlowParticles = true;
+
+    function makeCurve(pts, z) {
+      return new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], z)));
+    }
+
+    function buildWires(swapOK) {
+      while (wireGrp.children.length) wireGrp.remove(wireGrp.children[0]);
+      activeFlowPaths = { fwd: [], rev: [], motor: [] };
+
+      const src = [-0.5, 0, 0.5], blk = [-0.8, 0, 0.8];
+      [-MX, MX].forEach((cx, ci) => KEYS.forEach((p, k) => {
+        const x = cx + src[k], z = 0.62 + k * 0.07 + ci * 0.03;
+        const cIn = makeCurve([[src[k], 3.3], [(src[k] + x) / 2, 2.7], [x, 1.95], [x, 1.72]], z);
+        wireGrp.add(new THREE.Mesh(new THREE.TubeGeometry(cIn, 32, 0.062, 10), std(COL[p], { roughness: 0.35 })));
+
+        const tk = (ci === 1 && swapOK) ? 2 - k : k; // MC2 R·T 상교체
+        const cOut = makeCurve([[x, -0.12], [x, -0.8], [(x + blk[tk]) / 2, -1.65], [blk[tk], -2.7]], z);
+        wireGrp.add(new THREE.Mesh(new THREE.TubeGeometry(cOut, 32, 0.062, 10), std(COL[p], { roughness: 0.35 })));
+
+        if (ci === 0) activeFlowPaths.fwd.push({ curve: cIn, col: COL[p] }, { curve: cOut, col: COL[p] });
+        else activeFlowPaths.rev.push({ curve: cIn, col: COL[p] }, { curve: cOut, col: COL[p] });
+      }));
+
+      KEYS.forEach((p, k) => {
+        const x = [-0.8, 0, 0.8][k];
+        const cMot = makeCurve([[x, -2.7], [x * 0.8, -3.3], [x * 0.4, -3.75], [x * 0.2, -3.95]], 0.8 + k * 0.03);
+        wireGrp.add(new THREE.Mesh(new THREE.TubeGeometry(cMot, 32, 0.065, 10), std(COL[p], { roughness: 0.35 })));
+        activeFlowPaths.motor.push({ curve: cMot, col: COL[p] });
+      });
+    }
+
+    const FLOW_SPHERES = [];
+    for (let i = 0; i < 27; i++) {
+      const m = new THREE.Mesh(
+        new THREE.SphereGeometry(0.125, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+      );
+      m.visible = false;
+      flowParticleGrp.add(m);
+      FLOW_SPHERES.push({ mesh: m, offset: (i % 3) / 3, pathIdx: Math.floor(i / 3) });
+    }
+
+    /* ---------- 단락 아크 스파크 파티클 ---------- */
+    const N = 180, sGeo = new THREE.BufferGeometry(), sPos = new Float32Array(N * 3), sVel = new Float32Array(N * 3), sLife = new Float32Array(N);
+    sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+    const sparks = new THREE.Points(sGeo, new THREE.PointsMaterial({ color: 0xfde047, size: 0.26, transparent: true, opacity: 0 }));
+    rootTwin.add(sparks);
+    let sparkT = 0;
+    function emit(i) {
+      sPos.set([0, -0.5, 0.95], i * 3);
+      const a = Math.random() * 6.28, s = 2.8 + Math.random() * 6.0;
+      sVel.set([Math.cos(a) * s, Math.random() * 6.0, Math.sin(a) * s * 0.65], i * 3);
+      sLife[i] = 0.3 + Math.random() * 0.7;
+    }
+
+    /* ==========================================================================
+       4. BUILD 1단계 주회로 직접 결선 실습 3D 보드 (boardWire - Industrial Upgrade)
+       ========================================================================== */
+    const terms = {}, tpos = {}, tmeshes = [];
+    function bLabel(t, sx, sy, px, col, bg) {
+      const c = document.createElement('canvas'); c.width = 320; c.height = Math.round(320 * sy / sx);
+      const g = c.getContext('2d');
+      if (bg) { g.fillStyle = bg; g.fillRect(0, 0, c.width, c.height); }
+      g.font = 'bold ' + px + 'px "Noto Sans KR",sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = col || '#f8fafc'; g.fillText(t, c.width / 2, c.height / 2);
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+      s.scale.set(sx, sy, 1); s.renderOrder = 10; return s;
+    }
+    function bBox(cx, cy, w, h, col, title, px) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.45), std(col, { roughness: 0.45 }));
+      m.position.set(cx, cy, 0.15); boardWire.add(m);
+      if (title) { const l = bLabel(title, w * 0.92, 0.48, px || 32, '#fff', 'rgba(15,23,42,0.85)'); l.position.set(cx, cy, 0.45); boardWire.add(l); }
+    }
+    function term(id, x, y, ph, name, num, dy) {
+      const mat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.75, roughness: 0.25, emissive: 0x000000 });
+      const g = new THREE.CylinderGeometry(0.22, 0.22, 0.18, 18); g.rotateX(Math.PI / 2);
+      const m = new THREE.Mesh(g, mat); m.position.set(x, y, 0.44); m.userData.id = id; boardWire.add(m);
+      const r = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.042, 10, 24), new THREE.MeshBasicMaterial({ color: COL[ph] }));
+      r.position.set(x, y, 0.39); boardWire.add(r);
+      if (num) { const l = bLabel(num, 0.5, 0.26, 38, '#fde047'); l.position.set(x, y + dy, 0.45); boardWire.add(l); }
+      terms[id] = { m, mat, name, ph }; tpos[id] = new THREE.Vector3(x, y, 0.44); tmeshes.push(m);
+    }
+    function dev3(prefix, dname, cx, cy, w, h, col, title) {
+      bBox(cx, cy, w, h, col, title);
+      [-0.8, 0, 0.8].forEach((dx, k) => {
+        term(prefix + '-' + (2 * k + 1), cx + dx, cy + h * 0.32, KEYS[k], dname + ' ' + (2 * k + 1) + '번(주회로 입력)', String(2 * k + 1), -0.35);
+        term(prefix + '-' + (2 * k + 2), cx + dx, cy - h * 0.32, KEYS[k], dname + ' ' + (2 * k + 2) + '번(주회로 출력)', String(2 * k + 2), 0.35);
+      });
+    }
+
+    // MC 옆면에 부착되는 인터록 b접점(5·11번) 및 코일(A1:6번·A2:12번) 보조블록 생성 함수
+    function addMCControlBlock(prefix, dname, sideX, cy) {
+      bBox(sideX, cy, 1.55, 2.2, 0x334155, dname + ' 인터록·코일', 24);
+      // 상단: b접점 5번(입력), 11번(출력) - 황색 제어선(C)
+      term(prefix + '-b1', sideX - 0.38, cy + 0.65, 'C', dname + ' b접점 5번(인터록 입력)', 'b5', -0.33);
+      term(prefix + '-b2', sideX + 0.38, cy + 0.65, 'C', dname + ' b접점 11번(인터록 출력)', 'b11', -0.33);
+      // 하단: 코일 A1(6번), A2(12번)
+      term(prefix + '-A1', sideX - 0.38, cy - 0.68, 'C', dname + ' 코일 6번(A1 전원)', 'A1(6)', 0.33);
+      term(prefix + '-A2', sideX + 0.38, cy - 0.68, 'T', dname + ' 코일 12번(A2 공통)', 'A2(12)', 0.33);
+    }
+
+    // Galvanized Workbench Plate for Wiring Mode (확장된 폭으로 제어회로 스위치 및 인터록 단자 수용)
+    const wireBackPlate = new THREE.Mesh(new THREE.BoxGeometry(14.8, 11.4, 0.2), new THREE.MeshStandardMaterial({ color: 0x9aa3ad, map: steelTex, metalness: 0.6, roughness: 0.4 }));
+    wireBackPlate.position.set(0, -0.2, -0.05);
+    boardWire.add(wireBackPlate);
+
+    bBox(0, 4.45, 3.2, 1.0, 0x1e2229, 'MCCB 전원 (R·S·T)', 30);
+    KEYS.forEach((p, k) => term('P-' + p, [-0.8, 0, 0.8][k], 3.6, p, '전원 ' + p + '상', p, -0.35));
+
+    // 주회로 접촉기 & 열동계전기
+    dev3('MCF', 'MC-F', -3.0, 2.0, 2.6, 2.2, 0x1f2937, 'MC-F (정회전)');
+    dev3('MCR', 'MC-R', 3.0, 2.0, 2.6, 2.2, 0x1f2937, 'MC-R (역회전)');
+
+    // MC-F / MC-R 측면 보조접점(b접점 5-11) 및 코일(A1-A2) 단자 블록 배치
+    addMCControlBlock('MCF', 'MC-F', -5.25, 2.0);
+    addMCControlBlock('MCR', 'MC-R', 5.25, 2.0);
+
+    // 제어회로 기동 버튼 블록 (PB-F 정회전 / PB-R 역회전)
+    bBox(-5.25, -0.85, 2.2, 1.5, 0x14532d, 'PB-F (정회전 버튼)', 26);
+    term('PBF-1', -5.7, -0.85, 'C', 'PB-F 입력(제어R)', 'IN', -0.35);
+    term('PBF-2', -4.8, -0.85, 'C', 'PB-F 출력(기동신호)', 'OUT', -0.35);
+
+    bBox(5.25, -0.85, 2.2, 1.5, 0x7f1d1d, 'PB-R (역회전 버튼)', 26);
+    term('PBR-1', 4.8, -0.85, 'C', 'PB-R 입력(제어R)', 'IN', -0.35);
+    term('PBR-2', 5.7, -0.85, 'C', 'PB-R 출력(역회전신호)', 'OUT', -0.35);
+
+    dev3('THR', 'THR', 0, -0.6, 2.7, 1.8, 0x27272a, 'THR (과부하계전기)');
+    bBox(0, -2.55, 2.7, 0.9, 0x111318);
+    ['U', 'V', 'W'].forEach((u, k) => term('M-' + u, [-0.8, 0, 0.8][k], -2.55, KEYS[k], '모터 ' + u + ' 단자', u, -0.35));
+
+    const wMotor = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 3.2, 32).rotateZ(Math.PI / 2), std(0x25384e, { metalness: 0.6, roughness: 0.35 }));
+    wMotor.position.set(0, -4.3, 0.15); boardWire.add(wMotor);
+    const wMl = bLabel('3상 유도전동기 (U·V·W)', 3.2, 0.5, 32, '#fff', 'rgba(15,23,42,0.85)'); wMl.position.set(0, -4.3, 1.3); boardWire.add(wMl);
+
+    // 1단계 결선 전용 3D 전선 그룹 (되돌리기/전체철거 시 잔상 없이 즉시 제거되도록 분리)
+    const userWireGrp = new THREE.Group();
+    boardWire.add(userWireGrp);
+
+    // 1단계 결선 데이터 및 그래프 검사 로직 (주회로 15선 + 제어회로 인터록 8선 = 총 23선)
+    const userWires = [];
+    let selTerm = null, hoverTerm = null, wireStartTime = null, wireAttempts = 0;
+    const nm = id => terms[id].name;
+
+    const GROUPS = [
+      ['[주회로] 전원 → MC-F 입력', [['P-R', 'MCF-1'], ['P-S', 'MCF-3'], ['P-T', 'MCF-5']]],
+      ['[주회로] MC-F 출력 → THR 입력', [['MCF-2', 'THR-1'], ['MCF-4', 'THR-3'], ['MCF-6', 'THR-5']]],
+      ['[주회로] 전원 → MC-R 입력', [['P-R', 'MCR-1'], ['P-S', 'MCR-3'], ['P-T', 'MCR-5']]],
+      ['[주회로] MC-R 출력 → THR (R·T 교체)', [['MCR-2', 'THR-5'], ['MCR-4', 'THR-3'], ['MCR-6', 'THR-1']]],
+      ['[주회로] THR 출력 → 모터 U·V·W', [['THR-2', 'M-U'], ['THR-4', 'M-V'], ['THR-6', 'M-W']]],
+      ['[제어] 전원(R/T) → 기동버튼·코일A2', [['P-R', 'PBF-1'], ['P-R', 'PBR-1'], ['P-T', 'MCF-A2'], ['P-T', 'MCR-A2']]],
+      ['[인터록] PB-F → MC-R(b접점) → MC-F코일', [['PBF-2', 'MCR-b1'], ['MCR-b2', 'MCF-A1']]],
+      ['[인터록] PB-R → MC-F(b접점) → MC-R코일', [['PBR-2', 'MCF-b1'], ['MCF-b2', 'MCR-A1']]]
+    ];
+    const pairKey = (a, b) => [a, b].sort().join('|');
+    const requiredPairs = new Set(GROUPS.flatMap(g => g[1].map(p => pairKey(...p))));
+    const TOTAL_REQUIRED_WIRES = requiredPairs.size;
+
+    function clearUserWireMeshes() {
+      while (userWireGrp.children.length > 0) {
+        const child = userWireGrp.children[0];
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+          else child.material.dispose();
+        }
+        userWireGrp.remove(child);
+      }
+    }
+
+    function rebuildUserWires() {
+      clearUserWireMeshes();
+      userWires.forEach((w, k) => {
+        const A = tpos[w.a], B = tpos[w.b], M = A.clone().add(B).multiplyScalar(0.5);
+        M.z = 0.8 + 0.08 * (k % 10);
+        const c = new THREE.CatmullRomCurve3([A.clone(), A.clone().setZ(0.65), M, B.clone().setZ(0.65), B.clone()]);
+        const m = new THREE.Mesh(
+          new THREE.TubeGeometry(c, 40, 0.055, 10),
+          std(w.color, { roughness: 0.35, emissive: w.color, emissiveIntensity: 0.1 })
+        );
+        m.userData.wire = w;
+        m.userData.wireIndex = k;
+        w.mesh = m;
+        userWireGrp.add(m);
+
+        // 양 끝단 압착 단자 절연 슬리브(Boot)도 userWireGrp 내부에 추가하여 철거 시 함께 삭제
+        [A, B].forEach(pos => {
+          const boot = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.085, 0.085, 0.14, 12).rotateX(Math.PI / 2),
+            std(w.color, { roughness: 0.3 })
+          );
+          boot.position.set(pos.x, pos.y, pos.z + 0.08);
+          boot.userData.wire = w;
+          boot.userData.wireIndex = k;
+          userWireGrp.add(boot);
+        });
+      });
+      updateWireModeUI();
+    }
+
+    function refreshTermsEmissive() {
+      const used = new Set(); userWires.forEach(w => { used.add(w.a); used.add(w.b); });
+      for (const id in terms) {
+        terms[id].mat.emissive.setHex(id === selTerm ? 0xfacc15 : id === hoverTerm ? 0x38bdf8 : used.has(id) ? 0x10b981 : 0);
+      }
+    }
+
+    function updateWireModeUI() {
+      let totalDone = 0;
+      $('#wireChecklistUI').innerHTML = GROUPS.map(([t, pairs]) => {
+        const n = pairs.filter(([a, b]) => userWires.some(w => pairKey(w.a, w.b) === pairKey(a, b))).length;
+        totalDone += n;
+        const ok = n === pairs.length;
+        return `<li class="flex items-center justify-between p-1.5 rounded bg-[#080c12] border ${ok ? 'border-emerald-500/60 text-emerald-400' : 'border-slate-800 text-slate-400'}">
+          <span>${ok ? '✓ ' : '○ '}${t}</span>
+          <span class="font-mono font-bold">${n}/${pairs.length}</span>
+        </li>`;
+      }).join('');
+      $('#wireCheckSummary').textContent = `${totalDone} / ${TOTAL_REQUIRED_WIRES} 완료`;
+      $('#wireCountUI').textContent = userWires.length;
+      $('#wireListUI').innerHTML = userWires.length ? userWires.map((w, i) => `
+        <li class="flex items-center gap-2 p-1.5 rounded bg-[#080c12] border border-slate-800">
+          <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:#${w.color.toString(16).padStart(6, '0')}"></span>
+          <span class="truncate flex-1">${nm(w.a)} → ${nm(w.b)}</span>
+          <button type="button" data-i="${i}" class="text-red-400 hover:text-red-200 px-1.5 font-bold cursor-pointer" title="이 전선 철거">×</button>
+        </li>`).join('') : '<li class="text-center text-slate-500 py-3">포설된 전선이 없습니다.</li>';
+      refreshTermsEmissive();
+    }
+
+    $('#wireListUI').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-i]');
+      if (!btn) return;
+      const i = Number(btn.dataset.i);
+      if (!Number.isNaN(i) && userWires[i]) {
+        const removed = userWires.splice(i, 1)[0];
+        selTerm = null;
+        rebuildUserWires();
+        sfx.clack();
+        $('#wireInspectResult').innerHTML = `<span class="text-amber-400">전선 철거:</span> ${nm(removed.a)} ↔ ${nm(removed.b)} 연결을 삭제했습니다.`;
+      }
+    });
+
+    function clickTerm(id) {
+      sfx.clack();
+      if (!selTerm) {
+        selTerm = id;
+        refreshTermsEmissive();
+        $('#wireInspectResult').innerHTML = `시작 단자: <b class="text-amber-300">${nm(id)}</b> → 연결할 상대 단자를 클릭하세요. (같은 단자 재클릭 시 취소)`;
+        return;
+      }
+      if (selTerm === id) {
+        selTerm = null;
+        refreshTermsEmissive();
+        $('#wireInspectResult').textContent = '단자 선택을 취소했습니다.';
+        return;
+      }
+      const a = selTerm;
+      selTerm = null;
+      if (userWires.some(w => (w.a === a && w.b === id) || (w.a === id && w.b === a))) {
+        refreshTermsEmissive();
+        $('#wireInspectResult').innerHTML = '<span class="text-red-400 font-bold">이미 연결된 단자 구간입니다.</span>';
+        return;
+      }
+      if (!wireStartTime) wireStartTime = Date.now();
+      userWires.push({ a, b: id, color: COL[terms[a].ph] });
+      rebuildUserWires();
+      $('#wireInspectResult').innerHTML = `<span class="text-emerald-400 font-bold">결선 완료:</span> ${nm(a)} → ${nm(id)}`;
+    }
+
+    function graph(active) {
+      const g = {}, add = (a, b) => { (g[a] = g[a] || []).push(b); (g[b] = g[b] || []).push(a); };
+      userWires.forEach(w => add(w.a, w.b));
+      ['THR', active].forEach(p => [[1, 2], [3, 4], [5, 6]].forEach(([i, o]) => add(p + '-' + i, p + '-' + o)));
+      return g;
+    }
+    function reach(g, s) {
+      const seen = new Set([s]), q = [s];
+      while (q.length) {
+        const n = q.pop();
+        (g[n] || []).forEach(m => { if (!seen.has(m)) { seen.add(m); q.push(m); } });
+      }
+      return seen;
+    }
+    function analyze(active) {
+      const g = graph(active), r = { R: reach(g, 'P-R'), S: reach(g, 'P-S'), T: reach(g, 'P-T') }, out = { short: [], map: {} };
+      if (r.R.has('P-S')) out.short.push('R-S');
+      if (r.R.has('P-T')) out.short.push('R-T');
+      if (r.S.has('P-T')) out.short.push('S-T');
+      ['U', 'V', 'W'].forEach(u => out.map[u] = KEYS.filter(p => r[p].has('M-' + u)));
+      return out;
+    }
+    function kind(map) {
+      const v = ['U', 'V', 'W'].map(u => map[u]);
+      if (v.some(x => x.length === 0)) return { k: 'none' };
+      if (v.some(x => x.length > 1) || new Set(v.map(x => x[0])).size < 3) return { k: 'multi' };
+      const s = v.map(x => x[0]), idx = s.map(p => 'RST'.indexOf(p));
+      let inv = 0;
+      for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) if (idx[i] > idx[j]) inv++;
+      if (inv === 0) return { k: 'identity', s };
+      if (inv === 2) return { k: 'cycle', s };
+      return { k: 'swap', s, pair: KEYS.filter((p, i) => s[i] !== p) };
+    }
+    const fmt = s => 'U=' + s[0] + ', V=' + s[1] + ', W=' + s[2];
+
+    function checkUserWiring() {
+      wireAttempts++;
+      $('#wireAttemptUI').textContent = wireAttempts;
+      if (!userWires.length) {
+        $('#wireInspectResult').innerHTML = '<b class="text-red-400">포설된 전선이 없습니다.</b> 단자를 클릭해 결선하세요.';
+        return;
+      }
+      const errs = [], oks = [];
+      const actualPairs = new Set(userWires.map(w => pairKey(w.a, w.b)));
+      const missing = [...requiredPairs].filter(p => !actualPairs.has(p));
+      const extra = [...actualPairs].filter(p => !requiredPairs.has(p));
+
+      // 제어회로 인터록(상대 b접점 경유 여부) 정밀 진단
+      const gBase = {};
+      const addEdge = (a, b) => { (gBase[a] = gBase[a] || []).push(b); (gBase[b] = gBase[b] || []).push(a); };
+      userWires.forEach(w => addEdge(w.a, w.b));
+
+      // 정회전 코일(MCF-A1)이 상대 MCR-b(b1-b2) 접점을 반드시 거치는지 검사
+      const gWithMCRb = JSON.parse(JSON.stringify(gBase));
+      (gWithMCRb['MCR-b1'] = gWithMCRb['MCR-b1'] || []).push('MCR-b2');
+      (gWithMCRb['MCR-b2'] = gWithMCRb['MCR-b2'] || []).push('MCR-b1');
+      const reachFwdClosed = reach(gWithMCRb, 'PBF-2').has('MCF-A1');
+      const reachFwdOpen = reach(gBase, 'PBF-2').has('MCF-A1'); // b접점 개방 시 차단되어야 정상
+
+      if (reachFwdClosed && !reachFwdOpen) {
+        oks.push('정회전 인터록: PB-F → MC-R b접점(5·11번) → MC-F 코일(A1) 정상');
+      } else if (reachFwdOpen) {
+        errs.push('정회전 인터록 누락: <b class="text-red-400">MC-R의 b접점(5·11번)을 거치지 않고</b> MC-F 코일(A1)로 직결되었습니다! (동시 투입 시 단락 위험)');
+      } else {
+        errs.push('정회전 제어회로 미결선: PB-F(OUT) → MC-R(b5·b11) → MC-F(A1) 경로가 완성되지 않았습니다.');
+      }
+
+      // 역회전 코일(MCR-A1)이 상대 MCF-b(b1-b2) 접점을 반드시 거치는지 검사
+      const gWithMCFb = JSON.parse(JSON.stringify(gBase));
+      (gWithMCFb['MCF-b1'] = gWithMCFb['MCF-b1'] || []).push('MCF-b2');
+      (gWithMCFb['MCF-b2'] = gWithMCFb['MCF-b2'] || []).push('MCF-b1');
+      const reachRevClosed = reach(gWithMCFb, 'PBR-2').has('MCR-A1');
+      const reachRevOpen = reach(gBase, 'PBR-2').has('MCR-A1');
+
+      if (reachRevClosed && !reachRevOpen) {
+        oks.push('역회전 인터록: PB-R → MC-F b접점(5·11번) → MC-R 코일(A1) 정상');
+      } else if (reachRevOpen) {
+        errs.push('역회전 인터록 누락: <b class="text-red-400">MC-F의 b접점(5·11번)을 거치지 않고</b> MC-R 코일(A1)로 직결되었습니다! (동시 투입 시 단락 위험)');
+      } else {
+        errs.push('역회전 제어회로 미결선: PB-R(OUT) → MC-F(b5·b11) → MC-R(A1) 경로가 완성되지 않았습니다.');
+      }
+
+      if (missing.length) errs.push(`필수 단자 연결 ${missing.length}개가 누락되었습니다.`);
+      if (extra.length) errs.push(`기준 도면에 없는 오결선 ${extra.length}개가 있습니다.`);
+
+      const F = analyze('MCF'), B = analyze('MCR');
+      const inspectBranch = (a, dir) => {
+        if (a.short.length) { errs.push(`${dir}: 투입 시 <b class="text-red-400">${a.short.join(', ')} 상간 단락</b> 발생!`); return null; }
+        const k = kind(a.map);
+        if (k.k === 'none') { const miss = ['U', 'V', 'W'].filter(u => !a.map[u].length).join('·'); errs.push(`${dir}: 모터 <b>${miss}</b> 상 미도달`); return null; }
+        if (k.k === 'multi') { errs.push(`${dir}: 한 모터 단자에 중복 상 연결됨`); return null; }
+        return k;
+      };
+      const kf = inspectBranch(F, '정회전(MC-F)');
+      if (kf) {
+        if (kf.k === 'identity') oks.push('주회로 정회전(MC-F): U-V-W = R-S-T 정상');
+        else errs.push(`정회전(MC-F): 상순 불일치 (${fmt(kf.s)})`);
+      }
+      const kb = inspectBranch(B, '역회전(MC-R)');
+      if (kb) {
+        if (kb.k === 'identity') errs.push('역회전(MC-R): <b class="text-red-400">주회로 상 교체 누락</b> (정회전과 동일 방향 회전)');
+        else if (kb.k === 'cycle') errs.push(`역회전(MC-R): 3상 순환(${fmt(kb.s)}) 연결됨 — 2상(R·T)만 교체해야 합니다.`);
+        else {
+          oks.push(`주회로 역회전(MC-R): ${fmt(kb.s)} → 두 상(${kb.pair.join('·')}) 교체 완료`);
+          if (kb.pair.join('') !== 'RT') errs.push(`역회전: 시험 기준은 R·T 교체입니다 (현재 ${kb.pair.join('·')}).`);
+        }
+      }
+
+      if (!errs.length) {
+        done[1] = true;
+        S.interlock = true;
+        S.swapOK = true;
+        $('#swI').checked = false;
+        $('#swP').checked = false;
+        config();
+        toast('주회로 및 b접점 인터록 결선 완벽 통과! 3D 운전·고장 탭에서 동작을 테스트하세요.', true);
+        $('#wireInspectResult').innerHTML = `<div class="text-emerald-400 font-bold mb-1">✔ 주회로 + 인터록 결선 완벽 통과! (${wireAttempts}회 시도)</div><ul class="list-disc pl-4 space-y-0.5 text-slate-200">${oks.map(o => `<li>${o}</li>`).join('')}</ul>`;
+      } else {
+        sfx.arcBlast();
+        $('#wireInspectResult').innerHTML = `<div class="text-red-400 font-bold mb-1">✘ 결선 오류 ${errs.length}건 발견</div><ul class="list-disc pl-4 space-y-0.5 text-red-200">${errs.map(e => `<li>${e}</li>`).join('')}${oks.map(o => `<li class="text-emerald-300">✔ ${o}</li>`).join('')}</ul>`;
+      }
+    }
+
+    /* ==========================================================================
+       5. SIMULATION STATE, SEQUENCER & SCHEMATIC SYNCHRONIZATION
+       ========================================================================== */
+    const S = {
+      viewMode: 'twin',
+      fwd: false,
+      rev: false,
+      tripped: false,
+      interlock: true,
+      swapOK: true
+    };
+    const done = [false, false, false, false, false, false];
+    const STEPS = [
+      '1단계 주회로 직접 결선 및 검사 통과',
+      '전원 투입 후 정회전(MC1) 기동 확인',
+      '정지 후 역회전(MC2) 상교체 회전 확인',
+      '인터록(b접점) 동시 투입 방지 동작 확인',
+      '오류 체험 (인터록 누락 단락폭발 · 상교체 누락)'
+    ];
+    const HINTS = [
+      '상단 [1단계 결선실습] 탭에서 주회로를 결선하고 검사를 통과하세요.',
+      '우측 조작반의 초록색 [정회전 기동(PB-F)]을 누르세요.',
+      '[정지(PB-S)]를 누른 뒤 [역회전 기동(PB-R)]을 누르세요.',
+      '정회전 운전 중에 즉시 [역회전 기동]을 눌러 b접점 차단을 확인하세요.',
+      '좌측 [고장 모의] 체크박스를 켜고 운전 중 반대 방향 버튼을 눌러 보세요.'
+    ];
+
+    let ilkFlash = 0, omega = 0, flowTime = 0, inrushTimer = 0;
+
+    function log(t, k) {
+      const m = $('#msg');
+      m.textContent = t;
+      m.className = 'mt-2.5 p-2.5 rounded bg-[#05080c] border-l-4 text-xs leading-relaxed min-h-[52px] ' +
+        (k === 'err' ? 'border-red-500 text-red-300 font-bold' : k === 'ok' ? 'border-emerald-500 text-emerald-300' : 'border-sky-500 text-slate-300');
+    }
+
+    function dirNow() {
+      return (S.rev && !S.fwd) ? (S.swapOK ? -1 : 1) : 1;
+    }
+
+    let toastT;
+    function toast(t, ok) {
+      const e = $('#toastBanner');
+      e.textContent = t;
+      e.className = `fixed left-1/2 top-16 -translate-x-1/2 z-50 max-w-[92vw] w-[540px] px-4 py-2.5 rounded-lg border text-xs sm:text-sm font-bold shadow-2xl ${ok ? 'bg-emerald-950/95 border-emerald-400 text-emerald-200' : 'bg-red-950/95 border-red-500 text-red-200'}`;
+      e.classList.remove('hidden');
+      clearTimeout(toastT);
+      toastT = setTimeout(() => e.classList.add('hidden'), 5000);
+    }
+
+    function renderSteps() {
+      const cur = done.findIndex((d, i) => i > 0 && !d);
+      const completedCount = done.slice(1).filter(Boolean).length;
+      $('#stepCountBadge').textContent = `${completedCount} / 5 완료`;
+      $('#stepsListUI').innerHTML = STEPS.map((t, i) => {
+        const n = i + 1;
+        const isDone = done[n];
+        const isCur = n === cur;
+        return `<li class="flex items-start gap-2.5 p-2 rounded-lg border ${isDone ? 'bg-emerald-950/30 border-emerald-600/40 text-emerald-300' : isCur ? 'bg-sky-950/40 border-sky-500/60 text-white' : 'bg-[#080c12] border-slate-800/80 text-slate-400'}">
+          <span class="w-5 h-5 rounded-full text-[11px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 ${isDone ? 'bg-emerald-500 text-slate-950' : isCur ? 'bg-sky-400 text-slate-950' : 'border border-slate-600 text-slate-400'}">${isDone ? '✓' : n}</span>
+          <div class="flex-1">
+            <div class="font-bold leading-snug">${t}</div>
+            ${isCur ? `<div class="text-[11px] text-sky-300 mt-0.5">${HINTS[i]}</div>` : ''}
+          </div>
+        </li>`;
+      }).join('');
+    }
+
+    function syncSchematicSVG() {
+      const run = (S.fwd || S.rev) && !S.tripped;
+      const d = dirNow();
+
+      $('#svgMCCB').setAttribute('stroke', S.tripped ? '#ef4444' : '#10b981');
+      $('#svgMCCBTxt').textContent = S.tripped ? 'MCCB (단락 TRIP!)' : 'MCCB (정상 ON)';
+      $('#svgMCCBTxt').setAttribute('fill', S.tripped ? '#fca5a5' : '#e2e8f0');
+
+      $('#svgPowerMC1').setAttribute('opacity', S.fwd ? '1' : '0.3');
+      ['#pF_R', '#pF_S', '#pF_T'].forEach(id => $(id).classList.toggle('current-flow-active', S.fwd && !S.tripped));
+      $('#svgBoxMC1').setAttribute('stroke', S.fwd ? '#22c55e' : '#334155');
+
+      $('#svgPowerMC2').setAttribute('opacity', S.rev ? '1' : '0.3');
+      ['#pR_inR', '#pR_inS', '#pR_inT', '#pR_out1', '#pR_out2', '#pR_out3'].forEach(id => $(id).classList.toggle('current-flow-active', S.rev && !S.tripped));
+      $('#svgBoxMC2').setAttribute('stroke', S.rev ? '#ef4444' : '#334155');
+
+      $('#pR_out1').setAttribute('d', S.swapOK ? 'M 205 162 L 205 198 L 155 198' : 'M 205 162 L 205 198 L 55 198');
+      $('#pR_out3').setAttribute('d', S.swapOK ? 'M 285 162 L 285 182 L 55 182' : 'M 285 162 L 285 182 L 155 182');
+      $('#svgSwapBadge').textContent = S.swapOK ? '★ R↔T 상교체 정상' : '⚠ 상교체 누락(R-S-T)';
+      $('#svgSwapBadge').setAttribute('fill', S.swapOK ? '#f59e0b' : '#ef4444');
+
+      $('#svgShortAlert').classList.toggle('hidden', !S.tripped);
+
+      $('#svgMotorLines').setAttribute('opacity', run ? '1' : '0.3');
+      ['#pM_U', '#pM_V', '#pM_W'].forEach(id => $(id).classList.toggle('current-flow-active', run));
+      $('#svgMotorCircle').setAttribute('stroke', !run ? '#334155' : d > 0 ? '#22c55e' : '#38bdf8');
+      $('#svgMotorDirTxt').textContent = !run ? '정지' : (S.fwd && S.rev) ? '단락위험!' : d > 0 ? '정회전 ↻' : '역회전 ↺';
+
+      ['#c_f1', '#c_f_hold', '#c_f2', '#c_f3'].forEach(id => {
+        const el = $(id);
+        el.setAttribute('stroke', S.fwd ? '#22c55e' : '#64748b');
+        el.classList.toggle('current-flow-active', S.fwd);
+      });
+      $('#svgCoilMC1').setAttribute('fill', S.fwd ? '#14532d' : '#0f172a');
+      $('#svgCoilMC1').setAttribute('stroke', S.fwd ? '#22c55e' : '#334155');
+      $('#svgContactMC1a').setAttribute('stroke', S.fwd ? '#22c55e' : '#334155');
+
+      ['#c_r1', '#c_r_hold', '#c_r2', '#c_r3'].forEach(id => {
+        const el = $(id);
+        el.setAttribute('stroke', S.rev ? '#ef4444' : '#64748b');
+        el.classList.toggle('current-flow-active', S.rev);
+      });
+      $('#svgCoilMC2').setAttribute('fill', S.rev ? '#7f1d1d' : '#0f172a');
+      $('#svgCoilMC2').setAttribute('stroke', S.rev ? '#ef4444' : '#334155');
+      $('#svgContactMC2a').setAttribute('stroke', S.rev ? '#ef4444' : '#334155');
+
+      if (!S.interlock) {
+        $('#svgIlkMC2bTxt').textContent = '인터록 누락(직결)';
+        $('#svgIlkMC1bTxt').textContent = '인터록 누락(직결)';
+        $('#svgIlkMC2bBar').setAttribute('y2', '202');
+        $('#svgIlkMC1bBar').setAttribute('y2', '202');
+      } else {
+        $('#svgIlkMC2bTxt').textContent = S.rev ? 'MC2-b (열림!)' : 'MC2-b (닫힘)';
+        $('#svgIlkMC2bBar').setAttribute('y2', S.rev ? '192' : '218');
+        $('#svgIlkMC1bTxt').textContent = S.fwd ? 'MC1-b (열림!)' : 'MC1-b (닫힘)';
+        $('#svgIlkMC1bBar').setAttribute('y2', S.fwd ? '192' : '218');
+      }
+
+      if (!$('#modalLargeSchematic').classList.contains('hidden')) {
+        $('#largeSchematicContainer').innerHTML = $('#miniSchematicWrap').innerHTML;
+      }
+    }
+
+    function sync() {
+      const set = (id, t, cls) => { const e = $(id); e.textContent = t; e.className = 'font-bold ' + cls; };
+      set('#sM1', S.fwd ? '투입 (여자 ON)' : '소자 (OFF)', S.fwd ? 'text-emerald-400' : 'text-slate-400');
+      set('#sM2', S.rev ? '투입 (여자 ON)' : '소자 (OFF)', S.rev ? 'text-rose-400' : 'text-slate-400');
+
+      const ilkText = !S.interlock ? '⚠ b접점 제거됨' : S.fwd ? 'MC1-b 개방(역회전차단)' : S.rev ? 'MC2-b 개방(정회전차단)' : '양쪽 닫힘(NC 정상)';
+      set('#sIlkState', ilkText, !S.interlock ? 'text-red-400' : (S.fwd || S.rev) ? 'text-amber-300' : 'text-emerald-400');
+
+      const run = (S.fwd || S.rev) && !S.tripped;
+      const d = dirNow();
+      set('#sMot', !run ? '정지 (0 RPM)' : (S.fwd && S.rev) ? '⚡ 동시투입 단락위험!' : d > 0 ? '정회전 ↻ (1760 RPM)' : '역회전 ↺ (-1760 RPM)',
+        !run ? 'text-slate-400' : (S.fwd && S.rev) ? 'text-red-400' : d > 0 ? 'text-emerald-400' : 'text-sky-400');
+      set('#sBrk', S.tripped ? '⚡ 트립 (TRIP 차단)' : '정상 투입(ON)', S.tripped ? 'text-red-400' : 'text-emerald-400');
+
+      // Local Panel Pilot Lamps & Button Glows
+      $('#lampRL').className = 'pilot-lamp ' + (run ? 'pilot-rl-on' : 'pilot-rl-off');
+      $('#lampGL').className = 'pilot-lamp ' + (!run && !S.tripped ? 'pilot-gl-on' : 'pilot-gl-off');
+      $('#lampYL').className = 'pilot-lamp ' + (S.tripped ? 'pilot-yl-on' : 'pilot-yl-off');
+      $('#bF').classList.toggle('active-glow', S.fwd);
+      $('#bR').classList.toggle('active-glow', S.rev);
+
+      // 3D Contactor Plungers, Lamps & Door Pilot Lamps
+      lamps.m1.material.emissive.setHex(S.fwd ? 0x22c55e : 0);
+      lamps.m1.material.color.setHex(S.fwd ? 0x22c55e : 0x143321);
+      lamps.m2.material.emissive.setHex(S.rev ? 0xef4444 : 0);
+      lamps.m2.material.color.setHex(S.rev ? 0xef4444 : 0x143321);
+
+      plungers.m1.position.z = S.fwd ? 0.67 : 0.74;
+      plungers.m2.position.z = S.rev ? 0.67 : 0.74;
+
+      bContactBars.m1.position.y = (S.interlock && S.fwd) ? 0.96 : 0.8;
+      bContactBars.m1.material.color.setHex((S.interlock && S.fwd) ? 0x64748b : 0xef4444);
+      bContactBars.m2.position.y = (S.interlock && S.rev) ? 0.96 : 0.8;
+      bContactBars.m2.material.color.setHex((S.interlock && S.rev) ? 0x64748b : 0xef4444);
+
+      mccbHandle.position.y = S.tripped ? 3.65 : 3.82;
+      mccbHandle.material.color.setHex(S.tripped ? 0xef4444 : 0x22c55e);
+
+      doorLampRL.material.emissive.setHex(run ? 0xef4444 : 0x000000);
+      doorLampRL.material.color.setHex(run ? 0xef4444 : 0x450a0a);
+      doorLampGL.material.emissive.setHex(!run && !S.tripped ? 0x22c55e : 0x000000);
+      doorLampGL.material.color.setHex(!run && !S.tripped ? 0x22c55e : 0x0e2e1c);
+
+      setDirLabel(
+        !run ? '정지 (0 RPM)' : d > 0 ? '정회전 ↻ (1760 RPM)' : '역회전 ↺ (-1760 RPM)',
+        !run ? '#94a3b8' : d > 0 ? '#4ade80' : '#38bdf8',
+        !run ? '#334155' : d > 0 ? '#22c55e' : '#38bdf8'
+      );
+      $('#alertBox').classList.toggle('hidden', !S.tripped);
+      renderSteps();
+      syncSchematicSVG();
+    }
+
+    function trip() {
+      sfx.arcBlast();
+      S.tripped = true;
+      S.fwd = S.rev = true;
+      sparkT = 2.6;
+      for (let i = 0; i < N; i++) emit(i);
+      done[5] = true;
+      document.body.classList.remove('shake-screen');
+      void document.body.offsetWidth;
+      document.body.classList.add('shake-screen');
+      log('⚡ MC1·MC2 동시 투입 → R-T 상간 단락 폭발! MCCB 차단기가 트립되었습니다.', 'err');
+      toast('⚡ R-T 상간 단락(Short-Circuit) 발생! 차단기가 트립되었습니다.', false);
+      sync();
+      setTimeout(() => { S.fwd = S.rev = false; sync(); }, 900);
+    }
+
+    function press(a) {
+      sfx.clack();
+      if (S.tripped) {
+        log('차단기(MCCB)가 트립 상태입니다. [차단기 복귀 및 정상 회로 리셋] 버튼을 먼저 누르세요.', 'err');
+        toast('MCCB 차단기가 트립되어 있습니다. 먼저 복귀 버튼을 누르세요.', false);
+        return;
+      }
+      if (a === 'stop') {
+        S.fwd = S.rev = false;
+        log('정지(PB-S): 자기유지가 해제되어 모든 전자접촉기(MC1·MC2)가 소자되었습니다.');
+        return sync();
+      }
+      const o = a === 'fwd' ? 'rev' : 'fwd';
+      if (S[o]) {
+        if (S.interlock) {
+          done[4] = true;
+          ilkFlash = 1.4;
+          log('🔒 인터록 보호 작동: 상대 MC의 보조 b접점(5-11번)이 열려 있어 동시 투입이 원천 차단되었습니다! 방향 전환 전 반드시 [정지]를 누르세요.', 'ok');
+          toast('🔒 인터록(b접점) 정상 작동! 운전 중 반대 방향 투입이 안전하게 차단되었습니다.', true);
+          return sync();
+        }
+        S[a] = true;
+        if (S.swapOK) return trip();
+        done[5] = true;
+        log('⚠ 인터록 누락: MC1·MC2가 동시에 투입되었습니다! (상교체도 누락되어 단락 폭발은 면했으나 매우 위험한 오결선입니다.)', 'err');
+        return sync();
+      }
+      S[a] = true;
+      inrushTimer = 0.6;
+      if (a === 'fwd') {
+        done[2] = true;
+        log('정회전 기동(PB-F): MC1 코일 여자 및 MC1-a 자기유지 완료! 모터가 시계방향(CW ↻)으로 회전합니다.', 'ok');
+      } else if (S.swapOK) {
+        done[3] = true;
+        log('역회전 기동(PB-R): MC2 투입! 주회로 R↔T 두 상이 교차 인가되어 모터가 반시계방향(CCW ↺)으로 역회전합니다.', 'ok');
+      } else {
+        done[5] = true;
+        log('⚠ 역회전 불가 오류: MC2가 투입되었으나 주회로 상교체(R↔T)가 누락되어 정회전(↻)과 동일한 방향으로 회전합니다!', 'err');
+        toast('⚠ 상교체 누락 체험: MC2에 R·T 교차 결선이 없어 모터가 정회전합니다!', false);
+      }
+      sync();
+    }
+
+    function config() {
+      S.interlock = !$('#swI').checked;
+      S.swapOK = !$('#swP').checked;
+      S.fwd = S.rev = S.tripped = false;
+      ilkOn.visible = S.interlock;
+      ilkOff.visible = !S.interlock;
+      buildWires(S.swapOK);
+      log(S.interlock && S.swapOK
+        ? '정상 시퀀스 결선 상태입니다. 기동 버튼으로 정·역회전 및 인터록을 확인하세요.'
+        : '⚠ 고장 모의(오결선) 조건이 주입되었습니다. 정회전 기동 후 역회전 버튼을 눌러 결과를 확인하세요.', S.interlock && S.swapOK ? 'info' : 'err');
+      sync();
+    }
+
+    $('#swI').onchange = $('#swP').onchange = config;
+    $('#bReset').onclick = () => {
+      $('#swI').checked = false;
+      $('#swP').checked = false;
+      config();
+      toast('차단기(MCCB) 복귀 및 정상 회로 초기화가 완료되었습니다.', true);
+    };
+    $('#bF').onclick = () => press('fwd');
+    $('#bR').onclick = () => press('rev');
+    $('#bS').onclick = () => press('stop');
+
+    $('#svgBtnFwd').onclick = () => press('fwd');
+    $('#svgBoxMC1').onclick = () => press('fwd');
+    $('#svgBtnRev').onclick = () => press('rev');
+    $('#svgBoxMC2').onclick = () => press('rev');
+    $('#svgBtnStop').onclick = () => press('stop');
+
+    /* ==========================================================================
+       6. MODE SWITCHING & CAMERA PRESETS
+       ========================================================================== */
+    function switchMode(mode) {
+      S.viewMode = mode;
+      const isTwin = mode === 'twin';
+      rootTwin.visible = isTwin;
+      boardWire.visible = !isTwin;
+
+      $('#leftTwinContent').classList.toggle('hidden', !isTwin);
+      $('#rightTwinContent').classList.toggle('hidden', !isTwin);
+      $('#leftWireContent').classList.toggle('hidden', isTwin);
+      $('#rightWireContent').classList.toggle('hidden', isTwin);
+
+      $('#btnModeTwin').className = `px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-bold transition-all ${isTwin ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'}`;
+      $('#btnModeWire').className = `px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-bold transition-all ${!isTwin ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'}`;
+
+      controls.autoRotate = false;
+      if (isTwin) {
+        camera.position.set(0, -0.4, 21.5);
+        controls.target.set(0.5, -0.8, 0);
+      } else {
+        camera.position.set(0, 0.2, 19.5);
+        controls.target.set(0, 0.2, 0);
+        updateWireModeUI();
+      }
+      controls.update();
+    }
+
+    $('#btnModeTwin').onclick = () => switchMode('twin');
+    $('#btnModeWire').onclick = () => switchMode('wire');
+
+    $('#btnCamFront').onclick = () => {
+      controls.autoRotate = false;
+      if (S.viewMode === 'twin') { camera.position.set(0, -0.4, 21.5); controls.target.set(0.5, -0.8, 0); }
+      else { camera.position.set(0, 0.2, 19.5); controls.target.set(0, 0.2, 0); }
+      controls.update();
+    };
+    $('#btnCamAngle').onclick = () => {
+      controls.autoRotate = false;
+      camera.position.set(-10.5, 4.2, 17.5);
+      controls.target.set(0.5, -0.8, 0);
+      controls.update();
+    };
+    $('#btnCamMotor').onclick = () => {
+      controls.autoRotate = false;
+      camera.position.set(0, -4.5, 9.5);
+      controls.target.set(0, -5.0, 0.5);
+      controls.update();
+    };
+
+    /* ==========================================================================
+       7. 3D RAYCASTER INTERACTION
+       ========================================================================== */
+    const rc = new THREE.Raycaster();
+    let down = null;
+    const ndc = e => {
+      const r = cv.getBoundingClientRect();
+      return new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    };
+
+    function pulseBtn(m) {
+      m.material.emissiveIntensity = 1;
+      m.position.z = 0.19;
+      setTimeout(() => { m.material.emissiveIntensity = 0.18; m.position.z = 0.26; }, 180);
+    }
+
+    cv.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; });
+    cv.addEventListener('pointerup', e => {
+      if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) return;
+      if (stereoVRActive) {
+        if (!S.fwd && !S.rev) press('fwd');
+        else if (S.fwd) { press('stop'); setTimeout(() => press('rev'), 220); }
+        else press('stop');
+        return;
+      }
+      rc.setFromCamera(ndc(e), camera);
+      if (S.viewMode === 'twin') {
+        const h = rc.intersectObjects(acts, false);
+        if (h.length) { pulseBtn(h[0].object); press(h[0].object.userData.action); }
+        else { const dh = rc.intersectObjects(doorHit, false); if (dh.length) toggleDoor(dh[0].object.userData.door); }
+      } else {
+        if (e.button !== 0) return;
+        const h = rc.intersectObjects(tmeshes, false);
+        if (h.length) clickTerm(h[0].object.userData.id);
+        else { const dh = rc.intersectObjects(doorHit, false); if (dh.length) toggleDoor(dh[0].object.userData.door); }
+      }
+    });
+
+    cv.addEventListener('contextmenu', e => {
+      if (S.viewMode !== 'wire') return;
+      e.preventDefault();
+      rc.setFromCamera(ndc(e), camera);
+      const h = rc.intersectObjects(userWireGrp.children, false);
+      if (h.length) {
+        const targetWire = h[0].object.userData.wire;
+        const idx = userWires.indexOf(targetWire);
+        if (idx !== -1) {
+          userWires.splice(idx, 1);
+          selTerm = null;
+          rebuildUserWires();
+          sfx.clack();
+          $('#wireInspectResult').textContent = '3D 전선을 우클릭하여 철거했습니다.';
+        }
+      }
+    });
+
+    const tipEl = $('#termTooltip');
+    cv.addEventListener('pointermove', e => {
+      rc.setFromCamera(ndc(e), camera);
+      if (S.viewMode === 'twin') {
+        const h = rc.intersectObjects(acts, false);
+        cv.style.cursor = h.length ? 'pointer' : 'default';
+        tipEl.classList.add('hidden');
+      } else {
+        const h = rc.intersectObjects(tmeshes, false);
+        const id = h.length ? h[0].object.userData.id : null;
+        if (id !== hoverTerm) { hoverTerm = id; refreshTermsEmissive(); cv.style.cursor = id ? 'pointer' : 'default'; }
+        if (id) {
+          tipEl.classList.remove('hidden');
+          tipEl.textContent = nm(id);
+          tipEl.style.left = (e.clientX + 14) + 'px';
+          tipEl.style.top = (e.clientY + 14) + 'px';
+        } else {
+          tipEl.classList.add('hidden');
+        }
+      }
+    });
+
+    /* ==========================================================================
+       8. MOBILE VR (WebXR + Stereoscopic Cardboard Split-Screen)
+       ========================================================================== */
+    let xrSession = null;
+    let stereoVRActive = false;
+
+    function toggleStereoVR(forceState) {
+      stereoVRActive = forceState !== undefined ? forceState : !stereoVRActive;
+      $('#vrStereoOverlay').classList.toggle('active', stereoVRActive);
+      document.body.classList.toggle('stereo-on', stereoVRActive);
+      $('#leftCol').classList.toggle('hidden', stereoVRActive);
+      $('#rightCol').classList.toggle('hidden', stereoVRActive);
+      $('#vrBtnLabel').textContent = stereoVRActive ? 'VR 종료' : '모바일 VR';
+      if (!stereoVRActive) {
+        renderer.setScissorTest(false);
+        resize();
+      } else {
+        toast('모바일 VR 양안 분할 모드가 활성화되었습니다. 화면을 터치하면 기동/정지가 전환됩니다.', true);
+      }
+    }
+
+    $('#btnExitStereoVR').onclick = () => toggleStereoVR(false);
+
+    $('#btnStartVR').onclick = async () => {
+      if (xrSession) { xrSession.end(); return; }
+      if (stereoVRActive) { toggleStereoVR(false); return; }
+
+      if (navigator.xr && navigator.xr.isSessionSupported) {
+        try {
+          const supported = await navigator.xr.isSessionSupported('immersive-vr');
+          if (supported) {
+            const s = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor'] });
+            xrSession = s;
+            s.addEventListener('end', () => { xrSession = null; $('#vrBtnLabel').textContent = '모바일 VR'; });
+            await renderer.xr.setSession(s);
+            $('#vrBtnLabel').textContent = 'VR 종료';
+            return;
+          }
+        } catch (err) {}
+      }
+      toggleStereoVR(true);
+    };
+
+    $('#btnCheckWiring').onclick = checkUserWiring;
+    $('#btnWireUndo').onclick = () => {
+      if (userWires.length > 0) {
+        const last = userWires.pop();
+        selTerm = null;
+        rebuildUserWires();
+        sfx.clack();
+        $('#wireInspectResult').innerHTML = `<span class="text-amber-400">되돌리기 완료:</span> 마지막 전선(${nm(last.a)} ↔ ${nm(last.b)})을 철거했습니다.`;
+      } else {
+        selTerm = null;
+        rebuildUserWires();
+        $('#wireInspectResult').textContent = '되돌릴 전선이 없습니다.';
+      }
+    };
+    $('#btnWireClear').onclick = () => {
+      userWires.length = 0;
+      selTerm = null;
+      rebuildUserWires();
+      sfx.clack();
+      $('#wireInspectResult').innerHTML = '<span class="text-red-400 font-bold">전체 철거 완료:</span> 포설된 모든 전선을 3D 보드에서 제거했습니다.';
+    };
+
+    $('#btnAutoCompleteWire').onclick = () => {
+      userWires.length = 0;
+      selTerm = null;
+      GROUPS.forEach(g => g[1].forEach(([a, b]) => userWires.push({ a, b, color: COL[terms[a].ph] })));
+      rebuildUserWires();
+      checkUserWiring();
+    };
+    $('#btnNoInterlockWire').onclick = () => {
+      userWires.length = 0;
+      selTerm = null;
+      GROUPS.forEach((g, idx) => {
+        if (idx === 6) {
+          // 정회전 인터록(MCR-b)을 건너뛰고 PB-F에서 MCF-A1 코일로 직결하는 오결선 예시
+          userWires.push({ a: 'PBF-2', b: 'MCF-A1', color: COL.C });
+        } else if (idx === 7) {
+          // 역회전 인터록(MCF-b)을 건너뛰고 PB-R에서 MCR-A1 코일로 직결하는 오결선 예시
+          userWires.push({ a: 'PBR-2', b: 'MCR-A1', color: COL.C });
+        } else {
+          g[1].forEach(([a, b]) => userWires.push({ a, b, color: COL[terms[a].ph] }));
+        }
+      });
+      rebuildUserWires();
+      checkUserWiring();
+    };
+    $('#btnSwapErrorWire').onclick = () => {
+      userWires.length = 0;
+      selTerm = null;
+      GROUPS.forEach((g, idx) => {
+        if (idx === 3) {
+          [['MCR-2', 'THR-1'], ['MCR-4', 'THR-3'], ['MCR-6', 'THR-5']].forEach(([a, b]) => userWires.push({ a, b, color: COL[terms[a].ph] }));
+        } else {
+          g[1].forEach(([a, b]) => userWires.push({ a, b, color: COL[terms[a].ph] }));
+        }
+      });
+      rebuildUserWires();
+      checkUserWiring();
+    };
+
+    for (let i = 0; i < 2; i++) {
+      const c = renderer.xr.getController(i);
+      c.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(0, 0, -6)]), new THREE.LineBasicMaterial({ color: 0x38bdf8 })));
+      c.addEventListener('selectstart', () => {
+        const m = new THREE.Matrix4().extractRotation(c.matrixWorld);
+        rc.ray.origin.setFromMatrixPosition(c.matrixWorld);
+        rc.ray.direction.set(0, 0, -1).applyMatrix4(m);
+        if (S.viewMode === 'twin') {
+          const h = rc.intersectObjects(acts, false);
+          if (h.length) { pulseBtn(h[0].object); press(h[0].object.userData.action); }
+          else { const dh = rc.intersectObjects(doorHit, false); if (dh.length) toggleDoor(dh[0].object.userData.door); }
+        } else {
+          const h = rc.intersectObjects(tmeshes, false);
+          if (h.length) clickTerm(h[0].object.userData.id);
+        }
+      });
+      scene.add(c);
+    }
+
+    /* ==========================================================================
+       9. UI CONTROLS, TELEMETRY METERS & ANIMATION LOOP
+       ========================================================================== */
+    const openLargeSchem = () => {
+      $('#largeSchematicContainer').innerHTML = $('#miniSchematicWrap').innerHTML;
+      $('#modalLargeSchematic').classList.remove('hidden');
+    };
+    $('#btnExpandSchematicModal').onclick = openLargeSchem;
+    $('#btnExpandSchematicInner').onclick = openLargeSchem;
+    $('#btnCloseLargeSchematic').onclick = () => $('#modalLargeSchematic').classList.add('hidden');
+
+    $('#btnOpenTheory').onclick = () => $('#modalTheory').classList.remove('hidden');
+    $('#btnCloseTheory').onclick = () => $('#modalTheory').classList.add('hidden');
+
+    $('#btnToggleFlowParticles').onclick = () => {
+      showFlowParticles = !showFlowParticles;
+      $('#btnToggleFlowParticles').innerHTML = `<i class="fa-solid fa-bolt"></i> 전류펄스: ${showFlowParticles ? 'ON' : 'OFF'}`;
+      if (!showFlowParticles) FLOW_SPHERES.forEach(s => s.mesh.visible = false);
+    };
+
+    $('#btnAutoSpinCam').onclick = () => {
+      controls.autoRotate = !controls.autoRotate;
+      $('#btnAutoSpinCam').innerHTML = `<i class="fa-solid fa-rotate"></i> ${controls.autoRotate ? '회전중지' : '자동회전'}`;
+    };
+
+    setInterval(() => {
+      if (wireStartTime && S.viewMode === 'wire') {
+        const sec = Math.floor((Date.now() - wireStartTime) / 1000);
+        $('#wireTimerUI').textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+      }
+    }, 500);
+
+    function resize() {
+      if (renderer.xr.isPresenting) return;
+      const w = viewContainer.clientWidth, h = viewContainer.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    new ResizeObserver(() => requestAnimationFrame(resize)).observe(viewContainer);
+    resize();
+
+    const clock = new THREE.Clock();
+    renderer.setAnimationLoop(() => {
+      const dt = Math.min(clock.getDelta(), 0.05);
+      updateDoors(dt);
+      const run = (S.fwd || S.rev) && !S.tripped;
+
+      // 1. Motor Rotor Inertia & Live SCADA Telemetry Update
+      omega += ((run ? dirNow() * 7.2 : 0) - omega) * Math.min(1, dt * (S.tripped ? 8 : 3.2));
+      rotor.rotation.z -= omega * dt;
+
+      if (inrushTimer > 0) inrushTimer = Math.max(0, inrushTimer - dt);
+      const liveRPM = Math.round((omega / 7.2) * 1760);
+      $('#meterRPM').textContent = `${liveRPM} RPM`;
+      if (S.tripped) {
+        $('#meterVolt').textContent = '0V (TRIP)';
+        $('#meterVolt').className = 'font-mono text-xs font-extrabold text-red-500';
+        $('#meterAmp').textContent = 'FAULT!';
+        $('#meterAmp').className = 'font-mono text-xs font-extrabold text-red-500';
+      } else {
+        $('#meterVolt').textContent = '380V';
+        $('#meterVolt').className = 'font-mono text-xs font-extrabold text-amber-400';
+        const amp = !run ? 0.0 : inrushTimer > 0 ? (24.5 * (inrushTimer / 0.6) + 4.8).toFixed(1) : (4.8 + Math.sin(clock.elapsedTime * 5) * 0.1).toFixed(1);
+        $('#meterAmp').textContent = `${amp} A`;
+        $('#meterAmp').className = `font-mono text-xs font-extrabold ${inrushTimer > 0 ? 'text-amber-400' : 'text-emerald-400'}`;
+      }
+
+      // 2. 3D Current Flow Particles along Power Cables
+      if (showFlowParticles && run && S.viewMode === 'twin') {
+        flowTime = (flowTime + dt * 0.9) % 1;
+        const activeBranch = S.fwd ? activeFlowPaths.fwd : activeFlowPaths.rev;
+        const allActive = activeBranch.concat(activeFlowPaths.motor);
+
+        FLOW_SPHERES.forEach(sp => {
+          const pathObj = allActive[sp.pathIdx];
+          if (pathObj && pathObj.curve) {
+            sp.mesh.visible = true;
+            sp.mesh.material.color.setHex(pathObj.col);
+            const t = (flowTime + sp.offset) % 1;
+            pathObj.curve.getPointAt(t, sp.mesh.position);
+          } else {
+            sp.mesh.visible = false;
+          }
+        });
+      } else {
+        FLOW_SPHERES.forEach(sp => sp.mesh.visible = false);
+      }
+
+      // 3. Interlock Box Flash on Block
+      if (ilkFlash > 0) {
+        ilkFlash -= dt;
+        const on = Math.floor(ilkFlash * 7) % 2 === 0;
+        ilkBox.material.emissive.setHex(on ? 0xef4444 : 0);
+        ilkBox.material.emissiveIntensity = 0.95;
+        if (ilkFlash <= 0) ilkBox.material.emissive.setHex(0);
+      }
+
+      // 4. Short-Circuit Sparks Physics
+      if (sparkT > 0) {
+        sparkT -= dt;
+        for (let i = 0; i < N; i++) {
+          sLife[i] -= dt;
+          if (sLife[i] <= 0) {
+            if (sparkT > 0.8) emit(i);
+            else sPos[i * 3 + 1] = -99;
+            continue;
+          }
+          sVel[i * 3 + 1] -= 9.8 * dt;
+          for (let k = 0; k < 3; k++) sPos[i * 3 + k] += sVel[i * 3 + k] * dt;
+        }
+        sGeo.attributes.position.needsUpdate = true;
+        sparks.material.opacity = Math.min(1, sparkT);
+        flash.intensity = sparkT > 0.8 ? Math.random() * 6 : 0;
+      } else {
+        sparks.material.opacity = 0;
+        flash.intensity = 0;
+      }
+
+      if (!renderer.xr.isPresenting) controls.update();
+
+      if (stereoVRActive && !renderer.xr.isPresenting) {
+        const w = viewContainer.clientWidth, h = viewContainer.clientHeight;
+        const halfW = Math.floor(w / 2);
+        renderer.setScissorTest(true);
+
+        cameraL.copy(camera);
+        cameraL.aspect = halfW / h;
+        cameraL.updateProjectionMatrix();
+        cameraL.translateX(-0.08);
+        renderer.setViewport(0, 0, halfW, h);
+        renderer.setScissor(0, 0, halfW, h);
+        renderer.render(scene, cameraL);
+
+        cameraR.copy(camera);
+        cameraR.aspect = halfW / h;
+        cameraR.updateProjectionMatrix();
+        cameraR.translateX(0.08);
+        renderer.setViewport(halfW, 0, w - halfW, h);
+        renderer.setScissor(halfW, 0, w - halfW, h);
+        renderer.render(scene, cameraR);
+      } else {
+        renderer.render(scene, camera);
+      }
+    });
+
+    config();
+  </script>
+</body>
+</html>
