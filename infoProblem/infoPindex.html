@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보처리산업기사 시험 안내 및 수험생 학습관</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .navy-header {
+            background: linear-gradient(135deg, #0b132b 0%, #1c2541 50%, #3a506b 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <div>
+        <!-- Main Header -->
+        <header class="navy-header text-white pt-12 pb-16 px-4 relative overflow-hidden">
+            <div class="max-w-6xl mx-auto text-center relative z-10">
+                <div class="inline-flex items-center space-x-2 bg-indigo-500/30 border border-indigo-400/30 rounded-full px-4 py-1.5 text-indigo-200 text-xs sm:text-sm font-medium mb-4 backdrop-blur-sm">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>국가기술자격증 합격 가이드</span>
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mb-3">
+                    정보처리산업기사 시험 안내 및 수험생 학습관
+                </h1>
+                <p class="text-indigo-200 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+                    IT 시스템 구축 및 SW 개발 실무 자격증! 자격 요건 확인부터 단계별 맞춤 실전 문제풀이까지 한 눈에 확인하세요.
+                </p>
+            </div>
+            <!-- Decorative Glow -->
+            <div class="absolute -left-20 -top-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl"></div>
+            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl"></div>
+        </header>
+
+        <!-- SECTION 1: CORE ACTION BANNER (난이도별 문제풀기 - 제목 바로 아래 위치) -->
+        <div class="max-w-6xl mx-auto px-4 -mt-8 relative z-20 mb-12">
+            <div class="bg-white rounded-2xl p-6 sm:p-8 card-shadow border border-indigo-100">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 pb-4 border-b border-slate-100 gap-2">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Interactive Practice</span>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">수준별 맞춤 모의고사 문제풀기</h2>
+                    </div>
+                    <div id="scoreSummary" class="text-xs sm:text-sm text-slate-500 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 flex items-center gap-3">
+                        <span><i class="fa-solid fa-trophy text-amber-500 mr-1"></i> 최고 기록: <strong id="highScoreText" class="text-slate-800">미도전</strong></span>
+                        <button onclick="resetScores()" class="text-xs text-rose-500 hover:text-rose-700 underline font-medium">점수 초기화</button>
+                    </div>
+                </div>
+
+                <!-- Difficulty Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- 기초 문제풀기 -->
+                    <button onclick="openQuizModal('기초')" 
+                            class="group relative overflow-hidden p-5 rounded-xl border-2 border-emerald-500/20 bg-gradient-to-br from-emerald-50 to-white hover:border-emerald-500 transition-all duration-200 text-left shadow-sm hover:shadow-md">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold text-lg shadow-md group-hover:scale-105 transition-transform">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">3문항 · 100점</span>
+                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-lg group-hover:text-emerald-600 transition-colors">기초 문제풀기</h3>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">데이터구조 기본 개념, 기초 SQL구문, 기본 프로그래밍 변수 이해</p>
+                        <div class="mt-4 flex items-center text-xs font-bold text-emerald-600">
+                            <span>풀기 시작</span>
+                            <i class="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </button>
+
+                    <!-- 중급 문제풀기 -->
+                    <button onclick="openQuizModal('중급')" 
+                            class="group relative overflow-hidden p-5 rounded-xl border-2 border-indigo-500/20 bg-gradient-to-br from-indigo-50 to-white hover:border-indigo-500 transition-all duration-200 text-left shadow-sm hover:shadow-md">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md group-hover:scale-105 transition-transform">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <span class="text-xs font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">3문항 · 100점</span>
+                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-lg group-hover:text-indigo-600 transition-colors">중급 문제풀기</h3>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">관계형 DB 조인(JOIN), 정렬/탐색 알고리즘, C/Java 포인터 응용</p>
+                        <div class="mt-4 flex items-center text-xs font-bold text-indigo-600">
+                            <span>풀기 시작</span>
+                            <i class="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </button>
+
+                    <!-- 고급 문제풀기 -->
+                    <button onclick="openQuizModal('고급')" 
+                            class="group relative overflow-hidden p-5 rounded-xl border-2 border-purple-500/20 bg-gradient-to-br from-purple-50 to-white hover:border-purple-500 transition-all duration-200 text-left shadow-sm hover:shadow-md">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md group-hover:scale-105 transition-transform">
+                                <i class="fa-solid fa-code text-base"></i>
+                            </div>
+                            <span class="text-xs font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">3문항 · 100점</span>
+                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-lg group-hover:text-purple-600 transition-colors">고급 문제풀기</h3>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">실기 필답형 코드 추적, 서브쿼리, 운영체제 메모리/교착상태 제어</p>
+                        <div class="mt-4 flex items-center text-xs font-bold text-purple-600">
+                            <span>풀기 시작</span>
+                            <i class="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <main class="max-w-6xl mx-auto px-4 space-y-10 pb-16">
+
+            <!-- SECTION 2: EXAM SCHEDULE -->
+            <section class="bg-white rounded-2xl p-6 sm:p-8 card-shadow border border-slate-100">
+                <div class="flex items-center justify-between mb-6 border-b border-slate-100 pb-4 flex-wrap gap-2">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-slate-900">2026년 정기검정 시험 일정</h2>
+                            <p class="text-xs text-slate-500">한국산업인력공단(Q-Net) 연간 정기 시험 기준</p>
+                        </div>
+                    </div>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full font-semibold border border-indigo-100">
+                        <i class="fa-solid fa-bell mr-1"></i> 필기 CBT / 실기 필답형
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+                                <th class="p-3.5 rounded-l-lg">구분</th>
+                                <th class="p-3.5">필기 원서접수</th>
+                                <th class="p-3.5">필기 시험일</th>
+                                <th class="p-3.5">실기 원서접수</th>
+                                <th class="p-3.5">실기 시험일</th>
+                                <th class="p-3.5 rounded-r-lg">최종 합격발표</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-600 font-medium">
+                            <tr class="hover:bg-indigo-50/30 transition-colors">
+                                <td class="p-3.5 font-bold text-indigo-600">제 1 회</td>
+                                <td class="p-3.5">1월 중순</td>
+                                <td class="p-3.5">2월 중순 ~ 3월 초</td>
+                                <td class="p-3.5">3월 중순</td>
+                                <td class="p-3.5">4월 중순</td>
+                                <td class="p-3.5">6월 초</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30 transition-colors">
+                                <td class="p-3.5 font-bold text-indigo-600">제 2 회</td>
+                                <td class="p-3.5">4월 중순</td>
+                                <td class="p-3.5">5월 초 ~ 5월 중순</td>
+                                <td class="p-3.5">6월 중순</td>
+                                <td class="p-3.5">7월 중순</td>
+                                <td class="p-3.5">9월 초</td>
+                            </tr>
+                            <tr class="hover:bg-indigo-50/30 transition-colors">
+                                <td class="p-3.5 font-bold text-indigo-600">제 3 회</td>
+                                <td class="p-3.5">6월 중순</td>
+                                <td class="p-3.5">7월 초 ~ 7월 중순</td>
+                                <td class="p-3.5">8월 중순</td>
+                                <td class="p-3.5">10월 초</td>
+                                <td class="p-3.5">11월 말</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 3: ELIGIBILITY -->
+            <section class="bg-white rounded-2xl p-6 sm:p-8 card-shadow border border-slate-100">
+                <div class="flex items-center space-x-3 mb-6 border-b border-slate-100 pb-4">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-700 rounded-xl flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">응시 자격 조건</h2>
+                        <p class="text-xs text-slate-500">다음 조건 중 1개 이상에 해당하면 시험 응시가 가능합니다.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex items-start space-x-3">
+                        <div class="p-2 bg-blue-500 text-white rounded-lg mt-0.5">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">전문대학 졸업(예정)자</h3>
+                            <p class="text-xs text-slate-500 mt-1">관련 학과 2년제 또는 3년제 전문대학 졸업자 및 졸업예정자</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex items-start space-x-3">
+                        <div class="p-2 bg-blue-500 text-white rounded-lg mt-0.5">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">실무 경력 2년 이상</h3>
+                            <p class="text-xs text-slate-500 mt-1">동일 및 유사 직무 분야(정보기술 등)에서의 순수 실무 경력 2년 이상</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex items-start space-x-3">
+                        <div class="p-2 bg-blue-500 text-white rounded-lg mt-0.5">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">기능사 취득 후 경력 1년</h3>
+                            <p class="text-xs text-slate-500 mt-1">동일·유사 분야 기능사 자격 취득 후 실무 경력 1년 이상 보유자</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex items-start space-x-3">
+                        <div class="p-2 bg-blue-500 text-white rounded-lg mt-0.5">
+                            <i class="fa-solid fa-university"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">4년제 대학 2학년 이수자</h3>
+                            <p class="text-xs text-slate-500 mt-1">관련 학과 4년제 대학교 2학년 과정 이상을 정상 이수한 학점 보유자</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: EXAM SUBJECTS & FORMAT -->
+            <section class="bg-white rounded-2xl p-6 sm:p-8 card-shadow border border-slate-100">
+                <div class="flex items-center space-x-3 mb-6 border-b border-slate-100 pb-4">
+                    <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">시험 과목 및 검정 방법</h2>
+                        <p class="text-xs text-slate-500">필기(3과목) 및 실기(1과목) 상세 기준</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 필기시험 -->
+                    <div class="p-5 border border-slate-200 rounded-xl bg-slate-50/30">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-bold text-lg text-slate-900 flex items-center">
+                                <i class="fa-solid fa-pen-to-square text-emerald-600 mr-2"></i> 필기 시험
+                            </span>
+                            <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-md">CBT 객관식</span>
+                        </div>
+                        <ul class="space-y-2 mb-4 text-sm text-slate-700 font-medium">
+                            <li class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-100">
+                                <span>1과목: 정보시스템 개론</span>
+                                <span class="text-xs text-slate-400">20문항</span>
+                            </li>
+                            <li class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-100">
+                                <span>2과목: 데이터베이스 활용</span>
+                                <span class="text-xs text-slate-400">20문항</span>
+                            </li>
+                            <li class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-slate-100">
+                                <span>3과목: 알고리즘 활용</span>
+                                <span class="text-xs text-slate-400">20문항</span>
+                            </li>
+                        </ul>
+                        <div class="text-xs text-slate-500 space-y-1 bg-emerald-50/60 p-3 rounded-lg border border-emerald-100">
+                            <p>• <strong>시험시간:</strong> 총 1시간 30분 (과목당 30분)</p>
+                            <p>• <strong>합격기준:</strong> 과목당 40점 이상(과락) & 전체 평균 60점 이상</p>
+                        </div>
+                    </div>
+
+                    <!-- 실기시험 -->
+                    <div class="p-5 border border-slate-200 rounded-xl bg-slate-50/30">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-bold text-lg text-slate-900 flex items-center">
+                                <i class="fa-solid fa-laptop-code text-indigo-600 mr-2"></i> 실기 시험
+                            </span>
+                            <span class="text-xs bg-indigo-100 text-indigo-800 font-bold px-2.5 py-1 rounded-md">필답형 주관식</span>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-slate-100 mb-4">
+                            <p class="font-bold text-sm text-slate-800">과목: 정보처리 실무</p>
+                            <p class="text-xs text-slate-500 mt-1">C, Java, Python 프로그래밍 언어 응용, SQL문 작성, 애플리케이션 테스트 및 데이터베이스 구축 구현</p>
+                        </div>
+                        <div class="text-xs text-slate-500 space-y-1 bg-indigo-50/60 p-3 rounded-lg border border-indigo-100">
+                            <p>• <strong>시험시간:</strong> 총 2시간 30분</p>
+                            <p>• <strong>합격기준:</strong> 100점 만점 기준 60점 이상 (과락 없음)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ MODAL -->
+    <div id="quizModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 text-slate-800 relative max-h-[90vh] overflow-y-auto">
+            <!-- Close Button -->
+            <button onclick="closeQuizModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-100">
+                <span id="modalBadge" class="px-3 py-1 text-white font-bold text-xs rounded-full">
+                    기초 Level
+                </span>
+                <h3 class="text-xl font-extrabold text-slate-900">정보처리산업기사 모의 문제 (3문항)</h3>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <form id="quizForm" onsubmit="submitQuiz(event)" class="space-y-6 my-4">
+                <div id="quizQuestionsContainer" class="space-y-6">
+                    <!-- Dynamic Questions -->
+                </div>
+
+                <!-- Submit Button / Results -->
+                <div id="quizResultBanner" class="hidden p-4 rounded-xl border text-center font-bold text-sm">
+                    <!-- Score output -->
+                </div>
+
+                <div class="flex justify-end space-x-3 border-t border-slate-100 pt-4">
+                    <button type="button" onclick="closeQuizModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition">
+                        닫기
+                    </button>
+                    <button type="submit" id="submitBtn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-md">
+                        채점하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 text-center space-y-2">
+            <p class="font-medium text-slate-300">정보처리산업기사 수험생 자격시험 학습 가이드</p>
+            <p>© 2026 Q-Net 기준 정보처리산업기사 안내. 수험생 여러분의 합격을 응원합니다.</p>
+        </div>
+    </footer>
+
+    <!-- Quiz JavaScript Code -->
+    <script>
+        const quizData = {
+            '기초': [
+                {
+                    q: "1. 스택(Stack) 자료구조에 대한 설명으로 가장 올바른 것은?",
+                    options: ["선입선출(FIFO) 구조로 동작한다.", "후입선출(LIFO) 구조로 동작한다.", "양쪽 끝에서 삽입과 삭제가 모두 자유롭다.", "비선형 그래프 자료구조이다."],
+                    ans: 1,
+                    exp: "스택(Stack)은 나중에 들어간 데이터가 먼저 나오는 LIFO(Last-In, First-Out) 구조입니다."
+                },
+                {
+                    q: "2. SQL 명령어 중 데이터베이스의 테이블 구조 자체를 생성할 때 사용하는 DDL(데이터 정의어)은?",
+                    options: ["INSERT", "UPDATE", "CREATE", "SELECT"],
+                    ans: 2,
+                    exp: "CREATE는 DDL(데이터 정의어) 문으로, 테이블/뷰/인덱스 등을 생성합니다."
+                },
+                {
+                    q: "3. Python 언어에서 변수 x가 10보다 클 때 문장을 실행하는 올바른 조건문 작성 방식은?",
+                    options: ["if x > 10 then:", "if (x > 10) { }", "if x > 10:", "if x > 10 begin"],
+                    ans: 2,
+                    exp: "파이썬의 조건문은 'if 조건식:' 형태로 콜론(:)을 사용하여 블록을 구분합니다."
+                }
+            ],
+            '중급': [
+                {
+                    q: "1. 두 개의 테이블에서 공통된 키 값을 기준으로 일치하는 행만 결합하여 조회하는 SQL 조인 방식은?",
+                    options: ["LEFT OUTER JOIN", "INNER JOIN", "RIGHT OUTER JOIN", "FULL OUTER JOIN"],
+                    ans: 1,
+                    exp: "INNER JOIN은 조건에 일치하는 양쪽 테이블의 공통 데이터만 결합하여 가져옵니다."
+                },
+                {
+                    q: "2. C언어 코드의 실행 결과로 올바른 것은?\n\nint a = 10;\nint *p = &a;\n*p = 30;\nprintf(\"%d\", a);",
+                    options: ["10", "30", "가비지 값", "컴파일 오류"],
+                    ans: 1,
+                    exp: "포인터 p가 a의 주소를 가리키므로, *p = 30으로 메모리를 변경하면 변수 a의 값도 30이 됩니다."
+                },
+                {
+                    q: "3. 정렬 알고리즘 중 기준값(Pivot)을 설정하고 이를 기준으로 작은 값과 큰 값으로 나누는 방식은?",
+                    options: ["버블 정렬 (Bubble Sort)", "선택 정렬 (Selection Sort)", "퀵 정렬 (Quick Sort)", "삽입 정렬 (Insertion Sort)"],
+                    ans: 2,
+                    exp: "퀵 정렬(Quick Sort)은 분할 정복(Divide and Conquer) 방식을 이용하며 피벗을 기준으로 정렬합니다."
+                }
+            ],
+            '고급': [
+                {
+                    q: "1. Java 코드의 실행 결과 출력값은?\n\nint arr[] = {2, 4, 6, 8, 10};\nint sum = 0;\nfor(int i=0; i<arr.length; i+=2){\n    sum += arr[i];\n}\nSystem.out.println(sum);",
+                    options: ["30", "18", "12", "20"],
+                    ans: 1,
+                    exp: "i는 0, 2, 4로 증가하므로 arr[0]+arr[2]+arr[4] = 2 + 6 + 10 = 18이 됩니다."
+                },
+                {
+                    q: "2. SQL의 GROUP BY절 결과에 대하여 집계 조건을 부여할 때 사용하는 구문은?",
+                    options: ["WHERE", "ORDER BY", "HAVING", "LIKE"],
+                    ans: 2,
+                    exp: "GROUP BY로 그룹화된 결과에 대한 조건은 HAVING 절을 사용하여 필터링합니다."
+                },
+                {
+                    q: "3. 운영체제 교착상태(Deadlock)의 4가지 발생 조건에 해당하지 않는 것은?",
+                    options: ["상호 배제 (Mutual Exclusion)", "점유와 대기 (Hold and Wait)", "선점 (Preemption)", "환형 대기 (Circular Wait)"],
+                    ans: 2,
+                    exp: "교착상태 필요조건은 '비선점(No Preemption)'입니다. '선점'이 허용되면 교착상태가 발생하지 않습니다."
+                }
+            ]
+        };
+
+        let currentLevel = '기초';
+        let highScores = JSON.parse(localStorage.getItem('ip_scores') || '{}');
+
+        function updateScoreDisplay() {
+            const keys = Object.keys(highScores);
+            if (keys.length === 0) {
+                document.getElementById('highScoreText').innerText = '미도전';
+            } else {
+                const list = keys.map(k => `${k}: ${highScores[k]}점`).join(' | ');
+                document.getElementById('highScoreText').innerText = list;
+            }
+        }
+
+        function openQuizModal(level) {
+            currentLevel = level;
+            const modal = document.getElementById('quizModal');
+            const badge = document.getElementById('modalBadge');
+            const container = document.getElementById('quizQuestionsContainer');
+            const resultBanner = document.getElementById('quizResultBanner');
+
+            resultBanner.classList.add('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+
+            badge.innerText = `${level} Level`;
+            if (level === '기초') badge.className = "px-3 py-1 bg-emerald-600 text-white font-bold text-xs rounded-full";
+            else if (level === '중급') badge.className = "px-3 py-1 bg-indigo-600 text-white font-bold text-xs rounded-full";
+            else badge.className = "px-3 py-1 bg-purple-600 text-white font-bold text-xs rounded-full";
+
+            const questions = quizData[level];
+            container.innerHTML = questions.map((item, idx) => `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                    <p class="font-bold text-slate-800 whitespace-pre-line mb-3 text-sm sm:text-base">${item.q}</p>
+                    <div class="space-y-2 mb-3">
+                        ${item.options.map((opt, oIdx) => `
+                            <label class="flex items-center space-x-2 text-xs sm:text-sm text-slate-700 cursor-pointer p-2.5 bg-white rounded-lg border border-slate-200 hover:bg-indigo-50/50 transition">
+                                <input type="radio" name="q_${idx}" value="${oIdx}" required class="text-indigo-600 focus:ring-indigo-500">
+                                <span>${oIdx + 1}) ${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div id="ans_${idx}" class="hidden mt-3 p-3 bg-indigo-50 text-indigo-900 border border-indigo-200 rounded-lg text-xs space-y-1">
+                        <p class="font-bold">정답: ${item.ans + 1}) ${item.options[item.ans]}</p>
+                        <p class="text-indigo-800">해설: ${item.exp}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function submitQuiz(e) {
+            e.preventDefault();
+            const questions = quizData[currentLevel];
+            let score = 0;
+
+            questions.forEach((item, idx) => {
+                const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+                const ansDiv = document.getElementById(`ans_${idx}`);
+                ansDiv.classList.remove('hidden');
+
+                if (selected && parseInt(selected.value) === item.ans) {
+                    score += 33;
+                }
+            });
+
+            if (score === 99) score = 100; // 정밀도 조정
+
+            const resultBanner = document.getElementById('quizResultBanner');
+            resultBanner.classList.remove('hidden');
+            resultBanner.className = score >= 60 
+                ? "p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 font-bold text-sm text-center"
+                : "p-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 font-bold text-sm text-center";
+
+            resultBanner.innerHTML = `
+                <p class="text-base">${currentLevel} 모의고사 채점 결과: <strong>${score}점</strong></p>
+                <p class="text-xs font-normal mt-1">${score >= 60 ? '🎉 합격권입니다! 훌륭합니다.' : '💡 조금 더 복습이 필요합니다. 정답 해설을 확인하세요.'}</p>
+            `;
+
+            // 기록 저장
+            if (!highScores[currentLevel] || highScores[currentLevel] < score) {
+                highScores[currentLevel] = score;
+                localStorage.setItem('ip_scores', JSON.stringify(highScores));
+                updateScoreDisplay();
+            }
+
+            document.getElementById('submitBtn').classList.add('hidden');
+        }
+
+        function resetScores() {
+            if (confirm('모든 문제풀이 기록을 초기화하시겠습니까?')) {
+                highScores = {};
+                localStorage.removeItem('ip_scores');
+                updateScoreDisplay();
+            }
+        }
+
+        function closeQuizModal() {
+            const modal = document.getElementById('quizModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // 초기화 시 점수 표시
+        updateScoreDisplay();
+    </script>
+</body>
+</html>
