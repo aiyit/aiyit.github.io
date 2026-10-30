@@ -22,30 +22,157 @@
 
     <div class="section">
         <h3>1. HTML 전체 소스코드</h3>
-        <pre>&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-&lt;title&gt;예제9-4String 속성&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;h3&gt;String 속성&lt;/h3&gt;
-&lt;p&gt;Length : &lt;b id="Lth"&gt;&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;Prototype : &lt;b id="proto"&gt;&lt;/b&gt;&lt;/p&gt;
-&lt;p&gt;Constructor : &lt;b id="cnst"&gt;&lt;/b&gt;&lt;/p&gt;
-&lt;script&gt;
-    function Human(name, job, birth) {
-        this.name = name;
-        this.job = job;
-        this.birth = birth; 
-    }
-    Human.prototype.age = 23;
-    var kim = new Human("Kim", "student", 2003);
+        <pre>
+&lt;!DOCTYPE html&gt; &lt;!-- HTML5 문서 선언 --&gt;
+&lt;html&gt; &lt;!-- HTML 문서 시작 --&gt;
+&lt;head&gt; &lt;!-- 문서 정보 시작 --&gt;
+&lt;title&gt;예제9-4String 속성&lt;/title&gt; &lt;!-- 브라우저 제목 --&gt;
+&lt;/head&gt; &lt;!-- head 종료 --&gt;
+&lt;body&gt; &lt;!-- 화면 내용 시작 --&gt;
+
+&lt;h3&gt;String 속성&lt;/h3&gt; &lt;!-- 실습 제목 --&gt;
+&lt;p&gt;Length : &lt;b id="Lth"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- 문자열 길이 출력 위치 --&gt;
+&lt;p&gt;Prototype : &lt;b id="proto"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- 프로토타입 값 출력 위치 --&gt;
+&lt;p&gt;Constructor : &lt;b id="cnst"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- 생성자 정보 출력 위치 --&gt;
+
+&lt;script&gt; // JavaScript 코드 시작
+
+    function Human(name, job, birth) { // Human 생성자 함수 정의
+        this.name = name; // 객체의 name 속성에 이름 저장
+        this.job = job; // 객체의 job 속성에 직업 저장
+        this.birth = birth; // 객체의 birth 속성에 출생연도 저장
+    } // 생성자 함수 종료
+
+    Human.prototype.age = 23; // prototype에 age 속성 추가
+
+    var kim = new Human("Kim", "student", 2003); // Human 객체 생성
+
     document.getElementById("proto").innerHTML = kim.age;
+    // kim 객체의 age 속성값 출력
+
     document.getElementById("cnst").innerHTML = kim.constructor;
+    // kim 객체의 생성자 함수 정보 출력
+
     document.getElementById("Lth").innerHTML = kim.name.length;
-&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</pre>
+    // Kim 문자열의 길이 3 출력
+
+&lt;/script&gt; &lt;!-- JavaScript 코드 종료 --&gt;
+
+&lt;/body&gt; &lt;!-- body 종료 --&gt;
+&lt;/html&gt; &lt;!-- HTML 문서 종료 --&gt;
+
+
+&lt;!DOCTYPE html&gt; &lt;!-- HTML5 문서 선언 --&gt;
+&lt;html&gt; &lt;!-- HTML 문서 시작 --&gt;
+&lt;head&gt; &lt;!-- 문서 정보 시작 --&gt;
+    &lt;title&gt;예제9-5String 메소드1&lt;/title&gt; &lt;!-- 브라우저 제목 --&gt;
+&lt;/head&gt; &lt;!-- head 종료 --&gt;
+&lt;body&gt; &lt;!-- 화면 내용 시작 --&gt;
+
+    &lt;h3&gt;String 메소드1&lt;/h3&gt; &lt;!-- 실습 제목 --&gt;
+
+    &lt;p&gt;charAt : &lt;b id="ca"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- charAt 결과 출력 위치 --&gt;
+    &lt;p&gt;charCodeAt : &lt;b id="cca"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- charCodeAt 결과 출력 위치 --&gt;
+    &lt;p&gt;concat : &lt;b id="cnct"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- concat 결과 출력 위치 --&gt;
+    &lt;p&gt;indexOf : &lt;b id="ido"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- indexOf 결과 출력 위치 --&gt;
+    &lt;p&gt;lastIndexOf : &lt;b id="lido"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- lastIndexOf 결과 출력 위치 --&gt;
+    &lt;p&gt;replace : &lt;b id="rpl"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- replace 결과 출력 위치 --&gt;
+
+&lt;script&gt; // JavaScript 코드 시작
+
+    var str = "hello, welcome to AI Software!!"; // 실습 문자열 저장
+    var str2 ="???"; // 연결할 두 번째 문자열 저장
+
+    var ca = str.charAt(0); // 0번 위치의 문자 h 반환
+    var cca = str.charCodeAt(0); // 0번 위치 문자 h의 유니코드 값 반환
+
+    var cnct = str.concat(str2); // 두 문자열 연결
+    var ido = str.indexOf("AI"); // AI가 처음 나타나는 위치 반환
+
+    var lido = str.lastIndexOf("to"), rpl = str.replace("hello","Good Bye");
+    // lastIndexOf("to")는 to가 마지막으로 나타나는 위치 반환
+    // replace()는 hello를 Good Bye로 교체
+
+    document.getElementById("ca").innerHTML = ca;
+    // charAt 실행 결과 출력
+
+    document.getElementById("cca").innerHTML = cca;
+    // charCodeAt 실행 결과 출력
+
+    document.getElementById("cnct").innerHTML = cnct;
+    // concat 실행 결과 출력
+
+    document.getElementById("ido").innerHTML = ido;
+    // indexOf 실행 결과 출력
+
+    document.getElementById("lido").innerHTML = lido;
+    // lastIndexOf 실행 결과 출력
+
+    document.getElementById("rpl").innerHTML = rpl;
+    // replace 실행 결과 출력
+
+&lt;/script&gt; &lt;!-- JavaScript 코드 종료 --&gt;
+
+&lt;/body&gt; &lt;!-- body 종료 --&gt;
+&lt;/html&gt; &lt;!-- HTML 문서 종료 --&gt;
+
+
+&lt;!DOCTYPE html&gt; &lt;!-- HTML5 문서 선언 --&gt;
+&lt;html&gt; &lt;!-- HTML 문서 시작 --&gt;
+&lt;head&gt; &lt;!-- 문서 정보 시작 --&gt;
+    &lt;title&gt;예제9-6String 메소드2&lt;/title&gt; &lt;!-- 브라우저 제목 --&gt;
+&lt;/head&gt; &lt;!-- head 종료 --&gt;
+&lt;body&gt; &lt;!-- 화면 내용 시작 --&gt;
+
+    &lt;h3&gt;String 메소드2&lt;/h3&gt; &lt;!-- 실습 제목 --&gt;
+
+    &lt;p&gt;match : &lt;b id="ca"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- match 결과 출력 위치 --&gt;
+    &lt;p&gt;search : &lt;b id="cca"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- search 결과 출력 위치 --&gt;
+    &lt;p&gt;slice : &lt;b id="cnct"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- slice 결과 출력 위치 --&gt;
+    &lt;p&gt;split : &lt;b id="ido"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- split 결과 출력 위치 --&gt;
+    &lt;p&gt;toUpperCase : &lt;b id="lido"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- 대문자 변환 결과 출력 위치 --&gt;
+    &lt;p&gt;toString : &lt;b id="rpl"&gt;&lt;/b&gt;&lt;/p&gt; &lt;!-- 문자열 변환 결과 출력 위치 --&gt;
+
+&lt;script&gt; // JavaScript 코드 시작
+
+    var str = "Hello, welcome, AI, Software"; // 실습 문자열 저장
+    var str2 = 5678; // 숫자형 데이터 저장
+
+    var ca = str.match("AI"), cca = str.search("Software");
+    // match()는 AI와 일치하는 문자열 검색
+    // search()는 Software가 시작되는 위치 반환
+
+    var cnct = str.slice(7,12), ido = str.split(" ");
+    // slice()는 7번부터 11번 인덱스까지 추출
+    // split()은 공백을 기준으로 문자열 분리
+
+    var lido = str.toUpperCase(), rpl = str2.toString();
+    // toUpperCase()는 영문자를 대문자로 변환
+    // toString()은 숫자 5678을 문자열로 변환
+
+    document.getElementById("ca").innerHTML = ca;
+    // match 실행 결과 출력
+
+    document.getElementById("cca").innerHTML = cca;
+    // search 실행 결과 출력
+
+    document.getElementById("cnct").innerHTML = cnct;
+    // slice 실행 결과 출력
+
+    document.getElementById("ido").innerHTML = ido;
+    // split 실행 결과 출력
+
+    document.getElementById("lido").innerHTML = lido;
+    // toUpperCase 실행 결과 출력
+
+    document.getElementById("rpl").innerHTML = rpl;
+    // toString 실행 결과 출력
+
+&lt;/script&gt; &lt;!-- JavaScript 코드 종료 --&gt;
+
+&lt;/body&gt; &lt;!-- body 종료 --&gt;
+&lt;/html&gt; &lt;!-- HTML 문서 종료 --&gt;
+</pre>
     </div>
 
     <div class="section">
@@ -85,6 +212,80 @@
                 <td>문자열 원시 값이 래퍼 객체로 변환되어 길이를 반환</td>
             </tr>
         </table>
+         <table>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 결과</th>
+            </tr>
+            <tr>
+                <td><code>charAt(index)</code></td>
+                <td><code>str.charAt(0)</code></td>
+                <td>특정 인덱스(0번째)에 위치한 문자 추출 ➔ <b>h</b></td>
+            </tr>
+            <tr>
+                <td><code>charCodeAt(index)</code></td>
+                <td><code>str.charCodeAt(0)</code></td>
+                <td>특정 인덱스 문자의 유니코드(Unicode) 값 반환 ➔ <b>104</b> ('h'의 ASCII/Unicode 값)</td>
+            </tr>
+            <tr>
+                <td><code>concat(string)</code></td>
+                <td><code>str.concat(str2)</code></td>
+                <td>문자열을 서로 결합 ➔ <b>hello, welcome to AI Software!!???</b></td>
+            </tr>
+            <tr>
+                <td><code>indexOf(substring)</code></td>
+                <td><code>str.indexOf("AI")</code></td>
+                <td>지정한 문자열이 처음으로 등장하는 위치(인덱스) 검색 ➔ <b>17</b></td>
+            </tr>
+            <tr>
+                <td><code>lastIndexOf(substring)</code></td>
+                <td><code>str.lastIndexOf("to")</code></td>
+                <td>지정한 문자열이 마지막으로 등장하는 위치 검색 ➔ <b>14</b></td>
+            </tr>
+            <tr>
+                <td><code>replace(target, replacement)</code></td>
+                <td><code>str.replace("hello", "Good Bye")</code></td>
+                <td>특정 문자열을 찾아 다른 문자열로 치환 ➔ <b>Good Bye, welcome to AI Software!!</b></td>
+            </tr>
+        </table>
+         <table>
+            <tr>
+                <th>메서드명</th>
+                <th>사용 예시</th>
+                <th>동작 설명 및 결과</th>
+            </tr>
+            <tr>
+                <td><code>match(pattern)</code></td>
+                <td><code>str.match("AI")</code></td>
+                <td>지정한 정규식 또는 문자열과 일치하는 항목을 검색하여 배열로 반환합니다. ➔ <b>AI</b></td>
+            </tr>
+            <tr>
+                <td><code>search(pattern)</code></td>
+                <td><code>str.search("Software")</code></td>
+                <td>지정한 정규식 또는 문자열이 처음으로 시작되는 인덱스 위치를 반환합니다. ➔ <b>20</b></td>
+            </tr>
+            <tr>
+                <td><code>slice(start, end)</code></td>
+                <td><code>str.slice(7, 12)</code></td>
+                <td>인덱스 7부터 12 직전(11)까지의 문자열을 부분 추출합니다. ➔ <b>welco</b></td>
+            </tr>
+            <tr>
+                <td><code>split(separator)</code></td>
+                <td><code>str.split(" ")</code></td>
+                <td>구분자(공백 <code>" "</code>)를 기준으로 문자열을 분할하여 배열을 생성합니다. (DOM 출력 시 콤마로 연결됨) ➔ <b>Hello,,welcome,,AI,,Software</b></td>
+            </tr>
+            <tr>
+                <td><code>toUpperCase()</code></td>
+                <td><code>str.toUpperCase()</code></td>
+                <td>문자열 내부의 모든 영문 소문자를 대문자로 변환합니다. ➔ <b>HELLO, WELCOME, AI, SOFTWARE</b></td>
+            </tr>
+            <tr>
+                <td><code>toString()</code></td>
+                <td><code>str2.toString()</code></td>
+                <td>숫자 객체/원시 값(<code>5678</code>)을 문자열 형태(<code>"5678"</code>)로 변환합니다. ➔ <b>5678</b></td>
+            </tr>
+        </table>
     </div>
 
     <div class="section">
@@ -99,6 +300,26 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
