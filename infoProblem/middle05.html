@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>정보처리산업기사 중급 모의시험 5회 60문제</title>
+<style>
+:root{--navy:#10233f;--blue:#2563eb;--cyan:#0891b2;--bg:#f3f6fb;--ink:#172033;--muted:#64748b;--line:#dbe3ef;--good:#15803d;--bad:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,'Noto Sans KR',sans-serif;line-height:1.65}.hero{background:linear-gradient(135deg,#10233f,#174b7a);color:white;padding:30px 18px}.hero-inner{max-width:980px;margin:auto}.hero h1{margin:0 0 8px;font-size:clamp(24px,4vw,36px)}.hero p{margin:6px 0;color:#e2e8f0}.wrap{max-width:980px;margin:22px auto;padding:0 14px}.notice,.toolbar,.question,.results{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}.notice{border-left:5px solid var(--cyan)}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;position:sticky;top:0;z-index:5;box-shadow:0 4px 16px #10233f12}.progress{font-weight:700;color:var(--navy)}button{border:0;border-radius:9px;padding:11px 16px;font-size:15px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:#e8eef8;color:var(--navy)}.section-title{background:#e4edf9;color:var(--navy);padding:12px 15px;border-radius:10px;margin:24px 0 12px;font-size:20px}.question h3{font-size:17px;margin:0 0 12px}.qnum{color:var(--blue);font-weight:800}.options{display:grid;gap:8px}.option{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:9px;cursor:pointer}.option:hover{background:#f8fbff}.option input{margin-top:6px;accent-color:var(--blue);flex-shrink:0}.explanation{display:none;margin-top:14px;padding:13px;border-radius:9px;background:#f0fdf4;border:1px solid #bbf7d0}.explanation.show{display:block}.correct{font-weight:800;color:var(--good)}.wrong{font-weight:800;color:var(--bad)}.option.correct-answer{border-color:#22c55e;background:#f0fdf4}.option.wrong-answer{border-color:#ef4444;background:#fef2f2}.results{display:none}.results.show{display:block}.score{font-size:28px;font-weight:800;color:var(--blue)}.small{font-size:13px;color:var(--muted)}footer{text-align:center;color:var(--muted);padding:25px 12px;font-size:13px}@media(max-width:600px){.hero{padding:24px 16px}.question{padding:14px}.toolbar{position:static}.section-title{font-size:18px}}
+.code-box{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:10px 14px;font-family:Consolas,monospace;font-size:14px;margin:8px 0;white-space:pre-wrap;color:#0f172a}
+</style></head><body>
+<header class="hero"><div class="hero-inner"><h1>정보처리산업기사 필기 중급 모의시험 5회</h1><p>객관식 4지선다 · 총 60문제 · 정답 및 상세 해설</p><p>1과목 정보시스템 기반 기술 (20문항) · 2과목 프로그래밍 언어 활용 (20문항) · 3과목 데이터베이스 활용 (20문항)</p></div></header>
+<main class="wrap"><div class="notice"><strong>문제 출처 및 난이도 안내</strong><br>전문대 학과 과정 및 정보처리산업기사 시험 표준 출제기준에 채택된 실무 중심 중급 문항 60개입니다.</div>
+<div class="toolbar"><div><div class="progress" id="progress">응답: 0 / 60</div><div class="small">문제를 선택한 뒤 하단의 ‘정답 및 해설 보기’를 누르세요.</div></div><button class="secondary" onclick="resetQuiz()">선택 초기화</button></div>
+<div id="quiz"></div><div class="toolbar"><div><strong>모든 문제를 푼 뒤 정답과 해설을 확인하세요.</strong><div class="small">미응답 문제는 오답으로 계산됩니다.</div></div><button class="primary" onclick="showAnswers()">정답 및 해설 보기</button></div><div id="results" class="results"></div></main><footer>정보처리산업기사 학습용 자체 제작 자료 · 오프라인에서도 실행 가능</footer>
+<script>
+const questions = [
+  ["여러 프로세스가 공유 자원에 동시에 접근하면 안 되는 코드 영역을 무엇이라 하는가?", ["스택 영역", "임계구역(Critical Section)", "힙 영역", "인터럽트 벡터"], 1, "임계구역은 한 번에 하나의 프로세스만 실행해야 하는 공유 자원 접근 구역입니다."],
+  ["프로세스 상태 전이에서 준비(Ready) 상태의 프로세스가 CPU를 할당받아 실행 상태가 되는 것은?", ["타임아웃", "웨이크업", "디스패치(Dispatch)", "블록"], 2, "디스패치는 스케줄러가 선택한 프로세스에 CPU를 할당하는 동작입니다."],
+  ["우선순위 스케줄링에서 낮은 우선순위 프로세스가 무한정 기다리는 기아 현상을 막기 위한 기법은?", ["에이징(Aging)", "스와핑", "스풀링", "페이징"], 0, "에이징은 오래 기다린 프로세스의 우선순위를 점차 높여 줍니다."],
+  ["페이지 부재(Page Fault)가 발생했을 때 운영체제의 처리는?", ["프로세스를 즉시 삭제한다", "보조기억장치에서 해당 페이지를 주기억장치로 적재한다", "CPU를 재부팅한다", "디스크를 포맷한다"], 1, "필요한 페이지를 디스크에서 메모리로 가져와 페이지 테이블을 갱신합니다."],
+  ["파일 할당 방식 중 연속 할당의 장점은?", ["외부 단편화가 없다", "순차·직접 접근 속도가 빠르다", "파일 크기 확장이 쉽다", "포인터 저장 공간이 많이 든다"], 1, "연속 할당은 블록이 붙어 있어 접근 속도가 빠르지만 외부 단편화와 크기 확장 문제가 있습니다."],
+  ["현재 대부분의 운영체제가 사용하는 디렉터리 구조는?", ["1단계 구조", "트리 구조", "원형 구조", "스택 구조"], 1, "트리 구조는 계층적으로 디렉터리를 구성하여 관리가 편리합니다."],
+  ["다음에 실행할 명령어의 주소를 저장하는 CPU 레지스터는?", ["프로그램 카운터(PC)", "명령어 레지스터(IR)", "누산기(AC)", "상태 레지스터"], 0, "PC는 다음 명령어의 주소를, IR은 현재 실행 중인 명령어를 저장합니다."],
+  ["논리 게이트 XOR에 입력 1과 1을 넣었을 때의 출력은?", ["1", "0", "10", "정의되지 않음"], 1, "XOR은 입력이 서로 다를 때만 1을 출력합니다."],
+  ["10진수 13을 2진수로 변환한 값은?", ["1011", "1110", "1101", "1001"], 2, "13 = 8 + 4 + 1 이므로 1101입니다."],
+  ["16진수 0x1F를 10진수로 변환한 값은?", ["15", "16", "31", "32"], 2, "1×16 + 15 = 31입니다."],
+  ["OSI 7계층의 전송 계층에서 사용하는 데이터 단위(PDU)는?", ["세그먼트", "패킷", "프레임", "비트"], 0, "전송 계층은 세그먼트, 네트워크 계층은 패킷, 데이터링크 계층은 프레임을 사용합니다."],
+  ["IP 주소 클래스 중 첫 번째 옥텟이 128~191 범위인 클래스는?", ["A 클래스", "C 클래스", "D 클래스", "B 클래스"], 3, "A는 1~126, B는 128~191, C는 192~223입니다."],
+  ["모든 노드가 중앙 장치(허브/스위치)에 연결되는 네트워크 토폴로지는?", ["스타형", "버스형", "링형", "메시형"], 0, "스타형은 중앙 장치 하나에 모든 단말이 연결됩니다."],
+  ["정보 보안의 3요소 중 허가된 사용자가 필요할 때 언제든 자원에 접근할 수 있도록 보장하는 특성은?", ["가용성", "기밀성", "무결성", "부인방지"], 0, "CIA 3요소는 기밀성, 무결성, 가용성입니다."],
+  ["랜섬웨어 피해를 줄이기 위한 가장 기본적인 대응책은?", ["중요 데이터의 정기적인 오프라인 백업", "출처를 모르는 첨부파일 열기", "백신 비활성화", "비밀번호 공유"], 0, "정기 백업은 감염 시에도 데이터를 복구할 수 있게 해 줍니다."],
+  ["사용자에게 업무 수행에 필요한 최소한의 권한만 부여하는 보안 원칙은?", ["직무 분리의 원칙", "개방 설계의 원칙", "최소 권한의 원칙", "기본 허용의 원칙"], 2, "최소 권한 원칙은 권한 오남용과 침해 피해를 줄입니다."],
+  ["전체 시스템을 큰 단위 모듈로 나눈 뒤 점차 세부 모듈로 상세화하는 설계 방식은?", ["상향식 설계", "결합 설계", "하향식 설계", "역공학"], 2, "하향식은 상위 모듈에서 하위 모듈로 점진적으로 구체화합니다."],
+  ["프로그램을 실행하지 않고 코드를 눈으로 검토하여 결함을 찾는 정적 테스트 기법은?", ["부하 테스트", "코드 인스펙션", "스트레스 테스트", "회귀 테스트"], 1, "인스펙션과 워크스루는 코드를 실행하지 않고 검토하는 정적 테스트입니다."],
+  ["소프트웨어 품질 특성 중 오류가 발생해도 지정된 성능 수준을 유지하는 능력은?", ["이식성", "효율성", "신뢰성", "사용성"], 2, "신뢰성은 일정 조건에서 기능을 정확히 유지하는 능력입니다."],
+  ["빅데이터의 3V에 해당하지 않는 것은?", ["Volume", "Variety", "Velocity", "Validation"], 3, "3V는 규모(Volume), 다양성(Variety), 속도(Velocity)입니다."],
+  ["다음 C언어 코드의 출력 결과는?\n\n<div class=\"code-box\">int a[3] = {1, 2, 3};\nint i, s = 0;\nfor (i = 0; i &lt; 3; i++)\n    s += a[i] * (i + 1);\nprintf(\"%d\", s);</div>", ["6", "12", "10", "14"], 3, "1×1 + 2×2 + 3×3 = 14입니다."],
+  ["다음 C언어 코드의 출력 결과는?\n\n<div class=\"code-box\">int a = 3, b = 7;\nprintf(\"%d\", (a &gt; b) ? a - b : b - a);</div>", ["-4", "3", "4", "7"], 2, "a > b가 거짓이므로 b - a = 4입니다."],
+  ["다음 C언어 코드의 출력 결과는?\n\n<div class=\"code-box\">#include &lt;string.h&gt;\nprintf(\"%d\", (int)strlen(\"Hello World\"));</div>", ["11", "10", "12", "5"], 0, "공백을 포함해 11글자이며 널 문자는 세지 않습니다."],
+  ["다음 C언어 코드의 출력 결과는?\n\n<div class=\"code-box\">void f() {\n    static int c = 0;\n    c++;\n    printf(\"%d\", c);\n}\nint main() { f(); f(); f(); }</div>", ["111", "123", "012", "321"], 1, "static 변수는 호출 사이에 값이 유지되어 1, 2, 3이 출력됩니다."],
+  ["다음 C언어 코드의 출력 결과는?\n\n<div class=\"code-box\">void swap(int *a, int *b) { int t = *a; *a = *b; *b = t; }\nint main() {\n    int x = 1, y = 2;\n    swap(&amp;x, &amp;y);\n    printf(\"%d %d\", x, y);\n}</div>", ["1 2", "1 1", "2 2", "2 1"], 3, "포인터로 값을 교환하므로 x는 2, y는 1이 됩니다."],
+  ["다음 C언어 코드의 출력 결과는?\n\n<div class=\"code-box\">int m[2][3] = {{1, 2, 3}, {4, 5, 6}};\nprintf(\"%d\", m[1][2]);</div>", ["3", "6", "5", "4"], 1, "m[1][2]는 두 번째 행의 세 번째 값입니다."],
+  ["다음 C언어 코드의 출력 결과는?\n\n<div class=\"code-box\">int a = 0, b = 0;\nif (a++ &amp;&amp; b++) { }\nprintf(\"%d %d\", a, b);</div>", ["1 1", "0 0", "1 0", "0 1"], 2, "a++의 값이 0(거짓)이므로 단축 평가로 b++는 실행되지 않습니다."],
+  ["다음 Java 코드의 출력 결과는?\n\n<div class=\"code-box\">System.out.println(\"apple\".compareTo(\"banana\"));</div>", ["0", "1", "-1", "97"], 2, "'a'(97)와 'b'(98)의 차이인 -1이 반환됩니다."],
+  ["다음 Java 코드의 출력 결과는?\n\n<div class=\"code-box\">int a = 5;\nint b = a++ * 2 + --a;\nSystem.out.println(a + \" \" + b);</div>", ["5 14", "6 15", "4 15", "5 15"], 3, "a++는 5를 쓰고 a=6, 곱하면 10, --a는 5이므로 b = 15, a = 5입니다."],
+  ["다음 Java 코드의 출력 결과는?\n\n<div class=\"code-box\">int[][] m = new int[3][4];\nSystem.out.println(m.length + \" \" + m[0].length);</div>", ["4 3", "3 3", "3 4", "12 1"], 2, "m.length는 행 수(3), m[0].length는 열 수(4)입니다."],
+  ["Java에서 자기 자신의 객체를 가리키며 멤버 변수와 매개변수 이름이 같을 때 구분하는 데 쓰는 키워드는?", ["super", "self", "this", "new"], 2, "this.name = name처럼 현재 객체의 멤버를 가리킵니다."],
+  ["Java의 예외 중 컴파일러가 반드시 처리하도록 강제하는 체크 예외(Checked Exception)는?", ["NullPointerException", "ArithmeticException", "ArrayIndexOutOfBoundsException", "IOException"], 3, "IOException은 try-catch 또는 throws가 필요한 체크 예외이고 나머지는 런타임 예외입니다."],
+  ["다음 Java 코드의 출력 결과는?\n\n<div class=\"code-box\">HashMap&lt;String, Integer&gt; map = new HashMap&lt;&gt;();\nmap.put(\"a\", 1);\nmap.put(\"a\", 2);\nSystem.out.println(map.size() + \" \" + map.get(\"a\"));</div>", ["2 2", "1 1", "1 2", "2 1"], 2, "같은 키로 put하면 값이 덮어쓰기 되어 크기는 1, 값은 2입니다."],
+  ["다음 Python 코드의 출력 결과는?\n\n<div class=\"code-box\">def f(*args):\n    return sum(args)\n\nprint(f(1, 2, 3))</div>", ["(1, 2, 3)", "6", "3", "오류"], 1, "*args는 가변 인자를 튜플로 받으며 합은 6입니다."],
+  ["다음 Python 코드의 출력 결과는?\n\n<div class=\"code-box\">print(\"abcdef\"[1:5:2])</div>", ["bd", "bcde", "ace", "bdf"], 0, "인덱스 1부터 4까지 2칸씩 건너뛰면 b, d입니다."],
+  ["다음 Python 코드의 출력 결과는?\n\n<div class=\"code-box\">a = [1, 2]\nb = a\nb.append(3)\nprint(a)</div>", ["[1, 2]", "[3]", "오류", "[1, 2, 3]"], 3, "b = a는 같은 리스트를 가리키므로 b를 수정하면 a에도 반영됩니다."],
+  ["다음 Python 코드의 출력 결과는?\n\n<div class=\"code-box\">print(sum(range(1, 6)))</div>", ["15", "10", "21", "5"], 0, "range(1, 6)은 1~5이며 합은 15입니다."],
+  ["다음 Python 코드의 출력 결과는?\n\n<div class=\"code-box\">print(\"hello world\".title())</div>", ["HELLO WORLD", "hello world", "Hello world", "Hello World"], 3, "title()은 각 단어의 첫 글자를 대문자로 만듭니다."],
+  ["다음 Python 코드의 출력 결과는?\n\n<div class=\"code-box\">x = 7\nprint(\"odd\" if x % 2 else \"even\")</div>", ["odd", "even", "1", "True"], 0, "x % 2가 1(참)이므로 'odd'가 출력됩니다."],
+  ["다음 Python 코드의 출력 결과는?\n\n<div class=\"code-box\">m = [[1, 2], [3, 4]]\nprint(m[1][0])</div>", ["3", "2", "1", "4"], 0, "m[1]은 [3, 4]이고 그 첫 요소는 3입니다."],
+  ["다음 SQL 명령 중 DDL(데이터 정의어)이 아닌 것은?", ["CREATE", "ALTER", "DROP", "SELECT"], 3, "SELECT는 데이터 조작어(DML)에 속합니다."],
+  ["COMMIT과 ROLLBACK이 속하는 SQL 분류는?", ["DDL", "DML", "TCL(트랜잭션 제어어)", "DCL"], 2, "COMMIT, ROLLBACK, SAVEPOINT는 TCL에 속합니다."],
+  ["CREATE TABLE 문에서 기본키를 지정하는 제약조건 키워드는?", ["MAIN KEY", "PRIMARY KEY", "UNIQUE ONLY", "FIRST KEY"], 1, "PRIMARY KEY는 유일성과 NOT NULL을 함께 보장합니다."],
+  ["WHERE a = 1 OR b = 2 AND c = 3 에서 먼저 평가되는 연산은?", ["a = 1 OR b = 2", "모두 동시에 평가", "왼쪽부터 순서대로", "b = 2 AND c = 3"], 3, "AND가 OR보다 우선순위가 높습니다."],
+  ["dept IN ('AI', 'EE') 조건의 의미는?", ["dept가 AI이고 EE인 행", "dept가 AI 또는 EE인 행", "dept에 AI 또는 EE 문자가 포함", "dept가 AI와 EE를 제외한 행"], 1, "IN은 목록 중 하나와 일치하면 참입니다."],
+  ["A, A, B 값이 들어 있는 컬럼에 대해 COUNT(DISTINCT 컬럼)의 결과는?", ["3", "2", "1", "0"], 1, "중복을 제거한 값 A, B 두 가지가 있으므로 2입니다."],
+  ["ORDER BY dept ASC, salary DESC의 의미는?", ["부서는 내림차순, 급여는 오름차순", "부서는 오름차순, 같은 부서 안에서는 급여 내림차순", "부서와 급여 모두 오름차순", "급여 우선 내림차순"], 1, "여러 컬럼 정렬은 앞의 컬럼이 우선이며 같은 값일 때 다음 컬럼 기준으로 정렬합니다."],
+  ["두 테이블을 조인할 때 조인 조건을 지정하는 절은?", ["FOR", "LET", "AS", "ON"], 3, "JOIN ... ON 조건 형식으로 연결 조건을 작성합니다."],
+  ["서브쿼리 결과가 한 행이라도 존재하는지 검사하는 SQL 연산자는?", ["BETWEEN", "LIKE", "DISTINCT", "EXISTS"], 3, "EXISTS는 서브쿼리가 한 행 이상 반환하면 참입니다."],
+  ["릴레이션의 구조를 정의한 것으로 자주 변하지 않는 것을 무엇이라 하는가?", ["릴레이션 스키마", "릴레이션 인스턴스", "튜플", "카디널리티"], 0, "스키마는 구조, 인스턴스는 특정 시점에 저장된 실제 데이터입니다."],
+  ["데이터베이스에 저장된 객체들의 정의와 설명을 담고 있는 시스템 데이터베이스는?", ["데이터 사전(시스템 카탈로그)", "백업 파일", "인덱스 파일", "로그 파일"], 0, "시스템 카탈로그는 스키마와 객체 정보 등 메타데이터를 저장합니다."],
+  ["반정규화(Denormalization)를 수행하는 주된 이유는?", ["중복을 모두 제거하기 위해", "저장 공간을 줄이기 위해", "보안을 강화하기 위해", "조회 성능을 높이기 위해"], 3, "반정규화는 조인을 줄여 조회 성능을 높이는 대신 중복을 허용합니다."],
+  ["회복 기법에서 체크포인트(Checkpoint)의 목적은?", ["트랜잭션을 모두 취소하기 위해", "인덱스를 삭제하기 위해", "회복 시 로그를 검사할 범위를 줄이기 위해", "사용자 권한을 변경하기 위해"], 2, "체크포인트 이후의 로그만 확인하면 되므로 복구 시간이 단축됩니다."],
+  ["트랜잭션 스케줄의 직렬 가능성(Serializability)이 보장해야 하는 것은?", ["모든 트랜잭션이 동시에 시작해야 한다", "병행 실행 결과가 어떤 직렬 실행 결과와 같아야 한다", "트랜잭션 수를 줄여야 한다", "항상 읽기만 해야 한다"], 1, "직렬 가능한 스케줄은 병행 실행해도 순차 실행과 같은 결과를 보장합니다."],
+  ["타임스탬프 순서(Timestamp Ordering) 병행 제어 기법의 특징은?", ["잠금을 반드시 사용한다", "교착상태가 자주 발생한다", "트랜잭션의 시작 시간 순서로 실행 순서를 결정한다", "인덱스를 이용해 정렬한다"], 2, "타임스탬프 기법은 잠금 없이 시간 순서로 직렬성을 보장합니다."],
+  ["NoSQL 데이터베이스 중 키-값(Key-Value) 저장소의 대표적인 예는?", ["Oracle", "MySQL", "PostgreSQL", "Redis"], 3, "Redis는 인메모리 키-값 저장소이고 나머지는 관계형 DBMS입니다."],
+  ["데이터 웨어하우스(DW)의 특징으로 옳은 것은?", ["주제 중심으로 통합된 데이터를 의사결정 지원에 사용한다", "실시간 거래 처리에 최적화되어 있다", "데이터를 수시로 삭제하고 수정한다", "정규화를 가장 우선한다"], 0, "DW는 주제 지향·통합·시계열·비휘발성 데이터로 분석과 의사결정을 지원합니다."],
+  ["대량의 데이터에서 유용한 패턴이나 규칙을 발견하는 기술은?", ["데이터 마이닝", "데이터 정규화", "데이터 암호화", "데이터 백업"], 0, "데이터 마이닝은 통계·머신러닝 기법으로 숨은 패턴을 찾아냅니다."],
+  ["데이터베이스에서 인덱스를 지나치게 많이 생성했을 때 나타날 수 있는 문제는?", ["조회가 항상 느려진다", "삽입·수정·삭제 성능이 저하된다", "테이블이 삭제된다", "권한이 사라진다"], 1, "인덱스는 데이터 변경 시마다 함께 갱신되므로 과도하면 변경 성능과 저장 공간 부담이 커집니다."],
+  ["SQL에서 숫자를 지정한 자릿수로 반올림하는 함수는?", ["CEIL", "FLOOR", "ABS", "ROUND"], 3, "ROUND는 반올림, CEIL은 올림, FLOOR는 내림, ABS는 절댓값을 구합니다."]
+];
+
+const groups = ["1과목. 정보시스템 기반 기술", "2과목. 프로그래밍 언어 활용", "3과목. 데이터베이스 활용"];
+const quiz = document.getElementById('quiz');
+
+questions.forEach((q, i) => {
+  if (i % 20 === 0) {
+    const h = document.createElement('h2');
+    h.className = 'section-title';
+    h.textContent = groups[Math.floor(i / 20)];
+    quiz.appendChild(h);
+  }
+  const card = document.createElement('section');
+  card.className = 'question';
+  card.id = 'q' + i;
+
+  const h = document.createElement('h3');
+  h.innerHTML = '<span class="qnum">' + (i + 1) + '.</span> ' + q[0].replace(/\n/g, '<br>');
+  card.appendChild(h);
+
+  const opts = document.createElement('div');
+  opts.className = 'options';
+
+  q[1].forEach((option, j) => {
+    const label = document.createElement('label');
+    label.className = 'option';
+    label.innerHTML = '<input type="radio" name="q' + i + '" value="' + j + '"><span><b>' + (j + 1) + '.</b> ' + escapeHTML(option) + '</span>';
+    label.querySelector('input').addEventListener('change', updateProgress);
+    opts.appendChild(label);
+  });
+
+  card.appendChild(opts);
+  const ex = document.createElement('div');
+  ex.className = 'explanation';
+  ex.id = 'ex' + i;
+  card.appendChild(ex);
+  quiz.appendChild(card);
+});
+
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+}
+
+function updateProgress() {
+  const n = questions.filter((q, i) => document.querySelector('input[name="q' + i + '"]:checked')).length;
+  document.getElementById('progress').textContent = '응답: ' + n + ' / 60';
+}
+
+function showAnswers() {
+  let correct = 0, answered = 0, by = [0, 0, 0];
+  questions.forEach((q, i) => {
+    const card = document.getElementById('q' + i);
+    const selected = document.querySelector('input[name="q' + i + '"]:checked');
+    const chosen = selected ? Number(selected.value) : -1;
+    if (chosen >= 0) answered++;
+    if (chosen === q[2]) {
+      correct++;
+      by[Math.floor(i / 20)]++;
+    }
+    card.querySelectorAll('.option').forEach((label, j) => {
+      label.classList.remove('correct-answer', 'wrong-answer');
+      if (j === q[2]) label.classList.add('correct-answer');
+      if (j === chosen && chosen !== q[2]) label.classList.add('wrong-answer');
+    });
+    const ex = document.getElementById('ex' + i);
+    ex.classList.add('show');
+    ex.innerHTML = '<div class="' + (chosen === q[2] ? 'correct' : 'wrong') + '">' + (chosen === q[2] ? '정답입니다!' : '정답: ' + (q[2] + 1) + '번' + (chosen < 0 ? ' (미응답)' : ' · 선택한 답: ' + (chosen + 1) + '번')) + '</div><div style="margin-top:6px">' + escapeHTML(q[3]) + '</div>';
+  });
+
+  const r = document.getElementById('results');
+  r.className = 'results show';
+  r.innerHTML = '<h2>채점 결과</h2><div class="score">' + correct + ' / 60 (' + Math.round(correct / 60 * 100) + '점)</div><p>응답한 문제: ' + answered + ' / 60</p><ul><li>정보시스템 기반 기술: ' + by[0] + ' / 20 (' + by[0] * 5 + '점)</li><li>프로그래밍 언어 활용: ' + by[1] + ' / 20 (' + by[1] * 5 + '점)</li><li>데이터베이스 활용: ' + by[2] + ' / 20 (' + by[2] * 5 + '점)</li></ul><p class="small">각 과목별 정답과 해설이 모든 문항 아래에 표시되었습니다. 이 점수는 학습용 모의시험 결과이며 공식 성적이 아닙니다.</p><button class="secondary" onclick="window.scrollTo(0,0)">맨 위로 이동</button>';
+  r.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetQuiz() {
+  document.querySelectorAll('input[type=radio]').forEach(x => x.checked = false);
+  document.querySelectorAll('.explanation').forEach(x => {
+    x.classList.remove('show');
+    x.innerHTML = '';
+  });
+  document.querySelectorAll('.option').forEach(x => x.classList.remove('correct-answer', 'wrong-answer'));
+  const r = document.getElementById('results');
+  r.className = 'results';
+  r.innerHTML = '';
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script></body></html>
