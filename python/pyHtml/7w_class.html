@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7주차 | Python 객체지향 프로그래밍 시각 학습</title>
+<style>
+:root{
+ --navy:#142b4a;--blue:#2563a6;--cyan:#0e7490;--bg:#f3f6fa;
+ --paper:#fff;--text:#263445;--muted:#607086;--line:#dce4ed;
+ --code:#17212f;--codeText:#e6edf5;--soft:#eaf3fc;--gold:#fff6df;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans KR",Pretendard,Arial,sans-serif;line-height:1.75}
+header{background:linear-gradient(120deg,#142b4a,#1d5689);color:white;padding:34px 20px}
+header .inner,.container{max-width:1050px;margin:auto}
+.eyebrow{font-size:.9rem;color:#b9d8f4;font-weight:700;letter-spacing:.08em}
+h1{font-size:clamp(1.65rem,4vw,2.35rem);line-height:1.35;margin:8px 0}
+header p{margin:8px 0 0;color:#e0edf8}
+.container{padding:24px 18px 60px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+nav a{background:white;border:1px solid var(--line);border-radius:20px;padding:7px 14px;color:var(--blue);text-decoration:none;font-size:.9rem;font-weight:700}
+section{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;margin:20px 0;box-shadow:0 3px 14px #142b4a0a}
+h2{color:var(--navy);font-size:1.45rem;border-left:5px solid var(--blue);padding-left:12px;margin:0 0 18px}
+h3{color:#24547f;margin:22px 0 8px;font-size:1.12rem}
+p{margin:8px 0}
+.lead{font-size:1.03rem}
+.note{background:var(--soft);border-left:4px solid var(--blue);padding:13px 16px;border-radius:7px;margin:13px 0}
+.exam{background:var(--gold);border-left:4px solid #d49a20;padding:12px 15px;border-radius:7px;margin:12px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+th{background:#edf3f9;color:var(--navy)}
+.diagram{white-space:pre;overflow:auto;background:#f1f5f9;border:1px solid var(--line);border-radius:8px;padding:15px;font-family:Consolas,monospace;line-height:1.45}
+.question{border:1px solid var(--line);border-radius:10px;padding:15px;margin:14px 0}
+.question p{font-weight:700}
+.options{display:grid;gap:7px;margin:10px 0}
+.options label{display:block;padding:7px 10px;border-radius:6px;background:#f7f9fc;cursor:pointer}
+.options label:hover{background:#eaf3fc}
+.answer{display:none;background:#edf8f2;border-left:4px solid #27935d;padding:12px;margin-top:10px;border-radius:6px}
+button{border:0;border-radius:7px;background:var(--blue);color:white;padding:8px 13px;font-weight:700;cursor:pointer}
+button:hover{filter:brightness(.92)}
+.secondary{background:#53677d}
+.code-card{margin:16px 0;border:1px solid #334155;border-radius:10px;overflow:hidden}
+.code-head{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#263548;color:#eaf1f8;padding:9px 13px;font-size:.9rem}
+.code-head button{background:#42688e;padding:6px 11px}
+pre{margin:0;background:var(--code);color:var(--codeText);padding:17px;overflow-x:auto;font:14px/1.65 Consolas,"D2Coding",monospace;tab-size:4}
+pre code{font:inherit;color:inherit;white-space:pre}
+.output{background:#f3f6f8;border:1px solid var(--line);padding:12px 15px;border-radius:7px;margin-top:8px}
+.output strong{color:var(--cyan)}
+.task{background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:14px;margin:12px 0}
+.tag{display:inline-block;background:#e5effa;color:#24547f;border-radius:5px;padding:2px 8px;font-size:.8rem;font-weight:700;margin-right:5px}
+footer{text-align:center;color:var(--muted);padding:25px;font-size:.9rem}
+@media(max-width:650px){section{padding:17px}table{font-size:.85rem}th,td{padding:7px}.code-head{align-items:flex-start}}
+
+.visual-card{margin:14px 0 20px;padding:14px;background:linear-gradient(135deg,#f2f8ff,#ffffff);border:1px solid #cfe0f2;border-radius:12px;overflow:hidden}
+.visual-card svg{display:block;width:100%;height:auto;max-height:245px}
+.visual-caption{margin:8px 2px 0;color:#52677e;font-size:.9rem;text-align:center}
+.visual-card .vtitle{font-size:17px;font-weight:800;fill:#173b63}
+.visual-card .vtext{font-size:13px;font-weight:700;fill:#20364e}
+.visual-card .vsmall{font-size:11px;fill:#52677e}
+.visual-card .vbox{fill:#fff;stroke:#6ba5dc;stroke-width:2}
+.visual-card .varrow{stroke:#3982c8;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:650px){.visual-card{padding:8px}.visual-card svg{max-height:190px}.visual-caption{font-size:.82rem}}
+\n</style>
+</head>
+<body>
+<header><div class="inner">
+<div class="eyebrow">PYTHON · 7주차 · VISUAL LEARNING</div>
+<h1>객체지향 프로그래밍<br>클래스와 객체(Object-Oriented Programming)</h1>
+<p>그림으로 이해하는 객체지향 개념 · UML 설계 · Jupyter 실습</p>
+</div></header>
+<div class="container">
+<nav>
+<a href="#theory">핵심 개념 1~7</a><a href="#practice">Jupyter 코드 실습</a><a href="#practical">코드 분석</a><a href="#assignment">종합 과제</a>
+</nav>
+
+<section id="theory">
+<h2>Ⅰ. 객체지향 핵심 개념 1~7</h2>
+<p class="lead">객체지향을 처음 배우는 학습자도 이해할 수 있도록 생활 속 사례와 그림으로 개념을 살펴봅니다. 각 그림을 확인한 뒤 아래 설명과 Python 코드를 연결해 보세요.</p>
+
+<h3>1. 객체지향 프로그래밍(OOP)이란?</h3>\n<div class="visual-card"><svg viewBox="0 0 760 205" role="img" aria-label="객체지향은 데이터와 기능을 객체로 묶는 구조">
+<rect x="20" y="28" width="205" height="145" rx="16" fill="#dceeff" stroke="#4b91d0" stroke-width="2"/>
+<text x="122" y="57" text-anchor="middle" class="vtitle">객체(Object)</text>
+<rect x="43" y="72" width="160" height="37" rx="8" fill="#fff" stroke="#67a5d9"/><text x="123" y="96" text-anchor="middle" class="vtext">속성 · 데이터</text>
+<rect x="43" y="119" width="160" height="37" rx="8" fill="#fff" stroke="#67a5d9"/><text x="123" y="143" text-anchor="middle" class="vtext">메서드 · 기능</text>
+<path d="M245 100 H315" class="varrow"/><path d="M304 90 L316 100 L304 110" class="varrow"/>
+<rect x="330" y="28" width="190" height="145" rx="16" fill="#e8f8ef" stroke="#45a879" stroke-width="2"/>
+<text x="425" y="60" text-anchor="middle" class="vtitle">프로그램</text><text x="425" y="91" text-anchor="middle" class="vtext">학생 객체</text><text x="425" y="116" text-anchor="middle" class="vsmall">이름 · 학번 · 성적</text><text x="425" y="143" text-anchor="middle" class="vsmall">소개하기 · 평균 계산</text>
+<path d="M540 100 H600" class="varrow"/><path d="M589 90 L601 100 L589 110" class="varrow"/>
+<circle cx="665" cy="100" r="49" fill="#fff3d9" stroke="#e3a63c" stroke-width="3"/><text x="665" y="95" text-anchor="middle" class="vtitle">결과</text><text x="665" y="117" text-anchor="middle" class="vsmall">관리 쉬움</text>
+</svg><p class="visual-caption">객체지향은 데이터(속성)와 데이터를 다루는 기능(메서드)을 하나의 객체로 묶어 관리합니다.</p></div>
+<p>객체지향 프로그래밍(Object-Oriented Programming)은 데이터와 데이터를 처리하는 기능을 하나의 객체 단위로 묶어 프로그램을 설계하는 방법입니다.</p>
+<div class="note"><b>핵심 암기</b> : 객체는 속성(Attribute)과 메서드(Method)로 구성됩니다. 클래스는 객체를 생성하기 위한 설계도입니다.</div>
+<table><tr><th>용어</th><th>의미</th><th>Python 예시</th></tr>
+<tr><td>클래스(Class)</td><td>객체를 만들기 위한 설계도</td><td><code>class Student:</code></td></tr>
+<tr><td>객체(Object)</td><td>클래스를 바탕으로 만들어진 실체</td><td><code>student = Student()</code></td></tr>
+<tr><td>인스턴스(Instance)</td><td>특정 클래스에 의해 생성된 객체</td><td><code>student</code></td></tr>
+<tr><td>속성(Attribute)</td><td>객체가 보유한 데이터 또는 상태</td><td><code>self.name</code></td></tr>
+<tr><td>메서드(Method)</td><td>클래스에 정의된 함수, 객체의 동작</td><td><code>def introduce(self):</code></td></tr>
+<tr><td>생성자(Constructor)</td><td>객체 생성 시 초기화 작업을 수행</td><td><code>__init__()</code></td></tr></table>
+
+<h3>2. 객체지향의 주요 특징 4가지</h3>\n<div class="visual-card"><svg viewBox="0 0 760 205" role="img" aria-label="객체지향의 네 가지 특징">
+<rect x="12" y="20" width="174" height="160" rx="14" fill="#e5f2ff" stroke="#5b9bd5" stroke-width="2"/><circle cx="99" cy="61" r="23" fill="#4b91d0"/><text x="99" y="68" text-anchor="middle" font-size="21" fill="white" font-weight="bold">1</text><text x="99" y="108" text-anchor="middle" class="vtitle">추상화</text><text x="99" y="134" text-anchor="middle" class="vsmall">필요한 핵심만 표현</text><text x="99" y="155" text-anchor="middle" class="vsmall">복잡한 세부사항 감춤</text>
+<rect x="202" y="20" width="174" height="160" rx="14" fill="#e8f8ef" stroke="#55ad7b" stroke-width="2"/><circle cx="289" cy="61" r="23" fill="#42a66f"/><text x="289" y="68" text-anchor="middle" font-size="21" fill="white" font-weight="bold">2</text><text x="289" y="108" text-anchor="middle" class="vtitle">캡슐화</text><text x="289" y="134" text-anchor="middle" class="vsmall">데이터와 기능을 묶음</text><text x="289" y="155" text-anchor="middle" class="vsmall">접근을 제어</text>
+<rect x="392" y="20" width="174" height="160" rx="14" fill="#fff3df" stroke="#e4aa48" stroke-width="2"/><circle cx="479" cy="61" r="23" fill="#d99a2e"/><text x="479" y="68" text-anchor="middle" font-size="21" fill="white" font-weight="bold">3</text><text x="479" y="108" text-anchor="middle" class="vtitle">상속</text><text x="479" y="134" text-anchor="middle" class="vsmall">부모의 기능 물려받기</text><text x="479" y="155" text-anchor="middle" class="vsmall">코드 재사용</text>
+<rect x="582" y="20" width="166" height="160" rx="14" fill="#f2eaff" stroke="#9a79cf" stroke-width="2"/><circle cx="665" cy="61" r="23" fill="#8660bd"/><text x="665" y="68" text-anchor="middle" font-size="21" fill="white" font-weight="bold">4</text><text x="665" y="108" text-anchor="middle" class="vtitle">다형성</text><text x="665" y="134" text-anchor="middle" class="vsmall">같은 호출, 다른 동작</text><text x="665" y="155" text-anchor="middle" class="vsmall">상황에 맞게 실행</text>
+</svg><p class="visual-caption">객체지향의 네 가지 핵심 원리: 추상화·캡슐화·상속·다형성입니다.</p></div>
+<table><tr><th>특징</th><th>설명</th><th>기억할 키워드</th></tr>
+<tr><td>추상화(Abstraction)</td><td>필요한 핵심 기능과 속성만 추출하여 표현</td><td>핵심 요소 모델링</td></tr>
+<tr><td>캡슐화(Encapsulation)</td><td>데이터와 기능을 하나로 묶고 외부 접근을 제어</td><td>정보 은닉, 접근 제어</td></tr>
+<tr><td>상속(Inheritance)</td><td>기존 클래스의 속성과 메서드를 물려받아 재사용</td><td>코드 재사용, 부모·자식</td></tr>
+<tr><td>다형성(Polymorphism)</td><td>같은 이름의 인터페이스가 객체에 따라 다르게 동작</td><td>오버라이딩, 동적 바인딩</td></tr></table>
+
+
+<h3>3. 클래스와 객체의 관계</h3>\n<div class="visual-card"><svg viewBox="0 0 760 205" role="img" aria-label="클래스 설계도에서 여러 객체 생성">
+<rect x="20" y="35" width="220" height="135" rx="12" fill="#e8f3ff" stroke="#428bc9" stroke-width="3"/><text x="130" y="62" text-anchor="middle" class="vtitle">Student 클래스</text><path d="M35 75 H225 M35 119 H225" stroke="#8bb6dc"/><text x="130" y="98" text-anchor="middle" class="vtext">속성: 이름, 점수</text><text x="130" y="145" text-anchor="middle" class="vtext">메서드: 평균(), 소개()</text>
+<path d="M250 102 H320 M310 92 L322 102 L310 112" class="varrow"/>
+<path d="M335 102 L380 55 M335 102 L380 102 M335 102 L380 150" class="varrow"/>
+<rect x="390" y="22" width="155" height="55" rx="10" class="vbox"/><text x="467" y="45" text-anchor="middle" class="vtext">student1</text><text x="467" y="64" text-anchor="middle" class="vsmall">홍길동 · 95점</text>
+<rect x="390" y="82" width="155" height="55" rx="10" class="vbox"/><text x="467" y="105" text-anchor="middle" class="vtext">student2</text><text x="467" y="124" text-anchor="middle" class="vsmall">김철수 · 88점</text>
+<rect x="390" y="142" width="155" height="55" rx="10" class="vbox"/><text x="467" y="165" text-anchor="middle" class="vtext">student3</text><text x="467" y="184" text-anchor="middle" class="vsmall">이영희 · 92점</text>
+<text x="625" y="85" text-anchor="middle" class="vtitle">한 장의 설계도</text><text x="625" y="110" text-anchor="middle" class="vtitle">→ 여러 객체</text><text x="625" y="140" text-anchor="middle" class="vsmall">객체마다 값은</text><text x="625" y="157" text-anchor="middle" class="vsmall">서로 다를 수 있음</text>
+</svg><p class="visual-caption">클래스는 설계도, 객체는 설계도를 바탕으로 만들어진 실제 결과물입니다.</p></div>
+<div class="diagram">             클래스 Student (설계도)
+             ┌─────────────────────┐
+             │ 속성: name, score   │
+             │ 메서드: introduce() │
+             └──────────┬──────────┘
+                        │ 객체 생성
+          ┌─────────────┼─────────────┐
+          ▼             ▼             ▼
+      student1      student2      student3
+      홍길동 / 95    김철수 / 88    이영희 / 92
+        객체           객체           객체</div>
+<p>하나의 클래스로 여러 객체를 생성할 수 있으며, 각 객체는 서로 다른 속성값을 가질 수 있습니다.</p>
+
+<h3>4. 생성자와 self</h3>\n<div class="visual-card"><svg viewBox="0 0 760 205" role="img" aria-label="생성자 init과 self의 역할">
+<rect x="18" y="30" width="210" height="145" rx="13" fill="#eaf4ff" stroke="#4b91d0" stroke-width="2"/><text x="123" y="59" text-anchor="middle" class="vtitle">Student()</text><text x="123" y="91" text-anchor="middle" class="vtext">객체 생성</text><text x="123" y="119" text-anchor="middle" class="vsmall">Student("민수", 90)</text><text x="123" y="147" text-anchor="middle" class="vsmall">초기화 시작</text>
+<path d="M238 102 H300" class="varrow"/><path d="M289 92 L301 102 L289 112" class="varrow"/>
+<rect x="315" y="30" width="200" height="145" rx="13" fill="#e8f8ef" stroke="#45a879" stroke-width="2"/><text x="415" y="59" text-anchor="middle" class="vtitle">__init__()</text><text x="415" y="91" text-anchor="middle" class="vtext">생성 직후 초기화</text><text x="415" y="119" text-anchor="middle" class="vsmall">self.name = name</text><text x="415" y="147" text-anchor="middle" class="vsmall">self.score = score</text>
+<path d="M525 102 H585" class="varrow"/><path d="M574 92 L586 102 L574 112" class="varrow"/>
+<rect x="600" y="30" width="145" height="145" rx="13" fill="#fff3df" stroke="#e4aa48" stroke-width="2"/><text x="672" y="62" text-anchor="middle" class="vtitle">self</text><text x="672" y="92" text-anchor="middle" class="vtext">현재 객체</text><text x="672" y="120" text-anchor="middle" class="vsmall">내 이름</text><text x="672" y="142" text-anchor="middle" class="vsmall">내 점수</text>
+</svg><p class="visual-caption">__init__()은 객체의 초기값을 준비하고, self는 메서드를 호출한 현재 객체를 가리킵니다.</p></div>
+<ul>
+<li><code>__init__()</code> : 객체가 생성될 때 자동으로 호출되는 초기화 메서드입니다.</li>
+<li><code>self</code> : 메서드를 호출한 현재 객체 자신을 가리키는 매개변수입니다.</li>
+<li><code>self.name</code> : 현재 객체에 속한 <code>name</code> 속성을 의미합니다.</li>
+</ul>
+<div class="note">Python에서 <code>self</code>는 예약어가 아니라 관례적으로 사용하는 이름입니다. 인스턴스 메서드의 첫 번째 매개변수로 사용합니다.</div>
+
+<h3>5. 상속과 메서드 오버라이딩</h3>\n<div class="visual-card"><svg viewBox="0 0 760 205" role="img" aria-label="부모 클래스 Animal에서 Dog Cat Bird로 상속">
+<rect x="275" y="12" width="210" height="55" rx="12" fill="#e8f3ff" stroke="#428bc9" stroke-width="2"/><text x="380" y="36" text-anchor="middle" class="vtitle">Animal 부모 클래스</text><text x="380" y="55" text-anchor="middle" class="vsmall">공통 기능: eat()</text>
+<path d="M380 68 V95 M120 95 H640 M120 95 V119 M293 95 V119 M466 95 V119 M640 95 V119" class="varrow"/>
+<rect x="45" y="120" width="150" height="65" rx="11" fill="#fff0ed" stroke="#db8b76" stroke-width="2"/><text x="120" y="146" text-anchor="middle" class="vtitle">Dog</text><text x="120" y="168" text-anchor="middle" class="vsmall">sound() → 멍멍</text>
+<rect x="218" y="120" width="150" height="65" rx="11" fill="#f2eaff" stroke="#9a79cf" stroke-width="2"/><text x="293" y="146" text-anchor="middle" class="vtitle">Cat</text><text x="293" y="168" text-anchor="middle" class="vsmall">sound() → 야옹</text>
+<rect x="391" y="120" width="150" height="65" rx="11" fill="#e8f8ef" stroke="#45a879" stroke-width="2"/><text x="466" y="146" text-anchor="middle" class="vtitle">Bird</text><text x="466" y="168" text-anchor="middle" class="vsmall">sound() → 짹짹</text>
+<rect x="565" y="120" width="150" height="65" rx="11" fill="#fff3df" stroke="#e4aa48" stroke-width="2"/><text x="640" y="146" text-anchor="middle" class="vtitle">공통 기능</text><text x="640" y="168" text-anchor="middle" class="vsmall">eat() 재사용</text>
+</svg><p class="visual-caption">자식 클래스는 부모의 기능을 물려받고, 필요하면 같은 이름의 메서드를 다시 정의(오버라이딩)합니다.</p></div>
+<p><b>상속</b>은 자식 클래스가 부모 클래스의 기능을 물려받는 것이며, <b>오버라이딩(Overriding)</b>은 자식 클래스에서 부모 클래스의 메서드를 같은 이름으로 다시 정의하는 것입니다.</p>
+<div class="diagram">부모 클래스 Animal
+       │
+       ├── Dog  → sound() : "멍멍"
+       ├── Cat  → sound() : "야옹"
+       └── Bird → sound() : "짹짹"</div>
+<p><code>super()</code>는 자식 클래스에서 부모 클래스의 메서드나 생성자를 호출할 때 사용합니다.</p>
+
+<h3>6. UML(Unified Modeling Language)이란?</h3>\n<div class="visual-card"><svg viewBox="0 0 760 205" role="img" aria-label="UML 클래스 다이어그램의 세 구획">
+<rect x="205" y="15" width="350" height="175" rx="7" fill="white" stroke="#3579b7" stroke-width="2"/>
+<rect x="205" y="15" width="350" height="43" fill="#dceeff"/><text x="380" y="43" text-anchor="middle" class="vtitle">Student</text>
+<path d="M205 58 H555 M205 120 H555" stroke="#3579b7" stroke-width="1.5"/>
+<text x="230" y="83" class="vtext">- name : str</text><text x="230" y="105" class="vtext">- score : int</text>
+<text x="230" y="146" class="vtext">+ average() : float</text><text x="230" y="169" class="vtext">+ introduce() : void</text>
+<text x="85" y="42" text-anchor="middle" class="vtitle">클래스 이름</text><path d="M130 40 H195" class="varrow"/>
+<text x="85" y="91" text-anchor="middle" class="vtitle">속성</text><path d="M130 87 H195" class="varrow"/>
+<text x="85" y="151" text-anchor="middle" class="vtitle">메서드</text><path d="M130 147 H195" class="varrow"/>
+<rect x="585" y="42" width="150" height="118" rx="12" fill="#f1f7ff" stroke="#8db7df"/><text x="660" y="72" text-anchor="middle" class="vtitle">접근 기호</text><text x="610" y="101" class="vtext">+ public</text><text x="610" y="124" class="vtext">- private</text><text x="610" y="147" class="vtext"># protected</text>
+</svg><p class="visual-caption">UML 클래스 다이어그램은 클래스 이름·속성·메서드를 구획으로 나누어 표현합니다.</p></div>
+<p>UML(통합 모델링 언어)은 소프트웨어 시스템을 개발하기 전에 요구사항, 구조, 객체 간 상호작용 및 처리 흐름을 그림으로 표현하기 위한 표준 모델링 언어입니다. UML은 프로그래밍 언어가 아니며, Python이나 Java 코드를 직접 실행하는 도구도 아닙니다.</p>
+<div class="note"><b>왜 UML을 사용하는가?</b><br>
+① 개발 전에 시스템 구조를 설계할 수 있습니다.<br>
+② 개발자와 사용자 사이의 의사소통을 돕습니다.<br>
+③ 복잡한 시스템의 구성 요소와 관계를 쉽게 파악할 수 있습니다.<br>
+④ 설계 내용을 문서화하여 유지보수에 활용할 수 있습니다.</div>
+
+<h3>6-1. UML 다이어그램의 분류</h3>
+<table><tr><th>분류</th><th>다이어그램</th><th>주요 표현 내용</th></tr>
+<tr><td rowspan="4">구조 다이어그램<br>(Structure)</td><td>클래스 다이어그램</td><td>클래스, 속성, 메서드, 클래스 사이의 관계</td></tr>
+<tr><td>객체 다이어그램</td><td>특정 시점의 객체와 객체 사이의 연결 상태</td></tr>
+<tr><td>컴포넌트 다이어그램</td><td>소프트웨어 구성 요소와 의존 관계</td></tr>
+<tr><td>배치 다이어그램</td><td>실행 파일·컴포넌트가 하드웨어 노드에 배치되는 구조</td></tr>
+<tr><td rowspan="4">행위 다이어그램<br>(Behavior)</td><td>유스케이스 다이어그램</td><td>사용자(액터)와 시스템 기능의 관계</td></tr>
+<tr><td>시퀀스 다이어그램</td><td>시간 순서에 따른 객체 간 메시지 교환</td></tr>
+<tr><td>활동 다이어그램</td><td>업무 또는 알고리즘의 작업 흐름과 분기</td></tr>
+<tr><td>상태 머신 다이어그램</td><td>객체의 상태 변화와 상태 전이 조건</td></tr></table>
+
+
+<h3>6-2. 클래스 다이어그램의 기본 구조</h3>
+<p>클래스는 일반적으로 세 부분으로 표현합니다. 맨 위에는 클래스 이름, 가운데에는 속성, 아래에는 메서드를 표시합니다.</p>
+<div class="diagram">┌─────────────────────────────┐
+│           Student           │  ← 클래스 이름
+├─────────────────────────────┤
+│ - name : str                │  ← 속성(이름 : 자료형)
+│ - score : int               │
+├─────────────────────────────┤
+│ + average() : float         │  ← 메서드(이름 : 반환형)
+│ + introduce() : void        │
+└─────────────────────────────┘
+
+접근 제어 기호
++ public     : 외부에서 접근 가능
+- private    : 해당 클래스 내부에서 접근 제한
+# protected  : 해당 클래스 및 하위 클래스 중심의 접근</div>
+<p>예를 들어 <code>- score : int</code>는 private 접근 범위의 score 속성이 정수형임을 의미합니다. <code>+ average() : float</code>는 public 메서드이며 실수형 값을 반환한다는 뜻입니다.</p>
+
+<h3>6-3. 클래스 사이의 관계</h3>
+<table><tr><th>관계</th><th>의미</th><th>대표 표기·예시</th></tr>
+<tr><td>연관(Association)</td><td>두 클래스가 서로 관련되어 객체를 참조하거나 정보를 주고받음</td><td>학생 — 수강 — 강좌</td></tr>
+<tr><td>집합(Aggregation)</td><td>전체와 부분 관계이나 부분 객체가 전체와 독립적으로 존재할 수 있음</td><td>학과 ◇— 교수</td></tr>
+<tr><td>합성(Composition)</td><td>강한 전체·부분 관계로 전체의 생명주기에 부분이 종속되는 관계</td><td>주문 ◆— 주문항목</td></tr>
+<tr><td>일반화(Generalization)</td><td>상속 관계. 자식 클래스가 부모 클래스의 특성을 물려받음</td><td>Dog ─▷ Animal</td></tr>
+<tr><td>의존(Dependency)</td><td>한 클래스가 다른 클래스를 일시적으로 사용하거나 변경에 영향을 받음</td><td>주문서비스 - - &gt; 결제서비스</td></tr></table>
+<div class="diagram">연관:       Student ───────── Course
+
+집합:       Department ◇──────── Professor
+            (빈 마름모: 독립적인 부분)
+
+합성:       Order ◆──────── OrderItem
+            (검은 마름모: 생명주기 종속)
+
+일반화:     Dog ─────────▷ Animal
+            (빈 삼각형 화살표: 상속)
+
+의존:       OrderService - - - -> PaymentService
+            (점선 화살표: 사용·의존)</div>
+<p><b>집합과 합성의 차이</b>는 시험에서 자주 비교되는 개념입니다. 집합은 부분 객체가 전체 객체 없이도 존재할 수 있지만, 합성은 전체와 부분의 생명주기가 강하게 연결됩니다.</p>
+
+<h3>6-4. 다중성(Multiplicity)</h3>
+<p>다중성은 한 클래스의 객체가 다른 클래스의 객체와 몇 개 연결될 수 있는지를 나타냅니다.</p>
+<table><tr><th>표기</th><th>의미</th><th>예시</th></tr>
+<tr><td>1</td><td>정확히 1개</td><td>주문은 고객 1명에 속함</td></tr>
+<tr><td>0..1</td><td>0개 또는 1개</td><td>사원은 사물함을 사용하지 않을 수도 있음</td></tr>
+<tr><td>* 또는 0..*</td><td>0개 이상</td><td>고객은 주문을 여러 개 가질 수 있음</td></tr>
+<tr><td>1..*</td><td>1개 이상</td><td>주문에는 하나 이상의 항목이 존재</td></tr>
+<tr><td>2..5</td><td>2개 이상 5개 이하</td><td>정해진 범위의 구성원</td></tr></table>
+
+<h3>6-5. 다른 UML 다이어그램 읽기</h3>
+<p><b>① 유스케이스 다이어그램</b>은 시스템 외부의 액터(사람 또는 외부 시스템)와 시스템이 제공하는 기능을 표현합니다.</p>
+<div class="diagram">      (학생)                 [수강 신청 시스템]
+         O                 ┌────────────────────┐
+        /| ─────────────── ( 수강 과목 조회 )  │
+        / \ ────────────── ( 수강 신청 )       │
+                          └────────────────────┘
+       액터                     유스케이스</div>
+<p><b>② 시퀀스 다이어그램</b>은 객체 간 메시지가 시간의 흐름에 따라 어떤 순서로 전달되는지 표현합니다.</p>
+<div class="diagram">시간 ↓
+학생          웹 시스템          수강 서비스
+ │                │                  │
+ │─ 로그인 요청 ─>│                  │
+ │                │─ 인증 확인 ─────>│
+ │                │<─ 인증 결과 ─────│
+ │<─ 로그인 결과 ─│                  │</div>
+<p><b>③ 활동 다이어그램</b>은 시작, 작업, 조건 분기, 종료를 이용해 업무 처리 흐름을 나타냅니다.</p>
+<div class="diagram">       ● 시작
+          │
+     [로그인 정보 입력]
+          │
+      ◇ 인증 성공? ◇
+       /          \\
+     예            아니오
+     │               │
+ [메뉴 표시]     [오류 메시지]
+     │               │
+     └───────┬───────┘
+             ◎ 종료</div>
+
+<h3>7. 객체지향 설계(Object-Oriented Design)의 개념</h3>\n<div class="visual-card"><svg viewBox="0 0 760 205" role="img" aria-label="요구사항에서 분석 설계 구현 테스트로 이어지는 객체지향 개발 흐름">
+<rect x="12" y="55" width="135" height="95" rx="13" fill="#eaf4ff" stroke="#4b91d0" stroke-width="2"/><text x="79" y="89" text-anchor="middle" class="vtitle">요구사항</text><text x="79" y="116" text-anchor="middle" class="vsmall">무엇이 필요한가?</text>
+<path d="M150 102 H177" class="varrow"/><path d="M167 92 L179 102 L167 112" class="varrow"/>
+<rect x="185" y="55" width="135" height="95" rx="13" fill="#e8f8ef" stroke="#45a879" stroke-width="2"/><text x="252" y="89" text-anchor="middle" class="vtitle">분석 OOA</text><text x="252" y="116" text-anchor="middle" class="vsmall">객체 찾기</text>
+<path d="M323 102 H350" class="varrow"/><path d="M340 92 L352 102 L340 112" class="varrow"/>
+<rect x="358" y="55" width="135" height="95" rx="13" fill="#fff3df" stroke="#e4aa48" stroke-width="2"/><text x="425" y="89" text-anchor="middle" class="vtitle">설계 OOD</text><text x="425" y="116" text-anchor="middle" class="vsmall">관계·책임 정하기</text>
+<path d="M496 102 H523" class="varrow"/><path d="M513 92 L525 102 L513 112" class="varrow"/>
+<rect x="531" y="55" width="95" height="95" rx="13" fill="#f2eaff" stroke="#9a79cf" stroke-width="2"/><text x="578" y="89" text-anchor="middle" class="vtitle">구현</text><text x="578" y="116" text-anchor="middle" class="vsmall">코드 작성</text>
+<path d="M629 102 H650" class="varrow"/><path d="M640 92 L652 102 L640 112" class="varrow"/>
+<rect x="658" y="55" width="90" height="95" rx="13" fill="#e8f8ef" stroke="#45a879" stroke-width="2"/><text x="703" y="89" text-anchor="middle" class="vtitle">테스트</text><text x="703" y="116" text-anchor="middle" class="vsmall">검증</text>
+<text x="380" y="30" text-anchor="middle" class="vsmall">문제를 이해하고 → 구조를 설계하고 → 프로그램으로 구현합니다.</text>
+</svg><p class="visual-caption">객체지향 개발은 요구사항 파악 → 객체 분석(OOA) → 설계(OOD) → 구현 → 테스트 순서로 진행합니다.</p></div>
+<p>객체지향 설계(OOD)는 요구사항을 분석한 뒤 시스템을 여러 객체와 클래스의 협력 구조로 설계하는 과정입니다. 각 객체가 어떤 책임을 갖고, 어떤 데이터를 보유하며, 다른 객체와 어떻게 메시지를 주고받는지 결정합니다.</p>
+<div class="note"><b>객체지향 설계의 핵심 질문</b><br>
+① 어떤 객체가 필요한가? (객체 식별)<br>
+② 각 객체가 보유할 데이터는 무엇인가? (속성 설계)<br>
+③ 각 객체가 수행할 기능은 무엇인가? (메서드·책임 설계)<br>
+④ 객체 사이의 관계는 무엇인가? (연관·상속 등)<br>
+⑤ 객체 간 요청과 응답은 어떻게 이루어지는가? (메시지 설계)</div>
+
+<h3>7-1. 객체지향 분석과 설계의 흐름</h3>
+<div class="diagram">요구사항 수집
+     │
+     ▼
+객체지향 분석(OOA)
+ - 문제 영역과 주요 객체 식별
+ - 객체의 속성·기능 후보 도출
+     │
+     ▼
+객체지향 설계(OOD)
+ - 클래스와 인터페이스 설계
+ - 객체 간 관계와 메시지 정의
+ - 데이터 및 책임 배분
+     │
+     ▼
+구현(OOP)
+ - Python 등의 언어로 클래스 작성
+ - 객체 생성 및 메서드 구현
+     │
+     ▼
+테스트 및 유지보수</div>
+<table><tr><th>단계</th><th>주요 활동</th><th>산출물 예시</th></tr>
+<tr><td>요구사항 분석</td><td>사용자 요구와 시스템 기능 파악</td><td>요구사항 명세서, 유스케이스</td></tr>
+<tr><td>객체지향 분석(OOA)</td><td>객체, 속성, 책임 및 관계 파악</td><td>개념 클래스 모델</td></tr>
+<tr><td>객체지향 설계(OOD)</td><td>클래스 구조, 인터페이스, 메시지, 알고리즘 설계</td><td>클래스·시퀀스 다이어그램</td></tr>
+<tr><td>구현</td><td>설계 내용을 프로그래밍 언어로 작성</td><td>소스 코드</td></tr>
+<tr><td>테스트</td><td>기능과 객체 간 상호작용 검증</td><td>테스트 결과</td></tr></table>
+
+<h3>7-2. 좋은 객체지향 설계의 원칙</h3>
+<table><tr><th>원칙</th><th>설명</th><th>설계 예시</th></tr>
+<tr><td>단일 책임 원칙(SRP)</td><td>클래스는 하나의 핵심 책임에 집중</td><td>학생 정보 관리와 성적 계산 책임 분리</td></tr>
+<tr><td>개방-폐쇄 원칙(OCP)</td><td>확장에는 열려 있고 변경에는 닫혀 있어야 함</td><td>새 결제 방식을 기존 코드의 큰 수정 없이 추가</td></tr>
+<tr><td>리스코프 치환 원칙(LSP)</td><td>자식 객체는 부모 객체를 사용하는 위치에 대체 가능해야 함</td><td>부모 유형으로 처리해도 자식 객체가 정상 동작</td></tr>
+<tr><td>인터페이스 분리 원칙(ISP)</td><td>사용하지 않는 기능까지 강제로 의존하지 않도록 인터페이스를 작게 분리</td><td>프린터 기능과 스캐너 기능을 분리</td></tr>
+<tr><td>의존 역전 원칙(DIP)</td><td>구체적인 구현보다 추상화에 의존하도록 설계</td><td>특정 결제 클래스 대신 결제 인터페이스에 의존</td></tr></table>
+<p>위 다섯 원칙을 SOLID 원칙이라고 합니다. 이는 유지보수와 확장성이 높은 객체지향 설계를 위한 대표적인 설계 지침입니다.</p>
+
+<h3>7-3. 응집도와 결합도</h3>
+<table><tr><th>개념</th><th>설명</th><th>바람직한 설계</th></tr>
+<tr><td>응집도(Cohesion)</td><td>하나의 모듈 내부 요소들이 같은 목적을 위해 얼마나 밀접하게 구성되어 있는가</td><td>높을수록 좋음</td></tr>
+<tr><td>결합도(Coupling)</td><td>모듈 사이의 의존 관계가 얼마나 강한가</td><td>낮을수록 좋음</td></tr></table>
+
+
+<h3>7-4. 객체지향 설계 예시: 학생 성적 관리 시스템</h3>
+<p>요구사항: 학생의 이름과 과목별 점수를 저장하고 평균을 계산하며, 성적 정보를 출력합니다.</p>
+<div class="diagram">┌────────────────────────────┐
+│          Student           │
+├────────────────────────────┤
+│ - name : str               │
+│ - scores : list            │
+├────────────────────────────┤
+│ + average() : float        │
+│ + print_info() : void      │
+└────────────────────────────┘
+          │
+          │ 학생 객체 생성
+          ▼
+     Student("홍길동", [90, 80, 100])
+          │
+          ├── average() → 90.0
+          └── print_info() → 학생 정보 출력</div>
+<p>이 설계를 Python 코드로 구현하면 다음과 같습니다.</p>
+<div class="code-card"><div class="code-head"><span>설계 예제 · Student 클래스</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Student:
+    def __init__(self, name, scores):
+        self.name = name
+        self.scores = scores
+
+    def average(self):
+        return sum(self.scores) / len(self.scores)
+
+    def print_info(self):
+        print("이름:", self.name)
+        print("과목 점수:", self.scores)
+        print("평균:", self.average())
+
+student = Student("홍길동", [90, 80, 100])
+student.print_info()</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>이름: 홍길동<br>과목 점수: [90, 80, 100]<br>평균: 90.0</div>
+
+<h3>7-5. UML과 객체지향 설계의 연결</h3>
+<table><tr><th>설계 질문</th><th>활용 UML</th><th>설계 결과</th></tr>
+<tr><td>시스템 사용자는 누구이며 어떤 기능을 사용하는가?</td><td>유스케이스</td><td>액터와 기능 정의</td></tr>
+<tr><td>어떤 클래스와 속성이 필요한가?</td><td>클래스</td><td>정적 구조 정의</td></tr>
+<tr><td>객체는 어떤 순서로 요청을 주고받는가?</td><td>시퀀스</td><td>메시지 흐름 정의</td></tr>
+<tr><td>업무는 어떤 순서와 조건으로 진행되는가?</td><td>활동</td><td>업무 처리 흐름 정의</td></tr>
+<tr><td>객체의 상태는 어떻게 변하는가?</td><td>상태 머신</td><td>상태와 전이 조건 정의</td></tr></table>
+
+<h3>8. 클래스와 딕셔너리 비교</h3>
+<table><tr><th>구분</th><th>딕셔너리(dict)</th><th>클래스(class)</th></tr>
+<tr><td>데이터 저장</td><td>키와 값으로 저장</td><td>속성으로 저장</td></tr>
+<tr><td>기능 포함</td><td>함수를 값으로 저장할 수 있으나 객체 동작 구조화에는 제한적</td><td>메서드로 기능을 정의</td></tr>
+<tr><td>재사용</td><td>데이터 구조 중심</td><td>설계와 기능을 함께 재사용</td></tr>
+<tr><td>주요 용도</td><td>간단한 데이터 묶음</td><td>상태와 동작을 갖는 객체 모델링</td></tr></table>
+</section>
+<section id="practice">
+<h2>Ⅲ. Jupyter Notebook 실습 코드</h2>
+<p>아래 코드는 Python 코드입니다. 각 코드 블록의 <b>코드 복사</b> 버튼을 눌러 복사한 후 Jupyter Notebook의 셀에 붙여넣고 실행하세요. 코드 실행 결과는 참고용입니다.</p>
+
+<h3>실습 1. 클래스와 객체 생성</h3>
+<p><span class="tag">기초</span>클래스를 정의하고 객체를 생성하는 기본 구조를 익힙니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 1 · 클래스와 객체</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Student:
+    def introduce(self):
+        print("안녕하세요. 학생입니다.")
+
+# Student 클래스로 객체 생성
+student = Student()
+
+# 객체의 메서드 호출
+student.introduce()</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>안녕하세요. 학생입니다.</div>
+
+<h3>실습 2. 생성자와 인스턴스 속성</h3>
+<p><span class="tag">기초</span><code>__init__()</code>에서 객체의 이름과 점수를 초기화합니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 2 · 생성자와 속성</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+s1 = Student("홍길동", 95)
+s2 = Student("김철수", 88)
+
+print(s1.name, s1.score)
+print(s2.name, s2.score)</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>홍길동 95<br>김철수 88</div>
+
+<h3>실습 3. 메서드와 반환값(return)</h3>
+<p><span class="tag">기초</span>메서드에서 계산한 결과를 <code>return</code>으로 반환합니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 3 · 평균 계산</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Student:
+    def __init__(self, name, python, ai):
+        self.name = name
+        self.python = python
+        self.ai = ai
+
+    def average(self):
+        return (self.python + self.ai) / 2
+
+student = Student("홍길동", 90, 80)
+
+print("이름:", student.name)
+print("평균:", student.average())</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>이름: 홍길동<br>평균: 85.0</div>
+
+<h3>실습 4. 객체를 리스트에 저장하고 반복문 사용</h3>
+<p><span class="tag">중급</span>여러 학생 객체를 리스트에 저장하고 평균을 계산합니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 4 · 객체 리스트</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+students = [
+    Student("홍길동", 95),
+    Student("김철수", 82),
+    Student("이영희", 100)
+]
+
+for student in students:
+    print(student.name, student.score)</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>홍길동 95<br>김철수 82<br>이영희 100</div>
+
+<h3>실습 5. 객체 정렬과 lambda</h3>
+<p><span class="tag">중급</span>학생 객체를 점수 기준으로 내림차순 정렬합니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 5 · 객체 정렬</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+students = [
+    Student("홍길동", 95),
+    Student("김철수", 82),
+    Student("이영희", 100),
+    Student("박민수", 90)
+]
+
+# score를 기준으로 내림차순 정렬
+students.sort(key=lambda s: s.score, reverse=True)
+
+for s in students:
+    print(s.name, s.score)</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>이영희 100<br>홍길동 95<br>박민수 90<br>김철수 82</div>
+
+<h3>실습 6. 클래스 상속과 super()</h3>
+<p><span class="tag">중급</span>부모 클래스의 생성자를 호출하고 자식 클래스의 속성을 추가합니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 6 · 상속</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Person:
+    def __init__(self, name):
+        self.name = name
+
+    def introduce(self):
+        print("이름:", self.name)
+
+class Student(Person):
+    def __init__(self, name, major):
+        super().__init__(name)
+        self.major = major
+
+    def study(self):
+        print(self.name, "학생의 전공:", self.major)
+
+s = Student("홍길동", "AI소프트웨어")
+s.introduce()
+s.study()</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>이름: 홍길동<br>홍길동 학생의 전공: AI소프트웨어</div>
+
+<h3>실습 7. 메서드 오버라이딩과 다형성</h3>
+<p><span class="tag">중급</span>자식 클래스가 부모 클래스의 메서드를 재정의합니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 7 · 오버라이딩</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class Animal:
+    def sound(self):
+        print("동물 소리")
+
+class Dog(Animal):
+    def sound(self):
+        print("멍멍")
+
+class Cat(Animal):
+    def sound(self):
+        print("야옹")
+
+animals = [Dog(), Cat(), Animal()]
+
+for animal in animals:
+    animal.sound()</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>멍멍<br>야옹<br>동물 소리</div>
+
+<h3>실습 8. 캡슐화와 접근 메서드</h3>
+<p><span class="tag">심화</span>이름 앞에 밑줄 두 개를 붙인 속성과 메서드를 이용해 내부 데이터에 직접 접근하는 것을 제한하는 예시입니다. Python의 이름 맹글링은 완전한 보안 기능은 아닙니다.</p>
+<div class="code-card"><div class="code-head"><span>Python 코드 8 · 캡슐화</span><button onclick="copyCode(this)">코드 복사</button></div><pre><code>class BankAccount:
+    def __init__(self, balance):
+        self.__balance = balance
+
+    def deposit(self, amount):
+        if amount > 0:
+            self.__balance += amount
+
+    def get_balance(self):
+        return self.__balance
+
+account = BankAccount(10000)
+account.deposit(5000)
+
+print("잔액:", account.get_balance())</code></pre></div>
+<div class="output"><strong>실행 결과</strong><br>잔액: 15000</div>
+</section>
+
+<section id="practical">
+<h2>Ⅳ. 실기시험 대비 코드 분석 문제</h2>
+<p>코드를 실행하기 전에 결과를 먼저 예측하세요. 정답 및 해설을 확인한 뒤 Jupyter에서 직접 실행해 보세요.</p>
+
+<div class="question"><p>실기 1. 다음 코드의 출력 결과를 작성하세요.</p>
+<pre><code>class Product:
+    def __init__(self, price):
+        self.price = price
+
+p1 = Product(1000)
+p2 = Product(2500)
+
+print(p1.price * 2 + p2.price)</code></pre>
+<button onclick="showAnswer('p1')">정답 및 해설</button><div class="answer" id="p1"><b>정답: 4500</b><br>1000 × 2 + 2500 = 4500입니다. 객체별 price 속성값을 구분하여 계산합니다.</div></div>
+
+<div class="question"><p>실기 2. 다음 코드의 출력 결과를 작성하세요.</p>
+<pre><code>class Number:
+    def __init__(self, n):
+        self.n = n
+
+    def double(self):
+        return self.n * 2
+
+x = Number(7)
+print(x.double())</code></pre>
+<button onclick="showAnswer('p2')">정답 및 해설</button><div class="answer" id="p2"><b>정답: 14</b><br>double() 메서드는 인스턴스의 n 속성에 2를 곱한 값을 반환합니다.</div></div>
+
+<div class="question"><p>실기 3. 다음 코드의 출력 결과를 작성하세요.</p>
+<pre><code>class Parent:
+    def show(self):
+        print("부모")
+
+class Child(Parent):
+    def show(self):
+        print("자식")
+
+obj = Child()
+obj.show()</code></pre>
+<button onclick="showAnswer('p3')">정답 및 해설</button><div class="answer" id="p3"><b>정답: 자식</b><br>Child 클래스가 show() 메서드를 오버라이딩했으므로 자식 클래스의 메서드가 실행됩니다.</div></div>
+
+<div class="task"><b>실기 빈칸 완성 문제</b><p>다음 코드의 빈칸을 채워 학생의 평균을 출력하세요.</p>
+<pre><code>class Student:
+    def __init__(self, name, score1, score2):
+        self.name = name
+        self.score1 = score1
+        self.score2 = score2
+
+    def average(self):
+        return (self.score1 + self.score2) / 2
+
+s = Student("홍길동", 80, 100)
+print(s.average())</code></pre>
+<p>핵심 빈칸: 생성자 이름은 <code>__________</code>, 현재 객체 참조는 <code>__________</code>, 메서드 결과 반환은 <code>__________</code>입니다.</p>
+<button onclick="showAnswer('blank1')">정답 확인</button><div class="answer" id="blank1"><b>정답: __init__ / self / return</b><br>실행 결과는 90.0입니다.</div></div>
+</section>
+
+<section id="assignment">
+<h2>Ⅴ. 종합 실습 과제</h2>
+<p>아래 문제는 학습자가 직접 코드를 작성하고 실행 결과를 확인하는 실습 과제입니다.</p>
+<div class="task"><span class="tag">기초</span><b>과제 1. Rectangle 클래스</b><p>가로와 세로를 입력받아 넓이와 둘레를 반환하는 메서드를 작성하세요.</p><p>조건: <code>area()</code>, <code>perimeter()</code> 메서드 구현</p></div>
+<div class="task"><span class="tag">기초</span><b>과제 2. Calculator 클래스</b><p>두 숫자를 이용하여 덧셈, 뺄셈, 곱셈, 나눗셈을 수행하는 메서드를 작성하세요.</p><p>조건: 0으로 나누는 경우를 예외 처리하세요.</p></div>
+<div class="task"><span class="tag">중급</span><b>과제 3. 학생 성적 관리</b><p>학생 5명의 이름과 세 과목 점수를 객체로 저장하고 평균이 높은 순서로 출력하세요.</p><p>조건: 생성자, 평균 메서드, 리스트, sort(), lambda 활용</p></div>
+<div class="task"><span class="tag">중급</span><b>과제 4. 은행 계좌 클래스</b><p>입금, 출금, 잔액 조회 기능을 갖는 BankAccount 클래스를 작성하세요.</p><p>조건: 잔액을 직접 변경하지 않고 메서드를 통해 처리하며 잔액 부족을 검사하세요.</p></div>
+<div class="task"><span class="tag">심화</span><b>과제 5. 상속과 다형성</b><p>Animal 부모 클래스를 만들고 Dog, Cat, Bird 자식 클래스에서 sound() 메서드를 각각 재정의하세요.</p><p>조건: 리스트에 세 객체를 저장하고 반복문으로 sound()를 호출하세요.</p></div>
+
+<div class="note"><b>학습 점검 체크리스트</b><br>
+□ 클래스와 객체의 차이를 설명할 수 있다.<br>
+□ 생성자와 self의 역할을 설명할 수 있다.<br>
+□ 속성과 메서드를 구분할 수 있다.<br>
+□ 상속과 오버라이딩을 코드로 구현할 수 있다.<br>
+□ 캡슐화와 다형성의 의미를 설명할 수 있다.<br>
+□ 코드 실행 결과를 예측하고 Jupyter에서 검증할 수 있다.</div>
+</section>
+</div>
+<footer>Python 객체지향 프로그래밍 · 시각 학습 및 Jupyter 실습 자료</footer>
+<script>
+function showAnswer(id){
+ const el=document.getElementById(id);
+ el.style.display=el.style.display==='block'?'none':'block';
+}
+function copyCode(button){
+ const code=button.closest('.code-card').querySelector('pre code').innerText;
+ if(navigator.clipboard && window.isSecureContext){
+   navigator.clipboard.writeText(code).then(()=>{button.textContent='복사 완료';setTimeout(()=>button.textContent='코드 복사',1500);})
+   .catch(()=>fallbackCopy(code,button));
+ }else{fallbackCopy(code,button);}
+}
+function fallbackCopy(text,button){
+ const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);
+ area.select();
+ try{document.execCommand('copy');button.textContent='복사 완료';}
+ catch(e){button.textContent='복사 실패';}
+ area.remove();setTimeout(()=>button.textContent='코드 복사',1500);
+}
+function gradeQuiz(){
+ const answers={q1:'2',q2:'3',q3:'4',q4:'2',q5:'3',q6:'3',q7:'2',q8:'3',q9:'1',q10:'3',q11:'3',q12:'3',q13:'2',q14:'2',q15:'1'};
+ let score=0,unanswered=0;
+ for(const [q,a] of Object.entries(answers)){
+   const selected=document.querySelector('input[name="'+q+'"]:checked');
+   if(!selected) unanswered++;
+   else if(selected.value===a) score++;
+ }
+ document.getElementById('quizResult').textContent='채점 결과: 10문항 중 '+score+'문항 정답 ('+(score*10)+'점) · 미응답 '+unanswered+'문항';
+}
+</script>
+</body>
+</html>
