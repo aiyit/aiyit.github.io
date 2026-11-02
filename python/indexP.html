@@ -48,6 +48,22 @@
             font-size: 0.95rem;
         }
 
+        .download-button {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 30px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .download-button:hover {
+            background-color: var(--secondary-color);
+        }
+
         .nav-list {
             list-style: none;
             padding: 0;
@@ -109,6 +125,7 @@
 <div class="container">
     <h1>🐍 파이썬 프로그래밍 강의 자료</h1>
     <p class="subtitle">pyHtml 폴더 내 주차별 HTML 학습 가이드 바로가기</p>
+    <a href="downpy.html" class="download-button">파이썬 코드 다운로드</a>
 
     <ul class="nav-list">
         <li class="nav-item">
@@ -167,8 +184,14 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="pyHtml/dataStructure.html" class="nav-link">
+                <span>10 - 자료구조</span>
+                <span class="tag">dataStructure.html</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="pyHtml/10w_module.html" class="nav-link">
-                <span>10 - 파이썬 모듈 (Module)</span>
+                <span>11 - 파이썬 모듈 (Module)</span>
                 <span class="tag">10w_module.html</span>
             </a>
         </li>
