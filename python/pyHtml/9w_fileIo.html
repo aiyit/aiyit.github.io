@@ -159,15 +159,15 @@
 
     <!-- 1. 파일이란? -->
     <h2>1. 파일(File)이란?</h2>
-    <p>파일(File)이란 데이터를 영구적으로 저장하는 공간입니다[cite: 2]. 프로그램이 종료되면 일반 변수는 모두 사라지지만, 파일에 저장한 데이터는 컴퓨터에 계속 남아 있습니다[cite: 2].</p>
+    <p>파일(File)이란 데이터를 영구적으로 저장하는 공간입니다. 프로그램이 종료되면 일반 변수는 모두 사라지지만, 파일에 저장한 데이터는 컴퓨터에 계속 남아 있습니다.</p>
 
     <div class="concept-box">
         <strong>📌 대표적인 활용 예시</strong>
         <ul>
-            <li>학생 성적 저장[cite: 2]</li>
-            <li>회원 정보 저장[cite: 2]</li>
-            <li>시스템 로그 기록[cite: 2]</li>
-            <li>환경 설정값 저장[cite: 2]</li>
+            <li>학생 성적 저장</li>
+            <li>회원 정보 저장</li>
+            <li>시스템 로그 기록</li>
+            <li>환경 설정값 저장</li>
         </ul>
     </div>
 
@@ -183,15 +183,15 @@
           │
           ▼
    파일 닫기 (close)
-    </div>[cite: 2]
+    </div>
 
     <hr>
 
     <!-- 3. open() 함수 -->
     <h2>3. open() 함수</h2>
-    <p>파일을 열 때 사용하는 기본 함수입니다[cite: 2].</p>
+    <p>파일을 열 때 사용하는 기본 함수입니다.</p>
 <pre><code># 파일객체 = open(파일명, 모드)
-f = open("student.txt", "r")</code></pre>[cite: 2]
+f = open("student.txt", "r")</code></pre>
 
     <hr>
 
@@ -237,164 +237,143 @@ f = open("student.txt", "r")</code></pre>[cite: 2]
                 <td>이미지, 동영상 파일 등</td>
             </tr>
         </tbody>
-    </table>[cite: 2]
+    </table>
 
     <hr>
 
-    <!-- 5. 파일 쓰기 -->
-    <h2>5. 파일 쓰기 (write)</h2>
-<pre><code>f = open("output/hello.txt", "w")
-f.write("안녕하세요.")
-f.close()
+    <!-- 5~18. 통합 프로그램 코드 -->
+    <h2>5~18. 파일 입출력 통합 프로그램</h2>
+    <p>아래 코드는 5~18절의 파일 쓰기, 읽기, 추가, 인코딩, CSV, 복사, 예외 처리를 한 프로그램으로 보여줍니다. 각 절의 제목은 코드 안의 주석으로 표시했습니다.</p>
+<pre><code>
+import os
 
-# output 폴더로 이동하여 hello.txt 생성 여부를 확인합니다.</code></pre>[cite: 2]
+os.makedirs("output", exist_ok=True)
 
-    <hr>
-
-    <!-- 6. 여러 줄 저장 -->
-    <h2>6. 여러 줄 저장</h2>
-<pre><code>f = open("output/student.txt", "w")
-
-f.write("홍길동\n")
-f.write("김철수\n")
-f.write("이영희\n")
-
-f.close()</code></pre>[cite: 2]
-
-    <hr>
-
-    <!-- 7. 파일 읽기 -->
-    <h2>7. 파일 전체 읽기 (read)</h2>
-<pre><code>f = open("output/student.txt", "r")
-text = f.read()
-print(text)
-f.close()</code></pre>[cite: 2]
-
-    <hr>
-
-    <!-- 8. 한 줄씩 읽기 -->
-    <h2>8. 한 줄씩 읽기 (readline)</h2>
-<pre><code>f = open("output/student.txt", "r")
-
-print(f.readline())
-print(f.readline())
-print(f.readline())
-
-f.close()</code></pre>[cite: 2]
-
-    <hr>
-
-    <!-- 9. 모든 줄 읽기 -->
-    <h2>9. 모든 줄을 리스트로 읽기 (readlines)</h2>
-<pre><code>f = open("output/student.txt", "r")
-
-lines = f.readlines()
-print(lines)  # ['홍길동\n', '김철수\n', '이영희\n']
-
-f.close()</code></pre>[cite: 2]
-
-    <hr>
-
-    <!-- 10. 반복문으로 읽기 -->
-    <h2>10. 반복문으로 읽기</h2>
-<pre><code>f = open("output/student.txt", "r")
-
-for line in f:
-    print(line.strip())  # strip()은 줄 끝의 \n(개행문자)을 제거
-
-f.close()</code></pre>[cite: 2]
-
-    <hr>
-
-    <!-- 11. append() 모드 -->
-    <h2>11. 내용 추가하기 ("a" 모드)</h2>
-<pre><code>f = open("output/student.txt", "a")
-
-f.write("박민수\n")
-
-f.close()</code></pre>[cite: 2]
-
-    <hr>
-
-    <!-- 12. with 문 -->
-    <h2>12. with 문 사용하기 (권장)</h2>
-    <p><code>with</code> 구문을 사용하면 블록이 끝날 때 <strong>자동으로 파일이 닫히므로</strong> <code>f.close()</code>를 명시하지 않아도 됩니다[cite: 2]. 실무에서 권장하는 방식입니다[cite: 2].</p>
-<pre><code>with open("output/student.txt", "r") as f:
-    text = f.read()
-    print(text)</code></pre>[cite: 2]
-
-    <hr>
-
-    <!-- 13. UTF-8 인코딩 -->
-    <h2>13. UTF-8 인코딩 처리</h2>
-    <p>한글 데이터를 저장하거나 읽을 때는 인코딩을 <code>encoding="utf-8"</code>로 지정하는 것이 안전합니다[cite: 2].</p>
-<pre><code># 쓰기
-with open("output/student.txt", "w", encoding="utf-8") as f:
+# 5. 파일 쓰기 (write)
+with open("output/hello.txt", "w", encoding="utf-8") as f:
     f.write("안녕하세요.")
+    f.write("나는 여주대학교 AI 소프트웨어학과에 다니는 홍길동입니다.")
+# 6. 여러 줄 저장
+with open("output/student.txt", "w", encoding="utf-8") as fn:
+    fn.write("홍길동\n")
+    fn.write("김철수\n")
+    fn.write("이영희\n")
 
-# 읽기
+# 7. 파일 전체 읽기 (read)
+with open("output/hello.txt", "r", encoding="utf-8") as f:
+    text = f.read()
+with open("output/student.txt", "r", encoding="utf-8") as fn:
+    textn =fn.read()
+    print(text)
+    print(textn)
+
+# 8. 한 줄씩 읽기 (readline)
 with open("output/student.txt", "r", encoding="utf-8") as f:
-    print(f.read())</code></pre>[cite: 2]
+    print(f.readline(), end="")
+    print(f.readline(), end="")
+    print(f.readline(), end="")
 
-    <hr>
+# 9. 모든 줄을 리스트로 읽기 (readlines)
+with open("output/student.txt", "r", encoding="utf-8") as f:
+    lines = f.readlines()
+    print(lines)
 
-    <!-- 14. 학생 정보 입력 받아 저장 -->
-    <h2>14. 사용자 입력값 저장</h2>
-<pre><code>name = input("이름 : ")
-score = input("점수 : ")
+# 10. 반복문으로 읽기
+# for 반복문은 파일에서 한 줄씩 읽어 line 변수에 저장합니다.
+# strip()은 줄 끝의 줄바꿈 문자와 양쪽 공백을 제거한 뒤 해당 줄을 출력합니다.
+with open("output/student.txt", "r", encoding="utf-8") as f:
+    for line in f:
+        print(line.strip())
 
+# 11. 내용 추가하기 ("a" 모드)
 with open("output/student.txt", "a", encoding="utf-8") as f:
-    f.write(name + "," + score + "\n")</code></pre>[cite: 2]
+    f.write("박민수\n")
 
-    <hr>
+# 12. with 문으로 파일 자동 닫기
+with open("output/student.txt", "r", encoding="utf-8") as f:
+    print(f.read())
 
-    <!-- 15. CSV 형태 저장 -->
-    <h2>15. CSV(Comma-Separated Values) 형태 저장</h2>
-    <p>쉼표로 데이터를 구분하는 CSV 파일 형식은 Excel 등에서 손쉽게 불러올 수 있습니다[cite: 2].</p>
-<pre><code>with open("output/score.csv", "w", encoding="utf-8") as f:
+# 13. UTF-8 인코딩 처리
+with open("output/student.txt", "w", encoding="utf-8") as f:
+    f.write("안녕하세요.\n")
+with open("output/student.txt", "r", encoding="utf-8") as f:
+    print(f.read())
+
+# 14. 사용자 입력값 저장
+name = input("이름: ")
+score = input("점수: ")
+with open("output/student.txt", "a", encoding="utf-8") as f:
+    f.write(f"{name},{score}\n")
+
+# 15. CSV(Comma-Separated Values) 형태 저장
+with open("output/score.csv", "w", encoding="utf-8") as f:
     f.write("이름,Python,AI\n")
     f.write("홍길동,95,90\n")
-    f.write("김철수,88,85\n")</code></pre>[cite: 2]
+    f.write("김철수,88,85\n")
 
-    <hr>
-
-    <!-- 16. 파일 복사 -->
-    <h2>16. 파일 복사 예제</h2>
-<pre><code>with open("output/student.txt", "r", encoding="utf-8") as source:
+# 16. 파일 복사
+with open("output/student.txt", "r", encoding="utf-8") as source:
     with open("output/copy.txt", "w", encoding="utf-8") as target:
-        target.write(source.read())</code></pre>[cite: 2]
+        target.write(source.read())
 
-    <hr>
-
-    <!-- 17. 학생 성적 관리 예제 -->
-    <h2>17. 학생 성적 데이터 관리</h2>
-<pre><code>students = [
-    "홍길동,95",
-    "김철수,88",
-    "이영희,100"
-]
-
-# 파일 저장
+# 17. 학생 성적 데이터 저장 및 읽기
+students = ["홍길동,95", "김철수,88", "이영희,100"]
 with open("output/student.txt", "w", encoding="utf-8") as f:
     for student in students:
         f.write(student + "\n")
-
-# 파일 읽기 및 출력
 with open("output/student.txt", "r", encoding="utf-8") as f:
     for line in f:
         name, score = line.strip().split(",")
-        print(name, score)</code></pre>[cite: 2]
+        print(name, score)
 
-    <hr>
-
-    <!-- 18. 예외 처리 -->
-    <h2>18. 파일 읽기 예외 처리</h2>
-    <p>존재하지 않는 파일을 읽으려 할 때는 오류(FileNotFoundError)가 발생하므로 <code>try-except</code> 구문으로 예외 처리를 해줍니다[cite: 2].</p>
-<pre><code>try:
+# 18. 파일 읽기 예외 처리
+try:
     with open("output/test.txt", "r", encoding="utf-8") as f:
         print(f.read())
 except FileNotFoundError:
-    print("파일이 없습니다.")</code></pre>[cite: 2]
+    print("파일이 없습니다.")</code></pre>
+    <hr>
+
+    <!-- 실제 응용 예제: 학생 성적 관리 -->
+    <h2>실제 응용 예제: 학생 성적 기록 및 평균 확인</h2>
+    <p>학생 이름과 점수를 입력해 파일에 저장하고, 지금까지 저장된 성적 목록과 평균을 출력합니다.</p>
+<pre><code>
+file_name = "output/grade_book.csv"
+
+# 1. 학생 정보를 반복해서 입력받기
+while True:
+    name = input("학생 이름 (종료하려면 '종료' 입력): ")
+    # 종료 조건
+    if name == "종료":
+        break
+    score = int(input("학생 점수: "))
+    # 파일에 학생 정보 추가
+    with open(file_name, "a", encoding="utf-8") as file:
+        file.write(f"{name},{score}\n")
+    print(f"{name} 학생 성적 저장 완료!\n")
+
+# 2. 파일에 저장된 모든 학생 정보 읽기
+students = []
+with open(file_name, "r", encoding="utf-8") as file:
+    for line in file:
+        student_name, student_score = line.strip().split(",")
+        students.append((student_name, int(student_score)))
+
+# 3. 학생 성적 출력
+print("\n========== 학생 성적 목록 ==========")
+
+for student_name, student_score in students:
+    print(f"{student_name}: {student_score}점")
+
+# 4. 전체 평균 계산
+if len(students) > 0:
+    average = sum(score for _, score in students) / len(students) #_는 사용하지 않을 값을 표시하는 관례
+    print("===================================")
+    print(f"학생 수: {len(students)}명")
+    print(f"평균 점수: {average:.1f}점")
+else:
+    print("저장된 학생 정보가 없습니다.")
+</code></pre>
 
     <hr>
 
@@ -402,9 +381,9 @@ except FileNotFoundError:
     <h2>19. 자주 발생하는 오류 체크</h2>
     <div class="warn-box">
         <ul>
-            <li><strong>파일을 닫지 않음:</strong> <code>close()</code>를 누락하여 리소스가 낭비되는 경우. → <code>with open()</code> 사용 권장[cite: 2].</li>
-            <li><strong>잘못된 경로:</strong> 존재하지 않는 폴더 경로 지정 시 오류 발생 (예: <code>open("abc/test.txt")</code>)[cite: 2].</li>
-            <li><strong>인코딩 오류 (UnicodeDecodeError):</strong> 한글 깨짐 및 오류 방지를 위해 <code>encoding="utf-8"</code> 지정[cite: 2].</li>
+            <li><strong>파일을 닫지 않음:</strong> <code>close()</code>를 누락하여 리소스가 낭비되는 경우. → <code>with open()</code> 사용 권장.</li>
+            <li><strong>잘못된 경로:</strong> 존재하지 않는 폴더 경로 지정 시 오류 발생 (예: <code>open("abc/test.txt")</code>).</li>
+            <li><strong>인코딩 오류 (UnicodeDecodeError):</strong> 한글 깨짐 및 오류 방지를 위해 <code>encoding="utf-8"</code> 지정.</li>
         </ul>
     </div>
 
@@ -449,7 +428,7 @@ except FileNotFoundError:
                 <td>열린 파일 닫기</td>
             </tr>
         </tbody>
-    </table>[cite: 2]
+    </table>
 
     <hr>
 
@@ -458,16 +437,16 @@ except FileNotFoundError:
     <div class="assignment-list">
         <ol>
             <li><code>hello.txt</code> 파일을 생성하고 다음 두 줄을 저장하세요:
-                <br><code>Hello Python</code> / <code>I am AI Software</code>[cite: 2]
+                <br><code>Hello Python</code> / <code>I am AI Software</code>
             </li>
-            <li>학생 이름 5명을 입력받아 <code>student.txt</code>에 저장하세요[cite: 2].</li>
-            <li><code>student.txt</code>의 내용을 읽어 화면에 모두 출력하세요[cite: 2].</li>
-            <li>사용자의 이름과 나이를 입력받아 <code>member.txt</code>에 <code>홍길동,20</code> 형태로 저장하세요[cite: 2].</li>
-            <li><code>fruit.txt</code>(사과, 배, 포도, 복숭아)를 생성하고 반복문으로 출력하세요[cite: 2].</li>
-            <li>학생 점수 5개를 입력받아 파일에 저장한 후, 평균을 계산하여 출력하세요[cite: 2].</li>
-            <li>CSV 파일(<code>이름,Python,AI,Web</code> 헤더 포함)을 생성하세요[cite: 2].</li>
-            <li><code>source.txt</code>의 내용을 <code>backup.txt</code>로 복사하는 프로그램을 작성하세요[cite: 2].</li>
-            <li>존재하지 않는 파일을 읽을 때 예외 처리를 적용하여 <code>"파일이 존재하지 않습니다."</code>를 출력하세요[cite: 2].</li>
+            <li>학생 이름 5명을 입력받아 <code>student.txt</code>에 저장하세요.</li>
+            <li><code>student.txt</code>의 내용을 읽어 화면에 모두 출력하세요.</li>
+            <li>사용자의 이름과 나이를 입력받아 <code>member.txt</code>에 <code>홍길동,20</code> 형태로 저장하세요.</li>
+            <li><code>fruit.txt</code>(사과, 배, 포도, 복숭아)를 생성하고 반복문으로 출력하세요.</li>
+            <li>학생 점수 5개를 입력받아 파일에 저장한 후, 평균을 계산하여 출력하세요.</li>
+            <li>CSV 파일(<code>이름,Python,AI,Web</code> 헤더 포함)을 생성하세요.</li>
+            <li><code>source.txt</code>의 내용을 <code>backup.txt</code>로 복사하는 프로그램을 작성하세요.</li>
+            <li>존재하지 않는 파일을 읽을 때 예외 처리를 적용하여 <code>"파일이 존재하지 않습니다."</code>를 출력하세요.</li>
             <li>학생 정보를 입력받아 저장하고, 저장된 내용을 다시 읽어 아래와 같은 표 형태로 출력하세요:
 <pre><code>========================================
 이름        점수
@@ -475,7 +454,7 @@ except FileNotFoundError:
 홍길동      95
 김철수      88
 이영희      100
-========================================</code></pre>[cite: 2]
+========================================</code></pre>
             </li>
         </ol>
     </div>
