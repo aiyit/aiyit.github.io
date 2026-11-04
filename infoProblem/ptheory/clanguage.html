@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C 언어 | 정보처리산업기사</title>
+<style>
+:root{--n:#10243d;--b:#1769aa;--c:#079db8;--ink:#26374b;--bg:#f3f6fa;--line:#dce5ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Noto Sans KR",Arial,sans-serif}
+header{background:linear-gradient(120deg,#10243d,#155b91,#079db8);color:white;padding:35px 20px}.hero,.layout{max-width:1100px;margin:auto}.hero small{color:#bdefff;letter-spacing:2px}.hero h1{font-size:clamp(28px,4vw,42px);margin:8px 0}.layout{padding:22px 15px;display:grid;grid-template-columns:225px 1fr;gap:18px}
+nav,.card{background:white;border:1px solid var(--line);border-radius:14px}nav{position:sticky;top:12px;align-self:start;padding:14px}nav b{display:block;color:var(--n);margin-bottom:8px}nav a{display:block;padding:6px 8px;color:#40566e;text-decoration:none;border-radius:6px;font-size:14px}nav a:hover{background:#eaf5fb;color:var(--b)}
+.card{padding:23px;margin-bottom:18px;box-shadow:0 5px 18px #10243d08}h2{color:var(--n);font-size:24px;border-bottom:2px solid #e7eef5;padding-bottom:9px;margin:0 0 13px}h3{color:#155b8d;margin:22px 0 7px}h4{margin:0 0 8px;color:#29445f}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{background:#eaf2f8;color:#193d5d}
+.call,.exam{padding:12px 14px;border-radius:8px;margin:12px 0}.call{background:#edf8fc;border-left:4px solid var(--c)}.exam{background:#fff7e9;border-left:4px solid #c97913}
+.diagram{background:#f7faff;border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0;overflow:auto}.flow{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap}.box{border:2px solid #76a5c7;background:white;border-radius:8px;padding:9px 12px;text-align:center;font-weight:bold}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mini{background:#f8fbfe;border:1px solid var(--line);border-radius:9px;padding:12px}
+pre,code{font-family:Consolas,Monaco,"Courier New",monospace;font-size:13px}pre{background:#f0f4f8;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;margin:10px 0;line-height:1.5}
+button{background:var(--b);color:white;border:0;padding:9px 14px;border-radius:8px;font-weight:bold;cursor:pointer;margin:4px 3px 4px 0}button.alt{background:#e8eef5;color:#29435d}.result{background:#f7fafd;border:1px solid var(--line);border-radius:9px;padding:12px;margin-top:10px;overflow:auto}
+.quiz{border:1px solid var(--line);border-radius:10px;padding:13px;margin:12px 0}.quiz label{display:block;padding:5px;cursor:pointer}.feedback{font-weight:bold;margin-top:7px}
+footer{text-align:center;color:#61748a;padding:22px;font-size:13px}
+@media(max-width:780px){.layout{grid-template-columns:1fr}nav{position:static}.grid{grid-template-columns:1fr}.card{padding:17px}}
+</style></head><body>
+<header><div class="hero"><small>INFORMATION PROCESSING INDUSTRIAL ENGINEER</small><h1>C 언어 핵심 학습</h1><p>정보처리산업기사 대비 · 기본 문법부터 포인터·구조체·입출력까지 상세 정리</p></div></header>
+<div class="layout"><nav><b>학습 목차</b>
+<a href="#c1">1. C 언어 기초</a>
+<a href="#c2">2. 자료형·연산자</a>
+<a href="#c3">3. 입출력과 헤더</a>
+<a href="#c4">4. 제어문</a>
+<a href="#c5">5. 배열·문자열</a>
+<a href="#c6">6. 함수</a>
+<a href="#c7">7. 포인터</a>
+<a href="#c8">8. 구조체·공용체</a>
+<a href="#c9">9. 파일·전처리·기타</a>
+<a href="#c10">10. 예제 프로그램</a>
+<a href="#c11">11. 시험 문제</a>
+</nav><main>
+
+<section class="card" id="c1"><h2>1. C 언어 기초</h2>
+<h3>1-1. C 언어란?</h3>
+<p>C 언어는 1972년 벨 연구소의 <b>데니스 리치(Dennis Ritchie)</b>가 개발한 <b>절차지향(Procedural)</b> 프로그래밍 언어입니다. UNIX 운영체제 개발에 사용되었고, 시스템 프로그래밍·임베디드·운영체제 등에 널리 쓰입니다. C++·Java·C# 등 많은 언어의 문법적 기반이 됩니다.</p>
+<div class="diagram"><div class="flow">
+<div class="box">소스 코드<br>(.c)</div>→
+<div class="box">전처리<br>(Preprocessor)</div>→
+<div class="box">컴파일<br>(Compile)</div>→
+<div class="box">어셈블<br>(Assemble)</div>→
+<div class="box">링크<br>(Link)</div>→
+<div class="box">실행 파일<br>(.exe)</div>
+</div></div>
+<table><tr><th>단계</th><th>설명</th></tr>
+<tr><td>전처리</td><td>#include, #define 등 지시자 처리</td></tr>
+<tr><td>컴파일</td><td>소스 → 목적 파일(.obj) 변환, 문법 검사</td></tr>
+<tr><td>링크</td><td>목적 파일 + 라이브러리 → 실행 파일 생성</td></tr></table>
+
+<h3>1-2. C 프로그램 기본 구조</h3>
+<pre>#include &lt;stdio.h&gt;      /* 표준 입출력 헤더 */
+
+int main(void) {        /* 프로그램 시작점 */
+    printf("Hello");
+    return 0;           /* 정상 종료 (0 = 성공) */
+}</pre>
+<table><tr><th>구성 요소</th><th>설명</th></tr>
+<tr><td>#include</td><td>헤더 파일 포함 (전처리 지시자)</td></tr>
+<tr><td>main()</td><td>프로그램의 <b>유일한 진입점</b> (Entry Point)</td></tr>
+<tr><td>{ }</td><td>블록 (여러 문장을 묶음)</td></tr>
+<tr><td>;</td><td>문장 종료 기호 (세미콜론)</td></tr>
+<tr><td>/* */ 또는 //</td><td>주석 (컴파일러가 무시)</td></tr>
+<tr><td>return 0</td><td>프로그램 정상 종료</td></tr></table>
+<div class="exam"><b>시험 포인트</b> main 함수는 프로그램에 반드시 <b>하나</b>만 존재해야 하며, 실행은 항상 main부터 시작합니다.</div>
+
+<h3>1-3. 변수와 상수</h3>
+<div class="grid">
+<div class="mini"><b>변수 (Variable)</b>
+<p>값을 저장하는 메모리 공간. 선언 후 값 변경 가능.</p>
+<pre>int a = 10;
+a = 20;  /* 변경 가능 */</pre>
+</div>
+<div class="mini"><b>상수 (Constant)</b>
+<p>값이 고정되어 변경 불가.</p>
+<pre>const int MAX = 100;
+#define PI 3.14159</pre>
+</div>
+</div>
+<table><tr><th>변수 종류</th><th>유효 범위</th><th>특징</th></tr>
+<tr><td>지역 변수</td><td>함수·블록 내부</td><td>함수 종료 시 소멸, 초기화 안 하면 쓰레기값</td></tr>
+<tr><td>전역 변수</td><td>프로그램 전체</td><td>모든 함수에서 사용 가능, 0으로 자동 초기화</td></tr>
+<tr><td>정적 변수 (static)</td><td>함수 내부여도 유지</td><td>함수 종료 후에도 값 유지, 한 번만 초기화</td></tr>
+<tr><td>레지스터 변수</td><td>CPU 레지스터</td><td>빠른 접근 (현재는 거의 사용 안 함)</td></tr></table>
+<div class="call"><b>식별자 규칙</b> 영문자·숫자·_ 사용, 숫자로 시작 불가, 예약어 사용 불가, 대소문자 구분</div>
+</section>
+
+<section class="card" id="c2"><h2>2. 자료형과 연산자</h2>
+<h3>2-1. 기본 자료형 (시험 기준)</h3>
+<p>정보처리산업기사 시험에서는 전통적인 크기를 기준으로 출제됩니다.</p>
+<table><tr><th>자료형</th><th>크기</th><th>범위 (대략)</th><th>서식 문자</th></tr>
+<tr><td>char</td><td><b>1바이트</b></td><td>-128 ~ 127</td><td>%c</td></tr>
+<tr><td>short</td><td><b>2바이트</b></td><td>-32,768 ~ 32,767</td><td>%d / %hd</td></tr>
+<tr><td>int</td><td><b>2바이트</b></td><td>-32,768 ~ 32,767</td><td>%d</td></tr>
+<tr><td>long</td><td><b>4바이트</b></td><td>약 ±21억</td><td>%ld</td></tr>
+<tr><td>float</td><td>4바이트</td><td>단정밀도 실수</td><td>%f</td></tr>
+<tr><td>double</td><td>8바이트</td><td>배정밀도 실수</td><td>%lf</td></tr>
+<tr><td>void</td><td>-</td><td>값 없음 (반환값·포인터용)</td><td>-</td></tr></table>
+<div class="exam"><b>시험 포인트</b> 시험에서는 <b>int = 2바이트</b>, long = 4바이트로 계산합니다. (실제 현대 컴파일러는 int가 4바이트인 경우가 많음)</div>
+<div class="call"><b>서식 문자</b> %d(정수) %c(문자) %s(문자열) %f(실수) %lf(double) %x(16진수) %o(8진수) %p(주소) %%(%문자)</div>
+
+<h3>2-2. 형 변환 (Type Conversion)</h3>
+<table><tr><th>종류</th><th>설명</th><th>예</th></tr>
+<tr><td>자동 형 변환</td><td>작은 자료형 → 큰 자료형으로 자동</td><td>int + float → float</td></tr>
+<tr><td>강제 형 변환</td><td>(자료형)값 으로 직접 변환</td><td>(int)3.14 → 3</td></tr></table>
+<pre>int a = 5;
+float b = 2.0;
+printf("%f", a / b);     /* 2.500000 (자동 변환) */
+printf("%d", (int)3.9);  /* 3 (강제 변환, 소수점 버림) */</pre>
+
+<h3>2-3. 연산자</h3>
+<table><tr><th>종류</th><th>연산자</th><th>설명</th></tr>
+<tr><td>산술</td><td>+ - * / %</td><td>사칙연산, %는 나머지 (정수만)</td></tr>
+<tr><td>관계</td><td>== != &lt; &gt; &lt;= &gt;=</td><td>비교 결과 참(1) 또는 거짓(0)</td></tr>
+<tr><td>논리</td><td>&amp;&amp; || !</td><td>AND, OR, NOT</td></tr>
+<tr><td>증감</td><td>++ --</td><td>1 증가/감소</td></tr>
+<tr><td>대입</td><td>= += -= *= /= %=</td><td>대입 및 복합 대입</td></tr>
+<tr><td>비트</td><td>&amp; | ^ ~ &lt;&lt; &gt;&gt;</td><td>비트 AND, OR, XOR, NOT, 시프트</td></tr>
+<tr><td>조건</td><td>? :</td><td>삼항 연산자 (조건 ? 참 : 거짓)</td></tr>
+<tr><td>기타</td><td>sizeof ,</td><td>크기 연산, 콤마 연산</td></tr></table>
+
+<h4>증감 연산자 주의</h4>
+<pre>int a = 5;
+int b = a++;   /* 후위: b=5, a=6 (사용 후 증가) */
+int c = ++a;   /* 전위: a=7, c=7 (증가 후 사용) */</pre>
+<div class="exam"><b>시험 포인트</b> 후위(a++)는 <b>현재 값을 먼저 사용</b>하고 증가, 전위(++a)는 <b>먼저 증가</b>한 후 사용합니다.</div>
+
+<h4>연산자 우선순위 (높은 순)</h4>
+<table><tr><th>순위</th><th>연산자</th></tr>
+<tr><td>1</td><td>() [] -&gt; .</td></tr>
+<tr><td>2</td><td>! ~ ++ -- (단항) (형변환) sizeof</td></tr>
+<tr><td>3</td><td>* / %</td></tr>
+<tr><td>4</td><td>+ -</td></tr>
+<tr><td>5</td><td>&lt;&lt; &gt;&gt;</td></tr>
+<tr><td>6</td><td>&lt; &lt;= &gt; &gt;=</td></tr>
+<tr><td>7</td><td>== !=</td></tr>
+<tr><td>8</td><td>&amp;</td></tr>
+<tr><td>9</td><td>^</td></tr>
+<tr><td>10</td><td>|</td></tr>
+<tr><td>11</td><td>&amp;&amp;</td></tr>
+<tr><td>12</td><td>||</td></tr>
+<tr><td>13</td><td>? :</td></tr>
+<tr><td>14</td><td>= += -= 등</td></tr></table>
+</section>
+
+<section class="card" id="c3"><h2>3. 입출력과 주요 헤더</h2>
+<h3>3-1. stdio.h 필수 함수</h3>
+<p><code>#include &lt;stdio.h&gt;</code>는 거의 모든 C 프로그램에 필요합니다.</p>
+<table><tr><th>함수</th><th>기능</th><th>사용 예</th></tr>
+<tr><td>printf()</td><td>형식 지정 출력</td><td>printf("%d %s", 10, "hi");</td></tr>
+<tr><td>scanf()</td><td>형식 지정 입력</td><td>scanf("%d", &amp;a);</td></tr>
+<tr><td>getchar()</td><td>문자 1개 입력</td><td>ch = getchar();</td></tr>
+<tr><td>putchar()</td><td>문자 1개 출력</td><td>putchar('A');</td></tr>
+<tr><td>gets()</td><td>문자열 입력 (버퍼오버플로 위험)</td><td>gets(str);</td></tr>
+<tr><td>puts()</td><td>문자열 출력 후 개행</td><td>puts("Hello");</td></tr>
+<tr><td>sprintf()</td><td>문자열에 형식 출력</td><td>sprintf(buf, "%d", a);</td></tr>
+<tr><td>sscanf()</td><td>문자열에서 형식 입력</td><td>sscanf(str, "%d", &amp;a);</td></tr></table>
+<pre>int age;
+char name[20];
+scanf("%d %s", &amp;age, name);   /* 정수와 문자열 입력 */
+printf("나이:%d 이름:%s\n", age, name);</pre>
+<div class="exam"><b>시험 포인트</b> <b>scanf는 반드시 주소(&amp;)를 전달</b>해야 합니다. printf는 값만 전달합니다. 문자열 배열은 이름 자체가 주소이므로 &amp;를 붙이지 않습니다.</div>
+
+<h3>3-2. 주요 표준 헤더</h3>
+<table><tr><th>헤더</th><th>주요 내용</th></tr>
+<tr><td>stdio.h</td><td>입출력 (printf, scanf, FILE 등)</td></tr>
+<tr><td>stdlib.h</td><td>일반 유틸 (malloc, free, atoi, rand, exit)</td></tr>
+<tr><td>string.h</td><td>문자열 처리 (strlen, strcpy, strcmp, strcat)</td></tr>
+<tr><td>math.h</td><td>수학 함수 (sqrt, pow, sin, cos, abs)</td></tr>
+<tr><td>ctype.h</td><td>문자 판별 (isalpha, isdigit, toupper)</td></tr>
+<tr><td>time.h</td><td>시간 관련 (time, clock)</td></tr></table>
+
+<h3>3-3. string.h 주요 함수</h3>
+<table><tr><th>함수</th><th>기능</th><th>예</th></tr>
+<tr><td>strlen(s)</td><td>문자열 길이 (널 제외)</td><td>strlen("ABC") → 3</td></tr>
+<tr><td>strcpy(a,b)</td><td>b를 a에 복사</td><td>strcpy(dest, src)</td></tr>
+<tr><td>strncpy(a,b,n)</td><td>n개 문자 복사</td><td></td></tr>
+<tr><td>strcat(a,b)</td><td>b를 a 뒤에 연결</td><td></td></tr>
+<tr><td>strcmp(a,b)</td><td>문자열 비교 (0이면 같음)</td><td>strcmp("A","B") → 음수</td></tr>
+<tr><td>strchr(s,c)</td><td>문자 c 위치 찾기</td><td></td></tr>
+<tr><td>strstr(s,sub)</td><td>부분 문자열 찾기</td><td></td></tr></table>
+</section>
+
+<section class="card" id="c4"><h2>4. 제어문</h2>
+<h3>4-1. 조건문</h3>
+<table><tr><th>구문</th><th>형태</th><th>특징</th></tr>
+<tr><td>if</td><td>if(조건) 문장;</td><td>조건이 참일 때만 실행</td></tr>
+<tr><td>if-else</td><td>if(조건) ... else ...</td><td>참/거짓 분기</td></tr>
+<tr><td>if-else if</td><td>다중 조건</td><td>위에서부터 순차 검사</td></tr>
+<tr><td>switch</td><td>switch(식){ case 값: ... }</td><td>정수·문자 값에 따른 다중 분기</td></tr></table>
+<pre>int n = 2;
+switch(n) {
+    case 1: printf("하나"); break;
+    case 2: printf("둘"); break;   /* break 필수 */
+    default: printf("기타");
+}</pre>
+<div class="call"><b>주의</b> switch에서 <b>break를 생략</b>하면 다음 case까지 계속 실행됩니다 (fall-through).</div>
+
+<h3>4-2. 반복문</h3>
+<table><tr><th>구문</th><th>형태</th><th>특징</th></tr>
+<tr><td>for</td><td>for(초기식; 조건식; 증감식)</td><td>횟수가 정해진 반복에 적합</td></tr>
+<tr><td>while</td><td>while(조건)</td><td>조건이 참인 동안 반복 (0회 가능)</td></tr>
+<tr><td>do-while</td><td>do { ... } while(조건);</td><td><b>최소 1회</b> 실행 보장</td></tr></table>
+<pre>/* for 예제: 0부터 4까지 출력 */
+for(int i = 0; i &lt; 5; i++) {
+    printf("%d ", i);
+}
+/* 출력: 0 1 2 3 4 */</pre>
+<div class="exam"><b>시험 포인트</b> do-while은 조건을 <b>나중에</b> 검사하므로 본문이 무조건 한 번은 실행됩니다.</div>
+
+<h3>4-3. 분기문</h3>
+<table><tr><th>키워드</th><th>기능</th></tr>
+<tr><td>break</td><td>가장 가까운 반복문 또는 switch를 즉시 종료</td></tr>
+<tr><td>continue</td><td>현재 반복의 나머지 부분을 건너뛰고 다음 반복으로</td></tr>
+<tr><td>goto</td><td>지정한 레이블로 무조건 이동 (사용 지양)</td></tr>
+<tr><td>return</td><td>함수를 종료하고 값을 반환</td></tr></table>
+</section>
+
+<section class="card" id="c5"><h2>5. 배열과 문자열</h2>
+<h3>5-1. 배열 (Array)</h3>
+<p>같은 자료형의 데이터를 <b>연속된 메모리</b>에 저장하는 자료구조입니다. 인덱스는 <b>0부터</b> 시작합니다.</p>
+<pre>int arr[5] = {10, 20, 30, 40, 50};
+printf("%d", arr[0]);  /* 10 (첫 번째 요소) */
+printf("%d", arr[4]);  /* 50 (마지막 요소) */</pre>
+<table><tr><th>종류</th><th>선언 예</th><th>설명</th></tr>
+<tr><td>1차원 배열</td><td>int a[10];</td><td>선형 구조</td></tr>
+<tr><td>2차원 배열</td><td>int b[3][4];</td><td>행·열 구조 (3행 4열)</td></tr>
+<tr><td>초기화</td><td>int c[] = {1,2,3};</td><td>크기를 생략하면 초기값 개수로 결정</td></tr></table>
+<div class="call"><b>배열 이름</b> 배열 이름 자체는 첫 번째 요소의 주소입니다. <code>arr == &amp;arr[0]</code></div>
+
+<h3>5-2. 문자열 (String)</h3>
+<p>C에서 문자열은 <b>문자 배열</b>이며, 끝에 <b>널 문자('\0')</b>가 반드시 있어야 합니다.</p>
+<pre>char s1[6] = "Hello";     /* 'H','e','l','l','o','\0' */
+char s2[] = "Hi";         /* 크기는 3 (널 포함) */
+char s3[10];
+scanf("%s", s3);          /* 문자열 입력 시 &amp; 불필요 */</pre>
+<div class="exam"><b>시험 포인트</b> 문자열 끝에는 반드시 <b>'\0'</b>이 필요합니다. strlen()은 널 문자를 제외한 길이를 반환합니다.</div>
+</section>
+
+<section class="card" id="c6"><h2>6. 함수</h2>
+<h3>6-1. 함수 기본</h3>
+<pre>반환형 함수명(매개변수목록) {
+    /* 수행 코드 */
+    return 값;   /* 반환값이 있을 때 */
+}</pre>
+<table><tr><th>구성</th><th>설명</th></tr>
+<tr><td>프로토타입</td><td>함수를 미리 선언 (컴파일러에 알림)</td></tr>
+<tr><td>정의부</td><td>함수의 실제 내용</td></tr>
+<tr><td>호출부</td><td>함수를 사용하는 부분</td></tr>
+<tr><td>매개변수</td><td>함수에 전달하는 값 (가인수·실인수)</td></tr>
+<tr><td>반환값</td><td>return으로 돌려주는 결과</td></tr></table>
+
+<h3>6-2. 매개변수 전달 방식</h3>
+<div class="grid">
+<div class="mini"><b>값에 의한 호출 (Call by Value)</b>
+<p>인수의 <b>복사본</b>을 전달. 함수 안에서 값을 바꿔도 원본은 변하지 않음.</p>
+<pre>void swap(int a, int b) {
+    int t = a; a = b; b = t;
+} /* 원본 변경 안 됨 */</pre>
+</div>
+<div class="mini"><b>참조에 의한 호출 (Call by Reference)</b>
+<p><b>주소(포인터)</b>를 전달. 함수 안에서 원본 값을 변경할 수 있음.</p>
+<pre>void swap(int *a, int *b) {
+    int t = *a; *a = *b; *b = t;
+} /* 원본 변경됨 */</pre>
+</div>
+</div>
+<div class="exam"><b>시험 포인트</b> 값을 바꾸고 싶으면 포인터로 주소를 전달해야 합니다 (Call by Reference).</div>
+</section>
+
+<section class="card" id="c7"><h2>7. 포인터</h2>
+<h3>7-1. 포인터란?</h3>
+<p>포인터는 <b>변수의 메모리 주소</b>를 저장하는 변수입니다.</p>
+<pre>int a = 10;
+int *p = &amp;a;      /* p에 a의 주소를 저장 */
+printf("%d", *p); /* *p → a의 값인 10 출력 */
+*p = 20;          /* a의 값이 20으로 변경됨 */</pre>
+<table><tr><th>연산자</th><th>의미</th><th>예</th></tr>
+<tr><td>&amp;</td><td>주소 연산자 (변수의 주소)</td><td>&amp;a → a의 주소</td></tr>
+<tr><td>*</td><td>간접 참조 (주소가 가리키는 값)</td><td>*p → p가 가리키는 값</td></tr></table>
+
+<h3>7-2. 포인터와 배열</h3>
+<pre>int arr[5] = {10,20,30,40,50};
+int *p = arr;     /* arr == &amp;arr[0] */
+printf("%d", *p);     /* 10 */
+printf("%d", *(p+1)); /* 20 */
+printf("%d", p[2]);   /* 30 (배열처럼 사용 가능) */</pre>
+<div class="call"><b>핵심</b> 배열 이름은 포인터 상수입니다. <code>arr[i] == *(arr+i)</code></div>
+
+<h3>7-3. 포인터 연산</h3>
+<table><tr><th>연산</th><th>결과</th></tr>
+<tr><td>p + 1</td><td>다음 자료형 크기만큼 주소 증가 (int면 +2바이트)</td></tr>
+<tr><td>p - 1</td><td>이전 주소</td></tr>
+<tr><td>*p++</td><td>현재 값을 사용한 뒤 포인터 증가</td></tr>
+</table>
+</section>
+
+<section class="card" id="c8"><h2>8. 구조체와 공용체</h2>
+<h3>8-1. 구조체 (Structure)</h3>
+<p>서로 다른 자료형을 하나로 묶는 <b>사용자 정의 자료형</b>입니다.</p>
+<pre>struct Student {
+    char name[20];
+    int age;
+    float score;
+};
+
+struct Student s1 = {"Kim", 20, 95.5};
+printf("%s %d", s1.name, s1.age);  /* 멤버 접근: . 연산자 */</pre>
+<table><tr><th>관련 개념</th><th>설명</th></tr>
+<tr><td>.</td><td>구조체 변수에서 멤버 접근</td></tr>
+<tr><td>-&gt;</td><td>구조체 <b>포인터</b>에서 멤버 접근</td></tr>
+<tr><td>typedef</td><td>자료형에 새로운 이름 부여</td></tr>
+</table>
+<pre>struct Student *p = &amp;s1;
+printf("%s", p-&gt;name);   /* -&gt; 사용 */
+printf("%s", (*p).name); /* 동등한 표현 */</pre>
+
+<h3>8-2. 공용체 (Union)와 열거형</h3>
+<table><tr><th>구분</th><th>특징</th></tr>
+<tr><td>구조체 (struct)</td><td>멤버가 각각 별도 메모리 차지</td></tr>
+<tr><td>공용체 (union)</td><td>멤버가 <b>메모리를 공유</b> (가장 큰 멤버 크기만큼만 할당)</td></tr>
+<tr><td>열거형 (enum)</td><td>정수 상수에 이름을 붙임</td></tr></table>
+<pre>union Data {
+    int i;
+    float f;
+    char c;
+};  /* 크기는 가장 큰 멤버 기준 */
+
+enum Color { RED, GREEN, BLUE };  /* RED=0, GREEN=1, BLUE=2 */</pre>
+</section>
+
+<section class="card" id="c9"><h2>9. 파일 입출력 · 전처리기 · 동적 할당</h2>
+<h3>9-1. 파일 입출력</h3>
+<table><tr><th>함수</th><th>기능</th></tr>
+<tr><td>fopen()</td><td>파일 열기 (모드: "r"읽기, "w"쓰기, "a"추가, "rb"이진읽기 등)</td></tr>
+<tr><td>fclose()</td><td>파일 닫기</td></tr>
+<tr><td>fprintf() / fscanf()</td><td>파일에 형식 입출력</td></tr>
+<tr><td>fgets() / fputs()</td><td>문자열 입출력</td></tr>
+<tr><td>fread() / fwrite()</td><td>바이너리 입출력</td></tr>
+<tr><td>feof()</td><td>파일 끝(EOF) 확인</td></tr>
+<tr><td>fseek() / ftell()</td><td>파일 위치 이동 / 현재 위치</td></tr></table>
+<pre>FILE *fp = fopen("data.txt", "r");
+if(fp == NULL) { /* 파일 열기 실패 */ }
+fscanf(fp, "%d", &amp;num);
+fclose(fp);</pre>
+<div class="exam"><b>시험 포인트</b> fopen 실패 시 NULL을 반환하므로 반드시 확인해야 합니다. "r"은 읽기, "w"는 쓰기(기존 내용 삭제), "a"는 추가 모드입니다.</div>
+
+<h3>9-2. 전처리기 (Preprocessor)</h3>
+<table><tr><th>지시자</th><th>기능</th></tr>
+<tr><td>#include</td><td>헤더 파일 포함</td></tr>
+<tr><td>#define</td><td>매크로 상수·함수 정의</td></tr>
+<tr><td>#undef</td><td>매크로 정의 해제</td></tr>
+<tr><td>#ifdef / #ifndef</td><td>매크로 정의 여부에 따른 조건부 컴파일</td></tr>
+<tr><td>#if / #else / #endif</td><td>조건에 따른 코드 포함</td></tr>
+<tr><td>#pragma</td><td>컴파일러 지시</td></tr></table>
+<pre>#define MAX 100
+#define SQUARE(x) ((x)*(x))
+#define MAX(a,b) ((a)&gt;(b)?(a):(b))</pre>
+
+<h3>9-3. 동적 메모리 할당 (stdlib.h)</h3>
+<table><tr><th>함수</th><th>기능</th></tr>
+<tr><td>malloc(size)</td><td>size 바이트 할당 (초기화 안 됨)</td></tr>
+<tr><td>calloc(n, size)</td><td>n개 요소 할당 + 0으로 초기화</td></tr>
+<tr><td>realloc(ptr, size)</td><td>이미 할당된 메모리 크기 변경</td></tr>
+<tr><td>free(ptr)</td><td>할당된 메모리 해제</td></tr></table>
+<pre>int *p = (int *)malloc(sizeof(int) * 10);
+if(p == NULL) { /* 할당 실패 */ }
+free(p);  /* 반드시 해제 */</pre>
+</section>
+
+
+<section class="card" id="c10"><h2>10. 예제 프로그램</h2>
+<h3>10-1. 피보나치 수열 (반복문)</h3>
+<pre>#include &lt;stdio.h&gt;
+int main(void) {
+    int n, i;
+    int a = 0, b = 1, c;
+    printf("항 개수: ");
+    scanf("%d", &amp;n);
+    for(i = 1; i &lt;= n; i++) {
+        printf("%d ", a);
+        c = a + b;
+        a = b;
+        b = c;
+    }
+    return 0;
+}
+/* 입력 10 → 0 1 1 2 3 5 8 13 21 34 */</pre>
+
+<h3>10-2. 피보나치 수열 (재귀함수)</h3>
+<pre>#include &lt;stdio.h&gt;
+int fibo(int n) {
+    if(n &lt;= 1) return n;          /* 종료 조건 */
+    return fibo(n-1) + fibo(n-2); /* 재귀 호출 */
+}
+int main(void) {
+    int i, n = 10;
+    for(i = 0; i &lt; n; i++)
+        printf("%d ", fibo(i));
+    return 0;
+}
+/* 출력: 0 1 1 2 3 5 8 13 21 34 */</pre>
+<div class="exam"><b>시험 포인트</b> 재귀는 <b>종료 조건</b>이 반드시 있어야 하며, 없으면 무한 호출로 스택 오버플로가 발생합니다.</div>
+
+<h3>10-3. 팩토리얼 (재귀)</h3>
+<pre>#include &lt;stdio.h&gt;
+int fact(int n) {
+    if(n &lt;= 1) return 1;
+    return n * fact(n - 1);
+}
+int main(void) {
+    printf("%d", fact(5));  /* 120 */
+    return 0;
+}</pre>
+
+<h3>10-4. 최대공약수 (유클리드 호제법 - 재귀)</h3>
+<pre>#include &lt;stdio.h&gt;
+int gcd(int a, int b) {
+    if(b == 0) return a;
+    return gcd(b, a % b);
+}
+int main(void) {
+    printf("%d", gcd(48, 18));  /* 6 */
+    return 0;
+}</pre>
+
+<h3>10-5. 배열 합계 · 평균</h3>
+<pre>#include &lt;stdio.h&gt;
+int main(void) {
+    int arr[5] = {10, 20, 30, 40, 50};
+    int i, sum = 0;
+    for(i = 0; i &lt; 5; i++)
+        sum += arr[i];
+    printf("합계: %d\n", sum);
+    printf("평균: %.1f\n", sum / 5.0);
+    return 0;
+}</pre>
+
+<h3>10-6. 버블 정렬</h3>
+<pre>#include &lt;stdio.h&gt;
+int main(void) {
+    int a[5] = {5, 2, 4, 1, 3};
+    int i, j, temp;
+    for(i = 0; i &lt; 4; i++)
+        for(j = 0; j &lt; 4 - i; j++)
+            if(a[j] &gt; a[j+1]) {
+                temp = a[j];
+                a[j] = a[j+1];
+                a[j+1] = temp;
+            }
+    for(i = 0; i &lt; 5; i++)
+        printf("%d ", a[i]);  /* 1 2 3 4 5 */
+    return 0;
+}</pre>
+
+<h3>10-7. 문자열 길이 · 복사 · 비교</h3>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main(void) {
+    char s1[20] = "Hello";
+    char s2[20];
+    printf("길이: %d\n", strlen(s1));   /* 5 */
+    strcpy(s2, s1);
+    printf("복사: %s\n", s2);           /* Hello */
+    printf("비교: %d\n", strcmp(s1, s2)); /* 0 (같음) */
+    return 0;
+}</pre>
+
+<h3>10-8. 구조체 배열 예제</h3>
+<pre>#include &lt;stdio.h&gt;
+struct Student {
+    char name[20];
+    int score;
+};
+int main(void) {
+    struct Student s[3] = {
+        {"Kim", 90}, {"Lee", 85}, {"Park", 95}
+    };
+    int i, sum = 0;
+    for(i = 0; i &lt; 3; i++) {
+        printf("%s: %d\n", s[i].name, s[i].score);
+        sum += s[i].score;
+    }
+    printf("평균: %.1f\n", sum / 3.0);
+    return 0;
+}</pre>
+
+<div class="call"><b>재귀 함수 핵심</b>
+1. 종료 조건(Base Case)이 있어야 한다.<br>
+2. 자기 자신을 더 작은 문제로 호출한다.<br>
+3. 스택을 사용하므로 깊이가 너무 깊으면 위험하다.
+</div>
+</section>
+
+<section class="card" id="c11"><h2>11. 시험 핵심 정리와 실전 문제</h2>
+<h3>11-1. 핵심 학습표</h3>
+<table><tr><th>영역</th><th>핵심 내용</th><th>자주 나오는 유형</th></tr>
+<tr><td>기초</td><td>main, 주석, 변수·상수, 예약어</td><td>구조·문법 오류</td></tr>
+<tr><td>자료형</td><td>크기(int=2B), 서식문자, 형변환</td><td>크기·출력 결과</td></tr>
+<tr><td>연산자</td><td>증감 전위/후위, 우선순위, 비트</td><td>연산 결과 계산</td></tr>
+<tr><td>제어문</td><td>switch-break, do-while, continue</td><td>실행 흐름 추적</td></tr>
+<tr><td>배열·문자열</td><td>인덱스 0부터, 널문자, strlen</td><td>출력·오류 찾기</td></tr>
+<tr><td>함수</td><td>Call by Value/Reference</td><td>값 변화 예측</td></tr>
+<tr><td>포인터</td><td>&amp; *, 배열과 포인터 관계</td><td>주소·값 출력</td></tr>
+<tr><td>구조체</td><td>. 와 -&gt;, typedef, union</td><td>멤버 접근</td></tr>
+<tr><td>입출력·파일</td><td>scanf &amp;, fopen 모드</td><td>함수 기능 매칭</td></tr>
+</table>
+<div class="exam"><b>시험 대비 유의사항</b><br>이 자료는 정보처리산업기사 학습용 핵심 개념과 자체 제작 연습 문제입니다. 실제 출제기준은 Q-Net을 확인하세요.</div>
+
+<h3>11-2. 실전 확인 문제</h3>
+<form id="quiz">
+<div class="quiz" data-a="1" data-e="main 함수는 프로그램의 시작점(진입점)입니다.">
+<h4>문제 1. C 프로그램의 시작점이 되는 함수는?</h4>
+<label><input type="radio" name="q1" value="0"> ① printf</label>
+<label><input type="radio" name="q1" value="1"> ② main</label>
+<label><input type="radio" name="q1" value="2"> ③ include</label>
+<label><input type="radio" name="q1" value="3"> ④ return</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="0" data-e="정보처리산업기사 시험 기준에서 int는 2바이트입니다.">
+<h4>문제 2. 시험 기준에서 int의 크기는?</h4>
+<label><input type="radio" name="q2" value="0"> ① 2바이트</label>
+<label><input type="radio" name="q2" value="1"> ② 4바이트</label>
+<label><input type="radio" name="q2" value="2"> ③ 1바이트</label>
+<label><input type="radio" name="q2" value="3"> ④ 8바이트</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="2" data-e="후위 증가(a++)는 현재 값을 사용한 뒤 증가합니다. a=5일 때 b=a++이면 b=5, a=6이 됩니다.">
+<h4>문제 3. int a=5; int b=a++; 실행 후 b의 값은?</h4>
+<label><input type="radio" name="q3" value="0"> ① 4</label>
+<label><input type="radio" name="q3" value="1"> ② 6</label>
+<label><input type="radio" name="q3" value="2"> ③ 5</label>
+<label><input type="radio" name="q3" value="3"> ④ 0</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="0" data-e="배열 인덱스는 0부터 시작합니다.">
+<h4>문제 4. 배열의 첫 번째 요소 인덱스는?</h4>
+<label><input type="radio" name="q4" value="0"> ① 0</label>
+<label><input type="radio" name="q4" value="1"> ② 1</label>
+<label><input type="radio" name="q4" value="2"> ③ -1</label>
+<label><input type="radio" name="q4" value="3"> ④ 배열크기-1</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="3" data-e="* 연산자는 포인터가 가리키는 값을 가져오는 간접 참조 연산자입니다.">
+<h4>문제 5. 포인터가 가리키는 값을 가져오는 연산자는?</h4>
+<label><input type="radio" name="q5" value="0"> ① &amp;</label>
+<label><input type="radio" name="q5" value="1"> ② -&gt;</label>
+<label><input type="radio" name="q5" value="2"> ③ .</label>
+<label><input type="radio" name="q5" value="3"> ④ *</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="1" data-e="do-while은 조건을 나중에 검사하므로 본문이 최소 한 번은 실행됩니다.">
+<h4>문제 6. 최소 1회 실행이 보장되는 반복문은?</h4>
+<label><input type="radio" name="q6" value="0"> ① for</label>
+<label><input type="radio" name="q6" value="1"> ② do-while</label>
+<label><input type="radio" name="q6" value="2"> ③ while</label>
+<label><input type="radio" name="q6" value="3"> ④ switch</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="2" data-e="문자열은 문자 배열이며 끝에 널 문자('\0')가 있어야 합니다.">
+<h4>문제 7. C에서 문자열의 끝을 나타내는 문자는?</h4>
+<label><input type="radio" name="q7" value="0"> ① \n</label>
+<label><input type="radio" name="q7" value="1"> ② \t</label>
+<label><input type="radio" name="q7" value="2"> ③ \0</label>
+<label><input type="radio" name="q7" value="3"> ④ \\</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="0" data-e="fopen의 'r' 모드는 읽기 전용으로 파일을 엽니다.">
+<h4>문제 8. 파일을 읽기 모드로 여는 fopen 인자는?</h4>
+<label><input type="radio" name="q8" value="0"> ① "r"</label>
+<label><input type="radio" name="q8" value="1"> ② "w"</label>
+<label><input type="radio" name="q8" value="2"> ③ "a"</label>
+<label><input type="radio" name="q8" value="3"> ④ "x"</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="3" data-e="구조체 포인터로 멤버에 접근할 때는 -> 연산자를 사용합니다.">
+<h4>문제 9. 구조체 포인터의 멤버 접근 연산자는?</h4>
+<label><input type="radio" name="q9" value="0"> ① .</label>
+<label><input type="radio" name="q9" value="1"> ② *</label>
+<label><input type="radio" name="q9" value="2"> ③ &amp;</label>
+<label><input type="radio" name="q9" value="3"> ④ -&gt;</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="1" data-e="scanf는 변수 앞에 &를 붙여 주소를 전달해야 합니다.">
+<h4>문제 10. scanf 사용 시 정수 변수에 필요한 것은?</h4>
+<label><input type="radio" name="q10" value="0"> ① 값 전달</label>
+<label><input type="radio" name="q10" value="1"> ② 주소(&amp;) 전달</label>
+<label><input type="radio" name="q10" value="2"> ③ * 연산자</label>
+<label><input type="radio" name="q10" value="3"> ④ return</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="2" data-e="Call by Value는 복사본을 전달하므로 원본이 변경되지 않습니다.">
+<h4>문제 11. 함수에서 원본 값을 변경하려면 어떤 방식이 필요한가?</h4>
+<label><input type="radio" name="q11" value="0"> ① Call by Value</label>
+<label><input type="radio" name="q11" value="1"> ② 전역 변수만 사용</label>
+<label><input type="radio" name="q11" value="2"> ③ Call by Reference (포인터)</label>
+<label><input type="radio" name="q11" value="3"> ④ return만 사용</label>
+<div class="feedback"></div></div>
+
+<div class="quiz" data-a="0" data-e="배열 이름은 첫 번째 요소의 주소와 같습니다.">
+<h4>문제 12. 배열 이름 arr과 같은 의미는?</h4>
+<label><input type="radio" name="q12" value="0"> ① &amp;arr[0]</label>
+<label><input type="radio" name="q12" value="1"> ② arr[0]</label>
+<label><input type="radio" name="q12" value="2"> ③ *arr[0]</label>
+<label><input type="radio" name="q12" value="3"> ④ &amp;arr</label>
+<div class="feedback"></div></div>
+</form>
+<button onclick="grade()">채점하기</button>
+<button class="alt" onclick="resetQuiz()">다시 풀기</button>
+<div class="result" id="score">아직 채점하지 않았습니다.</div>
+</section></main></div>
+<footer>C 언어 학습 자료 · 정보처리산업기사 대비 · 자체 제작 연습 문제</footer>
+<script>
+function grade(){let n=0,c=0;document.querySelectorAll('.quiz').forEach(q=>{n++;let s=q.querySelector('input:checked'),a=Number(q.dataset.a),f=q.querySelector('.feedback');if(s&&Number(s.value)===a){c++;f.textContent='정답입니다. '+q.dataset.e;f.style.color='#16845b'}else{f.textContent='오답입니다. 정답은 '+(a+1)+'번입니다. '+q.dataset.e;f.style.color='#bd3f4b'}});document.getElementById('score').innerHTML=`<b>점수: ${c}/${n}문항 (${Math.round(c/n*100)}점)</b>`}
+function resetQuiz(){document.getElementById('quiz').reset();document.querySelectorAll('.feedback').forEach(x=>x.textContent='');document.getElementById('score').textContent='아직 채점하지 않았습니다.'}
+</script></body></html>
