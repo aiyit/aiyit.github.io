@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예제 9-8 Number 메소드 실무 응용</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Inter & JetBrains Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-brand-500/10 rounded-xl border border-brand-500/20 text-brand-500">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white flex items-center gap-2">
+                        예제 9-8 Number 메소드 실무 응용
+                        <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">실무 응용 예제</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">실생활 및 서비스 개발에 바로 적용하는 Number 메소드 활용 패턴</p>
+                </div>
+            </div>
+            
+            <!-- Quick Category Filter Buttons -->
+            <div class="hidden md:flex items-center gap-1 bg-slate-800/80 p-1 rounded-lg border border-slate-700/50 text-xs">
+                <button onclick="filterCategory('all')" class="filter-btn active px-3 py-1.5 rounded-md transition-all font-medium bg-brand-600 text-white" data-cat="all">전체 예제</button>
+                <button onclick="filterCategory('ecommerce')" class="filter-btn px-3 py-1.5 rounded-md transition-all text-slate-400 hover:text-slate-200" data-cat="ecommerce">이커머스/통화</button>
+                <button onclick="filterCategory('utility')" class="filter-btn px-3 py-1.5 rounded-md transition-all text-slate-400 hover:text-slate-200" data-cat="utility">유틸리티/용량</button>
+                <button onclick="filterCategory('validation')" class="filter-btn px-3 py-1.5 rounded-md transition-all text-slate-400 hover:text-slate-200" data-cat="validation">검증/파싱</button>
+                <button onclick="filterCategory('precision')" class="filter-btn px-3 py-1.5 rounded-md transition-all text-slate-400 hover:text-slate-200" data-cat="precision">부동소수점/부호화</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Legend & Overview Banner -->
+        <div class="mb-8 p-4 rounded-2xl bg-slate-800/40 border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-sm text-slate-300">
+                <i data-lucide="code-2" class="w-4 h-4 text-brand-500"></i>
+                <span>각 응용 시나리오별 실시간 데모와 실제 구현 코드를 직접 확인하고 테스트해보세요.</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-400 font-mono">
+                <span class="px-2 py-1 rounded bg-slate-800 border border-slate-700">toFixed</span>
+                <span class="px-2 py-1 rounded bg-slate-800 border border-slate-700">parseInt/parseFloat</span>
+                <span class="px-2 py-1 rounded bg-slate-800 border border-slate-700">toString(radix)</span>
+                <span class="px-2 py-1 rounded bg-slate-800 border border-slate-700">Number.EPSILON</span>
+            </div>
+        </div>
+
+        <!-- Grid Cards Container -->
+        <div id="cards-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Practical Scenario Cards injected via JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>예제 9-8 Number 메소드 응용 • 실시간 실습 대시보드</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Practical Application Examples Data
+        const scenariosData = [
+            // Scenario 1: Currency Formatter
+            {
+                id: 'currency',
+                title: '1. 다국어 통화 & 원화 포맷터 (Currency Formatter)',
+                category: 'ecommerce',
+                methodsUsed: ['toFixed', 'toLocaleString', 'Number'],
+                desc: '결제/장바구니 시스템에서 소수점 보정과 국가별 통화 기호, 천 단위 콤마(,)를 적용합니다.',
+                codeSnippet: `function formatCurrency(amount, currency = 'KRW', digits = 2) {
+  const num = Number(amount);
+  if (Number.isNaN(num)) return '잘못된 금액';
+  
+  if (currency === 'KRW') {
+    // 원화는 소수점이 필요 없으므로 정수 처리
+    return Math.floor(num).toLocaleString('ko-KR') + '원';
+  }
+  
+  // 소수점 보정 후 통화 포맷팅
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  }).format(num);
+}`,
+                inputs: [
+                    { id: 'amount', label: '금액 (Input Amount)', type: 'number', default: 1234567.89 },
+                    { id: 'currency', label: '통화 선택', type: 'select', options: [
+                        { label: '원화 (KRW)', value: 'KRW' },
+                        { label: '미국 달러 (USD)', value: 'USD' },
+                        { label: '유로화 (EUR)', value: 'EUR' },
+                        { label: '일본 엔화 (JPY)', value: 'JPY' }
+                    ], default: 'KRW' },
+                    { id: 'digits', label: '소수점 자릿수 (toFixed/Fraction)', type: 'range', min: 0, max: 4, step: 1, default: 2 }
+                ],
+                run: (inputs) => {
+                    const num = Number(inputs.amount);
+                    if (Number.isNaN(num)) return { result: '유효한 숫자를 입력하세요', type: 'error' };
+
+                    const digits = Number(inputs.digits);
+                    if (inputs.currency === 'KRW') {
+                        const formatted = Math.floor(num).toLocaleString('ko-KR') + '원';
+                        const fixedVer = num.toFixed(digits);
+                        return { 
+                            result: `${formatted} (fixed: ${fixedVer})`, 
+                            type: 'string' 
+                        };
+                    }
+
+                    const formatted = new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: inputs.currency,
+                        minimumFractionDigits: digits,
+                        maximumFractionDigits: digits
+                    }).format(num);
+
+                    return { result: formatted, type: 'string' };
+                }
+            },
+
+            // Scenario 2: File Size Calculator
+            {
+                id: 'filesize',
+                title: '2. 파일 용량 가독 계산기 (Human-Readable File Size)',
+                category: 'utility',
+                methodsUsed: ['toFixed', 'Math.log', 'Number.parseFloat'],
+                desc: '바이트(Byte) 단위의 파일 크기를 B, KB, MB, GB, TB 등의 읽기 쉬운 단위로 변환합니다.',
+                codeSnippet: `function formatBytes(bytes, decimals = 2) {
+  const size = Number(bytes);
+  if (size === 0 || Number.isNaN(size)) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+  const i = Math.floor(Math.log(size) / Math.log(k));
+  const converted = size / Math.pow(k, i);
+
+  // toFixed로 지정 소수점 지정 후 Float 파싱
+  return converted.toFixed(dm) + ' ' + sizes[i];
+}`,
+                inputs: [
+                    { id: 'bytes', label: '바이트 크기 (Bytes)', type: 'number', default: 104857600 },
+                    { id: 'decimals', label: '소수점 정밀도', type: 'range', min: 0, max: 4, step: 1, default: 2 }
+                ],
+                run: (inputs) => {
+                    const bytes = Number(inputs.bytes);
+                    const decimals = Number(inputs.decimals);
+
+                    if (bytes === 0 || Number.isNaN(bytes)) return { result: '0 Bytes', type: 'string' };
+                    if (bytes < 0) return { result: '음수 용량은 존재하지 않습니다', type: 'error' };
+
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    
+                    if (i >= sizes.length) return { result: '용량이 너무 큽니다', type: 'error' };
+
+                    const converted = bytes / Math.pow(k, i);
+                    const formatted = converted.toFixed(decimals) + ' ' + sizes[i];
+
+                    return { result: formatted, type: 'string' };
+                }
+            },
+
+            // Scenario 3: Input Parser & Validator
+            {
+                id: 'inputParser',
+                title: '3. 사용자 입력값 안전 파서 & 검증기 (Input Validator)',
+                category: 'validation',
+                methodsUsed: ['parseInt', 'parseFloat', 'Number.isNaN', 'Number.isInteger'],
+                desc: '폼 입력값("25px", "3.14만원", "abc")에서 정수/실수를 안심하고 추출 및 검증합니다.',
+                codeSnippet: `function parseUserInput(rawInput) {
+  // 1. 실수 파싱 (CSS 단위나 문자가 뒤에 붙은 경우)
+  const floatVal = Number.parseFloat(rawInput);
+  
+  // 2. 정수 파싱 (10진수 기준)
+  const intVal = Number.parseInt(rawInput, 10);
+  
+  // 3. Strict NaN 검증
+  const isInvalid = Number.isNaN(floatVal);
+  
+  // 4. 안전한 정수 여부 검사
+  const isInt = Number.isInteger(floatVal);
+
+  return { floatVal, intVal, isInvalid, isInt };
+}`,
+                inputs: [
+                    { id: 'rawText', label: '폼 입력 텍스트 (예: 24.5px, $1500, NaN)', type: 'text', default: '100.50px' }
+                ],
+                run: (inputs) => {
+                    const raw = inputs.rawText;
+                    const floatVal = Number.parseFloat(raw);
+                    const intVal = Number.parseInt(raw, 10);
+                    const isInvalid = Number.isNaN(floatVal);
+                    const isInt = Number.isInteger(floatVal);
+
+                    if (isInvalid) {
+                        return { result: `파싱 실패: 숫자를 찾을 수 없음 (isNaN = true)`, type: 'error' };
+                    }
+
+                    return { 
+                        result: `Float: ${floatVal} | Int: ${intVal} | 정수여부: ${isInt}`, 
+                        type: 'boolean' 
+                    };
+                }
+            },
+
+            // Scenario 4: Radix Conversion & Color / Hash
+            {
+                id: 'radixConverter',
+                title: '4. 진법 변환 & HEX 색상 코드 / 비트 연산 (Radix & Hex)',
+                category: 'precision',
+                methodsUsed: ['toString(16)', 'toString(2)', 'parseInt(str, 16)'],
+                desc: '10진수 정수를 2진수 비트, 16진수 HEX 색상 코드로 상호 변환합니다.',
+                codeSnippet: `// 10진수 RGB -> HEX 코드 변환 (#RRGGBB)
+function rgbToHex(r, g, b) {
+  const toHex = (n) => {
+    const hex = Number(n).toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+
+// 2진수 비트열 확인
+function toBinaryStr(num) {
+  return Number(num).toString(2).padStart(8, '0');
+}`,
+                inputs: [
+                    { id: 'decNum', label: '10진수 숫자 (0~255)', type: 'number', default: 255 }
+                ],
+                run: (inputs) => {
+                    const num = Number(inputs.decNum);
+                    if (Number.isNaN(num)) return { result: '숫자를 입력하세요', type: 'error' };
+
+                    const binary = num.toString(2).padStart(8, '0');
+                    const octal = num.toString(8);
+                    const hex = num.toString(16).toUpperCase().padStart(2, '0');
+
+                    return { 
+                        result: `HEX: #${hex}${hex}${hex} | BIN: ${binary} | OCT: ${octal}`, 
+                        type: 'number' 
+                    };
+                }
+            },
+
+            // Scenario 5: Safe Floating Precision
+            {
+                id: 'precisionFix',
+                title: '5. 부동소수점 오차 해결 & 과학 계산 (EPSILON / toPrecision)',
+                category: 'precision',
+                methodsUsed: ['toPrecision', 'Number.EPSILON', 'Math.abs'],
+                desc: '0.1 + 0.2 === 0.3 이 false가 되는 자바스크립트 소수점 오차 문제를 정밀 보정합니다.',
+                codeSnippet: `// 부동소수점 안전 비교 (Number.EPSILON 활용)
+function safeCompare(a, b) {
+  return Math.abs(a - b) < Number.EPSILON;
+}
+
+// 유효자릿수 보정
+function fixPrecision(num, precision = 12) {
+  return Number.parseFloat(Number(num).toPrecision(precision));
+}`,
+                inputs: [
+                    { id: 'numA', label: '값 A (예: 0.1)', type: 'number', default: 0.1 },
+                    { id: 'numB', label: '값 B (예: 0.2)', type: 'number', default: 0.2 }
+                ],
+                run: (inputs) => {
+                    const a = Number(inputs.numA);
+                    const b = Number(inputs.numB);
+                    const rawSum = a + b;
+                    
+                    const isDirectEqual = (rawSum === 0.3);
+                    const isEpsilonEqual = Math.abs(rawSum - 0.3) < Number.EPSILON;
+                    const fixedPrecision = Number.parseFloat(rawSum.toPrecision(12));
+
+                    return { 
+                        result: `단순 합: ${rawSum} | 0.3과 일치여부: ${isEpsilonEqual} (EPSILON 보정 적용됨)`, 
+                        type: isEpsilonEqual ? 'boolean' : 'error' 
+                    };
+                }
+            }
+        ];
+
+        // UI State management
+        const activeTabState = {};
+
+        function renderScenarios(filter = 'all') {
+            const container = document.getElementById('cards-grid');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' 
+                ? scenariosData 
+                : scenariosData.filter(s => s.category === filter);
+
+            filtered.forEach(sc => {
+                if (!activeTabState[sc.id]) {
+                    activeTabState[sc.id] = 'demo'; // 'demo' or 'code'
+                }
+
+                // Initial inputs state
+                const inputValues = {};
+                sc.inputs.forEach(inp => {
+                    inputValues[inp.id] = inp.default;
+                });
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 flex flex-col justify-between shadow-xl";
+                card.id = `scenario-${sc.id}`;
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Header & Methods Tags -->
+                        <div class="flex items-start justify-between gap-2 mb-3">
+                            <h3 class="font-bold text-white text-base">${sc.title}</h3>
+                            <div class="flex gap-1">
+                                <button onclick="switchTab('${sc.id}', 'demo')" id="tab-demo-${sc.id}" class="px-2.5 py-1 text-xs rounded-md font-medium transition-all ${activeTabState[sc.id] === 'demo' ? 'bg-brand-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-slate-200'}">Demo</button>
+                                <button onclick="switchTab('${sc.id}', 'code')" id="tab-code-${sc.id}" class="px-2.5 py-1 text-xs rounded-md font-medium transition-all ${activeTabState[sc.id] === 'code' ? 'bg-brand-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-slate-200'}">Code</button>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-400 mb-4 leading-relaxed">${sc.desc}</p>
+
+                        <!-- Used Methods Badge -->
+                        <div class="flex flex-wrap gap-1.5 mb-4 font-mono text-[11px]">
+                            ${sc.methodsUsed.map(m => `<span class="px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20">${m}</span>`).join('')}
+                        </div>
+
+                        <!-- Demo Tab Panel -->
+                        <div id="panel-demo-${sc.id}" class="${activeTabState[sc.id] === 'demo' ? 'block' : 'hidden'} space-y-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800 mb-4">
+                            ${sc.inputs.map(inp => `
+                                <div>
+                                    <div class="flex justify-between items-center mb-1 text-xs text-slate-400 font-medium">
+                                        <label for="input-${sc.id}-${inp.id}">${inp.label}</label>
+                                        ${inp.type === 'range' ? `<span id="val-display-${sc.id}-${inp.id}" class="font-mono text-brand-400">${inp.default}</span>` : ''}
+                                    </div>
+
+                                    ${inp.type === 'select' ? `
+                                        <select id="input-${sc.id}-${inp.id}" onchange="executeScenario('${sc.id}')" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500 font-mono">
+                                            ${inp.options.map(opt => `<option value="${opt.value}" ${opt.value == inp.default ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                                        </select>
+                                    ` : ''}
+
+                                    ${inp.type === 'number' || inp.type === 'text' ? `
+                                        <input type="${inp.type}" id="input-${sc.id}-${inp.id}" value="${inp.default}" oninput="executeScenario('${sc.id}')" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500 font-mono">
+                                    ` : ''}
+
+                                    ${inp.type === 'range' ? `
+                                        <input type="range" id="input-${sc.id}-${inp.id}" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${inp.default}" oninput="document.getElementById('val-display-${sc.id}-${inp.id}').textContent = this.value; executeScenario('${sc.id}')" class="w-full accent-brand-500 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Code Tab Panel -->
+                        <div id="panel-code-${sc.id}" class="${activeTabState[sc.id] === 'code' ? 'block' : 'hidden'} mb-4">
+                            <pre class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed"><code>${escapeHtml(sc.codeSnippet)}</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Output Result Area -->
+                    <div class="mt-auto">
+                        <div class="text-[11px] font-medium text-slate-400 mb-1 flex justify-between items-center">
+                            <span>실행 결과 (Live Result)</span>
+                            <span id="badge-${sc.id}" class="text-[10px] font-mono px-2 py-0.5 rounded font-semibold"></span>
+                        </div>
+                        <div id="output-box-${sc.id}" class="p-3.5 rounded-xl border bg-slate-950 font-mono text-xs break-all min-h-[48px] flex items-center justify-between transition-colors">
+                            <span id="output-text-${sc.id}"></span>
+                            <button onclick="copyScenarioOutput('${sc.id}')" title="복사" class="text-slate-500 hover:text-slate-300 p-1">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+                executeScenario(sc.id);
+            });
+
+            lucide.createIcons();
+        }
+
+        function switchTab(scenarioId, tab) {
+            activeTabState[scenarioId] = tab;
+            const demoPanel = document.getElementById(`panel-demo-${scenarioId}`);
+            const codePanel = document.getElementById(`panel-code-${scenarioId}`);
+            const demoBtn = document.getElementById(`tab-demo-${scenarioId}`);
+            const codeBtn = document.getElementById(`tab-code-${scenarioId}`);
+
+            if (tab === 'demo') {
+                demoPanel.classList.remove('hidden');
+                codePanel.classList.add('hidden');
+                demoBtn.className = "px-2.5 py-1 text-xs rounded-md font-medium transition-all bg-brand-600 text-white";
+                codeBtn.className = "px-2.5 py-1 text-xs rounded-md font-medium transition-all bg-slate-900 text-slate-400 hover:text-slate-200";
+            } else {
+                demoPanel.classList.add('hidden');
+                codePanel.classList.remove('hidden');
+                codeBtn.className = "px-2.5 py-1 text-xs rounded-md font-medium transition-all bg-brand-600 text-white";
+                demoBtn.className = "px-2.5 py-1 text-xs rounded-md font-medium transition-all bg-slate-900 text-slate-400 hover:text-slate-200";
+            }
+        }
+
+        function executeScenario(id) {
+            const sc = scenariosData.find(s => s.id === id);
+            if (!sc) return;
+
+            const inputs = {};
+            sc.inputs.forEach(inp => {
+                const el = document.getElementById(`input-${id}-${inp.id}`);
+                if (el) inputs[inp.id] = el.value;
+            });
+
+            const resObj = sc.run(inputs);
+
+            const textEl = document.getElementById(`output-text-${id}`);
+            const boxEl = document.getElementById(`output-box-${id}`);
+            const badgeEl = document.getElementById(`badge-${id}`);
+
+            if (!textEl) return;
+
+            textEl.textContent = resObj.result;
+
+            let badgeClass = '';
+            let borderClass = '';
+
+            switch (resObj.type) {
+                case 'string':
+                    badgeClass = 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
+                    borderClass = 'border-amber-500/30 text-amber-300';
+                    badgeEl.textContent = 'Output: String';
+                    break;
+                case 'number':
+                    badgeClass = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+                    borderClass = 'border-emerald-500/30 text-emerald-300';
+                    badgeEl.textContent = 'Output: Number';
+                    break;
+                case 'boolean':
+                    badgeClass = 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
+                    borderClass = 'border-purple-500/30 text-purple-300';
+                    badgeEl.textContent = 'Output: Boolean';
+                    break;
+                case 'error':
+                default:
+                    badgeClass = 'bg-rose-500/10 text-rose-400 border border-rose-500/20';
+                    borderClass = 'border-rose-500/30 text-rose-300';
+                    badgeEl.textContent = 'Validation Alert';
+                    break;
+            }
+
+            badgeEl.className = `text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${badgeClass}`;
+            boxEl.className = `p-3.5 rounded-xl border bg-slate-950 font-mono text-xs break-all min-h-[48px] flex items-center justify-between transition-colors ${borderClass}`;
+        }
+
+        function copyScenarioOutput(id) {
+            const textEl = document.getElementById(`output-text-${id}`);
+            if (!textEl) return;
+
+            const el = document.createElement('textarea');
+            el.value = textEl.textContent;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const badge = document.getElementById(`badge-${id}`);
+            const prevText = badge.textContent;
+            badge.textContent = 'Copied!';
+            setTimeout(() => { badge.textContent = prevText; }, 1000);
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = "filter-btn active px-3 py-1.5 rounded-md transition-all font-medium bg-brand-600 text-white";
+                } else {
+                    btn.className = "filter-btn px-3 py-1.5 rounded-md transition-all text-slate-400 hover:text-slate-200";
+                }
+            });
+            renderScenarios(cat);
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderScenarios('all');
+        });
+    </script>
+</body>
+</html>
