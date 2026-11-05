@@ -19,7 +19,7 @@ footer{text-align:center;color:#61748a;padding:22px;font-size:13px}
 </style></head><body>
 <header><div class="hero"><small>INFORMATION PROCESSING INDUSTRIAL ENGINEER</small><h1>컴퓨터 네트워크 핵심 학습</h1><p>정보처리산업기사 대비 · 네트워크 기본 개념부터 IP 주소와 서브넷 계산까지</p></div></header>
 <div class="layout"><nav><b>학습 목차</b>
-<a href="#n1">1. 네트워크 기본 개념</a><a href="#n2">2. OSI 7계층과 TCP/IP</a><a href="#n3">3. IP 주소와 서브넷</a><a href="#n4">4. 프로토콜과 네트워크 장비</a><a href="#n5">5. 라우팅·운영·보안</a><a href="#n6">6. 시험 핵심 정리와 문제</a></nav><main>
+<a href="#n1">1. 네트워크 기본 개념</a><a href="#n2">2. OSI 7계층과 TCP/IP</a><a href="#n3">3. IP 주소와 서브넷</a><a href="#n4">4. 프로토콜과 네트워크 장비</a><a href="#n5">5. 라우팅·운영·보안</a><a href="#n7">보충 학습</a><a href="#n6">6. 시험 핵심 정리와 문제</a></nav><main>
 
 <section class="card" id="n1"><h2>1. 네트워크 기본 개념</h2>
 <h3>1-1. 컴퓨터 네트워크란?</h3><p>컴퓨터 네트워크(Computer Network)는 두 대 이상의 컴퓨터나 정보기기가 통신 매체로 연결되어 데이터와 자원을 주고받는 시스템입니다.</p>
@@ -69,6 +69,36 @@ footer{text-align:center;color:#61748a;padding:22px;font-size:13px}
 <h3>5-4. 네트워크 진단 명령어</h3><table><tr><th>명령어</th><th>기능</th><th>예</th></tr><tr><td>ipconfig</td><td>Windows IP 설정 확인</td><td><code>ipconfig /all</code></td></tr><tr><td>ping</td><td>ICMP 에코 요청·응답으로 연결 상태 확인</td><td><code>ping 8.8.8.8</code></td></tr><tr><td>tracert</td><td>목적지까지 경로의 중간 홉 확인(Windows)</td><td><code>tracert example.com</code></td></tr><tr><td>nslookup</td><td>DNS 이름 조회</td><td><code>nslookup example.com</code></td></tr><tr><td>netstat</td><td>연결·포트·통계 확인</td><td><code>netstat -an</code></td></tr></table>
 <div class="call"><b>진단 순서 예</b> IP 설정 확인 → 게이트웨이 연결 확인 → 외부 IP 연결 확인 → DNS 이름 조회 → 경로 확인. 방화벽이나 ICMP 차단 때문에 ping 응답이 없을 수도 있으므로 한 가지 결과만으로 장애 원인을 단정하지 않습니다.</div></section>
 
+<section class="card" id="n7"><h2>보충 학습: IP 클래스·전송·오류 제어·변조</h2>
+<h3>A. IPv4 주소 클래스</h3>
+<table><tr><th>클래스</th><th>첫 옥텟 범위</th><th>기본 마스크</th><th>용도</th></tr>
+<tr><td>A</td><td>1 ~ 126</td><td>/8 (255.0.0.0)</td><td>대규모 네트워크</td></tr><tr><td>B</td><td>128 ~ 191</td><td>/16 (255.255.0.0)</td><td>중규모</td></tr><tr><td>C</td><td>192 ~ 223</td><td>/24 (255.255.255.0)</td><td>소규모</td></tr><tr><td>D</td><td>224 ~ 239</td><td>-</td><td>멀티캐스트</td></tr><tr><td>E</td><td>240 ~ 255</td><td>-</td><td>연구·예약</td></tr></table>
+<div class="call"><b>특수 주소</b> 127.0.0.1은 자기 자신(루프백), 호스트 비트가 모두 0이면 네트워크 주소, 모두 1이면 브로드캐스트입니다. IPv6에는 브로드캐스트가 없고 유니캐스트·멀티캐스트·애니캐스트를 사용합니다.</div>
+<h3>B. TCP 연결과 PAT</h3>
+<table><tr><th>단계</th><th>내용</th></tr><tr><td>연결 설정(3-way handshake)</td><td>클라이언트 SYN → 서버 SYN+ACK → 클라이언트 ACK</td></tr><tr><td>연결 종료</td><td>FIN과 ACK를 양쪽이 주고받음(4-way)</td></tr><tr><td>NAT / PAT</td><td>NAT는 IP 변환, PAT(NAPT)는 포트 번호까지 변환해 하나의 공인 IP를 다수 사설 IP가 공유</td></tr></table>
+<h3>C. 흐름 제어와 오류 제어</h3>
+<table><tr><th>구분</th><th>방식</th><th>특징</th></tr>
+<tr><td>흐름 제어</td><td>정지-대기, 슬라이딩 윈도우</td><td>수신 측이 처리 가능한 양만큼 전송</td></tr>
+<tr><td>오류 제어(ARQ)</td><td>Stop-and-Wait</td><td>프레임 1개 전송 후 ACK 대기</td></tr>
+<tr><td></td><td>Go-Back-N</td><td>오류 프레임부터 이후 프레임을 모두 재전송</td></tr>
+<tr><td></td><td>Selective Repeat</td><td>오류 프레임만 선택 재전송</td></tr>
+<tr><td>오류 검출·정정</td><td>패리티, 검사합, CRC</td><td>검출 중심 (CRC는 집단 오류에 강함)</td></tr>
+<tr><td></td><td>해밍 코드</td><td>오류 검출과 <b>정정</b> 가능</td></tr></table>
+<h3>D. 교환 방식 · 다중화 · 변조</h3>
+<table><tr><th>구분</th><th>종류와 특징</th></tr>
+<tr><td>교환 방식</td><td>회선 교환(전용 경로 설정), 패킷 교환(데이터그램·가상회선), 메시지 교환</td></tr>
+<tr><td>다중화</td><td>FDM(주파수 분할), TDM(시분할: 동기·통계), WDM(파장 분할, 광통신)</td></tr>
+<tr><td>디지털 변조</td><td>ASK(진폭), FSK(주파수), PSK(위상), QAM(진폭+위상)</td></tr>
+<tr><td>전송 방식</td><td>단방향, 반이중, 전이중</td></tr></table>
+<h3>E. LAN 접근 방식과 전송 매체</h3>
+<table><tr><th>구분</th><th>내용</th></tr>
+<tr><td>CSMA/CD</td><td>유선 이더넷. 충돌을 <b>검출</b>하면 전송을 중단하고 재전송</td></tr>
+<tr><td>CSMA/CA</td><td>무선 LAN(Wi-Fi). 충돌을 사전에 <b>회피</b></td></tr>
+<tr><td>UTP / STP</td><td>꼬임쌍선(비차폐 / 차폐), LAN 케이블</td></tr>
+<tr><td>동축 케이블</td><td>내부 도체와 차폐층 구조, 과거 버스형 LAN과 CATV</td></tr>
+<tr><td>광섬유</td><td>빛 신호 사용, 고속·장거리·전자기 간섭에 강함</td></tr></table>
+</section>
+
 <section class="card" id="n6"><h2>6. 시험 핵심 정리와 실전 문제</h2>
 <h3>6-1. 핵심 학습표</h3><table><tr><th>영역</th><th>핵심 내용</th><th>연습 유형</th></tr><tr><td>네트워크 기초</td><td>LAN·MAN·WAN, 토폴로지</td><td>개념·구조 구분</td></tr><tr><td>계층 모델</td><td>OSI 7계층, TCP/IP, PDU</td><td>계층별 기능 연결</td></tr><tr><td>전송 프로토콜</td><td>TCP·UDP, 포트 번호</td><td>특징·서비스 매칭</td></tr><tr><td>주소 체계</td><td>IPv4·IPv6, MAC, 서브넷</td><td>네트워크·브로드캐스트·호스트 수 계산</td></tr><tr><td>장비</td><td>허브, 스위치, 라우터, 브리지</td><td>기능과 계층 구분</td></tr><tr><td>운영·보안</td><td>라우팅, NAT, DHCP, DNS, IDS/IPS</td><td>상황에 맞는 기술 선택</td></tr></table>
 <div class="exam"><b>시험 대비 유의사항</b><br>이 자료는 정보처리산업기사 학습을 위한 핵심 개념과 자체 제작 연습 문제입니다. 특정 항목의 실제 출제 빈도나 출제 확률을 의미하지 않습니다. 시험 준비 시 해당 연도 Q-Net의 정보처리산업기사 출제기준과 공지사항을 함께 확인하세요.</div>
@@ -84,6 +114,12 @@ footer{text-align:center;color:#61748a;padding:22px;font-size:13px}
 <div class="quiz" data-a="3" data-e="DHCP는 IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS 서버 등의 설정을 자동으로 제공합니다."><h4>문제 8. IP 주소와 기본 게이트웨이를 자동으로 할당하는 프로토콜은?</h4><label><input type="radio" name="q8" value="0"> ① HTTP</label><label><input type="radio" name="q8" value="1"> ② ARP</label><label><input type="radio" name="q8" value="2"> ③ ICMP</label><label><input type="radio" name="q8" value="3"> ④ DHCP</label><div class="feedback"></div></div>
 <div class="quiz" data-a="1" data-e="HTTPS의 기본 포트는 TCP 443번이고 HTTP의 기본 포트는 TCP 80번입니다."><h4>문제 9. HTTPS의 기본 포트 번호는?</h4><label><input type="radio" name="q9" value="0"> ① 80</label><label><input type="radio" name="q9" value="1"> ② 443</label><label><input type="radio" name="q9" value="2"> ③ 21</label><label><input type="radio" name="q9" value="3"> ④ 25</label><div class="feedback"></div></div>
 <div class="quiz" data-a="2" data-e="ping은 ICMP 에코 요청과 응답을 이용해 IP 연결 상태를 확인하는 데 활용됩니다."><h4>문제 10. 기본적인 IP 연결 상태를 확인하는 명령어는?</h4><label><input type="radio" name="q10" value="0"> ① mkdir</label><label><input type="radio" name="q10" value="1"> ② format</label><label><input type="radio" name="q10" value="2"> ③ ping</label><label><input type="radio" name="q10" value="3"> ④ copy</label><div class="feedback"></div></div>
+<div class="quiz" data-a="2" data-e="첫 옥텟이 192~223이면 C 클래스입니다."><h4>문제 11. IP 주소 200.10.5.1이 속한 클래스는?</h4><label><input type="radio" name="q11" value="0"> ① A 클래스</label><label><input type="radio" name="q11" value="1"> ② B 클래스</label><label><input type="radio" name="q11" value="2"> ③ C 클래스</label><label><input type="radio" name="q11" value="3"> ④ D 클래스</label><div class="feedback"></div></div>
+<div class="quiz" data-a="1" data-e="클라이언트 SYN → 서버 SYN+ACK → 클라이언트 ACK 순서입니다."><h4>문제 12. TCP 3-way handshake에서 서버가 보내는 두 번째 메시지는?</h4><label><input type="radio" name="q12" value="0"> ① SYN</label><label><input type="radio" name="q12" value="1"> ② SYN+ACK</label><label><input type="radio" name="q12" value="2"> ③ ACK</label><label><input type="radio" name="q12" value="3"> ④ FIN</label><div class="feedback"></div></div>
+<div class="quiz" data-a="1" data-e="유선 이더넷은 CSMA/CD(충돌 검출), 무선 LAN은 CSMA/CA(충돌 회피)입니다."><h4>문제 13. 무선 LAN에서 충돌을 회피하기 위해 사용하는 접근 방식은?</h4><label><input type="radio" name="q13" value="0"> ① CSMA/CD</label><label><input type="radio" name="q13" value="1"> ② CSMA/CA</label><label><input type="radio" name="q13" value="2"> ③ TDM</label><label><input type="radio" name="q13" value="3"> ④ FDM</label><div class="feedback"></div></div>
+<div class="quiz" data-a="2" data-e="해밍 코드는 오류 위치를 찾아 정정할 수 있습니다."><h4>문제 14. 오류를 검출할 뿐 아니라 정정까지 할 수 있는 코드는?</h4><label><input type="radio" name="q14" value="0"> ① 패리티 검사</label><label><input type="radio" name="q14" value="1"> ② CRC</label><label><input type="radio" name="q14" value="2"> ③ 해밍 코드</label><label><input type="radio" name="q14" value="3"> ④ 검사합</label><div class="feedback"></div></div>
+<div class="quiz" data-a="1" data-e="PAT(NAPT)는 포트 번호까지 변환해 공인 IP 하나를 공유합니다."><h4>문제 15. 하나의 공인 IP와 포트 번호로 여러 사설 IP가 통신하도록 하는 기술은?</h4><label><input type="radio" name="q15" value="0"> ① DHCP</label><label><input type="radio" name="q15" value="1"> ② PAT</label><label><input type="radio" name="q15" value="2"> ③ ARP</label><label><input type="radio" name="q15" value="3"> ④ ICMP</label><div class="feedback"></div></div>
+<div class="quiz" data-a="2" data-e="224~239는 D 클래스로 멀티캐스트에 사용됩니다."><h4>문제 16. IP 주소 224.0.0.5가 속한 클래스(용도)는?</h4><label><input type="radio" name="q16" value="0"> ① A 클래스</label><label><input type="radio" name="q16" value="1"> ② C 클래스</label><label><input type="radio" name="q16" value="2"> ③ D 클래스(멀티캐스트)</label><label><input type="radio" name="q16" value="3"> ④ E 클래스</label><div class="feedback"></div></div>
 </form><button onclick="grade()">채점하기</button><button class="alt" onclick="resetQuiz()">다시 풀기</button><div class="result" id="score">아직 채점하지 않았습니다.</div>
 </section></main></div><footer>컴퓨터 네트워크 학습 자료 · 정보처리산업기사 대비 · 자체 제작 연습 문제</footer>
 <script>
