@@ -29,6 +29,7 @@ footer{text-align:center;color:#61748a;padding:22px;font-size:13px}
 <a href="#c8">8. 구조체·공용체</a>
 <a href="#c9">9. 파일·전처리·기타</a>
 <a href="#c10">10. 예제 프로그램</a>
+<a href="#c12">보충 학습</a>
 <a href="#c11">11. 시험 문제</a>
 </nav><main>
 
@@ -46,6 +47,7 @@ footer{text-align:center;color:#61748a;padding:22px;font-size:13px}
 <table><tr><th>단계</th><th>설명</th></tr>
 <tr><td>전처리</td><td>#include, #define 등 지시자 처리</td></tr>
 <tr><td>컴파일</td><td>소스 → 목적 파일(.obj) 변환, 문법 검사</td></tr>
+<tr><td>어셈블</td><td>어셈블리 코드 → 기계어(목적 파일)</td></tr>
 <tr><td>링크</td><td>목적 파일 + 라이브러리 → 실행 파일 생성</td></tr></table>
 
 <h3>1-2. C 프로그램 기본 구조</h3>
@@ -94,9 +96,10 @@ a = 20;  /* 변경 가능 */</pre>
 <tr><td>int</td><td><b>2바이트</b></td><td>-32,768 ~ 32,767</td><td>%d</td></tr>
 <tr><td>long</td><td><b>4바이트</b></td><td>약 ±21억</td><td>%ld</td></tr>
 <tr><td>float</td><td>4바이트</td><td>단정밀도 실수</td><td>%f</td></tr>
-<tr><td>double</td><td>8바이트</td><td>배정밀도 실수</td><td>%lf</td></tr>
+<tr><td>double</td><td>8바이트</td><td>배정밀도 실수</td><td>%lf (scanf 필수, printf는 %f도 가능)</td></tr>
 <tr><td>void</td><td>-</td><td>값 없음 (반환값·포인터용)</td><td>-</td></tr></table>
 <div class="exam"><b>시험 포인트</b> 시험에서는 <b>int = 2바이트</b>, long = 4바이트로 계산합니다. (실제 현대 컴파일러는 int가 4바이트인 경우가 많음)</div>
+<div class="call"><b>unsigned</b> 부호 없는 정수형. unsigned char는 0~255, unsigned int(2바이트 기준)는 0~65,535입니다. 부호 비트까지 값으로 쓰므로 양수 범위가 2배가 됩니다.</div>
 <div class="call"><b>서식 문자</b> %d(정수) %c(문자) %s(문자열) %f(실수) %lf(double) %x(16진수) %o(8진수) %p(주소) %%(%문자)</div>
 
 <h3>2-2. 형 변환 (Type Conversion)</h3>
@@ -128,7 +131,7 @@ int c = ++a;   /* 전위: a=7, c=7 (증가 후 사용) */</pre>
 <h4>연산자 우선순위 (높은 순)</h4>
 <table><tr><th>순위</th><th>연산자</th></tr>
 <tr><td>1</td><td>() [] -&gt; .</td></tr>
-<tr><td>2</td><td>! ~ ++ -- (단항) (형변환) sizeof</td></tr>
+<tr><td>2</td><td>! ~ ++ -- (단항) (형변환) sizeof, 단항 * &amp;</td></tr>
 <tr><td>3</td><td>* / %</td></tr>
 <tr><td>4</td><td>+ -</td></tr>
 <tr><td>5</td><td>&lt;&lt; &gt;&gt;</td></tr>
@@ -151,7 +154,7 @@ int c = ++a;   /* 전위: a=7, c=7 (증가 후 사용) */</pre>
 <tr><td>scanf()</td><td>형식 지정 입력</td><td>scanf("%d", &amp;a);</td></tr>
 <tr><td>getchar()</td><td>문자 1개 입력</td><td>ch = getchar();</td></tr>
 <tr><td>putchar()</td><td>문자 1개 출력</td><td>putchar('A');</td></tr>
-<tr><td>gets()</td><td>문자열 입력 (버퍼오버플로 위험)</td><td>gets(str);</td></tr>
+<tr><td>gets()</td><td>문자열 입력 (버퍼오버플로 위험, C11에서 삭제 → fgets 사용)</td><td>gets(str);</td></tr>
 <tr><td>puts()</td><td>문자열 출력 후 개행</td><td>puts("Hello");</td></tr>
 <tr><td>sprintf()</td><td>문자열에 형식 출력</td><td>sprintf(buf, "%d", a);</td></tr>
 <tr><td>sscanf()</td><td>문자열에서 형식 입력</td><td>sscanf(str, "%d", &amp;a);</td></tr></table>
@@ -164,9 +167,9 @@ printf("나이:%d 이름:%s\n", age, name);</pre>
 <h3>3-2. 주요 표준 헤더</h3>
 <table><tr><th>헤더</th><th>주요 내용</th></tr>
 <tr><td>stdio.h</td><td>입출력 (printf, scanf, FILE 등)</td></tr>
-<tr><td>stdlib.h</td><td>일반 유틸 (malloc, free, atoi, rand, exit)</td></tr>
+<tr><td>stdlib.h</td><td>일반 유틸 (malloc, free, atoi, rand, exit, <b>abs</b>)</td></tr>
 <tr><td>string.h</td><td>문자열 처리 (strlen, strcpy, strcmp, strcat)</td></tr>
-<tr><td>math.h</td><td>수학 함수 (sqrt, pow, sin, cos, abs)</td></tr>
+<tr><td>math.h</td><td>수학 함수 (sqrt, pow, sin, cos, <b>fabs</b>) ※ 정수 abs는 stdlib.h</td></tr>
 <tr><td>ctype.h</td><td>문자 판별 (isalpha, isdigit, toupper)</td></tr>
 <tr><td>time.h</td><td>시간 관련 (time, clock)</td></tr></table>
 
@@ -332,7 +335,7 @@ enum Color { RED, GREEN, BLUE };  /* RED=0, GREEN=1, BLUE=2 */</pre>
 <section class="card" id="c9"><h2>9. 파일 입출력 · 전처리기 · 동적 할당</h2>
 <h3>9-1. 파일 입출력</h3>
 <table><tr><th>함수</th><th>기능</th></tr>
-<tr><td>fopen()</td><td>파일 열기 (모드: "r"읽기, "w"쓰기, "a"추가, "rb"이진읽기 등)</td></tr>
+<tr><td>fopen()</td><td>파일 열기 (모드: "r"읽기, "w"쓰기, "a"추가, "rb"이진읽기, "r+"읽기/쓰기, "w+"쓰기/읽기(기존 삭제), "a+"추가/읽기 등)</td></tr>
 <tr><td>fclose()</td><td>파일 닫기</td></tr>
 <tr><td>fprintf() / fscanf()</td><td>파일에 형식 입출력</td></tr>
 <tr><td>fgets() / fputs()</td><td>문자열 입출력</td></tr>
@@ -492,6 +495,42 @@ int main(void) {
 </div>
 </section>
 
+<section class="card" id="c12"><h2>보충 학습: 서식·배열·포인터·비트·추적</h2>
+<h3>A. 출력 서식과 이스케이프 문자</h3>
+<table><tr><th>서식</th><th>의미</th><th>printf("서식|", 값) 결과</th></tr>
+<tr><td>%5d</td><td>폭 5, 오른쪽 정렬</td><td>"&nbsp;&nbsp;&nbsp;42|"</td></tr>
+<tr><td>%-5d</td><td>폭 5, 왼쪽 정렬</td><td>"42&nbsp;&nbsp;&nbsp;|"</td></tr>
+<tr><td>%05d</td><td>폭 5, 빈 칸을 0으로</td><td>"00042|"</td></tr>
+<tr><td>%.2f</td><td>소수 둘째 자리까지(반올림)</td><td>3.14159 → 3.14</td></tr>
+<tr><td>%8.3f</td><td>전체 폭 8, 소수 3자리</td><td>3.142 (앞 공백 포함 8칸)</td></tr></table>
+<table><tr><th>이스케이프</th><th>의미</th></tr>
+<tr><td>\n</td><td>줄 바꿈</td></tr><tr><td>\t</td><td>탭</td></tr><tr><td>\\</td><td>역슬래시 문자</td></tr><tr><td>\"  \'</td><td>큰따옴표 / 작은따옴표 문자</td></tr><tr><td>\0</td><td>널 문자(문자열 끝)</td></tr><tr><td>\a  \b</td><td>경고음 / 백스페이스</td></tr></table>
+<h3>B. 2차원 배열 · 포인터 배열 · 이중 포인터</h3>
+<pre>int a[2][3] = {{1,2,3},{4,5,6}};
+printf("%d", a[1][2]);      /* 6 (2행 3열) */
+printf("%d", *(*(a+1)+2));  /* 6 (포인터 표현) */
+
+char *name[3] = {"Kim", "Lee", "Park"};  /* 포인터 배열 */
+printf("%s", name[1]);                   /* Lee */
+
+int x = 10, *p = &amp;x, **pp = &amp;p;
+printf("%d", **pp);   /* 10 (이중 포인터: 포인터의 주소를 저장) */</pre>
+<div class="exam"><b>시험 포인트</b> sizeof(a)는 전체 바이트 수입니다. int a[5]이면 5×2=10바이트(시험 기준 int=2바이트), 요소 개수는 sizeof(a)/sizeof(a[0])로 구합니다.</div>
+<h3>C. 비트 연산 예제 (6 = 110, 3 = 011)</h3>
+<table><tr><th>식</th><th>계산</th><th>결과</th></tr>
+<tr><td>6 &amp; 3</td><td>110 AND 011 = 010</td><td>2</td></tr><tr><td>6 | 3</td><td>110 OR 011 = 111</td><td>7</td></tr><tr><td>6 ^ 3</td><td>110 XOR 011 = 101</td><td>5</td></tr><tr><td>~6</td><td>비트 반전 (2의 보수 표현)</td><td>-7</td></tr>
+<tr><td>1 &lt;&lt; 3</td><td>왼쪽 3칸 = ×2³</td><td>8</td></tr><tr><td>16 &gt;&gt; 2</td><td>오른쪽 2칸 = ÷2²</td><td>4</td></tr></table>
+<h3>D. static 변수와 출력 추적</h3>
+<pre>void f(void) {
+    static int c = 0;   /* 최초 1회만 초기화, 값 유지 */
+    c++;
+    printf("%d ", c);
+}
+int main(void) { f(); f(); f(); return 0; }
+/* 출력: 1 2 3  (static이 없으면 1 1 1) */</pre>
+<div class="call"><b>추적 요령</b> 변수 값 변화를 표로 적으면서 한 줄씩 따라가면 실수를 줄일 수 있습니다. 특히 전위/후위 증감, 정수 나눗셈(5/2=2), static 값 유지를 확인하세요.</div>
+</section>
+
 <section class="card" id="c11"><h2>11. 시험 핵심 정리와 실전 문제</h2>
 <h3>11-1. 핵심 학습표</h3>
 <table><tr><th>영역</th><th>핵심 내용</th><th>자주 나오는 유형</th></tr>
@@ -589,7 +628,7 @@ int main(void) {
 <label><input type="radio" name="q10" value="3"> ④ return</label>
 <div class="feedback"></div></div>
 
-<div class="quiz" data-a="2" data-e="Call by Value는 복사본을 전달하므로 원본이 변경되지 않습니다.">
+<div class="quiz" data-a="2" data-e="원본을 바꾸려면 변수의 주소(포인터)를 넘기는 Call by Reference가 필요합니다. Call by Value는 복사본을 전달하므로 원본이 변경되지 않습니다.">
 <h4>문제 11. 함수에서 원본 값을 변경하려면 어떤 방식이 필요한가?</h4>
 <label><input type="radio" name="q11" value="0"> ① Call by Value</label>
 <label><input type="radio" name="q11" value="1"> ② 전역 변수만 사용</label>
@@ -604,6 +643,12 @@ int main(void) {
 <label><input type="radio" name="q12" value="2"> ③ *arr[0]</label>
 <label><input type="radio" name="q12" value="3"> ④ &amp;arr</label>
 <div class="feedback"></div></div>
+<div class="quiz" data-a="1" data-e="%05d는 폭 5칸을 0으로 채워 00042가 출력됩니다."><h4>문제 13. printf("%05d", 42); 의 출력은?</h4><label><input type="radio" name="q13" value="0"> ① 42</label><label><input type="radio" name="q13" value="1"> ② 00042</label><label><input type="radio" name="q13" value="2"> ③ 42000</label><label><input type="radio" name="q13" value="3"> ④ &nbsp;&nbsp;&nbsp;42</label><div class="feedback"></div></div>
+<div class="quiz" data-a="3" data-e="a[1]은 둘째 행 {4,5,6}이고 인덱스 2는 세 번째 값이므로 6입니다."><h4>문제 14. int a[2][3]={{1,2,3},{4,5,6}}; 에서 a[1][2]의 값은?</h4><label><input type="radio" name="q14" value="0"> ① 3</label><label><input type="radio" name="q14" value="1"> ② 4</label><label><input type="radio" name="q14" value="2"> ③ 5</label><label><input type="radio" name="q14" value="3"> ④ 6</label><div class="feedback"></div></div>
+<div class="quiz" data-a="0" data-e="110 AND 011 = 010 이므로 2입니다. (OR=7, XOR=5)"><h4>문제 15. 6 &amp; 3 의 결과는?</h4><label><input type="radio" name="q15" value="0"> ① 2</label><label><input type="radio" name="q15" value="1"> ② 7</label><label><input type="radio" name="q15" value="2"> ③ 5</label><label><input type="radio" name="q15" value="3"> ④ 3</label><div class="feedback"></div></div>
+<div class="quiz" data-a="2" data-e="왼쪽 시프트 1칸은 ×2이므로 1×2³=8입니다."><h4>문제 16. 1 &lt;&lt; 3 의 결과는?</h4><label><input type="radio" name="q16" value="0"> ① 3</label><label><input type="radio" name="q16" value="1"> ② 6</label><label><input type="radio" name="q16" value="2"> ③ 8</label><label><input type="radio" name="q16" value="3"> ④ 16</label><div class="feedback"></div></div>
+<div class="quiz" data-a="1" data-e="**pp는 pp→p→x를 두 번 따라가 x의 값 10을 얻습니다."><h4>문제 17. int x=10, *p=&amp;x, **pp=&amp;p; 일 때 **pp의 값은?</h4><label><input type="radio" name="q17" value="0"> ① x의 주소</label><label><input type="radio" name="q17" value="1"> ② 10</label><label><input type="radio" name="q17" value="2"> ③ p의 주소</label><label><input type="radio" name="q17" value="3"> ④ 0</label><div class="feedback"></div></div>
+<div class="quiz" data-a="1" data-e="static 변수는 초기화가 한 번뿐이고 값이 유지되어 1 2 3이 출력됩니다."><h4>문제 18. 함수 안의 static int c=0; c++; printf("%d ",c); 를 3번 호출하면 출력은?</h4><label><input type="radio" name="q18" value="0"> ① 1 1 1</label><label><input type="radio" name="q18" value="1"> ② 1 2 3</label><label><input type="radio" name="q18" value="2"> ③ 0 1 2</label><label><input type="radio" name="q18" value="3"> ④ 3 3 3</label><div class="feedback"></div></div>
 </form>
 <button onclick="grade()">채점하기</button>
 <button class="alt" onclick="resetQuiz()">다시 풀기</button>
