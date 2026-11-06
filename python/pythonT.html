@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>정보처리산업기사 파이썬 핵심 이론</title>
+<style>
+:root{--navy:#10243d;--blue:#1769aa;--cyan:#16b8c8;--ink:#243247;--muted:#64748b;--paper:#f3f7fb;--line:#dce6f0}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.75 "Noto Sans KR",Arial,sans-serif}
+header{background:linear-gradient(120deg,var(--navy),#145b83);color:white;padding:42px 20px}
+.hero,main{max-width:1050px;margin:auto}.eyebrow{letter-spacing:2px;color:#8de9ef;font-size:.78rem;font-weight:bold}
+h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:8px 0}.lead{color:#e3f1fa;margin:0}
+main{padding:24px 18px 60px}.toc,.card{background:white;border:1px solid var(--line);border-radius:14px;padding:22px;margin:18px 0;box-shadow:0 5px 18px #183b5a0b}
+.toc h2,.card h2{margin:0 0 14px;color:var(--navy)}.toc ol{columns:2;padding-left:24px;margin:0}.toc a{color:var(--blue);text-decoration:none}.toc a:hover{text-decoration:underline}
+h3{color:#1769aa;margin:22px 0 8px}.diagram{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px;background:#edf6fc;border-radius:10px;padding:18px;margin:14px 0}.node{background:white;border:1px solid #9bc5e4;border-radius:9px;padding:10px 15px;text-align:center;font-weight:600}.arrow{color:#1686a9;font-weight:bold}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:9px;text-align:left}th{background:#edf4fa;color:var(--navy)}
+pre{white-space:pre-wrap;overflow-x:auto;background:#101d2e;color:#e5f3ff;padding:17px;border-radius:10px;font:14px/1.65 Consolas,monospace}code{font-family:Consolas,monospace}.note{background:#eaf8fa;border-left:4px solid var(--cyan);padding:12px 15px;border-radius:6px}.quiz{border-top:1px solid var(--line);padding:13px 0}.answer{display:none;color:#087c55;background:#eaf8f1;padding:9px;border-radius:7px}.quiz button{border:0;background:var(--blue);color:white;border-radius:7px;padding:7px 12px;cursor:pointer}
+footer{text-align:center;color:var(--muted);padding:24px}
+@media(max-width:650px){.toc ol{columns:1}.card{padding:16px}table{font-size:.84rem}}
+</style></head><body>
+<header><div class="hero"><div class="eyebrow">INFORMATION PROCESSING INDUSTRIAL ENGINEER</div><h1>파이썬 핵심 이론과 실습</h1><p class="lead">정보처리산업기사 학습을 위한 핵심 개념 · 도식 · 실행 코드</p></div></header>
+<main>
+<section class="toc"><h2>📘 학습 목차</h2><ol>
+<li><a href="#s1">파이썬과 알고리즘</a></li><li><a href="#s2">변수와 자료형</a></li><li><a href="#s3">연산자</a></li><li><a href="#s4">조건문과 반복문</a></li><li><a href="#s5">문자열·리스트·튜플</a></li><li><a href="#s6">세트와 딕셔너리</a></li><li><a href="#s7">함수</a></li><li><a href="#s8">클래스와 객체</a></li><li><a href="#s9">파일 입출력</a></li><li><a href="#s10">예외 처리</a></li><li><a href="#s11">모듈과 라이브러리</a></li><li><a href="#s12">자료구조와 알고리즘</a></li><li><a href="#s13">종합 실습</a></li><li><a href="#s14">확인 문제</a></li></ol></section>
+
+<section class="card" id="s1"><h2>1. 파이썬과 알고리즘</h2>
+<p><b>파이썬(Python)</b>은 문법이 간결하고 읽기 쉬운 프로그래밍 언어다. 데이터 분석, 웹 개발, 자동화, 인공지능 등에 활용한다.</p>
+<table><tr><th>개념</th><th>의미</th></tr><tr><td>알고리즘(Algorithm)</td><td>문제를 해결하기 위한 순서와 방법</td></tr><tr><td>프로그램(Program)</td><td>알고리즘을 프로그래밍 언어로 작성한 명령의 모음</td></tr><tr><td>실행(Execution)</td><td>작성한 명령을 컴퓨터가 수행하는 과정</td></tr></table>
+<div class="diagram"><span class="node">문제 이해</span><b class="arrow">→</b><span class="node">알고리즘</span><b class="arrow">→</b><span class="node">파이썬 코드</span><b class="arrow">→</b><span class="node">실행 결과</span></div>
+<div class="note">핵심 흐름은 입력 → 처리 → 출력이다.</div></section>
+
+<section class="card" id="s2"><h2>2. 변수와 자료형</h2><p>변수(Variable)는 값을 저장하고 다시 사용하기 위한 이름이다. 파이썬은 대입된 값을 바탕으로 자료형을 자동으로 판단한다.</p>
+<div class="diagram"><span class="node">변수 이름<br>score</span><b class="arrow">=</b><span class="node">저장된 값<br>90</span></div>
+<table><tr><th>자료형</th><th>의미</th><th>예시</th></tr><tr><td>int</td><td>정수</td><td>10, -3</td></tr><tr><td>float</td><td>실수</td><td>3.14, 0.5</td></tr><tr><td>str</td><td>문자열</td><td>"Python"</td></tr><tr><td>bool</td><td>참 또는 거짓</td><td>True, False</td></tr><tr><td>list</td><td>순서가 있고 변경 가능</td><td>[10, 20]</td></tr><tr><td>tuple</td><td>순서가 있고 변경 불가</td><td>(10, 20)</td></tr><tr><td>dict</td><td>키와 값의 쌍</td><td>{"name":"민수"}</td></tr><tr><td>set</td><td>중복을 허용하지 않는 집합</td><td>{1, 2, 3}</td></tr></table>
+<pre>name = "홍길동"
+age = 20
+height = 172.5
+is_student = True
+
+print(type(name))       # str
+print(type(age))        # int
+print(type(height))     # float
+print(type(is_student)) # bool</pre>
+<p><code>type(값)</code>은 자료형을 확인한다. <code>int("25")</code>처럼 형 변환도 가능하다.</p></section>
+
+<section class="card" id="s3"><h2>3. 연산자</h2>
+<table><tr><th>종류</th><th>연산자</th><th>의미</th></tr><tr><td>산술</td><td>+, -, *, /, //, %, **</td><td>더하기, 빼기, 곱하기, 나누기, 몫, 나머지, 거듭제곱</td></tr><tr><td>비교</td><td>==, !=, &gt;, &lt;, &gt;=, &lt;=</td><td>비교 결과는 True 또는 False</td></tr><tr><td>논리</td><td>and, or, not</td><td>논리곱, 논리합, 부정</td></tr><tr><td>대입</td><td>=, +=, -=, *=</td><td>값 저장 또는 갱신</td></tr><tr><td>포함</td><td>in, not in</td><td>자료 안에 값이 있는지 확인</td></tr></table>
+<pre>a = 17
+b = 5
+print(a / b)    # 3.4 나눈 결과
+print(a // b)   # 3 몫
+print(a % b)    # 2 나머지
+print(2 ** 3)   # 8 거듭제곱</pre>
+<div class="note">시험 핵심: //는 몫, %는 나머지다. 17을 5로 나누면 몫은 3, 나머지는 2다.</div></section>
+
+<section class="card" id="s4"><h2>4. 조건문과 반복문</h2><h3>4-1. 조건문 if</h3><p>조건이 참인지 거짓인지 판단해 실행할 내용을 선택한다.</p>
+<div class="diagram"><span class="node">점수 입력</span><b class="arrow">→</b><span class="node">점수 ≥ 60?</span><b class="arrow">→</b><span class="node">참: 합격<br>거짓: 불합격</span></div>
+<pre>score = 75
+
+if score >= 60:
+    print("합격")
+else:
+    print("불합격")</pre>
+<h3>4-2. 반복문 for와 while</h3><p><b>for</b>는 자료의 항목이나 정해진 범위를 하나씩 꺼내 반복한다. <b>while</b>은 조건이 참인 동안 반복하므로 종료 조건을 확인해야 한다.</p>
+<pre># 1부터 5까지 출력
+for number in range(1, 6):
+    print(number)
+
+# while 반복
+count = 1
+while count <= 5:
+    print(count)
+    count += 1</pre>
+<table><tr><th>명령</th><th>기능</th></tr><tr><td>break</td><td>반복문을 즉시 종료</td></tr><tr><td>continue</td><td>현재 반복을 건너뛰고 다음 반복으로 이동</td></tr><tr><td>pass</td><td>아무 동작 없이 문법상 자리를 채움</td></tr></table>
+<p><code>range(1, 6)</code>은 1부터 6 미만까지의 정수를 만든다.</p></section>
+
+<section class="card" id="s5"><h2>5. 문자열·리스트·튜플</h2><h3>5-1. 문자열(String)</h3><p>문자열은 문자가 순서대로 연결된 자료다. 인덱스는 0부터 시작한다.</p>
+<div class="diagram"><span class="node">P<br>0</span><span class="node">Y<br>1</span><span class="node">T<br>2</span><span class="node">H<br>3</span><span class="node">O<br>4</span><span class="node">N<br>5</span></div>
+<pre>text = "PYTHON"
+print(text[0])     # P
+print(text[2])     # T
+print(text[-1])    # N
+print(text[1:4])   # YTH</pre>
+<h3>5-2. 리스트(List)</h3><p>리스트는 여러 값을 순서대로 저장하며 항목을 추가·수정·삭제할 수 있다.</p>
+<pre>scores = [80, 90, 75]
+scores.append(100)   # 끝에 추가
+scores[0] = 85       # 첫 번째 값 수정
+scores.remove(90)    # 값 90 삭제
+print(scores)
+print(len(scores))   # 항목 개수
+print(sum(scores))   # 합계</pre>
+<table><tr><th>메서드</th><th>기능</th></tr><tr><td>append(x)</td><td>끝에 x 추가</td></tr><tr><td>insert(i, x)</td><td>i 위치에 x 삽입</td></tr><tr><td>remove(x)</td><td>값 x 삭제</td></tr><tr><td>pop()</td><td>마지막 항목을 꺼내고 삭제</td></tr><tr><td>sort()</td><td>오름차순 정렬</td></tr><tr><td>reverse()</td><td>순서 뒤집기</td></tr></table>
+<h3>5-3. 튜플(Tuple)</h3><p>튜플은 순서가 있지만 생성 후 항목을 변경할 수 없다.</p><pre>point = (10, 20)
+print(point[0])
+# point[0] = 30  # 오류: 튜플 항목은 변경 불가</pre></section>
+
+<section class="card" id="s6"><h2>6. 세트(Set)와 딕셔너리(Dictionary)</h2><h3>6-1. 세트</h3><p>세트는 중복된 값을 하나만 남기는 자료형이다. 항목의 순서를 기준으로 사용하지 않는다.</p><pre>numbers = {1, 2, 2, 3, 3, 3}
+print(numbers)       # {1, 2, 3}과 같은 집합
+print(2 in numbers)  # True</pre>
+<h3>6-2. 딕셔너리</h3><p>딕셔너리는 키(Key)와 값(Value)을 한 쌍으로 저장한다.</p>
+<div class="diagram"><span class="node">키: name</span><b class="arrow">→</b><span class="node">값: 홍길동</span></div>
+<pre>student = {"name": "홍길동", "score": 95}
+print(student["name"])
+print(student["score"])
+student["grade"] = "A"   # 새 항목 추가
+print(student.keys())    # 키 목록
+print(student.values())  # 값 목록</pre></section>
+
+<section class="card" id="s7"><h2>7. 함수(Function)</h2><p>함수는 자주 사용하는 코드를 하나의 이름으로 묶은 것이다. 입력값을 받을 수 있고 <code>return</code>으로 결과를 돌려줄 수 있다.</p>
+<div class="diagram"><span class="node">입력값 3, 5</span><b class="arrow">→</b><span class="node">add() 처리<br>3 + 5</span><b class="arrow">→</b><span class="node">반환 결과 8</span></div>
+<pre>def add(a, b):
+    result = a + b
+    return result
+
+total = add(3, 5)
+print(total)  # 8</pre>
+<table><tr><th>용어</th><th>설명</th></tr><tr><td>매개변수(Parameter)</td><td>함수를 정의할 때 입력받도록 만든 변수</td></tr><tr><td>인수(Argument)</td><td>함수를 호출할 때 실제 전달하는 값</td></tr><tr><td>return</td><td>실행 결과를 호출한 곳으로 돌려줌</td></tr><tr><td>지역 변수</td><td>함수 내부에서 만들어져 주로 함수 안에서 사용</td></tr><tr><td>전역 변수</td><td>함수 바깥에서 정의된 변수</td></tr><tr><td>lambda</td><td>간단한 함수를 한 줄 식으로 표현</td></tr></table>
+<pre>def greet(name, message="안녕하세요"):
+    print(name, message)
+
+greet("민수")
+greet("영희", "반갑습니다")
+
+square = lambda x: x * x
+print(square(4))  # 16</pre></section>
+
+<section class="card" id="s8"><h2>8. 클래스와 객체지향 프로그래밍</h2><p><b>클래스(Class)</b>는 객체를 만들기 위한 설계도이고, <b>객체(Object)</b>는 클래스를 바탕으로 실제 생성한 대상이다. 객체는 데이터인 속성과 기능인 메서드를 가진다.</p>
+<div class="diagram"><span class="node">Student 클래스<br>속성: name, score<br>기능: introduce()</span><b class="arrow">→</b><span class="node">객체 1<br>민수, 90점</span><span class="node">객체 2<br>영희, 95점</span></div>
+<pre>class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+    def introduce(self):
+        print(self.name, "학생의 점수는", self.score)
+
+student1 = Student("민수", 90)
+student2 = Student("영희", 95)
+
+student1.introduce()
+student2.introduce()</pre>
+<p><code>self</code>는 현재 객체 자신을 가리킨다. <code>__init__()</code>은 객체가 생성될 때 속성을 초기화하는 메서드다.</p>
+<table><tr><th>객체지향 특징</th><th>설명</th></tr><tr><td>캡슐화(Encapsulation)</td><td>데이터와 기능을 하나로 묶고 접근을 관리</td></tr><tr><td>상속(Inheritance)</td><td>기존 클래스의 속성과 기능을 물려받음</td></tr><tr><td>다형성(Polymorphism)</td><td>같은 기능 이름이 객체에 따라 다르게 동작</td></tr><tr><td>추상화(Abstraction)</td><td>복잡한 내부 구현은 감추고 핵심 기능을 표현</td></tr></table></section>
+
+<section class="card" id="s9"><h2>9. 파일 입출력</h2><p>파일 입출력(File Input/Output)은 프로그램의 데이터를 파일에 저장하거나 파일에서 읽어오는 기능이다.</p>
+<div class="diagram"><span class="node">파이썬 프로그램</span><b class="arrow">↔</b><span class="node">파일 data.txt<br>저장 공간</span></div>
+<table><tr><th>모드</th><th>의미</th></tr><tr><td>r</td><td>읽기. 파일이 없으면 오류</td></tr><tr><td>w</td><td>쓰기. 기존 내용이 있으면 덮어씀</td></tr><tr><td>a</td><td>추가. 기존 내용 뒤에 이어 씀</td></tr><tr><td>x</td><td>새 파일 생성. 같은 이름이 있으면 오류</td></tr><tr><td>b</td><td>바이너리 모드(예: rb, wb)</td></tr><tr><td>t</td><td>텍스트 모드(기본값)</td></tr></table>
+<h3>실습 9-1. 텍스트 파일 저장과 읽기</h3><pre># 파일에 쓰기
+with open("memo.txt", "w", encoding="utf-8") as file:
+    file.write("파이썬 파일 입출력 실습이다.\\n")
+    file.write("데이터를 저장한다.")
+
+# 파일 읽기
+with open("memo.txt", "r", encoding="utf-8") as file:
+    content = file.read()
+
+print(content)</pre>
+<p><code>with open()</code>을 사용하면 작업이 끝난 뒤 파일이 자동으로 닫힌다. 한글 파일은 <code>encoding="utf-8"</code>을 지정해 인코딩 문제를 줄인다.</p>
+<h3>실습 9-2. CSV 파일</h3><pre>import csv
+
+students = [
+    ["이름", "점수"],
+    ["민수", 90],
+    ["영희", 95],
+    ["철수", 82]
+]
+
+with open("scores.csv", "w", newline="", encoding="utf-8-sig") as file:
+    writer = csv.writer(file)
+    writer.writerows(students)
+
+with open("scores.csv", "r", encoding="utf-8-sig") as file:
+    reader = csv.reader(file)
+    for row in reader:
+        print(row)</pre></section>
+
+<section class="card" id="s10"><h2>10. 예외 처리</h2><p>예외(Exception)는 프로그램 실행 중 발생하는 오류 상황이다. <code>try</code>와 <code>except</code>를 이용해 오류에 대응한다.</p>
+<div class="diagram"><span class="node">try 실행</span><b class="arrow">→</b><span class="node">정상: else</span><span class="node">오류: except</span><b class="arrow">→</b><span class="node">finally</span></div>
+<pre>try:
+    number = int(input("숫자를 입력한다: "))
+    result = 100 / number
+except ValueError:
+    print("정수로 입력해야 한다.")
+except ZeroDivisionError:
+    print("0으로 나눌 수 없다.")
+else:
+    print("계산 결과:", result)
+finally:
+    print("프로그램을 종료한다.")</pre>
+<table><tr><th>구문</th><th>역할</th></tr><tr><td>try</td><td>오류 가능성이 있는 코드 실행</td></tr><tr><td>except</td><td>발생한 예외 처리</td></tr><tr><td>else</td><td>예외가 발생하지 않았을 때 실행</td></tr><tr><td>finally</td><td>예외 여부와 관계없이 실행</td></tr><tr><td>raise</td><td>예외를 직접 발생</td></tr></table></section>
+
+<section class="card" id="s11"><h2>11. 모듈과 라이브러리</h2><p>모듈(Module)은 파이썬 코드가 들어 있는 파일이다. 라이브러리(Library)는 특정 기능을 편리하게 사용하도록 제공하는 코드의 모음이다.</p>
+<table><tr><th>모듈</th><th>주요 기능</th><th>예시</th></tr><tr><td>math</td><td>수학 계산</td><td>sqrt(), ceil(), floor()</td></tr><tr><td>random</td><td>난수 생성</td><td>randint(), choice(), shuffle()</td></tr><tr><td>datetime</td><td>날짜와 시간</td><td>date.today(), datetime.now()</td></tr><tr><td>os</td><td>운영체제 기능</td><td>getcwd(), listdir()</td></tr><tr><td>csv</td><td>CSV 파일 처리</td><td>reader(), writer()</td></tr><tr><td>statistics</td><td>기초 통계</td><td>mean(), median()</td></tr></table>
+<pre>import math
+import random
+from statistics import mean
+
+print(math.sqrt(25))          # 5.0
+print(random.randint(1, 6))   # 1부터 6 사이 정수
+print(mean([80, 90, 100]))    # 90</pre>
+<p><code>import</code>는 다른 모듈의 기능을 현재 프로그램에서 사용할 수 있도록 불러오는 명령이다.</p></section>
+
+<section class="card" id="s12"><h2>12. 자료구조와 알고리즘</h2><p>자료구조(Data Structure)는 데이터를 효율적으로 저장하고 관리하는 방법이다. 알고리즘은 그 데이터를 이용해 문제를 해결하는 절차다.</p>
+<table><tr><th>자료구조</th><th>특징</th><th>비유</th></tr><tr><td>배열(Array)</td><td>인덱스로 데이터에 접근</td><td>번호가 붙은 사물함</td></tr><tr><td>스택(Stack)</td><td>후입선출(LIFO): 나중에 넣은 것이 먼저 나옴</td><td>접시 쌓기</td></tr><tr><td>큐(Queue)</td><td>선입선출(FIFO): 먼저 넣은 것이 먼저 나옴</td><td>줄 서기</td></tr><tr><td>리스트(List)</td><td>순서에 따라 데이터 관리</td><td>할 일 목록</td></tr><tr><td>딕셔너리(Dictionary)</td><td>키로 값을 찾음</td><td>전화번호부</td></tr></table>
+<div class="diagram"><span class="node">스택<br>마지막 데이터부터 꺼냄<br>3 → 2 → 1</span><span class="node">큐<br>먼저 들어온 데이터부터 꺼냄<br>1 → 2 → 3</span></div>
+<h3>스택 구현</h3><pre>stack = []
+stack.append("첫 번째")
+stack.append("두 번째")
+stack.append("세 번째")
+
+print(stack.pop())  # 세 번째
+print(stack.pop())  # 두 번째</pre>
+<h3>큐 구현</h3><pre>from collections import deque
+
+queue = deque()
+queue.append("첫 번째")
+queue.append("두 번째")
+queue.append("세 번째")
+
+print(queue.popleft())  # 첫 번째
+print(queue.popleft())  # 두 번째</pre>
+<h3>탐색과 정렬</h3><ul><li>순차 탐색(Linear Search): 처음부터 차례대로 비교한다.</li><li>이진 탐색(Binary Search): 정렬된 데이터의 가운데 값과 비교해 탐색 범위를 절반씩 줄인다.</li><li>버블 정렬(Bubble Sort): 이웃한 두 값을 비교하고 필요하면 교환한다.</li></ul>
+<pre>numbers = [12, 7, 25, 9, 18]
+target = 25
+
+for index, value in enumerate(numbers):
+    if value == target:
+        print("찾은 위치:", index)
+        break</pre></section>
+
+<section class="card" id="s13"><h2>13. 종합 실습: 학생 성적 관리</h2><p>학생 이름과 점수를 저장하고 평균, 최고 점수, 합격 여부를 출력한다. 리스트, 딕셔너리, 반복문, 조건문, 함수를 함께 사용한다.</p>
+<pre>students = [
+    {"name": "민수", "score": 90},
+    {"name": "영희", "score": 85},
+    {"name": "철수", "score": 72},
+    {"name": "지민", "score": 98},
+    {"name": "수현", "score": 55}
+]
+
+def get_average(data):
+    total = sum(student["score"] for student in data)
+    return total / len(data)
+
+for student in students:
+    result = "합격" if student["score"] >= 60 else "불합격"
+    print(student["name"], student["score"], result)
+
+average = get_average(students)
+top_student = max(students, key=lambda x: x["score"])
+
+print("평균:", round(average, 1))
+print("최고 점수:", top_student["name"], top_student["score"])</pre>
+<div class="note"><b>코드 분석</b><br>students는 학생 데이터를 저장한다. for문은 학생을 한 명씩 처리한다. get_average()는 평균을 계산하고 max()는 최고 점수 학생을 찾는다.</div>
+<h3>응용 과제</h3><ol><li>학생을 2명 추가한다.</li><li>합격 기준을 70점으로 변경한다.</li><li>평균보다 높은 학생만 출력한다.</li><li>결과를 CSV 파일로 저장한다.</li></ol></section>
+
+<section class="card" id="s14"><h2>14. 확인 문제</h2>
+<div class="quiz"><b>문제 1. 자료형을 확인하는 함수는?</b><p>① len()　② type()　③ print()　④ input()</p><button onclick="toggle(1)">정답 확인</button><p class="answer" id="a1">정답: ② type() — 값의 자료형을 확인한다.</p></div>
+<div class="quiz"><b>문제 2. 17 % 5의 결과는?</b><p>① 2　② 3　③ 3.4　④ 5</p><button onclick="toggle(2)">정답 확인</button><p class="answer" id="a2">정답: ① 2 — %는 나머지를 구한다.</p></div>
+<div class="quiz"><b>문제 3. 리스트 끝에 항목을 추가하는 메서드는?</b><p>① add()　② append()　③ insertEnd()　④ pushBack()</p><button onclick="toggle(3)">정답 확인</button><p class="answer" id="a3">정답: ② append() — 리스트 끝에 항목을 추가한다.</p></div>
+<div class="quiz"><b>문제 4. 나중에 넣은 데이터가 먼저 나오는 자료구조는?</b><p>① 큐　② 스택　③ 트리　④ 그래프</p><button onclick="toggle(4)">정답 확인</button><p class="answer" id="a4">정답: ② 스택 — 후입선출(LIFO) 방식이다.</p></div>
+<div class="quiz"><b>문제 5. 파일 작업 후 자동으로 파일을 닫도록 돕는 구문은?</b><p>① with　② while　③ pass　④ global</p><button onclick="toggle(5)">정답 확인</button><p class="answer" id="a5">정답: ① with — 자원을 안전하게 관리한다.</p></div>
+<div class="quiz"><b>문제 6. 오류가 발생했을 때 예외를 처리하는 구문은?</b><p>① if　② for　③ except　④ return</p><button onclick="toggle(6)">정답 확인</button><p class="answer" id="a6">정답: ③ except — try에서 발생한 예외를 처리한다.</p></div>
+<div class="quiz"><b>문제 7. 딕셔너리는 어떤 형태로 데이터를 저장하는가?</b><p>① 인덱스와 값　② 키와 값　③ 앞과 뒤　④ 행과 열만 사용</p><button onclick="toggle(7)">정답 확인</button><p class="answer" id="a7">정답: ② 키와 값 — 키를 이용해 값을 찾는다.</p></div>
+</section>
+<footer>정보처리산업기사 파이썬 학습 자료 · 개념을 읽고 코드를 직접 실행한다.</footer>
+</main><script>function toggle(n){const e=document.getElementById("a"+n);e.style.display=e.style.display==="block"?"none":"block"}</script></body></html>
