@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>정보처리산업기사 파이썬 핵심 이론</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f6fb;color:#243247;font:16px/1.75 Arial,"Noto Sans KR",sans-serif}
+header{background:linear-gradient(120deg,#10243b,#1769aa,#0e8997);color:white;padding:36px 20px}header div,main,.layout{max-width:1100px;margin:auto}
+header h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:8px 0}header p{color:#e0f2fe}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:22px 14px}
+nav,.sec{background:white;border:1px solid #dbe4ef;border-radius:14px;padding:18px;margin-bottom:15px}
+nav{position:sticky;top:10px;align-self:start}nav b{display:block;margin-bottom:8px}nav a{display:block;color:#31506f;text-decoration:none;padding:4px}nav a:hover{background:#eff6ff}
+h2{color:#10243b;border-bottom:2px solid #e5edf7;padding-bottom:8px}h3{color:#1769aa;margin:20px 0 5px}
+.note{background:#eff6ff;border-left:4px solid #2563eb;padding:12px;margin:12px 0;border-radius:7px}
+.tip{background:#ecfdf5;border-left:4px solid #10b981;padding:12px;margin:12px 0;border-radius:7px}
+figure{background:#f8fbff;border:1px solid #dbe4ef;border-radius:12px;padding:12px;margin:15px 0}
+svg{width:100%;height:auto;display:block}figcaption{text-align:center;color:#64748b;font-size:.9rem}
+pre{background:#101827;color:#e5edf8;padding:15px;border-radius:9px;overflow:auto;font-size:.9rem;line-height:1.55}
+table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid #dbe4ef;padding:8px;text-align:left}th{background:#edf4fc}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}.card{background:#f8fafc;border:1px solid #dbe4ef;border-radius:9px;padding:12px}
+.quiz{border:1px solid #dbe4ef;border-radius:9px;padding:13px;margin:12px 0}.quiz button{background:#1769aa;color:white;border:0;padding:8px 12px;border-radius:6px}.ans{display:none;background:#ecfdf5;padding:10px;margin-top:8px}
+footer{text-align:center;color:#64748b;padding:25px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}nav{position:static;display:grid;grid-template-columns:repeat(2,1fr)}nav b{grid-column:1/-1}}
+</style></head><body>
+<header><div><small>INFORMATION PROCESSING INDUSTRIAL ENGINEER</small><h1>파이썬(Python) 핵심 이론과 실습</h1>
+<p>정보처리산업기사 학습에 필요한 파이썬 기본 문법과 자료구조를 쉬운 문장, 도식, 실행 코드로 정리했습니다. 코드는 Jupyter Notebook에 복사해 실습할 수 있습니다.</p></div></header>
+<div class="layout"><nav><b>📘 학습 목차</b>
+<a href="#intro">1. 파이썬과 알고리즘</a><a href="#type">2. 변수와 자료형</a><a href="#op">3. 연산자</a><a href="#control">4. 조건문·반복문</a><a href="#string">5. 문자열·리스트·튜플</a><a href="#dict">6. 세트·딕셔너리</a><a href="#function">7. 함수</a><a href="#class">8. 클래스와 객체</a><a href="#file">9. 파일 입출력</a><a href="#error">10. 예외 처리</a><a href="#module">11. 모듈</a><a href="#data">12. 자료구조·알고리즘</a><a href="#project">13. 종합 실습</a><a href="#quiz">14. 확인 문제</a></nav>
+<main>
+<section class="sec" id="intro"><h2>1. 파이썬과 알고리즘</h2>
+<p><b>파이썬(Python)</b>은 문법이 비교적 간단하고 읽기 쉬운 프로그래밍 언어입니다. 데이터 분석, 웹 개발, 자동화, 인공지능 등에 사용됩니다.</p>
+<div class="cards"><div class="card"><b>알고리즘</b><br>문제를 해결하기 위한 순서와 방법</div><div class="card"><b>프로그램</b><br>알고리즘을 프로그래밍 언어로 작성한 명령의 모음</div><div class="card"><b>실행</b><br>작성한 명령을 컴퓨터가 수행하는 과정</div></div>
+<figure><svg viewBox="0 0 720 150" role="img" aria-label="문제에서 알고리즘, 코드, 실행결과로 이어지는 흐름"><defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L0 6L7 3Z" fill="#2563eb"/></marker></defs><g font-size="17" font-weight="bold" text-anchor="middle" fill="#17365d"><rect x="8" y="35" width="150" height="75" rx="10" fill="#dbeafe" stroke="#2563eb"/><text x="83" y="79">문제 이해</text><rect x="195" y="35" width="150" height="75" rx="10" fill="#ccfbf1" stroke="#0d9488"/><text x="270" y="79">알고리즘</text><rect x="382" y="35" width="150" height="75" rx="10" fill="#fef3c7" stroke="#d97706"/><text x="457" y="79">파이썬 코드</text><rect x="569" y="35" width="140" height="75" rx="10" fill="#ede9fe" stroke="#7c3aed"/><text x="639" y="79">실행 결과</text></g><g stroke="#2563eb" stroke-width="3" marker-end="url(#a)"><path d="M160 72H188"/><path d="M347 72H375"/><path d="M534 72H562"/></g></svg><figcaption>그림 1. 문제를 프로그램으로 해결하는 과정</figcaption></figure>
+<div class="note">코드를 외우기 전에 <b>입력 → 처리 → 출력</b>의 흐름부터 이해합니다.</div></section>
+
+<section class="sec" id="type"><h2>2. 변수와 자료형</h2>
+<p>변수(Variable)는 값을 저장하고 다시 사용하기 위한 이름입니다. 파이썬은 대입된 값을 보고 자료형을 자동으로 판단합니다.</p>
+<figure><svg viewBox="0 0 650 150" role="img" aria-label="score라는 변수에 숫자 90을 저장하는 개념도"><rect x="30" y="30" width="180" height="90" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/><text x="120" y="62" text-anchor="middle" font-size="16" fill="#17365d">변수 이름</text><text x="120" y="96" text-anchor="middle" font-size="24" font-weight="bold" fill="#1d4ed8">score</text><path d="M220 75H320" stroke="#2563eb" stroke-width="3"/><path d="M310 67L322 75L310 83" stroke="#2563eb" fill="none" stroke-width="3"/><rect x="335" y="30" width="280" height="90" rx="10" fill="#ecfdf5" stroke="#0d9488" stroke-width="2"/><text x="475" y="62" text-anchor="middle" font-size="16" fill="#115e59">저장된 값</text><text x="475" y="100" text-anchor="middle" font-size="28" font-weight="bold" fill="#0f766e">90</text></svg><figcaption>그림 2. score = 90의 의미</figcaption></figure>
+<table><tr><th>자료형</th><th>의미</th><th>예시</th></tr><tr><td>int</td><td>정수</td><td>10, -3</td></tr><tr><td>float</td><td>실수</td><td>3.14, 0.5</td></tr><tr><td>str</td><td>문자열</td><td>"Python", "안녕"</td></tr><tr><td>bool</td><td>참 또는 거짓</td><td>True, False</td></tr><tr><td>list</td><td>순서가 있고 변경 가능</td><td>[10, 20, 30]</td></tr><tr><td>tuple</td><td>순서가 있고 변경 불가</td><td>(10, 20, 30)</td></tr><tr><td>dict</td><td>키와 값의 쌍</td><td>{"name": "민수"}</td></tr><tr><td>set</td><td>중복을 허용하지 않는 모음</td><td>{1, 2, 3}</td></tr></table>
+<pre><code>name = "홍길동"
+age = 20
+height = 172.5
+is_student = True
+
+print(type(name))       # str
+print(type(age))        # int
+print(type(height))     # float
+print(type(is_student)) # bool</code></pre>
+<div class="tip">type(값)은 자료형을 확인합니다. int("25")처럼 형 변환도 할 수 있습니다.</div></section>
+
+<section class="sec" id="op"><h2>3. 연산자</h2>
+<table><tr><th>종류</th><th>연산자</th><th>의미</th></tr><tr><td>산술</td><td>+, -, *, /, //, %, **</td><td>더하기, 빼기, 곱하기, 나누기, 몫, 나머지, 거듭제곱</td></tr><tr><td>비교</td><td>==, !=, &gt;, &lt;, &gt;=, &lt;=</td><td>비교 결과는 True 또는 False</td></tr><tr><td>논리</td><td>and, or, not</td><td>논리곱, 논리합, 부정</td></tr><tr><td>대입</td><td>=, +=, -=, *=</td><td>값 저장 또는 기존 값 갱신</td></tr><tr><td>포함</td><td>in, not in</td><td>자료 안에 값이 있는지 확인</td></tr></table>
+<pre><code>a = 17
+b = 5
+print(a / b)    # 3.4 : 나눈 결과
+print(a // b)   # 3   : 몫
+print(a % b)    # 2   : 나머지
+print(2 ** 3)   # 8   : 거듭제곱</code></pre>
+<div class="note">시험 핵심: //는 몫, %는 나머지입니다. 17을 5로 나누면 몫은 3, 나머지는 2입니다.</div></section>
+
+<section class="sec" id="control"><h2>4. 조건문과 반복문</h2>
+<h3>4-1. 조건문 if</h3><p>조건이 참인지 거짓인지 판단하여 실행할 내용을 선택합니다.</p>
+<figure><svg viewBox="0 0 650 220" role="img" aria-label="점수가 60 이상인지 판단하는 조건문 순서도"><rect x="235" y="8" width="180" height="42" rx="8" fill="#dbeafe" stroke="#2563eb"/><text x="325" y="35" text-anchor="middle" font-size="16" fill="#17365d">점수 입력</text><path d="M325 50V72" stroke="#334155" stroke-width="2"/><path d="M325 72L425 120L325 168L225 120Z" fill="#fef3c7" stroke="#d97706" stroke-width="2"/><text x="325" y="125" text-anchor="middle" font-size="16" fill="#78350f">점수 ≥ 60?</text><path d="M225 120H105V183M425 120H545V183" fill="none" stroke="#334155" stroke-width="2"/><text x="155" y="108" font-size="13" fill="#0d9488">참</text><text x="485" y="108" font-size="13" fill="#2563eb">거짓</text><rect x="35" y="183" width="140" height="32" rx="7" fill="#ccfbf1" stroke="#0d9488"/><text x="105" y="205" text-anchor="middle" font-size="15" fill="#115e59">합격</text><rect x="475" y="183" width="140" height="32" rx="7" fill="#fee2e2" stroke="#dc2626"/><text x="545" y="205" text-anchor="middle" font-size="15" fill="#991b1b">불합격</text></svg><figcaption>그림 3. if 조건문으로 합격 여부 판단</figcaption></figure>
+<pre><code>score = 75
+
+if score >= 60:
+    print("합격")
+else:
+    print("불합격")</code></pre>
+<h3>4-2. 반복문 for와 while</h3>
+<div class="cards"><div class="card"><b>for</b>리스트나 정해진 범위의 값을 하나씩 꺼내 반복합니다.</div><div class="card"><b>while</b>조건이 참인 동안 반복합니다. 종료 조건을 확인해야 합니다.</div></div>
+<pre><code># 1부터 5까지 출력
+for number in range(1, 6):
+    print(number)
+
+# while 반복
+count = 1
+while count <= 5:
+    print(count)
+    count += 1</code></pre>
+<p>range(1, 6)은 1부터 6 미만까지입니다. 따라서 1, 2, 3, 4, 5가 만들어집니다.</p>
+<table><tr><th>명령</th><th>기능</th></tr><tr><td>break</td><td>반복문을 즉시 종료</td></tr><tr><td>continue</td><td>현재 반복을 건너뛰고 다음 반복으로 이동</td></tr><tr><td>pass</td><td>아무 동작 없이 문법상 자리를 채움</td></tr></table></section>
+
+<section class="sec" id="string"><h2>5. 문자열·리스트·튜플</h2>
+<h3>5-1. 문자열(String)</h3><p>문자열은 문자가 순서대로 연결된 자료입니다. 인덱스는 0부터 시작합니다.</p>
+<figure><svg viewBox="0 0 650 135" role="img" aria-label="PYTHON 문자열 인덱스는 0부터 5까지"><text x="325" y="20" text-anchor="middle" font-size="16" fill="#17365d">문자열 "PYTHON"</text><g text-anchor="middle"><g fill="#dbeafe" stroke="#2563eb"><rect x="65" y="35" width="75" height="48" rx="6"/><rect x="150" y="35" width="75" height="48" rx="6"/><rect x="235" y="35" width="75" height="48" rx="6"/><rect x="320" y="35" width="75" height="48" rx="6"/><rect x="405" y="35" width="75" height="48" rx="6"/><rect x="490" y="35" width="75" height="48" rx="6"/></g><g font-size="20" fill="#17365d"><text x="102" y="66">P</text><text x="187" y="66">Y</text><text x="272" y="66">T</text><text x="357" y="66">H</text><text x="442" y="66">O</text><text x="527" y="66">N</text></g><g font-size="13" fill="#64748b"><text x="102" y="108">0</text><text x="187" y="108">1</text><text x="272" y="108">2</text><text x="357" y="108">3</text><text x="442" y="108">4</text><text x="527" y="108">5</text></g></g></svg><figcaption>그림 4. 문자열의 인덱스는 0부터 시작합니다.</figcaption></figure>
+<pre><code>text = "PYTHON"
+print(text[0])     # P
+print(text[2])     # T
+print(text[-1])    # N
+print(text[1:4])   # YTH</code></pre>
+<h3>5-2. 리스트(List)</h3><p>리스트는 여러 값을 순서대로 저장하며 항목을 추가·수정·삭제할 수 있습니다.</p>
+<pre><code>scores = [80, 90, 75]
+scores.append(100)   # 끝에 추가
+scores[0] = 85       # 첫 번째 값 수정
+scores.remove(90)    # 값 90 삭제
+print(scores)
+print(len(scores))   # 항목 개수
+print(sum(scores))   # 합계</code></pre>
+<table><tr><th>메서드</th><th>기능</th></tr><tr><td>append(x)</td><td>끝에 x 추가</td></tr><tr><td>insert(i, x)</td><td>i 위치에 x 삽입</td></tr><tr><td>remove(x)</td><td>값 x 삭제</td></tr><tr><td>pop()</td><td>마지막 항목을 꺼내고 삭제</td></tr><tr><td>sort()</td><td>오름차순 정렬</td></tr><tr><td>reverse()</td><td>순서 뒤집기</td></tr></table>
+<h3>5-3. 튜플(Tuple)</h3><p>튜플은 순서가 있지만 생성 후 항목을 변경할 수 없습니다.</p><pre><code>point = (10, 20)
+print(point[0])
+# point[0] = 30  # 오류: 튜플 항목은 변경 불가</code></pre></section>
+
+<section class="sec" id="dict"><h2>6. 세트(Set)와 딕셔너리(Dictionary)</h2>
+<h3>6-1. 세트(Set)</h3><p>세트는 중복된 값을 하나만 남기는 자료형입니다. 항목의 순서를 기준으로 사용하지 않습니다.</p>
+<pre><code>numbers = {1, 2, 2, 3, 3, 3}
+print(numbers)      # {1, 2, 3}와 같은 집합
+print(2 in numbers) # True</code></pre>
+<h3>6-2. 딕셔너리(Dictionary)</h3><p>딕셔너리는 키(Key)와 값(Value)을 한 쌍으로 저장합니다.</p>
+<figure><svg viewBox="0 0 650 145" role="img" aria-label="딕셔너리의 name 키가 홍길동 값에 연결되는 구조"><rect x="25" y="35" width="150" height="65" rx="8" fill="#dbeafe" stroke="#2563eb"/><text x="100" y="74" text-anchor="middle" font-size="18" fill="#17365d">키: name</text><path d="M185 68H275" stroke="#2563eb" stroke-width="3"/><path d="M265 60L277 68L265 76" fill="none" stroke="#2563eb" stroke-width="3"/><rect x="290" y="35" width="210" height="65" rx="8" fill="#ccfbf1" stroke="#0d9488"/><text x="395" y="74" text-anchor="middle" font-size="18" fill="#115e59">값: 홍길동</text><text x="325" y="125" text-anchor="middle" font-size="13" fill="#64748b">student = {"name": "홍길동"}</text></svg><figcaption>그림 5. 키를 이용해 연결된 값을 찾는 딕셔너리</figcaption></figure>
+<pre><code>student = {"name": "홍길동", "score": 95}
+print(student["name"])
+print(student["score"])
+student["grade"] = "A"   # 새 항목 추가
+print(student.keys())    # 키 목록
+print(student.values())  # 값 목록</code></pre></section>
+
+<section class="sec" id="function"><h2>7. 함수(Function)</h2>
+<p>함수는 자주 사용하는 코드를 하나의 이름으로 묶은 것입니다. 입력값을 받을 수 있고 return으로 결과를 돌려줄 수 있습니다.</p>
+<figure><svg viewBox="0 0 650 135" role="img" aria-label="함수에 3과 5를 입력하여 더한 결과 8을 반환"><rect x="8" y="35" width="130" height="65" rx="8" fill="#dbeafe" stroke="#2563eb"/><text x="73" y="61" text-anchor="middle" font-size="15" fill="#17365d">입력값</text><text x="73" y="84" text-anchor="middle" font-size="19" fill="#17365d">3, 5</text><path d="M143 68H205" stroke="#2563eb" stroke-width="3"/><path d="M195 60L207 68L195 76" fill="none" stroke="#2563eb" stroke-width="3"/><rect x="215" y="22" width="220" height="90" rx="10" fill="#ccfbf1" stroke="#0d9488"/><text x="325" y="57" text-anchor="middle" font-size="18" fill="#115e59">함수 add()</text><text x="325" y="83" text-anchor="middle" font-size="15" fill="#115e59">3 + 5 계산</text><path d="M440 68H500" stroke="#2563eb" stroke-width="3"/><path d="M490 60L502 68L490 76" fill="none" stroke="#2563eb" stroke-width="3"/><rect x="510" y="35" width="130" height="65" rx="8" fill="#fef3c7" stroke="#d97706"/><text x="575" y="61" text-anchor="middle" font-size="15" fill="#78350f">반환 결과</text><text x="575" y="85" text-anchor="middle" font-size="22" fill="#78350f">8</text></svg><figcaption>그림 6. 함수의 입력 → 처리 → 반환 흐름</figcaption></figure>
+<pre><code>def add(a, b):
+    result = a + b
+    return result
+
+total = add(3, 5)
+print(total)  # 8</code></pre>
+<table><tr><th>용어</th><th>설명</th></tr><tr><td>매개변수(Parameter)</td><td>함수를 정의할 때 입력받도록 만든 변수</td></tr><tr><td>인수(Argument)</td><td>함수를 호출할 때 실제 전달하는 값</td></tr><tr><td>return</td><td>실행 결과를 호출한 곳으로 돌려줌</td></tr><tr><td>지역 변수</td><td>함수 내부에서 만들어져 주로 함수 안에서 사용</td></tr><tr><td>전역 변수</td><td>함수 바깥에서 정의된 변수</td></tr><tr><td>lambda</td><td>간단한 함수를 한 줄 식으로 표현</td></tr></table>
+<pre><code>def greet(name, message="안녕하세요"):
+    print(name, message)
+
+greet("민수")
+greet("영희", "반갑습니다")
+
+square = lambda x: x * x
+print(square(4))  # 16</code></pre></section>
+
+<section class="sec" id="class"><h2>8. 클래스와 객체지향 프로그래밍</h2>
+<p><b>클래스(Class)</b>는 객체를 만들기 위한 설계도이고, <b>객체(Object)</b>는 클래스를 바탕으로 실제 생성한 대상입니다. 객체는 데이터인 속성과 기능인 메서드를 가질 수 있습니다.</p>
+<figure><svg viewBox="0 0 650 180" role="img" aria-label="Student 클래스 설계도에서 학생 객체 두 개가 생성되는 구조"><rect x="205" y="8" width="240" height="75" rx="9" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/><text x="325" y="33" text-anchor="middle" font-size="18" font-weight="bold" fill="#17365d">Student 클래스</text><text x="225" y="56" font-size="13" fill="#17365d">속성: name, score</text><text x="225" y="73" font-size="13" fill="#17365d">기능: introduce()</text><path d="M325 84V110M155 110H495M155 110V125M495 110V125" stroke="#2563eb" stroke-width="2" fill="none"/><rect x="35" y="125" width="240" height="45" rx="8" fill="#ccfbf1" stroke="#0d9488"/><text x="155" y="153" text-anchor="middle" font-size="15" fill="#115e59">객체 1: 민수, 90점</text><rect x="375" y="125" width="240" height="45" rx="8" fill="#fef3c7" stroke="#d97706"/><text x="495" y="153" text-anchor="middle" font-size="15" fill="#78350f">객체 2: 영희, 95점</text></svg><figcaption>그림 7. 하나의 클래스에서 여러 객체를 만들 수 있습니다.</figcaption></figure>
+<pre><code>class Student:
+    def __init__(self, name, score):
+        self.name = name
+        self.score = score
+
+    def introduce(self):
+        print(self.name, "학생의 점수는", self.score)
+
+student1 = Student("민수", 90)
+student2 = Student("영희", 95)
+
+student1.introduce()
+student2.introduce()</code></pre>
+<div class="note"><b>self</b>는 현재 객체 자신을 가리킵니다. <b>__init__()</b>은 객체가 생성될 때 속성을 초기화하는 메서드입니다.</div>
+<table><tr><th>객체지향 특징</th><th>설명</th></tr><tr><td>캡슐화(Encapsulation)</td><td>데이터와 기능을 하나로 묶고 접근을 관리</td></tr><tr><td>상속(Inheritance)</td><td>기존 클래스의 속성과 기능을 물려받음</td></tr><tr><td>다형성(Polymorphism)</td><td>같은 기능 이름이 객체에 따라 다르게 동작</td></tr><tr><td>추상화(Abstraction)</td><td>복잡한 내부 구현은 감추고 핵심 기능을 표현</td></tr></table></section>
+
+<section class="sec" id="file"><h2>9. 파일 입출력</h2>
+<p>파일 입출력(File Input/Output)은 프로그램의 데이터를 파일에 저장하거나 파일에서 읽어오는 기능입니다.</p>
+<figure><svg viewBox="0 0 650 135" role="img" aria-label="프로그램과 파일 사이에서 쓰기와 읽기가 이루어지는 양방향 흐름"><rect x="20" y="30" width="190" height="75" rx="10" fill="#dbeafe" stroke="#2563eb"/><text x="115" y="62" text-anchor="middle" font-size="17" fill="#17365d">파이썬 프로그램</text><text x="115" y="85" text-anchor="middle" font-size="13" fill="#475569">read() / write()</text><rect x="440" y="30" width="190" height="75" rx="10" fill="#ccfbf1" stroke="#0d9488"/><text x="535" y="62" text-anchor="middle" font-size="17" fill="#115e59">파일 data.txt</text><text x="535" y="85" text-anchor="middle" font-size="13" fill="#475569">저장 공간</text><path d="M215 48H432M425 41L435 48L425 55" fill="none" stroke="#2563eb" stroke-width="3"/><text x="325" y="39" text-anchor="middle" font-size="12" fill="#2563eb">쓰기</text><path d="M435 91H218M225 84L215 91L225 98" fill="none" stroke="#0d9488" stroke-width="3"/><text x="325" y="120" text-anchor="middle" font-size="12" fill="#0d9488">읽기</text></svg><figcaption>그림 8. 프로그램과 파일 사이의 데이터 흐름</figcaption></figure>
+<table><tr><th>모드</th><th>의미</th></tr><tr><td>r</td><td>읽기. 파일이 없으면 오류</td></tr><tr><td>w</td><td>쓰기. 기존 내용이 있으면 덮어씀</td></tr><tr><td>a</td><td>추가. 기존 내용 뒤에 이어 씀</td></tr><tr><td>x</td><td>새 파일 생성. 같은 이름이 있으면 오류</td></tr><tr><td>b</td><td>바이너리 모드(예: rb, wb)</td></tr><tr><td>t</td><td>텍스트 모드(기본값)</td></tr></table>
+<h3>실습 9-1. 텍스트 파일 저장과 읽기</h3><pre><code># 파일에 쓰기
+with open("memo.txt", "w", encoding="utf-8") as file:
+    file.write("파이썬 파일 입출력 실습입니다.\\n")
+    file.write("데이터를 저장합니다.")
+
+# 파일 읽기
+with open("memo.txt", "r", encoding="utf-8") as file:
+    content = file.read()
+
+print(content)</code></pre>
+<div class="tip"><b>with open()</b>을 사용하면 작업이 끝난 뒤 파일이 자동으로 닫힙니다. 한글 파일은 encoding="utf-8"을 지정하면 인코딩 문제를 줄일 수 있습니다.</div>
+<h3>실습 9-2. CSV 파일</h3><pre><code>import csv
+
+students = [
+    ["이름", "점수"],
+    ["민수", 90],
+    ["영희", 95],
+    ["철수", 82]
+]
+
+with open("scores.csv", "w", newline="", encoding="utf-8-sig") as file:
+    writer = csv.writer(file)
+    writer.writerows(students)
+
+with open("scores.csv", "r", encoding="utf-8-sig") as file:
+    reader = csv.reader(file)
+    for row in reader:
+        print(row)</code></pre></section>
+
+<section class="sec" id="error"><h2>10. 예외 처리</h2>
+<p>예외(Exception)는 프로그램 실행 중 발생하는 오류 상황입니다. try와 except를 이용하면 오류가 발생했을 때 대응할 수 있습니다.</p>
+<figure><svg viewBox="0 0 650 175" role="img" aria-label="try에서 오류가 발생하지 않으면 정상 처리하고 발생하면 except로 처리하는 흐름"><rect x="235" y="8" width="180" height="42" rx="8" fill="#dbeafe" stroke="#2563eb"/><text x="325" y="35" text-anchor="middle" font-size="16" fill="#17365d">try 실행</text><path d="M325 50V70M325 70H150V100M325 70H500V100" fill="none" stroke="#334155" stroke-width="2"/><rect x="45" y="100" width="210" height="60" rx="8" fill="#ccfbf1" stroke="#0d9488"/><text x="150" y="125" text-anchor="middle" font-size="16" fill="#115e59">정상 실행</text><text x="150" y="146" text-anchor="middle" font-size="13" fill="#115e59">else (선택)</text><rect x="395" y="100" width="210" height="60" rx="8" fill="#fee2e2" stroke="#dc2626"/><text x="500" y="125" text-anchor="middle" font-size="16" fill="#991b1b">오류 발생</text><text x="500" y="146" text-anchor="middle" font-size="13" fill="#991b1b">except 처리</text></svg><figcaption>그림 9. try-except 예외 처리 흐름</figcaption></figure>
+<pre><code>try:
+    number = int(input("숫자를 입력하세요: "))
+    result = 100 / number
+except ValueError:
+    print("정수로 입력해야 합니다.")
+except ZeroDivisionError:
+    print("0으로 나눌 수 없습니다.")
+else:
+    print("계산 결과:", result)
+finally:
+    print("프로그램을 종료합니다.")</code></pre>
+<table><tr><th>구문</th><th>역할</th></tr><tr><td>try</td><td>오류 가능성이 있는 코드 실행</td></tr><tr><td>except</td><td>발생한 예외 처리</td></tr><tr><td>else</td><td>예외가 발생하지 않았을 때 실행</td></tr><tr><td>finally</td><td>예외 여부와 관계없이 실행</td></tr><tr><td>raise</td><td>예외를 직접 발생</td></tr></table></section>
+
+<section class="sec" id="module"><h2>11. 모듈과 라이브러리</h2>
+<p>모듈(Module)은 파이썬 코드가 들어 있는 파일입니다. 라이브러리(Library)는 특정 기능을 편리하게 사용하도록 제공하는 코드의 모음입니다.</p>
+<table><tr><th>모듈</th><th>주요 기능</th><th>예시</th></tr><tr><td>math</td><td>수학 계산</td><td>sqrt(), ceil(), floor()</td></tr><tr><td>random</td><td>난수 생성</td><td>randint(), choice(), shuffle()</td></tr><tr><td>datetime</td><td>날짜와 시간</td><td>date.today(), datetime.now()</td></tr><tr><td>os</td><td>운영체제 기능</td><td>getcwd(), listdir()</td></tr><tr><td>csv</td><td>CSV 파일 처리</td><td>reader(), writer()</td></tr><tr><td>statistics</td><td>기초 통계</td><td>mean(), median()</td></tr></table>
+<pre><code>import math
+import random
+from statistics import mean
+
+print(math.sqrt(25))          # 5.0
+print(random.randint(1, 6))   # 1부터 6 사이 정수
+print(mean([80, 90, 100]))    # 90</code></pre>
+<div class="note">import는 다른 모듈의 기능을 현재 프로그램에서 사용할 수 있도록 불러오는 명령입니다.</div></section>
+
+<section class="sec" id="data"><h2>12. 자료구조와 알고리즘</h2>
+<p>자료구조(Data Structure)는 데이터를 효율적으로 저장하고 관리하는 방법입니다. 알고리즘은 그 데이터를 이용해 문제를 해결하는 절차입니다.</p>
+<table><tr><th>자료구조</th><th>특징</th><th>비유</th></tr><tr><td>배열(Array)</td><td>인덱스로 데이터에 접근하는 구조</td><td>번호가 붙은 사물함</td></tr><tr><td>스택(Stack)</td><td>후입선출(LIFO): 나중에 넣은 것이 먼저 나옴</td><td>접시 쌓기</td></tr><tr><td>큐(Queue)</td><td>선입선출(FIFO): 먼저 넣은 것이 먼저 나옴</td><td>줄 서기</td></tr><tr><td>리스트(List)</td><td>순서에 따라 데이터를 관리</td><td>할 일 목록</td></tr><tr><td>딕셔너리(Dictionary)</td><td>키로 값을 찾음</td><td>전화번호부</td></tr></table>
+<figure><svg viewBox="0 0 650 205" role="img" aria-label="스택은 나중에 넣은 값이 먼저 나오고 큐는 먼저 넣은 값이 먼저 나오는 비교"><text x="160" y="25" text-anchor="middle" font-size="18" font-weight="bold" fill="#17365d">스택(Stack)</text><text x="490" y="25" text-anchor="middle" font-size="18" font-weight="bold" fill="#17365d">큐(Queue)</text><g stroke="#2563eb"><rect x="90" y="45" width="140" height="40" fill="#dbeafe"/><rect x="90" y="85" width="140" height="40" fill="#ccfbf1"/><rect x="90" y="125" width="140" height="40" fill="#fef3c7"/><rect x="360" y="75" width="80" height="60" fill="#dbeafe"/><rect x="440" y="75" width="80" height="60" fill="#ccfbf1"/><rect x="520" y="75" width="80" height="60" fill="#fef3c7"/></g><g font-size="17" text-anchor="middle" fill="#17365d"><text x="160" y="72">3</text><text x="160" y="112">2</text><text x="160" y="152">1</text><text x="400" y="111">1</text><text x="480" y="111">2</text><text x="560" y="111">3</text></g><g font-size="13" text-anchor="middle" fill="#64748b"><text x="160" y="190">3이 먼저 나옴</text><text x="480" y="165">1이 먼저 나옴</text></g></svg><figcaption>그림 10. 스택(LIFO)과 큐(FIFO)의 처리 순서</figcaption></figure>
+<h3>스택 구현</h3><pre><code>stack = []
+stack.append("첫 번째")
+stack.append("두 번째")
+stack.append("세 번째")
+
+print(stack.pop())  # 세 번째
+print(stack.pop())  # 두 번째</code></pre>
+<h3>큐 구현</h3><pre><code>from collections import deque
+
+queue = deque()
+queue.append("첫 번째")
+queue.append("두 번째")
+queue.append("세 번째")
+
+print(queue.popleft())  # 첫 번째
+print(queue.popleft())  # 두 번째</code></pre>
+<h3>탐색과 정렬</h3><ul><li><b>순차 탐색(Linear Search):</b> 처음부터 차례대로 비교합니다.</li><li><b>이진 탐색(Binary Search):</b> 정렬된 데이터의 가운데 값과 비교해 범위를 절반씩 줄입니다.</li><li><b>버블 정렬(Bubble Sort):</b> 이웃한 두 값을 비교하고 필요하면 교환합니다.</li></ul>
+<pre><code>numbers = [12, 7, 25, 9, 18]
+target = 25
+
+for index, value in enumerate(numbers):
+    if value == target:
+        print("찾은 위치:", index)
+        break</code></pre></section>
+
+<section class="sec" id="project"><h2>13. 종합 실습: 학생 성적 관리</h2>
+<p>학생 이름과 점수를 저장하고 평균, 최고 점수, 합격 여부를 출력합니다. 리스트, 딕셔너리, 반복문, 조건문, 함수를 함께 사용합니다.</p>
+<pre><code>students = [
+    {"name": "민수", "score": 90},
+    {"name": "영희", "score": 85},
+    {"name": "철수", "score": 72},
+    {"name": "지민", "score": 98},
+    {"name": "수현", "score": 55}
+]
+
+def get_average(data):
+    total = sum(student["score"] for student in data)
+    return total / len(data)
+
+for student in students:
+    result = "합격" if student["score"] >= 60 else "불합격"
+    print(student["name"], student["score"], result)
+
+average = get_average(students)
+top_student = max(students, key=lambda x: x["score"])
+
+print("평균:", round(average, 1))
+print("최고 점수:", top_student["name"], top_student["score"])</code></pre>
+<div class="tip"><b>코드 분석:</b> students는 학생 데이터를 저장합니다. for문은 학생을 한 명씩 처리합니다. get_average()는 평균을 계산하고 max()는 최고 점수 학생을 찾습니다.</div>
+<p><b>응용 과제</b>: 학생을 2명 추가하고, 합격 기준을 70점으로 바꾸고, 평균보다 높은 학생만 출력한 뒤 결과를 CSV 파일로 저장해 보세요.</p></section>
+
+<section class="sec" id="quiz"><h2>14. 확인 문제</h2>
+<div class="quiz"><b>문제 1.</b> 자료형을 확인하는 함수는?<br>① len()　② type()　③ print()　④ input()<br><button onclick="ans(1)">정답 확인</button><div class="ans" id="a1">정답: ② type() — 값의 자료형을 확인합니다.</div></div>
+<div class="quiz"><b>문제 2.</b> 17 % 5의 결과는?<br>① 2　② 3　③ 3.4　④ 5<br><button onclick="ans(2)">정답 확인</button><div class="ans" id="a2">정답: ① 2 — %는 나머지를 구합니다.</div></div>
+<div class="quiz"><b>문제 3.</b> 리스트 끝에 항목을 추가하는 메서드는?<br>① add()　② append()　③ insertEnd()　④ pushBack()<br><button onclick="ans(3)">정답 확인</button><div class="ans" id="a3">정답: ② append() — 리스트 끝에 항목을 추가합니다.</div></div>
+<div class="quiz"><b>문제 4.</b> 나중에 넣은 데이터가 먼저 나오는 자료구조는?<br>① 큐　② 스택　③ 트리　④ 그래프<br><button onclick="ans(4)">정답 확인</button><div class="ans" id="a4">정답: ② 스택 — 후입선출(LIFO)입니다.</div></div>
+<div class="quiz"><b>문제 5.</b> 파일 작업 후 자동으로 파일을 닫도록 돕는 구문은?<br>① with　② while　③ pass　④ global<br><button onclick="ans(5)">정답 확인</button><div class="ans" id="a5">정답: ① with — 자원을 안전하게 관리합니다.</div></div>
+<div class="quiz"><b>문제 6.</b> 오류가 발생했을 때 예외를 처리하는 구문은?<br>① if　② for　③ except　④ return<br><button onclick="ans(6)">정답 확인</button><div class="ans" id="a6">정답: ③ except — try에서 발생한 예외를 처리합니다.</div></div>
+<div class="quiz"><b>문제 7.</b> 딕셔너리는 어떤 형태로 데이터를 저장하나요?<br>① 인덱스와 값　② 키와 값　③ 앞과 뒤　④ 행과 열만 사용<br><button onclick="ans(7)">정답 확인</button><div class="ans" id="a7">정답: ② 키와 값 — 키를 이용해 값을 찾습니다.</div></div>
+</section>
+</main></div><footer>정보처리산업기사 파이썬 학습 자료 · 개념을 읽고 코드를 직접 실행해 보세요.</footer>
+<script>function ans(n){let e=document.getElementById("a"+n);e.style.display=e.style.display==="block"?"none":"block"}</script>
+</body></html>
