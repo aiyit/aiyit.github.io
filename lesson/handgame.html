@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>가위바위보 게임</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 0 16px;
+      text-align: center;
+    }
+    h1 { margin-bottom: 8px; }
+    .board {
+      background: #f5f5f5;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .board p { margin: 6px 0; font-size: 18px; }
+    #result { min-height: 32px; margin: 12px 0; }
+    .choices {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 16px 0;
+    }
+    .choices button {
+      flex: 1;
+      padding: 14px 8px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .choices button:hover { background: #eef6ff; }
+    #reset {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    .score { font-size: 15px; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>가위바위보</h1>
+
+  <div class="board">
+    <p>나: <span id="user">-</span></p>
+    <p>컴퓨터: <span id="com">-</span></p>
+    <h2 id="result">선택하세요</h2>
+  </div>
+
+  <div class="choices">
+    <button data-choice="가위">✌️ 가위</button>
+    <button data-choice="바위">✊ 바위</button>
+    <button data-choice="보">✋ 보</button>
+  </div>
+
+  <p class="score">
+    승: <span id="win">0</span> |
+    패: <span id="lose">0</span> |
+    무: <span id="draw">0</span>
+  </p>
+
+  <button id="reset">초기화</button>
+
+  <script>
+    const CHOICES = ['가위', '바위', '보'];
+    const EMOJI = { 가위: '✌️', 바위: '✊', 보: '✋' };
+
+    let score = { win: 0, lose: 0, draw: 0 };
+
+    const $ = (id) => document.getElementById(id);
+
+    document.querySelectorAll('.choices button').forEach((btn) => {
+      btn.addEventListener('click', () => play(btn.dataset.choice));
+    });
+
+    $('reset').addEventListener('click', reset);
+
+    function play(user) {
+      const com = CHOICES[Math.floor(Math.random() * CHOICES.length)];
+
+      $('user').textContent = `${EMOJI[user]} ${user}`;
+      $('com').textContent = `${EMOJI[com]} ${com}`;
+
+      const result = judge(user, com);
+
+      if (result === 'win') {
+        score.win++;
+        $('result').textContent = '이겼습니다! 🎉';
+      } else if (result === 'lose') {
+        score.lose++;
+        $('result').textContent = '졌습니다... 😢';
+      } else {
+        score.draw++;
+        $('result').textContent = '비겼습니다. 🤝';
+      }
+
+      updateScore();
+    }
+
+    function judge(user, com) {
+      if (user === com) return 'draw';
+
+      if (
+        (user === '가위' && com === '보') ||
+        (user === '바위' && com === '가위') ||
+        (user === '보' && com === '바위')
+      ) {
+        return 'win';
+      }
+
+      return 'lose';
+    }
+
+    function updateScore() {
+      $('win').textContent = score.win;
+      $('lose').textContent = score.lose;
+      $('draw').textContent = score.draw;
+    }
+
+    function reset() {
+      score = { win: 0, lose: 0, draw: 0 };
+      $('user').textContent = '-';
+      $('com').textContent = '-';
+      $('result').textContent = '선택하세요';
+      updateScore();
+    }
+  </script>
+</body>
+</html>
