@@ -343,7 +343,14 @@ except FileNotFoundError:
     <h2>실제 응용 예제: 학생 성적 기록 및 평균 확인</h2>
     <p>학생 이름과 점수를 입력해 파일에 저장하고, 지금까지 저장된 성적 목록과 평균을 출력합니다.</p>
 <pre><code>
+import os
 file_name = "output/grade_book.csv"
+os.makedirs("output", exist_ok=True) #파일 없을 경우 생성
+
+# 파일이 처음 생성될 때만 헤더 추가
+if not os.path.exists(file_name):
+    with open(file_name, "w", encoding="utf-8") as file:
+        file.write("이름,점수\n")
 
 # 1. 학생 정보를 반복해서 입력받기
 while True:
