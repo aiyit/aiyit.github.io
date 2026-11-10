@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript Canvas 통합 실습</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        padding: 24px;
+        font-family: "Malgun Gothic", Arial, sans-serif;
+        background: #f3f6fb;
+        color: #1f2937;
+        line-height: 1.6;
+    }
+    main { max-width: 1000px; margin: auto; }
+    h1 { color: #173b70; }
+    h2 {
+        margin-top: 32px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #d7e2f0;
+        color: #24558c;
+    }
+    .intro, .lesson, .note {
+        background: white;
+        border-radius: 12px;
+        padding: 18px;
+        margin: 16px 0;
+        box-shadow: 0 3px 12px rgba(30, 60, 90, .07);
+    }
+    canvas {
+        display: block;
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        margin: 14px auto;
+        background: white;
+        border: 2px solid #334155;
+        border-radius: 6px;
+    }
+    pre {
+        overflow-x: auto;
+        padding: 14px;
+        background: #172033;
+        color: #e5edf8;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    code { font-family: Consolas, monospace; }
+    .controls { text-align: center; margin: 12px; }
+    button {
+        border: 0;
+        border-radius: 7px;
+        padding: 10px 18px;
+        margin: 4px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+        font-size: 15px;
+    }
+    button:hover { background: #1d4ed8; }
+    .secondary { background: #64748b; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { border: 1px solid #d8e0ea; padding: 9px; text-align: left; }
+    th { background: #eaf1fb; }
+    .small { color: #64748b; font-size: .92rem; }
+</style>
+</head>
+<body>
+<main>
+    <h1>JavaScript Canvas 통합 실습</h1>
+    <div class="intro">
+        <p><strong>학습 목표</strong></p>
+        <ul>
+            <li>HTML Canvas 영역과 2D 그래픽 컨텍스트를 생성한다.</li>
+            <li>사각형, 원, 삼각형, 선, 텍스트를 그린다.</li>
+            <li>색상과 선 굵기를 변경하고 좌표 변환을 적용한다.</li>
+            <li><code>requestAnimationFrame()</code>으로 움직이는 도형을 구현한다.</li>
+        </ul>
+        <p class="small">각 예제는 독립적으로 실행되는 코드다. 브라우저에서 이 HTML 파일을 열어 결과를 확인한다.</p>
+    </div>
+
+    <section class="lesson">
+        <h2>1. Canvas 기본 구조</h2>
+        <p><code>&lt;canvas&gt;</code>는 그림을 표시할 영역이며, <code>getContext("2d")</code>는 2차원 그리기 도구를 가져온다.</p>
+<pre><code>&lt;canvas id="myCanvas" width="600" height="400"&gt;&lt;/canvas&gt;
+
+&lt;script&gt;
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+&lt;/script&gt;</code></pre>
+        <canvas id="basicCanvas" width="600" height="160"></canvas>
+        <p class="small">위 캔버스는 가로 600픽셀, 세로 160픽셀의 빈 그림 영역이다.</p>
+    </section>
+
+    <section class="lesson">
+        <h2>2. 사각형 그리기</h2>
+        <p><code>fillRect(x, y, width, height)</code>는 내부가 채워진 사각형을, <code>strokeRect()</code>는 테두리 사각형을 그린다.</p>
+        <canvas id="rectCanvas" width="600" height="190"></canvas>
+<pre><code>ctx.fillStyle = "skyblue";
+ctx.fillRect(40, 35, 180, 110);
+
+ctx.strokeStyle = "red";
+ctx.lineWidth = 4;
+ctx.strokeRect(270, 35, 180, 110);</code></pre>
+    </section>
+
+    <section class="lesson">
+        <h2>3. 선 그리기</h2>
+        <p><code>beginPath()</code>로 경로를 시작하고 <code>moveTo()</code>, <code>lineTo()</code>로 점을 연결한 뒤 <code>stroke()</code>로 선을 표시한다.</p>
+        <canvas id="lineCanvas" width="600" height="190"></canvas>
+<pre><code>ctx.beginPath();
+ctx.moveTo(50, 140);
+ctx.lineTo(180, 35);
+ctx.lineTo(310, 140);
+ctx.strokeStyle = "blue";
+ctx.lineWidth = 5;
+ctx.stroke();</code></pre>
+    </section>
+
+    <section class="lesson">
+        <h2>4. 원 그리기</h2>
+        <p><code>arc(x, y, radius, startAngle, endAngle)</code>를 사용한다. 원 전체를 그릴 때 종료 각도는 <code>Math.PI * 2</code>다.</p>
+        <canvas id="circleCanvas" width="600" height="190"></canvas>
+<pre><code>ctx.beginPath();
+ctx.arc(180, 95, 60, 0, Math.PI * 2);
+ctx.fillStyle = "orange";
+ctx.fill();
+ctx.strokeStyle = "#333";
+ctx.stroke();</code></pre>
+    </section>
+
+    <section class="lesson">
+        <h2>5. 삼각형 그리기</h2>
+        <p>세 꼭짓점을 <code>moveTo()</code>와 <code>lineTo()</code>로 연결하고 <code>closePath()</code>로 경로를 닫는다.</p>
+        <canvas id="triangleCanvas" width="600" height="190"></canvas>
+<pre><code>ctx.beginPath();
+ctx.moveTo(180, 25);
+ctx.lineTo(90, 155);
+ctx.lineTo(270, 155);
+ctx.closePath();
+ctx.fillStyle = "gold";
+ctx.fill();
+ctx.stroke();</code></pre>
+    </section>
+
+    <section class="lesson">
+        <h2>6. 색상과 그라데이션</h2>
+        <p><code>createLinearGradient()</code>로 색상이 점진적으로 변하는 그라데이션을 만든다.</p>
+        <canvas id="gradientCanvas" width="600" height="190"></canvas>
+<pre><code>const gradient = ctx.createLinearGradient(40, 0, 500, 0);
+gradient.addColorStop(0, "red");
+gradient.addColorStop(0.5, "yellow");
+gradient.addColorStop(1, "blue");
+
+ctx.fillStyle = gradient;
+ctx.fillRect(40, 40, 500, 100);</code></pre>
+    </section>
+
+    <section class="lesson">
+        <h2>7. 텍스트 출력</h2>
+        <p><code>font</code>로 글꼴을 지정하고 <code>fillText()</code>로 글자를 출력한다. <code>strokeText()</code>는 글자 테두리를 그린다.</p>
+        <canvas id="textCanvas" width="600" height="190"></canvas>
+<pre><code>ctx.font = "bold 32px Arial";
+ctx.fillStyle = "navy";
+ctx.fillText("Hello Canvas!", 45, 75);
+
+ctx.font = "bold 28px Arial";
+ctx.strokeStyle = "tomato";
+ctx.strokeText("JavaScript", 45, 135);</code></pre>
+    </section>
+
+    <section class="lesson">
+        <h2>8. 좌표 이동과 회전</h2>
+        <p><code>save()</code>는 현재 그리기 상태를 저장하고 <code>restore()</code>는 복원한다. <code>translate()</code>로 회전 중심을 옮긴 다음 <code>rotate()</code>를 적용한다.</p>
+        <canvas id="rotateCanvas" width="600" height="220"></canvas>
+<pre><code>ctx.save();
+ctx.translate(300, 110);
+ctx.rotate(Math.PI / 4); // 45도
+ctx.fillStyle = "purple";
+ctx.fillRect(-50, -50, 100, 100);
+ctx.restore();</code></pre>
+        <p class="note">주의: Canvas의 <code>rotate()</code>는 도(degree)가 아니라 라디안(radian)을 사용한다. 45도는 <code>Math.PI / 4</code>다.</p>
+    </section>
+
+    <section class="lesson">
+        <h2>9. 애니메이션: 움직이고 회전하는 사각형</h2>
+        <p>마지막 실습은 사각형이 좌우로 이동하면서 회전하는 애니메이션이다. 매 프레임마다 이전 화면을 지우고 새로운 위치에 다시 그린다.</p>
+        <canvas id="animationCanvas" width="600" height="260"></canvas>
+        <div class="controls">
+            <button id="startBtn">애니메이션 시작</button>
+            <button id="pauseBtn" class="secondary">일시 정지</button>
+            <button id="resetBtn" class="secondary">초기화</button>
+        </div>
+<pre><code>let x = 60;
+let angle = 0;
+let direction = 1;
+let animationId = null;
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(x, 130);
+    ctx.rotate(angle);
+    ctx.fillStyle = "deepskyblue";
+    ctx.fillRect(-30, -30, 60, 60);
+    ctx.restore();
+
+    x += 2 * direction;
+    angle += 0.04;
+
+    if (x &gt; 550 || x &lt; 50) {
+        direction *= -1;
+    }
+
+    animationId = requestAnimationFrame(animate);
+}</code></pre>
+        <p class="small">시작 버튼을 누르면 애니메이션이 실행된다. 일시 정지 후 시작 버튼을 누르면 현재 위치에서 다시 진행한다.</p>
+    </section>
+
+    <section class="lesson">
+        <h2>10. 핵심 문법 요약</h2>
+        <table>
+            <thead><tr><th>분류</th><th>문법</th><th>기능</th></tr></thead>
+            <tbody>
+                <tr><td>초기화</td><td><code>getContext("2d")</code></td><td>2D 그리기 환경 생성</td></tr>
+                <tr><td>사각형</td><td><code>fillRect()</code>, <code>strokeRect()</code></td><td>채운 사각형, 테두리 사각형</td></tr>
+                <tr><td>경로</td><td><code>beginPath()</code>, <code>closePath()</code></td><td>경로 시작과 닫기</td></tr>
+                <tr><td>선</td><td><code>moveTo()</code>, <code>lineTo()</code>, <code>stroke()</code></td><td>선 연결과 표시</td></tr>
+                <tr><td>원</td><td><code>arc()</code></td><td>원호와 원 그리기</td></tr>
+                <tr><td>색상</td><td><code>fillStyle</code>, <code>strokeStyle</code></td><td>채우기와 선 색상</td></tr>
+                <tr><td>텍스트</td><td><code>fillText()</code>, <code>strokeText()</code></td><td>글자 출력</td></tr>
+                <tr><td>변환</td><td><code>translate()</code>, <code>rotate()</code>, <code>scale()</code></td><td>이동, 회전, 크기 변경</td></tr>
+                <tr><td>상태</td><td><code>save()</code>, <code>restore()</code></td><td>그리기 상태 저장과 복원</td></tr>
+                <tr><td>애니메이션</td><td><code>requestAnimationFrame()</code></td><td>다음 화면 프레임 예약</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <div class="note">
+        <strong>확장 과제</strong>
+        <ol>
+            <li>사각형의 색상을 무작위로 바꿔 본다.</li>
+            <li>원과 삼각형에도 회전 애니메이션을 적용한다.</li>
+            <li>반복문으로 여러 개의 사각형을 배치한다.</li>
+            <li>재귀 함수를 이용해 사각형 프랙탈을 구현한다.</li>
+        </ol>
+    </div>
+</main>
+
+<script>
+// 각 예제에서 사용할 Canvas와 2D 컨텍스트를 가져오는 함수
+function getCanvasContext(id) {
+    const canvas = document.getElementById(id);
+    return { canvas, ctx: canvas.getContext("2d") };
+}
+
+// 2. 사각형
+{
+    const { ctx } = getCanvasContext("rectCanvas");
+    ctx.fillStyle = "skyblue";
+    ctx.fillRect(40, 35, 180, 110);
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(270, 35, 180, 110);
+}
+
+// 3. 선
+{
+    const { ctx } = getCanvasContext("lineCanvas");
+    ctx.beginPath();
+    ctx.moveTo(50, 140);
+    ctx.lineTo(180, 35);
+    ctx.lineTo(310, 140);
+    ctx.strokeStyle = "blue";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+}
+
+// 4. 원
+{
+    const { ctx } = getCanvasContext("circleCanvas");
+    ctx.beginPath();
+    ctx.arc(180, 95, 60, 0, Math.PI * 2);
+    ctx.fillStyle = "orange";
+    ctx.fill();
+    ctx.strokeStyle = "#333";
+    ctx.stroke();
+}
+
+// 5. 삼각형
+{
+    const { ctx } = getCanvasContext("triangleCanvas");
+    ctx.beginPath();
+    ctx.moveTo(180, 25);
+    ctx.lineTo(90, 155);
+    ctx.lineTo(270, 155);
+    ctx.closePath();
+    ctx.fillStyle = "gold";
+    ctx.fill();
+    ctx.stroke();
+}
+
+// 6. 그라데이션
+{
+    const { ctx } = getCanvasContext("gradientCanvas");
+    const gradient = ctx.createLinearGradient(40, 0, 540, 0);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(0.5, "yellow");
+    gradient.addColorStop(1, "blue");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(40, 40, 500, 100);
+}
+
+// 7. 텍스트
+{
+    const { ctx } = getCanvasContext("textCanvas");
+    ctx.font = "bold 32px Arial";
+    ctx.fillStyle = "navy";
+    ctx.fillText("Hello Canvas!", 45, 75);
+    ctx.font = "bold 28px Arial";
+    ctx.strokeStyle = "tomato";
+    ctx.strokeText("JavaScript", 45, 135);
+}
+
+// 8. 회전
+{
+    const { ctx } = getCanvasContext("rotateCanvas");
+    ctx.save();
+    ctx.translate(300, 110);
+    ctx.rotate(Math.PI / 4);
+    ctx.fillStyle = "purple";
+    ctx.fillRect(-50, -50, 100, 100);
+    ctx.restore();
+}
+
+// 9. 애니메이션
+{
+    const { canvas, ctx } = getCanvasContext("animationCanvas");
+    let x = 60;
+    let angle = 0;
+    let direction = 1;
+    let animationId = null;
+    let running = false;
+
+    function animate() {
+        if (!running) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 바닥 기준선
+        ctx.beginPath();
+        ctx.moveTo(0, 130);
+        ctx.lineTo(canvas.width, 130);
+        ctx.strokeStyle = "#d5deea";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(x, 130);
+        ctx.rotate(angle);
+        ctx.fillStyle = "deepskyblue";
+        ctx.fillRect(-30, -30, 60, 60);
+        ctx.strokeStyle = "#075985";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(-30, -30, 60, 60);
+        ctx.restore();
+
+        x += 2 * direction;
+        angle += 0.04;
+
+        if (x > 550 || x < 50) {
+            direction *= -1;
+        }
+
+        animationId = requestAnimationFrame(animate);
+    }
+
+    function start() {
+        if (running) return;
+        running = true;
+        animationId = requestAnimationFrame(animate);
+    }
+
+    function pause() {
+        running = false;
+        if (animationId !== null) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+    }
+
+    function reset() {
+        pause();
+        x = 60;
+        angle = 0;
+        direction = 1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "deepskyblue";
+        ctx.fillRect(30, 100, 60, 60);
+    }
+
+    document.getElementById("startBtn").addEventListener("click", start);
+    document.getElementById("pauseBtn").addEventListener("click", pause);
+    document.getElementById("resetBtn").addEventListener("click", reset);
+
+    reset();
+}
+</script>
+</body>
+</html>
