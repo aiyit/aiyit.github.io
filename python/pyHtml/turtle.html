@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Python Turtle 실습 예제 10선</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#243247;font-family:"Noto Sans KR",Arial,sans-serif;line-height:1.7}header{background:linear-gradient(120deg,#102b50,#176b91);color:white;padding:42px 20px;text-align:center}main{max-width:1000px;margin:28px auto;padding:0 16px}.intro,.lesson{background:white;border:1px solid #dce5ef;border-radius:14px;padding:22px;margin-bottom:20px}.lesson h2{color:#145b83;margin-top:0}.meta{color:#55718b;font-size:14px;margin-bottom:12px}pre{white-space:pre-wrap;overflow-x:auto;background:#101c2c;color:#e7f2ff;padding:18px;border-radius:9px;font:14px/1.65 Consolas,monospace}.note{background:#eef7fb;border-left:4px solid #1596bd;padding:10px 14px;margin-top:12px}nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;background:white;padding:12px;position:sticky;top:0}nav a{color:#176b91;text-decoration:none;border:1px solid #dce5ef;border-radius:18px;padding:4px 11px;font-size:13px}footer{text-align:center;color:#718096;padding:25px}</style></head><body><header><h1>🐢 Python Turtle 실습 예제 10선</h1><p>반복문·조건문·함수·난수를 활용한 그래픽 프로그래밍</p></header><nav><a href="#ex1">예제 1</a><a href="#ex2">예제 2</a><a href="#ex3">예제 3</a><a href="#ex4">예제 4</a><a href="#ex5">예제 5</a><a href="#ex6">예제 6</a><a href="#ex7">예제 7</a><a href="#ex8">예제 8</a><a href="#ex9">예제 9</a><a href="#ex10">예제 10</a></nav><main><section class="intro"><h2>실습 안내</h2><p>Turtle은 거북이 커서를 움직여 선과 도형을 그리는 Python 표준 그래픽 모듈이다. 코드를 Jupyter Notebook 또는 로컬 Python 환경에서 실행한다.</p><div class="note"><b>Jupyter 실행 주의:</b> Windows 로컬 Jupyter에서는 먼저 <code>%gui tk</code>를 실행하고 각 예제를 실행한다. GUI 창을 닫은 뒤 Terminator 오류가 발생하면 Kernel → Restart 후 다시 실행한다. 일반 Python 파일에서는 마지막에 <code>turtle.done()</code>을 사용할 수 있다.</div></section><section class="lesson" id="ex1"><h2>예제 1. 정다각형</h2><div class="meta">학습 개념: input(), for 반복문, 각도</div><pre>import turtle
+t = turtle.Turtle()
+n = int(input("몇 각형을 그릴까요? "))  # 변의 개수를 입력받는다.
+length = 100                            # 한 변의 길이를 정한다.
+angle = 360 / n                         # 정다각형의 외각을 계산한다.
+for i in range(n):                      # 변의 개수만큼 반복한다.
+    t.forward(length)                   # 한 변을 그린다.
+    t.right(angle)                      # 외각만큼 회전한다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 3~6각형을 그려보고 모양을 비교한다.</div></section><section class="lesson" id="ex2"><h2>예제 2. 별</h2><div class="meta">학습 개념: 반복문, 회전 각도</div><pre>import turtle
+t = turtle.Turtle()
+t.color("blue")       # 선 색상을 파란색으로 설정한다.
+t.pensize(3)          # 선 굵기를 설정한다.
+for i in range(5):    # 별의 다섯 변을 반복해서 그린다.
+    t.forward(150)    # 앞으로 이동한다.
+    t.right(144)      # 별 모양을 위해 144도 회전한다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 별의 크기와 색상을 변경한다.</div></section><section class="lesson" id="ex3"><h2>예제 3. 나선형</h2><div class="meta">학습 개념: 반복문, 변수 증가</div><pre>import turtle
+t = turtle.Turtle()
+t.speed(0)            # 가장 빠른 속도로 그린다.
+length = 5            # 처음 선의 길이를 지정한다.
+for i in range(80):   # 80번 반복한다.
+    t.forward(length) # 현재 길이만큼 이동한다.
+    t.right(90)       # 오른쪽으로 90도 회전한다.
+    length += 5       # 다음 선의 길이를 5 증가시킨다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 회전 각도를 91도 또는 120도로 변경한다.</div></section><section class="lesson" id="ex4"><h2>예제 4. 동심원</h2><div class="meta">학습 개념: 반복문, 좌표, 색상 리스트</div><pre>import turtle
+t = turtle.Turtle()
+t.speed(0)
+colors = ["red", "orange", "yellow", "green", "blue", "purple"]
+for i in range(6):                 # 6개의 원을 반복해서 그린다.
+    radius = 20 * (i + 1)          # 원의 반지름을 점점 크게 만든다.
+    t.penup()                      # 이동 중 선을 그리지 않는다.
+    t.goto(0, -radius)             # 원의 시작 위치로 이동한다.
+    t.pendown()                    # 다시 선을 그린다.
+    t.color(colors[i])             # 리스트에서 색상을 선택한다.
+    t.circle(radius)               # 지정한 반지름의 원을 그린다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 원의 개수와 반지름 간격을 바꾼다.</div></section><section class="lesson" id="ex5"><h2>예제 5. 꽃</h2><div class="meta">학습 개념: 반복문, 원, 회전</div><pre>import turtle
+t = turtle.Turtle()
+t.speed(0)
+t.color("red")
+for i in range(12):   # 꽃잎 12개를 만든다.
+    t.circle(80)      # 반지름 80인 원을 그린다.
+    t.right(30)       # 다음 꽃잎을 위해 30도 회전한다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 반복 횟수와 회전 각도를 바꾸어 꽃잎 수를 조절한다.</div></section><section class="lesson" id="ex6"><h2>예제 6. 무지개 원형 패턴</h2><div class="meta">학습 개념: 리스트, 나머지 연산, 중첩 반복문</div><pre>import turtle
+t = turtle.Turtle()
+t.speed(0)
+colors = ["red", "orange", "yellow", "green", "blue", "purple"]
+for i in range(36):                         # 전체 패턴을 36회 반복한다.
+    t.color(colors[i % len(colors)])        # 색상을 순환해서 선택한다.
+    for j in range(6):                      # 꽃잎 모양을 6번 그린다.
+        t.circle(60)                        # 원을 그린다.
+        t.right(60)                         # 60도 회전한다.
+    t.right(10)                             # 전체 패턴을 10도 회전한다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 색상 목록에 새로운 색을 추가한다.</div></section><section class="lesson" id="ex7"><h2>예제 7. 집</h2><div class="meta">학습 개념: 함수 정의와 호출, 도형 조합</div><pre>import turtle
+t = turtle.Turtle()
+t.speed(4)
+def draw_body():             # 집의 네모 몸체를 그리는 함수
+    t.color("blue")
+    for i in range(4):
+        t.forward(150)       # 한 변을 그린다.
+        t.right(90)          # 직각으로 회전한다.
+def draw_roof():             # 삼각형 지붕을 그리는 함수
+    t.color("red")
+    t.setheading(0)          # 오른쪽 방향을 기준으로 설정한다.
+    t.left(45)
+    t.forward(106)           # 지붕의 첫 번째 경사면
+    t.right(90)
+    t.forward(106)           # 지붕의 두 번째 경사면
+draw_body()                  # 몸체 함수를 호출한다.
+t.penup()
+t.goto(0, 0)                 # 몸체 왼쪽 위로 이동한다.
+t.pendown()
+draw_roof()                  # 지붕 함수를 호출한다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 문과 창문을 그리는 함수를 추가한다.</div></section><section class="lesson" id="ex8"><h2>예제 8. 랜덤 그림</h2><div class="meta">학습 개념: random 모듈, 난수, 리스트</div><pre>import turtle
+import random                          # 난수 생성 모듈을 불러온다.
+t = turtle.Turtle()
+t.speed(0)
+colors = ["red", "blue", "green", "orange", "purple", "black"]
+angles = [90, 180, 270]                # 회전 각도 후보 목록
+for i in range(100):                   # 100번 무작위로 이동한다.
+    t.color(random.choice(colors))     # 색상을 무작위 선택한다.
+    distance = random.randint(20, 100) # 20~100 사이 정수를 만든다.
+    t.forward(distance)                # 무작위 거리만큼 이동한다.
+    t.right(random.choice(angles))     # 목록에서 각도를 선택해 회전한다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 이동 거리와 반복 횟수를 조정한다.</div></section><section class="lesson" id="ex9"><h2>예제 9. 시계 눈금</h2><div class="meta">학습 개념: 반복문, setheading(), 좌표 이동</div><pre>import turtle
+t = turtle.Turtle()
+t.speed(0)
+for i in range(12):             # 시계 눈금 12개를 만든다.
+    t.penup()                   # 중심으로 이동할 때 선을 남기지 않는다.
+    t.goto(0, 0)                # 시계 중심으로 이동한다.
+    t.setheading(i * 30)        # 30도 간격으로 방향을 설정한다.
+    t.forward(100)              # 중심에서 바깥으로 이동한다.
+    t.pendown()
+    t.forward(15)               # 짧은 눈금 선을 그린다.
+    t.penup()
+    t.backward(115)             # 중심으로 돌아간다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 숫자 1~12와 시침·분침을 추가한다.</div></section><section class="lesson" id="ex10"><h2>예제 10. 만다라</h2><div class="meta">학습 개념: 중첩 반복문, 색상 순환, 패턴</div><pre>import turtle
+t = turtle.Turtle()
+t.speed(0)
+t.pensize(2)
+colors = ["red", "blue", "green", "orange", "purple", "cyan"]
+for i in range(36):                         # 바깥쪽 패턴을 반복한다.
+    t.color(colors[i % len(colors)])        # 색상을 순서대로 선택한다.
+    for j in range(6):                      # 꽃잎 6개를 그린다.
+        t.circle(60)                        # 원을 그려 꽃잎을 만든다.
+        t.right(60)                         # 다음 꽃잎 방향으로 회전한다.
+    t.right(10)                             # 전체 모양을 10도 회전한다.
+turtle.done()</pre><div class="note"><b>응용 실습:</b> 원 크기와 색상, 반복 횟수를 바꾸어 나만의 패턴을 만든다.</div></section><section class="intro"><h2>학습 정리</h2><ol><li>기초: 정다각형, 별, 나선형으로 반복문과 각도를 익힌다.</li><li>응용: 동심원, 꽃, 무지개, 집으로 색상·리스트·함수를 활용한다.</li><li>창작: 랜덤 그림, 시계, 만다라로 여러 문법을 결합한다.</li></ol></section></main><footer>Python Turtle Graphics · AI Software Department</footer></body></html>
