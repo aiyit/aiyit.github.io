@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Java 프로그래밍 이론 학습</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Noto Sans KR',sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.75}.hero{background:linear-gradient(125deg,#10243b,#1769aa,#0e8997)}.card{background:white;border:1px solid #dbe3ee;border-radius:16px;padding:22px;box-shadow:0 5px 18px #10243b08}h2{font-size:1.35rem;font-weight:800;color:#0f3554;margin-bottom:14px}h3{font-weight:800;color:#075985;margin:18px 0 8px}pre{background:#10243b;color:#d9f4ff;padding:16px;border-radius:12px;overflow-x:auto;font-size:.9rem;line-height:1.6;margin:10px 0}code{background:#eaf2f8;padding:2px 5px;border-radius:5px;color:#075985}table{width:100%;border-collapse:collapse;font-size:.92rem;margin:10px 0}th,td{border:1px solid #dbe3ee;padding:9px;text-align:left}th{background:#eaf4fb}
+</style></head><body>
+<header class="hero text-white px-5 py-11"><div class="max-w-5xl mx-auto"><a href="theory.html" class="inline-block text-sm bg-white/15 border border-white/30 rounded-lg px-3 py-2 mb-5">← 과목별 이론 목록</a><p class="text-cyan-100 text-sm font-bold tracking-widest">JAVA PROGRAMMING</p><h1 class="text-3xl md:text-4xl font-extrabold mt-2">Java 프로그래밍 이론</h1><p class="text-blue-100 mt-3">객체지향 프로그래밍의 핵심 원리와 Java 문법을 예제 중심으로 학습한다.</p></div></header>
+<main class="max-w-5xl mx-auto px-5 py-9 space-y-6">
+<section class="card"><h2>1. Java와 실행 환경</h2><p>Java는 객체지향 프로그래밍 언어다. 소스 코드를 바이트코드로 컴파일하고 JVM(Java Virtual Machine)에서 실행하므로 운영체제에 독립적인 실행 환경을 제공한다.</p>
+<table><tr><th>구성 요소</th><th>역할</th></tr><tr><td>JDK</td><td>Java 개발 도구 모음. 컴파일러와 실행 도구 등을 포함한다.</td></tr><tr><td>JRE</td><td>Java 프로그램 실행에 필요한 라이브러리와 실행 환경을 제공하는 개념</td></tr><tr><td>JVM</td><td>바이트코드를 실행하는 가상 머신</td></tr><tr><td>javac</td><td>.java 소스 파일을 .class 바이트코드로 컴파일</td></tr><tr><td>java</td><td>클래스의 main 메서드 등을 실행</td></tr></table>
+<pre>// Hello.java
+public class Hello {
+    public static void main(String[] args) {
+        System.out.println("Hello, Java!");
+    }
+}</pre><p>실행 흐름: <b>Hello.java → javac 컴파일 → Hello.class → JVM 실행</b></p></section>
+<section class="card"><h2>2. 기본 문법과 자료형</h2><p>Java는 변수의 자료형을 명시하는 정적 타입 언어다. 기본 자료형(primitive type)과 참조 자료형(reference type)을 구분한다.</p>
+<table><tr><th>분류</th><th>자료형</th><th>설명</th></tr><tr><td>정수</td><td>byte, short, int, long</td><td>정수 저장. long 리터럴은 보통 L을 붙인다.</td></tr><tr><td>실수</td><td>float, double</td><td>실수 저장. float 리터럴은 F를 붙인다.</td></tr><tr><td>문자</td><td>char</td><td>하나의 문자 저장</td></tr><tr><td>논리</td><td>boolean</td><td>true 또는 false</td></tr><tr><td>참조</td><td>String, 배열, 클래스 등</td><td>객체를 참조하는 값</td></tr></table>
+<pre>int age = 20;
+double score = 95.5;
+char grade = 'A';
+boolean passed = true;
+String name = "민수";
+
+System.out.println(name + " : " + score);</pre>
+<h3>형 변환</h3><p>작은 범위의 자료형에서 큰 범위로 변환하는 확대 형 변환은 일반적으로 자동 처리된다. 큰 범위에서 작은 범위로 변환하는 축소 형 변환은 명시적 캐스팅이 필요하며 데이터 손실에 주의한다.</p><pre>int n = 10;
+double d = n;          // 자동 형 변환
+double pi = 3.14;
+int value = (int) pi;  // 명시적 형 변환: 3</pre></section>
+<section class="card"><h2>3. 연산자와 제어문</h2>
+<table><tr><th>연산자</th><th>종류와 예</th></tr><tr><td>산술</td><td>+ - * / %</td></tr><tr><td>비교</td><td>== != &gt; &lt; &gt;= &lt;=</td></tr><tr><td>논리</td><td>&amp;&amp; || !</td></tr><tr><td>대입</td><td>= += -= *= /=</td></tr><tr><td>증감</td><td>++ --</td></tr><tr><td>조건</td><td>조건식 ? 값1 : 값2</td></tr></table>
+<h3>조건문</h3><pre>int score = 85;
+if (score >= 90) {
+    System.out.println("A");
+} else if (score >= 80) {
+    System.out.println("B");
+} else {
+    System.out.println("C 이하");
+}
+
+int day = 2;
+switch (day) {
+    case 1: System.out.println("월요일"); break;
+    case 2: System.out.println("화요일"); break;
+    default: System.out.println("기타");
+}</pre>
+<h3>반복문</h3><pre>for (int i = 1; i <= 5; i++) {
+    System.out.println(i);
+}
+
+int count = 1;
+while (count <= 3) {
+    System.out.println(count++);
+}
+
+for (int value : new int[]{10, 20, 30}) {
+    System.out.println(value);
+}</pre><p><code>break</code>는 반복문이나 switch를 종료하고, <code>continue</code>는 현재 반복의 나머지를 건너뛰고 다음 반복으로 이동한다.</p></section>
+<section class="card"><h2>4. 배열과 문자열</h2><p>배열은 같은 자료형의 여러 값을 연속된 인덱스로 관리한다. 인덱스는 0부터 시작하며 생성 후 길이를 변경할 수 없다.</p><pre>int[] scores = {90, 80, 95};
+System.out.println(scores[0]); // 90
+System.out.println(scores.length); // 3
+
+int sum = 0;
+for (int s : scores) sum += s;
+System.out.println("평균: " + (sum / (double)scores.length));</pre>
+<p>2차원 배열은 행과 열 형태의 배열이다.</p><pre>int[][] matrix = {
+    {1, 2, 3},
+    {4, 5, 6}
+};
+System.out.println(matrix[1][2]); // 6</pre>
+<h3>String 주요 메서드</h3><table><tr><th>메서드</th><th>기능</th></tr><tr><td>length()</td><td>문자열 길이</td></tr><tr><td>charAt(index)</td><td>해당 위치 문자</td></tr><tr><td>substring(a, b)</td><td>a부터 b 직전까지 추출</td></tr><tr><td>equals()</td><td>문자열 내용 비교</td></tr><tr><td>contains()</td><td>특정 문자열 포함 여부</td></tr><tr><td>toUpperCase()</td><td>대문자로 변환한 새 문자열 반환</td></tr></table><p>문자열 내용 비교에는 <code>==</code>보다 <code>equals()</code>를 사용한다. String은 불변(immutable) 객체다.</p></section>
+<section class="card"><h2>5. 클래스와 객체</h2><p>클래스는 객체를 만들기 위한 설계도이며, 객체는 클래스에 따라 생성된 실체다. 필드는 상태를, 메서드는 동작을 표현한다.</p><pre>class Student {
+    String name;
+    int score;
+
+    void introduce() {
+        System.out.println(name + "의 점수: " + score);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Student s = new Student();
+        s.name = "지민";
+        s.score = 92;
+        s.introduce();
+    }
+}</pre>
+<h3>생성자와 this</h3><p>생성자는 객체 생성 시 초기화를 담당하며 클래스 이름과 같고 반환형을 쓰지 않는다. <code>this</code>는 현재 객체를 가리킨다.</p><pre>class Book {
+    String title;
+    Book(String title) {
+        this.title = title;
+    }
+}</pre>
+<h3>접근 제한자</h3><table><tr><th>제한자</th><th>접근 범위(개념)</th></tr><tr><td>private</td><td>같은 클래스 내부</td></tr><tr><td>default</td><td>같은 패키지</td></tr><tr><td>protected</td><td>같은 패키지 및 다른 패키지의 하위 클래스 등</td></tr><tr><td>public</td><td>어디서나 접근 가능(모듈 등 별도 제한 제외)</td></tr></table></section>
+<section class="card"><h2>6. 객체지향의 4대 특징</h2>
+<table><tr><th>특징</th><th>핵심 개념</th><th>예시</th></tr><tr><td>캡슐화</td><td>데이터와 메서드를 묶고 내부 상태를 보호</td><td>private 필드와 public getter/setter</td></tr><tr><td>상속</td><td>기존 클래스의 특성을 하위 클래스가 확장</td><td>class Dog extends Animal</td></tr><tr><td>다형성</td><td>같은 타입의 참조가 실제 객체에 따라 다른 동작</td><td>메서드 오버라이딩</td></tr><tr><td>추상화</td><td>핵심 기능만 드러내고 세부 구현을 감춤</td><td>abstract class, interface</td></tr></table>
+<h3>상속과 오버라이딩</h3><pre>class Animal {
+    void sound() { System.out.println("소리"); }
+}
+class Dog extends Animal {
+    @Override
+    void sound() { System.out.println("멍멍"); }
+}
+Animal a = new Dog();
+a.sound(); // 멍멍</pre>
+<p><b>오버로딩</b>은 같은 이름의 메서드를 매개변수 목록을 다르게 하여 여러 개 정의하는 것이고, <b>오버라이딩</b>은 하위 클래스가 상위 클래스의 메서드 구현을 재정의하는 것이다.</p></section>
+<section class="card"><h2>7. 추상 클래스와 인터페이스</h2><p>추상 클래스는 직접 객체화할 수 없으며 공통 상태와 구현을 공유할 수 있다. 인터페이스는 구현 클래스가 제공해야 할 동작의 계약을 정의한다. Java의 인터페이스에는 추상 메서드 외에도 default, static 메서드 등이 존재한다.</p><pre>interface Flyable {
+    void fly();
+}
+class Bird implements Flyable {
+    public void fly() {
+        System.out.println("날아간다");
+    }
+}
+
+abstract class Shape {
+    abstract double area();
+}
+class Circle extends Shape {
+    double radius;
+    Circle(double radius) { this.radius = radius; }
+    double area() { return Math.PI * radius * radius; }
+}</pre>
+<p>클래스는 하나의 클래스를 상속(extends)하지만 여러 인터페이스를 구현(implements)할 수 있다.</p></section>
+<section class="card"><h2>8. 예외 처리</h2><p>예외(Exception)는 프로그램 실행 중 발생하는 비정상 상황이다. try-catch-finally로 예외를 처리하고 throw로 예외를 발생시키며 throws로 호출자에게 예외 처리를 위임한다고 선언한다.</p><pre>try {
+    int result = 10 / 0;
+    System.out.println(result);
+} catch (ArithmeticException e) {
+    System.out.println("0으로 나눌 수 없다.");
+} finally {
+    System.out.println("항상 실행되는 정리 구문");
+}</pre>
+<table><tr><th>구분</th><th>특징</th></tr><tr><td>Checked Exception</td><td>컴파일 시점에 처리 또는 선언을 요구하는 예외 계열</td></tr><tr><td>Unchecked Exception</td><td>RuntimeException 계열 등 컴파일러가 처리 선언을 강제하지 않는 예외</td></tr><tr><td>Error</td><td>일반 애플리케이션이 보통 복구 대상으로 다루지 않는 심각한 문제</td></tr></table></section>
+<section class="card"><h2>9. 컬렉션 프레임워크와 제네릭</h2><p>컬렉션 프레임워크는 객체들을 저장하고 관리하기 위한 인터페이스와 클래스 모음이다.</p>
+<table><tr><th>종류</th><th>특징</th><th>대표 구현</th></tr><tr><td>List</td><td>순서가 있고 중복 허용</td><td>ArrayList, LinkedList</td></tr><tr><td>Set</td><td>중복 원소를 허용하지 않음</td><td>HashSet, TreeSet</td></tr><tr><td>Queue</td><td>대기열 구조, 처리 순서는 구현에 따라 다름</td><td>ArrayDeque, PriorityQueue</td></tr><tr><td>Map</td><td>키와 값의 쌍으로 저장, 키 중복 불가</td><td>HashMap, TreeMap</td></tr></table>
+<pre>import java.util.*;
+
+List<String> names = new ArrayList<>();
+names.add("민수");
+names.add("지민");
+names.add("민수");
+
+for (String name : names) {
+    System.out.println(name);
+}
+
+Map<String, Integer> scores = new HashMap<>();
+scores.put("민수", 90);
+System.out.println(scores.get("민수"));</pre>
+<p><b>제네릭(Generic)</b>은 자료형을 매개변수처럼 지정해 컴파일 시 타입 안정성을 높이는 기능이다. 예: <code>List&lt;String&gt;</code>.</p></section>
+<section class="card"><h2>10. static, final, 람다 기초</h2><p><code>static</code> 멤버는 객체가 아니라 클래스에 속한다. <code>final</code> 변수는 재할당할 수 없고, final 메서드는 오버라이딩할 수 없으며, final 클래스는 상속할 수 없다.</p><pre>class Counter {
+    static int count = 0;
+    Counter() { count++; }
+}
+final double TAX_RATE = 0.1;</pre>
+<p>람다식은 함수형 인터페이스의 동작을 간결하게 표현한다.</p><pre>List<Integer> nums = Arrays.asList(1, 2, 3, 4);
+nums.forEach(n -> System.out.println(n * 2));</pre></section>
+<section class="card"><h2>11. 핵심 확인 문제</h2>
+<div class="space-y-5">
+<div><p class="font-bold">문제 1. Java 소스 코드를 바이트코드로 컴파일하는 도구는?</p><label class="block"><input type="radio" name="q1" value="a"> JVM</label><label class="block"><input type="radio" name="q1" value="b"> javac</label><label class="block"><input type="radio" name="q1" value="c"> java</label></div>
+<div><p class="font-bold">문제 2. 문자열의 내용이 같은지 비교할 때 사용하는 메서드는?</p><label class="block"><input type="radio" name="q2" value="a"> equals()</label><label class="block"><input type="radio" name="q2" value="b"> length()</label><label class="block"><input type="radio" name="q2" value="c"> charAt()</label></div>
+<div><p class="font-bold">문제 3. 중복 원소를 허용하지 않는 컬렉션 인터페이스는?</p><label class="block"><input type="radio" name="q3" value="a"> List</label><label class="block"><input type="radio" name="q3" value="b"> Map</label><label class="block"><input type="radio" name="q3" value="c"> Set</label></div>
+<div><p class="font-bold">문제 4. 하위 클래스에서 상위 클래스 메서드를 재정의하는 것은?</p><label class="block"><input type="radio" name="q4" value="a"> 오버로딩</label><label class="block"><input type="radio" name="q4" value="b"> 오버라이딩</label><label class="block"><input type="radio" name="q4" value="c"> 형 변환</label></div>
+<button onclick="grade()" class="bg-sky-700 hover:bg-sky-800 text-white font-bold px-5 py-2 rounded-lg">정답 확인</button><p id="result" class="font-bold" aria-live="polite"></p>
+</div></section>
+<footer class="text-center text-sm text-slate-500 pb-10">정보처리산업기사 Java 프로그래밍 학습 자료</footer></main>
+<script>
+function grade(){const key={q1:'b',q2:'a',q3:'c',q4:'b'};let n=0;for(const [q,a] of Object.entries(key)){const x=document.querySelector('input[name="'+q+'"]:checked');if(x&&x.value===a)n++;}document.getElementById('result').textContent='4문제 중 '+n+'문제 정답 · '+(n===4?'모두 정답!':'오답 내용을 다시 학습하자.');}
+</script></body></html>
