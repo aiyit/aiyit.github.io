@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>반도체 진공펌프 3D 실습실</title>
+<style>
+:root{--fg:#e8eef4;--bg:rgba(18,24,31,.88);--bd:#34424f;--ac:#3fb4ff;--ok:#3ddc84;--wr:#ffb020;--er:#ff5a5a;color-scheme:dark}
+html,body{margin:0;height:100%;overflow:hidden;background:#1a2128;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:var(--fg)}
+canvas{display:block;touch-action:none}
+.card{position:fixed;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5;backdrop-filter:blur(6px)}
+#st{top:calc(10px + env(safe-area-inset-top,0px));left:10px;width:min(250px,44vw)}
+#gd{top:calc(10px + env(safe-area-inset-top,0px));right:10px;width:min(270px,46vw);max-height:42vh;overflow:auto}
+#bt{bottom:calc(10px + env(safe-area-inset-bottom,0px));left:10px;right:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+h3{margin:0 0 4px;font-size:13px;color:var(--ac)}
+.row{display:flex;justify-content:space-between}
+.ok{color:var(--ok)}.wr{color:var(--wr)}.er{color:var(--er)}.dn{color:var(--ok)}
+button{background:#22303c;color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}
+button.f{border-color:#7a3a3a}
+#msg{position:fixed;left:50%;transform:translateX(-50%);top:calc(60px + env(safe-area-inset-top,0px));background:rgba(0,0,0,.8);border:1px solid var(--bd);padding:8px 14px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:80vw;text-align:center}
+@media(max-width:600px){.card{font-size:11px}}
+</style></head><body>
+<div class="card" id="st"><h3>펌프 상태</h3>
+<div class="row"><span>압력</span><b id="vp">-</b></div><div class="row"><span>온도</span><b id="vt">-</b></div>
+<div class="row"><span>펌프</span><b id="vm">-</b></div><div class="row"><span>부스터</span><b id="vb">-</b></div>
+<div id="va" class="er"></div></div>
+<div class="card" id="gd"><h3>기동 절차 (3D 부품을 클릭)</h3><div id="steps"></div><div id="fg"></div></div>
+<div class="card" id="bt"><b style="font-size:12px">고장 체험:</b>
+<button class="f" onclick="inject('water')">냉각수 차단</button><button class="f" onclick="inject('n2')">N₂ 퍼지 중단</button><button class="f" onclick="inject('exh')">배기 막힘</button><button class="f" onclick="inject('power')">정전</button>
+<b style="font-size:12px;margin-left:6px">시점:</b><button onclick="view(0)">전체</button><button onclick="view(1)">조작부</button><button onclick="view(2)">배관</button></div>
+<div id="msg"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));document.body.appendChild(R.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x1a2128);
+const cam=new THREE.PerspectiveCamera(50,1,.1,60);
+const M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6,metalness:.1},o||{}));
+const clk=[];
+function box(w,h,d,mat,x,y,z,p){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);(p||scene).add(m);return m}
+function cyl(r,h,mat,x,y,z,p,ax){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,24),mat);m.position.set(x,y,z);if(ax=='x')m.rotation.z=Math.PI/2;if(ax=='z')m.rotation.x=Math.PI/2;(p||scene).add(m);return m}
+function tube(a,b,r,mat){const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A);const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d.length(),14),mat);m.position.copy(A).add(B).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());scene.add(m);return m}
+function label(t,w,h,x,y,z,p,ry){const c=document.createElement('canvas');c.width=256;c.height=Math.round(256*h/w);const g=c.getContext('2d');g.fillStyle='rgba(255,255,255,.92)';g.fillRect(0,0,c.width,c.height);g.fillStyle='#111';g.font='bold '+Math.round(c.height*.5)+'px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(t,c.width/2,c.height/2);const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c)}));m.position.set(x,y,z);m.rotation.y=ry||0;(p||scene).add(m)}
+function act(m,a){m.userData.act=a;clk.push(m);return m}
+// lights
+scene.add(new THREE.HemisphereLight(0xffffff,0x556070,.5));
+const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(3,6,4);scene.add(dl);
+(function(){const e=new THREE.Scene(),bg=new THREE.Mesh(new THREE.BoxGeometry(20,10,20),new THREE.MeshBasicMaterial({color:0x7d8d9d,side:THREE.BackSide}));e.add(bg);[[0,4.8,0,8,.2,8],[-9.8,2,0,.2,4,10],[9.8,2,0,.2,4,10],[0,2,-9.8,10,4,.2]].forEach(p=>{const l=new THREE.Mesh(new THREE.BoxGeometry(p[3],p[4],p[5]),new THREE.MeshBasicMaterial({color:0xffffff}));l.position.set(p[0],p[1],p[2]);e.add(l)});scene.environment=new THREE.PMREMGenerator(R).fromScene(e,.02).texture})();
+function rr(w,h,r){const s=new THREE.Shape(),x=-w/2,y=-h/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s}
+function rbox(w,h,d,mat,x,y,z,p){const t=.015,dp=d-2*t,g=new THREE.ExtrudeGeometry(rr(w-2*t,h-2*t,.05),{depth:dp,bevelEnabled:true,bevelThickness:t,bevelSize:t,bevelSegments:3});g.translate(0,0,-dp/2);const m=new THREE.Mesh(g,mat);m.position.set(x,y,z);(p||scene).add(m);return m}
+// room
+const fl=new THREE.Mesh(new THREE.PlaneGeometry(8,8),M(0x9aa4ae,{roughness:.4}));fl.rotation.x=-Math.PI/2;scene.add(fl);
+scene.add(new THREE.GridHelper(8,16,0x7d8893,0x7d8893));
+const wm=M(0xdfe6ec,{side:THREE.DoubleSide});
+box(8,3.2,.1,wm,0,1.6,-3.5);box(.1,3.2,8,wm,-3.5,1.6,0);box(.1,3.2,8,wm,3.5,1.6,0);box(8,3.2,.1,wm,0,1.6,3.5);box(8,.1,8,wm,0,3.25,0);[-1.8,0,1.8].forEach(x=>box(1.2,.03,5,new THREE.MeshBasicMaterial({color:0xffffff}),x,3.18,0));
+box(8,.12,.12,M(0x3b82c4),0,.5,-3.44);
+// tool (process equipment)
+const tm=M(0x3b5b7a);box(2.4,2.2,1.2,tm,.5,1.1,-2.8);box(1.2,.6,.02,M(0x66ccff,{emissive:0x2277aa}),.5,1.5,-2.19);
+label('ETCH 공정장비',1.2,.22,.5,.9,-2.19);
+// pump
+const P=new THREE.Group();scene.add(P);
+const W=M(0xf2f4f7,{roughness:.22,metalness:.6}),G=M(0x8a9199),D=M(0x1d2329,{roughness:.35,metalness:.7}),Gy=M(0xa3acb4,{roughness:.25,metalness:.95});
+rbox(1.6,.8,.7,W,0,.55,0,P);box(1.62,.2,.72,M(0x8d97a1,{roughness:.25,metalness:.9}),0,.35,0,P);box(1.64,.025,.74,Gy,0,.955,0,P);box(1.64,.025,.74,Gy,0,.16,0,P);label('iQDP 40',.3,.07,.42,.62,.352,P);
+box(.16,.12,.74,M(0xd8333a),.45,.7,0,P);
+[[-.7,.1,.28],[.7,.1,.28],[-.7,.1,-.28],[.7,.1,-.28]].forEach(p=>cyl(.05,.06,D,p[0],p[1],p[2],P));
+// booster
+const bm=M(0xb9c0c8,{roughness:.28,metalness:.85});
+const bo=rbox(.55,.3,.38,bm,.4,1.1,0,P);
+const mt=cyl(.15,.6,bm,-.2,1.12,0,P,'x');
+cyl(.17,.04,D,-.52,1.12,0,P,'x');for(let i=0;i<6;i++)cyl(.162,.02,Gy,-.42+i*.1,1.12,0,P,'x');
+const fan=box(.02,.22,.04,M(0xcccccc),-.55,1.12,0,P);
+cyl(.1,.2,Gy,.4,1.35,0,P);const fg=cyl(.14,.04,Gy,.4,1.46,0,P);
+box(.12,.05,.06,M(0xffc400),-.35,1.28,.08,P);
+// control panel
+box(.62,.56,.02,M(0x2c3640),-.45,.55,.36,P);
+const sc=document.createElement('canvas');sc.width=256;sc.height=140;const sx=sc.getContext('2d'),stx=new THREE.CanvasTexture(sc);
+box(.34,.19,.01,new THREE.MeshBasicMaterial({map:stx}),-.45,.7,.375,P);
+function btn(col,x,y,a,t){const m=cyl(.035,.03,M(col,{emissive:col,emissiveIntensity:.15}),x,y,.385,P,'z');act(m,a);label(t,.11,.035,x,y-.065,.372,P);return m}
+const eb=btn(0xd32020,-.65,.5,'estop','E-STOP');eb.scale.set(1.5,1,1.5);
+btn(0x1fa84f,-.5,.5,'start','START');btn(0xf2f2f2,-.37,.5,'reset','RESET');btn(0xff8a00,-.24,.5,'boost','BOOST');
+function valve(col,x,t,a){const g=new THREE.Group();g.position.set(x,.33,.385);P.add(g);const b=cyl(.04,.04,M(col),0,0,0,g,'z');act(b,a);const bar=box(.11,.025,.025,M(col),0,0,.03,g);act(bar,a);label(t,.15,.04,x,.25,.372,P);return bar}
+const vw=valve(0xe0b000,-.6,'냉각수','water'),vn=valve(0x2a7de1,-.38,'N₂ 퍼지','n2');
+// light tower
+const lt=[0x00ff66,0xffcc00,0xff2020].map((c,i)=>cyl(.05,.09,M(c,{emissive:c,emissiveIntensity:0}),-.72,1.05+i*.1,-.2,P));
+// exhaust pipe + clog
+const ex=act(tube([.8,.3,-.28],[3.45,.3,-.28],.07,M(0x889099,{metalness:.5})),'exh');
+label('배기(Exhaust)',.5,.12,2.6,.55,-.28);
+const clog=box(.35,.2,.2,M(0x5a3a1a),2,.3,-.28);clog.visible=false;
+// foreline
+const fm=M(0xb7bec6,{metalness:.6});
+[[.4,1.46,0,.4,2.3,0],[.4,2.3,0,.4,2.3,-2.2],[.4,2.3,-2.2,.4,1.6,-2.2]].forEach(p=>tube(p.slice(0,3),p.slice(3),.07,fm));
+label('포어라인 → 공정챔버',.9,.12,.4,2.45,-1.1);
+// breaker (left wall)
+box(.08,.5,.35,M(0x555d66),-3.42,1.4,.4);
+const lv=act(box(.06,.22,.06,M(0xd32020),-3.35,1.4,.4),'power');
+label('주전원 차단기',.4,.1,-3.36,1.75,.4,null,Math.PI/2);
+// camera/orbit
+let th=.6,ph=1.25,rad=4.6;const tg=new THREE.Vector3(0,.8,0);
+const V=[[.6,1.25,4.6,0,.8,0],[.1,1.4,2.2,-.45,.6,0],[1.2,1.2,5.2,.4,1.4,-1]];
+function view(i){const v=V[i];th=v[0];ph=v[1];rad=v[2];tg.set(v[3],v[4],v[5])}
+function cm(){cam.position.set(tg.x+rad*Math.sin(ph)*Math.sin(th),tg.y+rad*Math.cos(ph),tg.z+rad*Math.sin(ph)*Math.cos(th));const q=cam.position;q.x=Math.max(-3.2,Math.min(3.2,q.x));q.z=Math.max(-3.2,Math.min(3.2,q.z));q.y=Math.max(.3,Math.min(2.9,q.y));cam.lookAt(tg)}
+function rs(){R.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+let dn=null,mv=0;const rc=new THREE.Raycaster();
+R.domElement.addEventListener('pointerdown',e=>{dn=[e.clientX,e.clientY];mv=0});
+addEventListener('pointermove',e=>{if(!dn)return;const dx=e.clientX-dn[0],dy=e.clientY-dn[1];mv+=Math.abs(dx)+Math.abs(dy);th-=dx*.006;ph=Math.min(1.6,Math.max(.3,ph-dy*.006));dn=[e.clientX,e.clientY]});
+addEventListener('pointerup',e=>{if(dn&&mv<6&&e.target===R.domElement){rc.setFromCamera(new THREE.Vector2(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1),cam);const h=rc.intersectObjects(clk,false)[0];if(h)doAct(h.object.userData.act)}dn=null});
+R.domElement.addEventListener('wheel',e=>{rad=Math.min(5.5,Math.max(1.3,rad+e.deltaY*.003));e.preventDefault()},{passive:false});
+// state
+const S={power:false,water:false,n2:false,pump:false,boost:false,estop:false,exh:false,p:1013,t:25,alarm:null,fault:null,tt:0};
+let mt_=0;function msg(t){const m=$('msg');m.textContent=t;m.style.opacity=1;clearTimeout(mt_);mt_=setTimeout(()=>m.style.opacity=0,2800)}
+function off(){S.pump=false;S.boost=false}
+function doAct(a){
+ if(a=='power'){S.power=!S.power;if(!S.power)off();msg(S.power?'주전원 차단기 ON':'주전원 차단기 OFF')}
+ else if(a=='water'){S.water=!S.water;msg(S.water?'냉각수 밸브 열림':'냉각수 밸브 닫힘')}
+ else if(a=='n2'){S.n2=!S.n2;msg(S.n2?'N₂ 퍼지 밸브 열림':'N₂ 퍼지 밸브 닫힘')}
+ else if(a=='estop'){S.estop=!S.estop;if(S.estop){off();msg('비상정지! 펌프 정지 (다시 클릭하면 해제)')}else msg('비상정지 해제')}
+ else if(a=='start'){
+  if(S.pump)return msg('이미 가동 중입니다');
+  if(!S.power)return msg('인터록: 주전원이 꺼져 있습니다 → 차단기 ON');
+  if(S.estop)return msg('인터록: E-STOP이 눌려 있습니다 → 해제');
+  if(S.alarm)return msg('알람 상태입니다 → 원인 제거 후 RESET');
+  if(!S.water)return msg('인터록: 냉각수 미공급 → 냉각수 밸브 열기');
+  if(!S.n2)return msg('인터록: N₂ 퍼지 없음 → N₂ 밸브 열기');
+  S.pump=true;msg('드라이펌프 기동! 배기 시작')}
+ else if(a=='boost'){
+  if(S.boost){S.boost=false;return msg('부스터 정지')}
+  if(!S.pump)return msg('먼저 메인 펌프(START)를 기동하세요');
+  if(S.p>20)return msg('부스터는 약 20 mbar 이하에서 기동합니다 (현재 압력이 높음)');
+  S.boost=true;msg('부스터 기동 — 고진공 영역으로')}
+ else if(a=='exh'){
+  if(!S.exh)return msg('배기 배관: 이상 없음');
+  if(S.pump)return msg('안전: 펌프 정지 후 배관 작업! (E-STOP)');
+  S.exh=false;msg('배기 배관 막힘 제거 완료')}
+ else if(a=='reset'){
+  if(!S.alarm)return msg('알람 없음');
+  const f=S.fault,why=f=='water'?(!S.water?'냉각수 밸브를 여세요':S.t>=50?'온도 50℃ 이하로 냉각될 때까지 대기':''):f=='n2'?(!S.n2?'N₂ 밸브를 여세요':''):f=='exh'?(S.exh?'배기 배관 막힘을 먼저 제거하세요':''):f=='power'?(!S.power?'차단기를 올리세요':''):'';
+  if(why)return msg('RESET 불가: '+why);
+  S.alarm=null;S.fault=null;S.tt=0;msg('알람 해제 — START로 재기동')}
+}
+const GD={water:'① 냉각수 밸브 열기 ② 온도 50℃ 이하까지 냉각 대기 ③ RESET ④ START 재기동',n2:'① N₂ 퍼지 밸브 열기 ② RESET ③ START 재기동',exh:'① 펌프 정지 확인(E-STOP) ② 빨간 배기 배관 클릭해 막힘 제거 ③ E-STOP 해제 ④ RESET ⑤ 재기동',power:'① 벽면 주전원 차단기 ON ② RESET ③ START → 부스터 순으로 재기동'};
+function inject(f){
+ if(!S.pump)return msg('펌프 가동 중에 체험할 수 있습니다. 먼저 기동하세요');
+ if(S.alarm)return msg('이미 알람 상태입니다');
+ S.fault=f;
+ if(f=='water'){S.water=false;S.alarm='냉각수 공급 중단 · 온도 상승'}
+ if(f=='n2'){S.n2=false;S.alarm='N₂ 퍼지 유량 저하';S.tt=8}
+ if(f=='exh'){S.exh=true;S.alarm='배기압 과다 (배관 막힘)';S.tt=5}
+ if(f=='power'){S.power=false;off();S.alarm='주전원 차단 (정전)'}
+ msg('⚠ '+S.alarm)}
+const ST=['① 주전원 차단기 ON (왼쪽 벽)','② 냉각수 밸브 열기 (노란 손잡이)','③ N₂ 퍼지 밸브 열기 (파란 손잡이)','④ START 버튼 (녹색)','⑤ BOOST 버튼 (≤20 mbar)','⑥ 목표 압력 0.1 mbar 이하 도달'];
+const fmt=p=>p>=10?p.toFixed(0)+' mbar':p>=1?p.toFixed(1)+' mbar':p.toExponential(1)+' mbar';
+let last=performance.now(),acc=0,bl=0;
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.1,(now-last)/1e3);last=now;
+ if(S.pump){const k=S.boost?1.1:.55,fl=S.boost?.002:.03;S.p=Math.max(fl,S.p*Math.exp(-dt*k))}else S.p+=(1013-S.p)*(1-Math.exp(-dt*.12));
+ const heat=S.pump?(S.boost?4:2.5):0;S.t+=(heat-(S.t-22)*(S.water?.12:.01))*dt;
+ if(S.fault&&S.pump){if(S.tt>0){S.tt-=dt;if(S.tt<=0){off();S.alarm+=' → 펌프 트립'}}if(S.t>=85){off();S.alarm='과온 → 펌프 트립'}}
+ const run=S.pump;
+ vw.rotation.z=S.water?0:Math.PI/2;vn.rotation.z=S.n2?0:Math.PI/2;lv.position.y=S.power?1.45:1.35;lv.material.color.set(S.power?0x20c060:0xd32020);
+ eb.position.z=S.estop?.37:.385;clog.visible=S.exh;
+ if(run){P.position.y=Math.sin(now/30)*.0015;fan.rotation.x+=dt*(S.boost?40:15)}else P.position.y=0;
+ const hot=Math.min(1,Math.max(0,(S.t-40)/45));bm.color.setRGB(.5+hot*.5,.52-hot*.3,.56-hot*.35);
+ bl=Math.floor(now/350)%2;
+ lt[0].material.emissiveIntensity=run&&!S.alarm?1:0;lt[1].material.emissiveIntensity=(!run&&S.power&&!S.alarm)||(S.alarm&&S.t>60)?1:0;lt[2].material.emissiveIntensity=S.alarm&&bl?1.5:0;
+ acc+=dt;if(acc>.2){acc=0;
+  sx.fillStyle='#04141c';sx.fillRect(0,0,256,140);sx.fillStyle=S.alarm?'#ff5a5a':'#3ddc84';sx.font='bold 22px monospace';
+  sx.fillText(S.alarm?'ALARM':(run?(S.boost?'RUN+BOOST':'RUN'):(S.power?'STANDBY':'POWER OFF')),10,30);sx.fillStyle='#9fe';sx.font='20px monospace';
+  sx.fillText(fmt(S.p),10,70);sx.fillText(S.t.toFixed(0)+' C',10,100);sx.fillStyle='#fc6';sx.font='13px monospace';sx.fillText(S.alarm?S.alarm.slice(0,24):'',10,128);stx.needsUpdate=true;
+  $('vp').textContent=fmt(S.p);$('vt').textContent=S.t.toFixed(0)+' ℃';$('vt').className=S.t>70?'er':S.t>55?'wr':'ok';
+  $('vm').textContent=run?'가동':'정지';$('vm').className=run?'ok':'';$('vb').textContent=S.boost?'가동':'정지';$('vb').className=S.boost?'ok':'';
+  $('va').textContent=S.alarm?'⚠ '+S.alarm:'';
+  const dn=[S.power,S.water,S.n2,S.pump,S.boost,S.pump&&S.p<.1];
+  $('steps').innerHTML=ST.map((s,i)=>'<div class="'+(dn[i]?'dn':'')+'">'+(dn[i]?'✔ ':'○ ')+s+'</div>').join('');
+  $('fg').innerHTML=S.fault?'<hr style="border-color:#34424f"><h3 class="er" style="color:var(--er)">고장 대처</h3>'+GD[S.fault]:''}
+ cm();R.render(scene,cam)}
+view(0);requestAnimationFrame(loop);
+</script></body></html>
