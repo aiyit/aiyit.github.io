@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 전기이론 1단원 옴의 법칙</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">기초</span>전기기능사 필기 · 전기이론 1단원 · 약 15분</p>
+<h1>옴의 법칙</h1>
+<p class="meta">전압, 전류, 저항의 관계를 이해하고 계산한다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section>
+<h2>학습 목표</h2>
+<p>이 단원을 마치면 다음을 할 수 있다.</p>
+<p>① 전압·전류·저항의 뜻과 단위를 말한다.<br>② 옴의 법칙으로 세 값 중 모르는 값을 구한다.<br>③ 직렬·병렬 합성저항과 전력을 계산한다.</p>
+<table><tr><th>양</th><th>기호</th><th>단위</th><th>비유(수도관)</th></tr>
+<tr><td>전압</td><td>V</td><td>볼트(V)</td><td>물을 미는 압력</td></tr>
+<tr><td>전류</td><td>I</td><td>암페어(A)</td><td>흐르는 물의 양</td></tr>
+<tr><td>저항</td><td>R</td><td>옴(Ω)</td><td>관의 좁은 정도</td></tr></table>
+<div class="tip">선수 지식은 필요 없다. 분수와 곱셈, 나눗셈만 알면 된다.</div>
+</section>
+
+<section>
+<h2>핵심 이론</h2>
+<p>회로에 흐르는 전류는 <b>전압에 비례</b>하고 <b>저항에 반비례</b>한다. 압력이 클수록 물이 많이 흐르고, 관이 좁을수록 적게 흐르는 것과 같다.</p>
+<div class="formula">V = I × R<small>I = V ÷ R　　R = V ÷ I</small></div>
+<div class="lab">
+<svg viewBox="0 0 360 150" role="img" aria-label="전류가 흐르는 간단한 회로">
+<rect x="50" y="30" width="260" height="90" rx="6" fill="none" stroke="var(--ink)" stroke-width="3"/>
+<rect x="38" y="62" width="24" height="26" fill="var(--card)" stroke="none"/>
+<line x1="42" y1="66" x2="58" y2="66" stroke="var(--ink)" stroke-width="4"/>
+<line x1="48" y1="84" x2="52" y2="84" stroke="var(--ink)" stroke-width="3"/><line x1="46" y1="84" x2="54" y2="84" stroke="var(--ink)" stroke-width="3"/>
+<text x="70" y="82" fill="var(--ink)" font-size="14" font-weight="700">V</text>
+<rect x="288" y="52" width="44" height="46" rx="4" fill="var(--card)" stroke="var(--acc)" stroke-width="3"/>
+<text x="310" y="81" text-anchor="middle" fill="var(--acc)" font-size="18" font-weight="700">R</text>
+<g id="dots" fill="var(--sig)" stroke="var(--ink)" stroke-width="1.5"></g>
+</svg>
+<label>전압 V <input type="range" id="v" min="1" max="24" value="12"> <span id="vv">12</span>V</label>
+<label>저항 R <input type="range" id="r" min="1" max="20" value="6"> <span id="rv">6</span>Ω</label>
+<div class="out"><div>전류 I<b id="i">2</b>A</div><div>전력 P<b id="p">24</b>W</div><div>전류 세기<b id="lv">보통</b></div></div>
+<p style="font-size:14px;color:var(--sub);margin:8px 0 0">슬라이더를 움직여 보자. 전류가 클수록 노란 전하가 빨리 흐른다.</p>
+</div>
+<p><b>직렬</b>: 전류가 같고 저항은 더한다. R = R₁ + R₂<br><b>병렬</b>: 전압이 같고 합성저항은 작아진다. R = (R₁×R₂) ÷ (R₁+R₂)</p>
+</section>
+
+<section>
+<h2>시험 포인트</h2>
+<div class="formula">P = V × I = I² × R = V² ÷ R<small>전력(W) · 전력량 W = P × t</small></div>
+<table><tr><th>구분</th><th>직렬</th><th>병렬</th></tr>
+<tr><td>전류</td><td>모두 같다</td><td>나뉜다</td></tr>
+<tr><td>전압</td><td>나뉜다</td><td>모두 같다</td></tr>
+<tr><td>합성저항</td><td>합</td><td>곱 ÷ 합</td></tr></table>
+<div class="tip"><b>자주 나오는 함정</b><br>병렬 합성저항은 항상 가장 작은 저항보다 작다. 계산 결과가 더 크면 틀린 것이다.</div>
+<div class="tip"><b>암기</b><br>저항이 같은 n개를 병렬로 연결하면 R ÷ n, 직렬이면 n × R.</div>
+</section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section>
+<h2>요약</h2>
+<p>• 옴의 법칙: V = I × R<br>• 직렬: 저항을 더하고 전류는 같다<br>• 병렬: 전압은 같고 합성저항은 곱 ÷ 합<br>• 전력: P = V × I</p>
+<div class="tip">퀴즈에서 틀린 문제는 해설을 다시 읽고, 숫자를 바꿔 직접 풀어 보자.</div>
+<p>다음 단원: <b>2. 직류 회로와 키르히호프 법칙</b> (준비 중)</p>
+</section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec01")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec01",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 슬라이더 + 전하 흐름 */
+const V=document.getElementById("v"),R=document.getElementById("r"),dots=document.getElementById("dots");
+const NS="http://www.w3.org/2000/svg",N=14,cs=[];
+for(let k=0;k<N;k++){const c=document.createElementNS(NS,"circle");c.setAttribute("r",5);dots.appendChild(c);cs.push(c)}
+let I=2,pos=0;
+const W=260,H=90,P=2*(W+H);
+function xy(d){d=((d%P)+P)%P;
+ if(d<W)return[50+d,30];d-=W;
+ if(d<H)return[310,30+d];d-=H;
+ if(d<W)return[310-d,120];d-=W;return[50,120-d]}
+function calc(){
+ const v=+V.value,r=+R.value;I=v/r;
+ document.getElementById("vv").textContent=v;document.getElementById("rv").textContent=r;
+ document.getElementById("i").textContent=+I.toFixed(2);
+ document.getElementById("p").textContent=+(v*I).toFixed(1);
+ document.getElementById("lv").textContent=I<1?"약함":I<4?"보통":"강함";
+ draw();
+}
+function draw(){cs.forEach((c,k)=>{const[x,y]=xy(pos+k*P/N);c.setAttribute("cx",x);c.setAttribute("cy",y)})}
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function tick(){pos+=Math.min(I,12)*0.6;draw();requestAnimationFrame(tick)}
+V.oninput=R.oninput=calc;calc();if(!reduce)requestAnimationFrame(tick);
+
+/* 퀴즈 */
+const Q=[["저항 10Ω에 100V를 가했을 때 흐르는 전류는?", ["1A", "10A", "100A", "1000A"], 1, "I = V ÷ R = 100 ÷ 10 = 10A"], ["전압 200V, 전류 4A일 때 저항은?", ["20Ω", "40Ω", "50Ω", "800Ω"], 2, "R = V ÷ I = 200 ÷ 4 = 50Ω"], ["4Ω과 6Ω을 직렬로 연결한 합성저항은?", ["2.4Ω", "5Ω", "10Ω", "24Ω"], 2, "직렬은 합이다. 4 + 6 = 10Ω"], ["6Ω과 3Ω을 병렬로 연결한 합성저항은?", ["2Ω", "4.5Ω", "9Ω", "18Ω"], 0, "(6×3) ÷ (6+3) = 18 ÷ 9 = 2Ω"], ["100V 전원에 5A가 흐를 때 전력은?", ["20W", "105W", "500W", "2000W"], 2, "P = V × I = 100 × 5 = 500W"], ["전압 24V, 저항 8Ω일 때 흐르는 전류는?", ["0.33A", "3A", "24A", "192A"], 1, "I = V ÷ R = 24 ÷ 8 = 3A"], ["전류 5A가 흐르는 20Ω 저항 양단의 전압은?", ["4V", "25V", "100V", "400V"], 2, "V = I × R = 5 × 20 = 100V"], ["6Ω 저항 3개를 직렬로 연결한 합성저항은?", ["2Ω", "6Ω", "12Ω", "18Ω"], 3, "직렬은 합이다. 6 × 3 = 18Ω"], ["6Ω 저항 3개를 병렬로 연결한 합성저항은?", ["2Ω", "6Ω", "12Ω", "18Ω"], 0, "같은 저항 n개 병렬은 R ÷ n = 6 ÷ 3 = 2Ω"], ["10Ω 저항에 2A가 흐를 때 소비 전력은?", ["20W", "40W", "80W", "200W"], 1, "P = I²R = 4 × 10 = 40W"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"1. 옴의 법칙",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+</body>
+</html>
