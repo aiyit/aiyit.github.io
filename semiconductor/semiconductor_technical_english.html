@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반도체 전공영어 학습실</title>
+<style>
+:root{--navy:#10243a;--blue:#1769aa;--sky:#eaf4fc;--ink:#203040;--muted:#637487;--line:#d9e2eb;--bg:#f4f7fb;--white:#fff;--green:#16835d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Malgun Gothic",sans-serif;line-height:1.65}
+header{background:linear-gradient(120deg,#10243a,#1769aa);color:white;padding:38px 20px}
+.hero{max-width:1100px;margin:auto}.eyebrow{letter-spacing:2px;font-size:.78rem;font-weight:bold;color:#b9ddff}
+h1{font-size:clamp(1.8rem,4vw,2.7rem);margin:8px 0}.hero p{max-width:760px;color:#e3effa;margin:8px 0}
+.wrap{max-width:1100px;margin:24px auto;padding:0 16px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:-4px}
+.stat,.panel,.module-card{background:white;border:1px solid var(--line);border-radius:14px;padding:17px}.stat strong{display:block;font-size:1.5rem;color:var(--blue)}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:18px;margin-top:20px}
+nav{align-self:start;position:sticky;top:12px;background:white;border:1px solid var(--line);border-radius:14px;padding:14px}
+nav h2{font-size:1rem;margin:0 0 10px}.navbtn{display:block;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--ink);font-size:.92rem}
+.navbtn:hover,.navbtn.active{background:var(--sky);color:var(--blue);font-weight:bold}
+main{min-width:0}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+input,select,button{font:inherit}input[type=search],select{padding:10px 12px;border:1px solid #bdcad7;border-radius:9px;background:white}
+input[type=search]{flex:1;min-width:190px}.primary{background:var(--blue);color:white;border:0;border-radius:9px;padding:10px 15px;cursor:pointer}
+h2.section-title{font-size:1.45rem;margin:0 0 5px;color:var(--navy)}.sub{color:var(--muted);margin:0 0 18px}
+.word{border:1px solid var(--line);border-radius:12px;padding:15px;margin:12px 0;background:#fff}
+.word-top{display:flex;justify-content:space-between;gap:10px;align-items:start;flex-wrap:wrap}
+.word h3{margin:0;color:var(--blue);font-size:1.16rem}.pron{color:#8a4b13;font-size:.92rem}
+.meaning{font-weight:bold;margin:5px 0}.example{background:#f5f8fb;border-left:3px solid #76a9d5;padding:9px 12px;border-radius:0 8px 8px 0;margin-top:9px}
+.example b{display:block;color:#243e59}.translation{display:none;color:#536579;font-size:.93rem;margin-top:6px}.translation.show{display:block}
+.tag{font-size:.75rem;background:#eaf4fc;color:#1769aa;padding:3px 8px;border-radius:20px}
+.quiz-q{padding:14px;border:1px solid var(--line);border-radius:12px;margin:12px 0;background:#fff}
+.quiz-q label{display:block;padding:5px 0;cursor:pointer}.feedback{font-weight:bold;margin-top:8px}
+.progress{height:9px;background:#e4ebf2;border-radius:20px;overflow:hidden}.progress span{display:block;height:100%;background:#16835d;width:0}
+footer{text-align:center;color:var(--muted);padding:30px 15px;font-size:.88rem}
+@media(max-width:760px){.layout{grid-template-columns:1fr}nav{position:static}.navlist{display:grid;grid-template-columns:repeat(2,1fr);gap:2px}.stats{gap:7px}.stat{padding:12px}.stat strong{font-size:1.2rem}}
+.spk{background:#16835d;color:#fff;border:0;border-radius:6px;padding:1px 7px;font-size:.72rem;cursor:pointer;vertical-align:middle}
+</style>
+</head>
+<body>
+<header><div class="hero">
+<div class="eyebrow">SEMICONDUCTOR TECHNICAL ENGLISH</div>
+<h1>반도체 전공영어 학습실</h1>
+<p>전문대학 1~2학년을 위한 반도체 기술영어 학습 콘텐츠. 핵심 용어의 발음과 뜻을 익히고, 제조공정과 장비 현장에서 사용하는 문장으로 활용 능력을 높인다.</p>
+</div></header>
+<div class="wrap">
+<div class="stats">
+<div class="stat"><strong>15개</strong><span>학습 모듈</span></div>
+<div class="stat"><strong id="wordCount">450개</strong><span>핵심 전공 용어</span></div>
+<div class="stat"><strong>기초~실무</strong><span>학습 수준</span></div>
+</div>
+<div class="layout">
+<nav><h2>학습 목차</h2><div class="navlist" id="navlist"></div></nav>
+<main>
+<div class="toolbar">
+<input id="search" type="search" placeholder="영어·한글 용어 검색">
+<select id="category"><option value="all">전체 모듈</option></select>
+<button class="primary" onclick="showQuiz()">단어 퀴즈</button>
+</div>
+<section class="panel" id="content"></section>
+</main>
+</div>
+</div>
+<footer>반도체 전공영어 교육용 웹 학습자료 · 학습 후 퀴즈로 이해도를 점검한다.</footer>
+<script>
+const modules = [
+["반도체 기초","Semiconductor, Wafer, Chip, Integrated Circuit",[
+["Semiconductor","세미컨덕터","반도체","Semiconductors are used in electronic devices.","반도체는 전자기기에 사용된다."],
+["Wafer","웨이퍼","웨이퍼","The silicon wafer is used to make many chips.","실리콘 웨이퍼는 여러 개의 칩을 만드는 데 사용된다."],
+["Chip","칩","반도체 칩","A chip contains many electronic components.","칩에는 많은 전자 부품이 들어 있다."],
+["Integrated Circuit","인티그레이티드 서킷","집적회로","An integrated circuit combines many components on one chip.","집적회로는 하나의 칩에 많은 부품을 집적한다."]]],
+["반도체 소재","Silicon, Substrate, Ingot, Crystal",[
+["Silicon","실리컨","실리콘","Silicon is a widely used semiconductor material.","실리콘은 널리 사용되는 반도체 재료다."],
+["Substrate","섭스트레이트","기판","The substrate supports the device structure.","기판은 소자 구조를 지지한다."],
+["Ingot","잉것","잉곳, 단결정 봉","A silicon ingot is sliced into wafers.","실리콘 잉곳을 얇게 절단해 웨이퍼를 만든다."],
+["Crystal","크리스털","결정","The crystal structure affects material properties.","결정 구조는 재료 특성에 영향을 준다."]]],
+["반도체 소자","Transistor, Diode, Gate, Source",[
+["Transistor","트랜지스터","트랜지스터","A transistor controls the flow of electrical current.","트랜지스터는 전류의 흐름을 제어한다."],
+["Diode","다이오드","다이오드","A diode allows current to flow mainly in one direction.","다이오드는 주로 한 방향으로 전류를 흐르게 한다."],
+["Gate","게이트","게이트, 제어 전극","The gate controls the transistor channel.","게이트는 트랜지스터 채널을 제어한다."],
+["Source","소스","소스 단자","Current carriers enter through the source terminal.","전하 운반자는 소스 단자를 통해 들어온다."]]],
+["웨이퍼 제조","Wafering, Polishing, Cleaning, Diameter",[
+["Wafering","웨이퍼링","웨이퍼 가공","Wafering includes slicing and surface preparation.","웨이퍼 가공에는 절단과 표면 준비가 포함된다."],
+["Polishing","폴리싱","연마","Polishing makes the wafer surface smooth.","연마는 웨이퍼 표면을 매끄럽게 만든다."],
+["Cleaning","클리닝","세정","Cleaning removes particles from the wafer.","세정은 웨이퍼의 입자를 제거한다."],
+["Diameter","다이애미터","직경","The wafer diameter is measured in millimeters.","웨이퍼 직경은 밀리미터 단위로 측정한다."]]],
+["포토공정","Lithography, Photoresist, Exposure, Mask",[
+["Lithography","리쏘그래피","포토리소그래피, 노광 패터닝","Lithography transfers a pattern onto the wafer.","리소그래피는 패턴을 웨이퍼에 전사한다."],
+["Photoresist","포토리시스트","감광액","Photoresist is coated on the wafer surface.","감광액을 웨이퍼 표면에 도포한다."],
+["Exposure","익스포저","노광","Exposure uses light to transfer the mask pattern.","노광은 빛을 이용해 마스크 패턴을 전사한다."],
+["Mask","마스크","마스크","The mask defines the pattern for a process layer.","마스크는 공정 층의 패턴을 정의한다."]]],
+["식각공정","Etching, Plasma, Selectivity, Residue",[
+["Etching","에칭","식각","Etching removes selected material from the wafer.","식각은 웨이퍼에서 선택된 물질을 제거한다."],
+["Plasma","플라즈마","플라즈마","Plasma is used in many dry etching processes.","플라즈마는 여러 건식 식각 공정에 사용된다."],
+["Selectivity","셀렉티비티","선택비","Etch selectivity compares removal rates of materials.","식각 선택비는 재료별 제거 속도를 비교한다."],
+["Residue","레지듀","잔류물","Residue must be removed after the process.","공정 후 잔류물을 제거해야 한다."]]],
+["증착공정","Deposition, CVD, PVD, ALD",[
+["Deposition","데포지션","증착","Deposition forms a thin film on the wafer.","증착은 웨이퍼 위에 박막을 형성한다."],
+["CVD","씨브이디","화학기상증착","CVD uses chemical reactions to form a film.","CVD는 화학 반응으로 박막을 형성한다."],
+["PVD","피브이디","물리기상증착","PVD deposits material by physical processes.","PVD는 물리적 방법으로 물질을 증착한다."],
+["ALD","에이엘디","원자층 증착","ALD provides precise control of film thickness.","ALD는 박막 두께를 정밀하게 제어한다."]]],
+["이온주입","Ion Implantation, Dopant, Dose, Annealing",[
+["Ion Implantation","아이언 임플랜테이션","이온주입","Ion implantation introduces dopants into silicon.","이온주입은 실리콘에 도펀트를 주입한다."],
+["Dopant","도펀트","도핑 원소","A dopant changes the electrical properties of silicon.","도펀트는 실리콘의 전기적 특성을 변화시킨다."],
+["Dose","도스","주입량","The ion dose is controlled during implantation.","이온 주입량은 주입 공정 중 제어된다."],
+["Annealing","어닐링","열처리, 어닐링","Annealing repairs crystal damage and activates dopants.","어닐링은 결정 손상을 회복하고 도펀트를 활성화한다."]]],
+["진공기술","Vacuum, Pressure, Leak, Exhaust",[
+["Vacuum","배큐엄","진공","The process requires a high vacuum.","이 공정에는 고진공이 필요하다."],
+["Pressure","프레셔","압력","The chamber pressure must remain stable.","챔버 압력은 안정적으로 유지되어야 한다."],
+["Leak","리크","누설, 누출","A leak can affect the vacuum level.","누설은 진공도에 영향을 줄 수 있다."],
+["Exhaust","이그조스트","배기","The exhaust system removes process gases.","배기 시스템은 공정 가스를 제거한다."]]],
+["반도체 장비","Chamber, Pump, Valve, Robot Arm",[
+["Chamber","체임버","공정 챔버","The wafer is processed inside the chamber.","웨이퍼는 챔버 내부에서 처리된다."],
+["Vacuum Pump","배큐엄 펌프","진공펌프","The vacuum pump removes gas from the chamber.","진공펌프는 챔버 내부의 기체를 배출한다."],
+["Valve","밸브","밸브","The valve controls gas flow.","밸브는 가스 흐름을 제어한다."],
+["Robot Arm","로봇 암","로봇 팔","The robot arm transfers wafers between modules.","로봇 팔은 모듈 사이에서 웨이퍼를 이송한다."]]],
+["측정 및 분석","Measurement, Inspection, Thickness, Resistance",[
+["Measurement","메저먼트","측정","Measurement data are recorded for each wafer.","각 웨이퍼의 측정 데이터가 기록된다."],
+["Inspection","인스펙션","검사","Inspection detects defects on the wafer.","검사는 웨이퍼의 결함을 검출한다."],
+["Thickness","씩니스","두께","The film thickness is measured after deposition.","증착 후 박막 두께를 측정한다."],
+["Resistance","리지스턴스","저항","The resistance is measured with a probe station.","프로브 스테이션으로 저항을 측정한다."]]],
+["품질관리","Defect, Yield, Uniformity, Reliability",[
+["Defect","디펙트","결함","A particle may cause a defect on the wafer.","입자는 웨이퍼에 결함을 일으킬 수 있다."],
+["Yield","일드","수율","Process improvement can increase yield.","공정 개선은 수율을 높일 수 있다."],
+["Uniformity","유니포미티","균일도","Film uniformity is important for device performance.","박막 균일도는 소자 성능에 중요하다."],
+["Reliability","릴라이어빌리티","신뢰성","Reliability testing checks long-term device performance.","신뢰성 시험은 장기간 소자 성능을 확인한다."]]],
+["유지보수","Maintenance, Calibration, Troubleshooting, Replace",[
+["Maintenance","메인터넌스","유지보수","Regular maintenance prevents unexpected downtime.","정기 유지보수는 예기치 않은 가동 중단을 예방한다."],
+["Calibration","캘리브레이션","교정","The sensor requires calibration.","센서는 교정이 필요하다."],
+["Troubleshooting","트러블슈팅","고장 진단 및 문제 해결","Troubleshooting helps identify the root cause.","문제 해결 과정은 근본 원인을 찾는 데 도움이 된다."],
+["Replace","리플레이스","교체하다","Replace the filter according to the maintenance schedule.","유지보수 일정에 따라 필터를 교체한다."]]],
+["안전관리","Safety, Hazard, PPE, Emergency",[
+["Safety","세이프티","안전","Safety procedures must be followed at all times.","안전 절차를 항상 준수해야 한다."],
+["Hazard","해저드","위험요인","Identify the hazard before starting the work.","작업을 시작하기 전에 위험요인을 확인한다."],
+["PPE","피피이","개인보호구","Wear proper PPE in the cleanroom.","클린룸에서 적절한 개인보호구를 착용한다."],
+["Emergency","이머전시","비상 상황","Report an emergency immediately.","비상 상황을 즉시 보고한다."]]],
+["현장 실무회화","Operate, Check, Install, Shutdown",[
+["Operate","오퍼레이트","작동하다, 운전하다","Operate the equipment according to the manual.","설명서에 따라 장비를 운전한다."],
+["Check","체크","점검하다, 확인하다","Check the pressure before the process starts.","공정 시작 전에 압력을 확인한다."],
+["Install","인스톨","설치하다","Install the sensor in the correct position.","센서를 올바른 위치에 설치한다."],
+["Shutdown","셧다운","정지, 종료","Follow the shutdown procedure before maintenance.","유지보수 전에 정지 절차를 따른다."]]]
+];
+
+const extra=[
+`Conductor|도체|A conductor allows electric current to flow easily.|도체는 전류가 쉽게 흐르게 한다.
+Insulator|절연체|An insulator blocks the flow of electric current.|절연체는 전류의 흐름을 차단한다.
+Bandgap|밴드갭|The bandgap determines the electrical behavior of a material.|밴드갭은 재료의 전기적 거동을 결정한다.
+Cleanroom|클린룸|Wafers are handled inside a cleanroom.|웨이퍼는 클린룸 안에서 다룬다.
+Fabrication|제조 공정|Chip fabrication involves hundreds of steps.|칩 제조에는 수백 단계의 공정이 포함된다.`,
+`Germanium|게르마늄|Germanium was used in early transistors.|게르마늄은 초기 트랜지스터에 사용되었다.
+Oxide|산화막|A thin oxide layer insulates the gate.|얇은 산화막이 게이트를 절연한다.
+Purity|순도|High purity is essential for silicon wafers.|실리콘 웨이퍼에는 높은 순도가 필수다.
+Compound Semiconductor|화합물 반도체|Gallium arsenide is a compound semiconductor.|갈륨비소는 화합물 반도체다.
+Epitaxial Layer|에피택셜층|An epitaxial layer is grown on the wafer.|웨이퍼 위에 에피택셜층을 성장시킨다.`,
+`Drain|드레인|Carriers leave the channel through the drain.|전하 운반자는 드레인을 통해 채널을 빠져나간다.
+Channel|채널|Current flows through the channel when the gate is on.|게이트가 켜지면 채널로 전류가 흐른다.
+MOSFET|모스펫|A MOSFET is a voltage-controlled switch.|MOSFET은 전압으로 제어되는 스위치다.
+Capacitor|커패시터|A capacitor stores electric charge.|커패시터는 전하를 저장한다.
+Threshold Voltage|문턱 전압|The transistor turns on above the threshold voltage.|트랜지스터는 문턱 전압 이상에서 켜진다.`,
+`Slicing|절단|Slicing cuts the ingot into thin wafers.|절단 공정은 잉곳을 얇은 웨이퍼로 자른다.
+Lapping|래핑|Lapping flattens the wafer surface.|래핑은 웨이퍼 표면을 평탄하게 한다.
+Flatness|평탄도|Wafer flatness affects pattern accuracy.|웨이퍼 평탄도는 패턴 정확도에 영향을 준다.
+Notch|노치|The notch shows the crystal orientation of the wafer.|노치는 웨이퍼의 결정 방향을 나타낸다.
+Edge Grinding|가장자리 연삭|Edge grinding prevents wafer chipping.|가장자리 연삭은 웨이퍼 깨짐을 방지한다.`,
+`Spin Coating|스핀 코팅|Spin coating spreads photoresist evenly.|스핀 코팅은 감광액을 고르게 펼친다.
+Develop|현상하다|Develop the wafer to remove exposed resist.|웨이퍼를 현상하여 노광된 감광막을 제거한다.
+Alignment|정렬|Mask alignment must be accurate.|마스크 정렬은 정확해야 한다.
+Wavelength|파장|A shorter wavelength gives finer patterns.|파장이 짧을수록 더 미세한 패턴이 만들어진다.
+Resolution|해상도|Higher resolution allows smaller features.|해상도가 높으면 더 작은 형상을 구현할 수 있다.`,
+`Dry Etching|건식 식각|Dry etching uses plasma instead of liquid.|건식 식각은 액체 대신 플라즈마를 사용한다.
+Wet Etching|습식 식각|Wet etching uses chemical solutions.|습식 식각은 화학 용액을 사용한다.
+Etch Rate|식각 속도|The etch rate is measured in nanometers per minute.|식각 속도는 분당 나노미터로 측정한다.
+Anisotropic|이방성의|Anisotropic etching produces vertical sidewalls.|이방성 식각은 수직한 측벽을 만든다.
+Endpoint|종료점|The system detects the etch endpoint automatically.|장비가 식각 종료점을 자동으로 감지한다.`,
+`Thin Film|박막|A thin film is only nanometers thick.|박막은 두께가 수 나노미터에 불과하다.
+Sputtering|스퍼터링|Sputtering ejects atoms from a metal target.|스퍼터링은 금속 타깃에서 원자를 튀어나오게 한다.
+Precursor|전구체|The precursor gas reacts on the hot wafer.|전구체 가스는 뜨거운 웨이퍼 위에서 반응한다.
+Target|타깃|The metal target is replaced after long use.|금속 타깃은 장시간 사용 후 교체한다.
+Step Coverage|단차 피복성|Good step coverage fills deep trenches.|단차 피복성이 좋으면 깊은 트렌치를 채운다.`,
+`Ion Beam|이온빔|The ion beam is aimed at the wafer.|이온빔을 웨이퍼를 향해 조사한다.
+Acceleration Energy|가속 에너지|Acceleration energy sets the implant depth.|가속 에너지가 주입 깊이를 결정한다.
+Junction|접합|A p-n junction forms where dopants meet.|도펀트가 만나는 곳에 p-n 접합이 형성된다.
+Activation|활성화|Heat treatment causes dopant activation.|열처리로 도펀트가 활성화된다.
+Channeling|채널링|Channeling lets ions travel too deep.|채널링은 이온이 너무 깊이 들어가게 한다.`,
+`Rough Pump|러프 펌프|The rough pump lowers pressure first.|러프 펌프가 먼저 압력을 낮춘다.
+Turbo Pump|터보 펌프|The turbo pump reaches high vacuum.|터보 펌프는 고진공에 도달한다.
+Vacuum Gauge|진공 게이지|Read the vacuum gauge before starting.|시작 전에 진공 게이지를 읽는다.
+Pumping Down|배기 진행|Pumping down takes about ten minutes.|배기에는 약 10분이 걸린다.
+Venting|벤팅|Venting returns the chamber to atmospheric pressure.|벤팅은 챔버를 대기압으로 되돌린다.`,
+`Load Lock|로드락|Wafers wait in the load lock before entry.|웨이퍼는 진입 전에 로드락에서 대기한다.
+Susceptor|서셉터|The susceptor holds the wafer during heating.|서셉터는 가열 중 웨이퍼를 고정한다.
+Mass Flow Controller|질량 유량 제어기|The mass flow controller regulates gas supply.|질량 유량 제어기는 가스 공급을 조절한다.
+Electrostatic Chuck|정전 척|An electrostatic chuck holds the wafer firmly.|정전 척은 웨이퍼를 단단히 고정한다.
+Gas Line|가스 배관|Check the gas line for leaks.|가스 배관의 누설을 점검한다.`,
+`Ellipsometer|엘립소미터|An ellipsometer measures film thickness optically.|엘립소미터는 광학적으로 박막 두께를 측정한다.
+Microscope|현미경|Defects are examined under a microscope.|결함은 현미경으로 관찰한다.
+Probe|프로브|The probe touches the test pad.|프로브가 테스트 패드에 접촉한다.
+Sheet Resistance|면저항|Sheet resistance shows doping quality.|면저항은 도핑 품질을 보여준다.
+Particle Count|입자 수|The particle count must stay below the limit.|입자 수는 기준치 이하로 유지되어야 한다.`,
+`Specification|규격|The result meets the specification.|결과가 규격을 만족한다.
+Tolerance|공차|The tolerance is plus or minus two percent.|공차는 ±2퍼센트다.
+Contamination|오염|Contamination lowers the yield.|오염은 수율을 떨어뜨린다.
+Reject|불량 처리하다|Reject any wafer with visible scratches.|눈에 보이는 긁힘이 있는 웨이퍼는 불량 처리한다.
+Failure Analysis|불량 분석|Failure analysis finds why a chip failed.|불량 분석은 칩이 고장 난 이유를 찾는다.`,
+`Preventive Maintenance|예방 정비|Preventive maintenance is done every month.|예방 정비는 매달 수행한다.
+Inspect|점검하다|Inspect the O-ring for cracks.|O링에 균열이 있는지 점검한다.
+Downtime|가동 중단 시간|Downtime reduces production output.|가동 중단 시간은 생산량을 줄인다.
+Spare Part|예비 부품|Keep a spare part for the pump.|펌프용 예비 부품을 보관한다.
+Lubricate|윤활하다|Lubricate the bearing as scheduled.|일정에 따라 베어링에 윤활한다.`,
+`Toxic Gas|독성 가스|A toxic gas alarm sounded in the bay.|베이에서 독성 가스 경보가 울렸다.
+Lockout Tagout|잠금·표지 절차|Apply lockout tagout before repair.|수리 전에 잠금·표지 절차를 적용한다.
+Evacuation|대피|Follow the evacuation route calmly.|대피 경로를 침착하게 따른다.
+Chemical Spill|화학물질 누출|Report any chemical spill at once.|화학물질 누출은 즉시 보고한다.
+Gloves|장갑|Wear gloves when handling wafers.|웨이퍼를 다룰 때 장갑을 착용한다.`,
+`Start Up|시동하다|Start up the system after the check.|점검 후 시스템을 시동한다.
+Adjust|조정하다|Adjust the gas flow to the set value.|가스 유량을 설정값으로 조정한다.
+Record|기록하다|Record the result in the log.|결과를 일지에 기록한다.
+Report|보고하다|Report any problem to the supervisor.|문제는 감독자에게 보고한다.
+Handover|인수인계|Complete the shift handover carefully.|교대 인수인계를 꼼꼼히 마친다.`
+];
+modules.forEach((m,i)=>extra[i].split('\n').forEach(l=>{const p=l.split('|');m[2].push([p[0],'',p[1],p[2],p[3]])}));
+const more=[
+`Electron|전자|Electrons carry negative charge in a semiconductor.|반도체에서 전자는 음전하를 운반한다.
+Hole|정공|A hole acts as a positive charge carrier.|정공은 양전하 운반자로 작용한다.
+Carrier|운반자|The number of carriers affects conductivity.|운반자의 수는 전도도에 영향을 준다.
+Conductivity|전도도|Conductivity increases with doping.|도핑을 하면 전도도가 높아진다.
+Doping|도핑|Doping adds impurities to silicon.|도핑은 실리콘에 불순물을 첨가한다.
+N-type|n형 반도체|N-type silicon has extra electrons.|n형 실리콘에는 여분의 전자가 있다.
+P-type|p형 반도체|P-type silicon has extra holes.|p형 실리콘에는 여분의 정공이 있다.
+Die|다이|Each die is cut from the wafer.|각 다이는 웨이퍼에서 잘라 낸다.
+Package|패키지|The package protects the chip.|패키지는 칩을 보호한다.
+Memory|메모리|Memory chips store data.|메모리 칩은 데이터를 저장한다.
+Logic|로직|Logic chips process information.|로직 칩은 정보를 처리한다.
+Foundry|파운드리|A foundry makes chips for other companies.|파운드리는 다른 회사를 위해 칩을 만든다.
+Node|노드|A smaller node means finer circuits.|노드가 작을수록 회로가 더 미세하다.
+Nanometer|나노미터|One nanometer is a billionth of a meter.|1나노미터는 10억 분의 1미터다.
+Microchip|마이크로칩|A microchip is smaller than a coin.|마이크로칩은 동전보다 작다.
+Circuit|회로|The circuit connects all components.|회로는 모든 부품을 연결한다.
+Device|소자|Each device has a specific function.|각 소자에는 고유한 기능이 있다.
+Supply Chain|공급망|The supply chain includes materials and equipment.|공급망에는 소재와 장비가 포함된다.
+Miniaturization|미세화|Miniaturization improves chip performance.|미세화는 칩 성능을 향상시킨다.
+Fab|팹, 반도체 공장|The fab runs twenty-four hours a day.|팹은 하루 24시간 가동된다.
+Mass Production|양산|Mass production begins after testing.|양산은 시험 후에 시작된다.`,
+`Polysilicon|다결정 실리콘|Polysilicon is the raw material for ingots.|다결정 실리콘은 잉곳의 원료다.
+Single Crystal|단결정|A single crystal has a uniform structure.|단결정은 균일한 구조를 가진다.
+Czochralski Method|초크랄스키법|The Czochralski method grows single crystals.|초크랄스키법으로 단결정을 성장시킨다.
+Silicon Dioxide|이산화규소|Silicon dioxide is a good insulator.|이산화규소는 좋은 절연체다.
+Silicon Nitride|질화규소|Silicon nitride protects the surface.|질화규소는 표면을 보호한다.
+Gallium Arsenide|갈륨비소|Gallium arsenide is used in high-speed devices.|갈륨비소는 고속 소자에 사용된다.
+Silicon Carbide|탄화규소|Silicon carbide handles high voltage.|탄화규소는 고전압을 견딘다.
+Gallium Nitride|질화갈륨|Gallium nitride is used in power chargers.|질화갈륨은 전력 충전기에 사용된다.
+Boron|붕소|Boron makes silicon p-type.|붕소는 실리콘을 p형으로 만든다.
+Phosphorus|인|Phosphorus makes silicon n-type.|인은 실리콘을 n형으로 만든다.
+Arsenic|비소|Arsenic is a common n-type dopant.|비소는 흔한 n형 도펀트다.
+Copper|구리|Copper is used for metal interconnects.|구리는 금속 배선에 사용된다.
+Aluminum|알루미늄|Aluminum was widely used for wiring.|알루미늄은 배선에 널리 사용되었다.
+Tungsten|텅스텐|Tungsten fills small contact holes.|텅스텐은 작은 접촉 구멍을 채운다.
+Dielectric|유전체|A dielectric separates metal lines.|유전체는 금속 배선을 분리한다.
+Polysilicon Gate|폴리실리콘 게이트|The polysilicon gate controls the channel.|폴리실리콘 게이트는 채널을 제어한다.
+Impurity|불순물|Even a small impurity can harm the device.|작은 불순물도 소자를 해칠 수 있다.
+Defect Density|결함 밀도|Low defect density improves quality.|결함 밀도가 낮으면 품질이 좋아진다.
+Grain Boundary|결정립계|A grain boundary disturbs current flow.|결정립계는 전류 흐름을 방해한다.
+Lattice|격자|Atoms form a regular lattice.|원자들은 규칙적인 격자를 이룬다.
+Photomask Blank|포토마스크 블랭크|A photomask blank is made of quartz.|포토마스크 블랭크는 석영으로 만든다.`,
+`Resistor|저항기|A resistor limits the current.|저항기는 전류를 제한한다.
+Inductor|인덕터|An inductor stores energy in a magnetic field.|인덕터는 자기장에 에너지를 저장한다.
+Bipolar Transistor|바이폴라 트랜지스터|A bipolar transistor amplifies current.|바이폴라 트랜지스터는 전류를 증폭한다.
+Emitter|이미터|The emitter supplies carriers to the base.|이미터는 베이스에 운반자를 공급한다.
+Collector|컬렉터|The collector gathers the carriers.|컬렉터는 운반자를 모은다.
+Base|베이스|A small base current controls the transistor.|작은 베이스 전류가 트랜지스터를 제어한다.
+NMOS|엔모스|An NMOS transistor conducts when the gate is high.|NMOS 트랜지스터는 게이트가 높으면 전도된다.
+PMOS|피모스|A PMOS transistor conducts when the gate is low.|PMOS 트랜지스터는 게이트가 낮으면 전도된다.
+CMOS|씨모스|CMOS circuits use very little power.|CMOS 회로는 전력을 아주 적게 쓴다.
+FinFET|핀펫|A FinFET has a fin-shaped channel.|핀펫은 지느러미 모양의 채널을 가진다.
+Switch|스위치|A transistor works as an electronic switch.|트랜지스터는 전자 스위치로 작동한다.
+Amplifier|증폭기|An amplifier increases signal strength.|증폭기는 신호 세기를 높인다.
+Leakage Current|누설 전류|Leakage current wastes power.|누설 전류는 전력을 낭비한다.
+Breakdown Voltage|항복 전압|Do not exceed the breakdown voltage.|항복 전압을 넘지 않도록 한다.
+Forward Bias|순방향 바이어스|Forward bias lets the diode conduct.|순방향 바이어스는 다이오드를 도통시킨다.
+Reverse Bias|역방향 바이어스|Reverse bias blocks the current.|역방향 바이어스는 전류를 차단한다.
+LED|발광 다이오드|An LED emits light when current flows.|LED는 전류가 흐르면 빛을 낸다.
+Solar Cell|태양전지|A solar cell converts light into electricity.|태양전지는 빛을 전기로 바꾼다.
+DRAM|디램|DRAM stores data in capacitors.|DRAM은 커패시터에 데이터를 저장한다.
+Flash Memory|플래시 메모리|Flash memory keeps data without power.|플래시 메모리는 전원 없이도 데이터를 유지한다.
+Gate Oxide|게이트 산화막|The gate oxide must be very thin.|게이트 산화막은 매우 얇아야 한다.`
+];
+more.forEach((t,i)=>t.split('\n').forEach(l=>{const p=l.split('|');modules[i][2].push([p[0],'',p[1],p[2],p[3]])}));
+const more2={
+3:`Crystal Growth|결정 성장|Crystal growth takes place in a furnace.|결정 성장은 노 안에서 이루어진다.
+Seed Crystal|종자 결정|A seed crystal starts the ingot growth.|종자 결정이 잉곳 성장을 시작한다.
+Ingot Grinding|잉곳 연삭|Ingot grinding sets the final diameter.|잉곳 연삭으로 최종 직경을 맞춘다.
+Wire Saw|와이어 쏘|A wire saw cuts many wafers at once.|와이어 쏘는 여러 장의 웨이퍼를 한 번에 자른다.
+Slurry|슬러리|Slurry contains fine abrasive particles.|슬러리에는 미세한 연마 입자가 들어 있다.
+CMP|화학적 기계적 연마|CMP polishes the wafer with slurry and a pad.|CMP는 슬러리와 패드로 웨이퍼를 연마한다.
+Thickness Variation|두께 편차|Thickness variation must be small.|두께 편차는 작아야 한다.
+Warpage|휨|Warpage can cause alignment errors.|휨은 정렬 오류를 일으킬 수 있다.
+Etching Solution|식각액|The etching solution removes the damaged layer.|식각액이 손상층을 제거한다.
+Surface Roughness|표면 거칠기|Surface roughness is measured in nanometers.|표면 거칠기는 나노미터 단위로 측정한다.
+Scratch|긁힘|A deep scratch makes the wafer unusable.|깊은 긁힘이 있으면 웨이퍼를 사용할 수 없다.
+Particle|입자|A single particle can ruin a chip.|입자 하나가 칩을 망칠 수 있다.
+Rinse|헹굼|Rinse the wafer with deionized water.|웨이퍼를 초순수로 헹군다.
+Deionized Water|초순수|Deionized water is used for cleaning.|초순수는 세정에 사용된다.
+Drying|건조|Drying prevents water marks.|건조는 물 얼룩을 방지한다.
+Wafer Cassette|웨이퍼 카세트|Place the wafers in the wafer cassette.|웨이퍼를 카세트에 넣는다.
+Orientation|결정 방향|Crystal orientation affects etching.|결정 방향은 식각에 영향을 준다.
+Resistivity|비저항|Resistivity indicates the doping level.|비저항은 도핑 수준을 나타낸다.
+Prime Wafer|프라임 웨이퍼|A prime wafer is used for real products.|프라임 웨이퍼는 실제 제품에 사용된다.
+Dummy Wafer|더미 웨이퍼|A dummy wafer is used for equipment tests.|더미 웨이퍼는 장비 시험에 사용된다.
+Wafer Inspection|웨이퍼 검사|Wafer inspection is done before shipping.|웨이퍼 검사는 출하 전에 수행한다.`,
+4:`Positive Resist|포지티브 감광막|Exposed positive resist dissolves in developer.|노광된 포지티브 감광막은 현상액에 녹는다.
+Negative Resist|네거티브 감광막|Exposed negative resist remains on the wafer.|노광된 네거티브 감광막은 웨이퍼에 남는다.
+Soft Bake|소프트 베이크|Soft bake removes solvent from the resist.|소프트 베이크는 감광막의 용매를 제거한다.
+Hard Bake|하드 베이크|Hard bake strengthens the resist pattern.|하드 베이크는 감광막 패턴을 단단하게 한다.
+Developer|현상액|The developer dissolves the unwanted resist.|현상액은 불필요한 감광막을 녹인다.
+Stepper|스테퍼|A stepper exposes one field at a time.|스테퍼는 한 번에 한 영역씩 노광한다.
+Scanner|스캐너|A scanner moves the mask and wafer together.|스캐너는 마스크와 웨이퍼를 함께 움직인다.
+EUV|극자외선|EUV uses extremely short wavelength light.|EUV는 매우 짧은 파장의 빛을 사용한다.
+Photomask|포토마스크|The photomask carries the circuit pattern.|포토마스크에는 회로 패턴이 있다.
+Reticle|레티클|The reticle is cleaned before exposure.|레티클은 노광 전에 세정한다.
+Pattern Transfer|패턴 전사|Pattern transfer defines the circuit shape.|패턴 전사로 회로 형태가 정해진다.
+Overlay|오버레이|Overlay error shifts the layer position.|오버레이 오류는 층의 위치를 어긋나게 한다.
+Critical Dimension|임계 치수|Critical dimension is measured after development.|임계 치수는 현상 후에 측정한다.
+Focus|초점|Poor focus blurs the pattern.|초점이 나쁘면 패턴이 흐려진다.
+Exposure Dose|노광량|Exposure dose affects line width.|노광량은 선폭에 영향을 준다.
+Line Width|선폭|The line width keeps getting smaller.|선폭은 계속 작아지고 있다.
+Pattern|패턴|The pattern is checked under a microscope.|패턴을 현미경으로 확인한다.
+Coater|코터|The coater applies resist to the wafer.|코터는 웨이퍼에 감광막을 도포한다.
+Yellow Room|옐로룸|The lithography area is called the yellow room.|포토공정 구역은 옐로룸이라고 부른다.
+Resist Strip|감광막 제거|Resist strip removes the remaining resist.|감광막 제거는 남은 감광막을 없앤다.
+Adhesion|밀착력|Good adhesion prevents resist peeling.|밀착력이 좋으면 감광막이 벗겨지지 않는다.`,
+5:`Isotropic|등방성의|Isotropic etching removes material in all directions.|등방성 식각은 모든 방향으로 물질을 제거한다.
+Reactive Ion Etching|반응성 이온 식각|Reactive ion etching combines plasma and chemistry.|반응성 이온 식각은 플라즈마와 화학 반응을 결합한다.
+Etchant|식각제|The etchant must be replaced regularly.|식각제는 정기적으로 교체해야 한다.
+Sidewall|측벽|The sidewall should be smooth and vertical.|측벽은 매끄럽고 수직이어야 한다.
+Profile|식각 단면 형상|The etch profile is checked by electron microscope.|식각 단면 형상은 전자현미경으로 확인한다.
+Undercut|언더컷|Undercut occurs under the mask edge.|언더컷은 마스크 가장자리 아래에서 발생한다.
+Over-etching|과식각|Over-etching can damage the layer below.|과식각은 아래층을 손상시킬 수 있다.
+Under-etching|부족 식각|Under-etching leaves unwanted material.|부족 식각은 불필요한 물질을 남긴다.
+Hard Mask|하드 마스크|A hard mask resists strong etching.|하드 마스크는 강한 식각을 견딘다.
+Etch Stop Layer|식각 정지층|The etch stop layer protects the lower film.|식각 정지층은 아래 박막을 보호한다.
+Etch Gas|식각 가스|The etch gas is supplied to the chamber.|식각 가스는 챔버에 공급된다.
+RF Power|RF 전력|RF power generates the plasma.|RF 전력이 플라즈마를 발생시킨다.
+Ion Bombardment|이온 충격|Ion bombardment helps etch vertically.|이온 충격은 수직 식각을 돕는다.
+Polymer|폴리머|Polymer protects the sidewall during etching.|폴리머는 식각 중 측벽을 보호한다.
+Ashing|애싱|Ashing removes resist using oxygen plasma.|애싱은 산소 플라즈마로 감광막을 제거한다.
+Hydrofluoric Acid|불산|Hydrofluoric acid etches silicon dioxide.|불산은 이산화규소를 식각한다.
+Etch Uniformity|식각 균일도|Etch uniformity affects the yield.|식각 균일도는 수율에 영향을 준다.
+Loading Effect|로딩 효과|The loading effect changes the etch rate.|로딩 효과는 식각 속도를 변화시킨다.
+Trench|트렌치|A deep trench is etched into silicon.|실리콘에 깊은 트렌치를 식각한다.
+Via Hole|비아 홀|The via hole connects two metal layers.|비아 홀은 두 금속층을 연결한다.
+Chamber Cleaning|챔버 세정|Chamber cleaning is done after many runs.|챔버 세정은 여러 번 공정 후에 한다.`,
+6:`LPCVD|저압 CVD|LPCVD works at low pressure.|LPCVD는 저압에서 작동한다.
+PECVD|플라즈마 강화 CVD|PECVD forms films at lower temperatures.|PECVD는 더 낮은 온도에서 박막을 형성한다.
+Evaporation|증발 증착|Evaporation heats the metal until it vaporizes.|증발 증착은 금속을 기화될 때까지 가열한다.
+Oxidation|산화|Oxidation grows an oxide layer on silicon.|산화 공정은 실리콘 위에 산화막을 성장시킨다.
+Thermal Oxide|열산화막|Thermal oxide has excellent quality.|열산화막은 품질이 매우 우수하다.
+Epitaxy|에피택시|Epitaxy grows a crystal layer on the wafer.|에피택시는 웨이퍼 위에 결정층을 성장시킨다.
+Film Stress|박막 응력|High film stress can bend the wafer.|박막 응력이 크면 웨이퍼가 휠 수 있다.
+Deposition Rate|증착 속도|The deposition rate is set by the recipe.|증착 속도는 레시피로 설정한다.
+Conformality|등각성|Conformality means even coverage on steps.|등각성은 단차를 고르게 덮는 성질이다.
+Barrier Layer|배리어층|A barrier layer stops copper diffusion.|배리어층은 구리 확산을 막는다.
+Seed Layer|시드층|A seed layer is needed before plating.|도금 전에 시드층이 필요하다.
+Electroplating|전해 도금|Electroplating fills trenches with copper.|전해 도금은 트렌치를 구리로 채운다.
+Metallization|금속 배선 공정|Metallization forms the wiring of the chip.|금속 배선 공정은 칩의 배선을 형성한다.
+Interconnect|배선|Interconnect links transistors together.|배선은 트랜지스터를 서로 연결한다.
+Insulating Film|절연막|An insulating film separates metal layers.|절연막은 금속층을 분리한다.
+Void|보이드|A void inside the metal line causes failure.|금속 배선 속 보이드는 불량을 일으킨다.
+Furnace|확산로|The furnace heats many wafers at once.|확산로는 여러 웨이퍼를 한꺼번에 가열한다.
+Carrier Gas|운반 가스|The carrier gas moves the precursor.|운반 가스가 전구체를 이동시킨다.
+Reactant|반응물|The reactant reacts with the surface.|반응물은 표면과 반응한다.
+Adsorption|흡착|Adsorption is the first step of ALD.|흡착은 ALD의 첫 단계다.
+Purge|퍼지|Purge the chamber with nitrogen gas.|챔버를 질소 가스로 퍼지한다.`
+};
+Object.keys(more2).forEach(i=>more2[i].split('\n').forEach(l=>{const p=l.split('|');modules[i][2].push([p[0],'',p[1],p[2],p[3]])}));
+const more3={
+7:`Implanter|이온주입기|The implanter accelerates ions toward the wafer.|이온주입기는 이온을 웨이퍼를 향해 가속한다.
+Ion Source|이온 소스|The ion source produces charged atoms.|이온 소스는 전하를 띤 원자를 만든다.
+Mass Analyzer|질량 분석기|The mass analyzer selects the correct ion type.|질량 분석기는 올바른 이온 종류를 선택한다.
+Accelerator|가속기|The accelerator increases the ion energy.|가속기는 이온 에너지를 높인다.
+Beam Current|빔 전류|Beam current affects the implant time.|빔 전류는 주입 시간에 영향을 준다.
+Implant Depth|주입 깊이|Implant depth depends on the ion energy.|주입 깊이는 이온 에너지에 따라 달라진다.
+Projected Range|투사 비정|Projected range is the average ion depth.|투사 비정은 이온의 평균 도달 깊이다.
+Dose Uniformity|주입량 균일도|Dose uniformity is checked across the wafer.|주입량 균일도를 웨이퍼 전체에서 확인한다.
+Tilt Angle|기울기 각도|A small tilt angle reduces channeling.|작은 기울기 각도는 채널링을 줄인다.
+Scanning|스캐닝|Beam scanning covers the whole wafer.|빔 스캐닝으로 웨이퍼 전체를 조사한다.
+Lattice Damage|격자 손상|Ion impact causes lattice damage.|이온 충돌은 격자 손상을 일으킨다.
+Amorphous Layer|비정질층|The implant creates an amorphous layer.|주입으로 비정질층이 만들어진다.
+Rapid Thermal Annealing|급속 열처리|Rapid thermal annealing takes only a few seconds.|급속 열처리는 몇 초밖에 걸리지 않는다.
+Diffusion|확산|Diffusion spreads dopants during heating.|확산은 가열 중 도펀트를 퍼뜨린다.
+Well|웰|A well is a doped region in the substrate.|웰은 기판 안의 도핑된 영역이다.
+Source and Drain Implant|소스·드레인 주입|Source and drain implant forms the transistor terminals.|소스·드레인 주입으로 트랜지스터 단자를 형성한다.
+Screen Oxide|스크린 산화막|A screen oxide reduces channeling.|스크린 산화막은 채널링을 줄인다.
+Implant Mask|주입 마스크|The implant mask blocks ions from unwanted areas.|주입 마스크는 원하지 않는 영역에 이온이 들어가지 않게 막는다.
+Ion Species|이온 종|Boron and phosphorus are common ion species.|붕소와 인은 흔한 이온 종이다.
+Wafer Charging|웨이퍼 대전|Wafer charging can damage thin oxide.|웨이퍼 대전은 얇은 산화막을 손상시킬 수 있다.
+Doping Profile|도핑 분포|The doping profile is measured after annealing.|도핑 분포는 열처리 후에 측정한다.`,
+8:`Vacuum Level|진공도|The vacuum level is displayed on the monitor.|진공도는 모니터에 표시된다.
+Atmospheric Pressure|대기압|Atmospheric pressure is about 760 torr.|대기압은 약 760토르다.
+Torr|토르|Pressure is often expressed in torr.|압력은 흔히 토르 단위로 나타낸다.
+Pascal|파스칼|The pascal is the SI unit of pressure.|파스칼은 압력의 SI 단위다.
+Low Vacuum|저진공|Low vacuum is reached by a rough pump.|저진공은 러프 펌프로 도달한다.
+High Vacuum|고진공|High vacuum is needed for sputtering.|스퍼터링에는 고진공이 필요하다.
+Ultra-high Vacuum|초고진공|Ultra-high vacuum keeps the surface very clean.|초고진공은 표면을 매우 깨끗하게 유지한다.
+Mean Free Path|평균 자유 행로|The mean free path grows as pressure drops.|압력이 낮아질수록 평균 자유 행로는 길어진다.
+Outgassing|탈기체|Outgassing from walls limits the vacuum level.|벽면의 탈기체가 진공도를 제한한다.
+Base Pressure|기저 압력|Check the base pressure before the process.|공정 전에 기저 압력을 확인한다.
+Leak Test|누설 시험|A leak test is done after maintenance.|유지보수 후에 누설 시험을 한다.
+Helium Leak Detector|헬륨 누설 검출기|A helium leak detector finds tiny leaks.|헬륨 누설 검출기는 아주 작은 누설을 찾아낸다.
+Roughing Valve|러핑 밸브|Open the roughing valve slowly.|러핑 밸브를 천천히 연다.
+Gate Valve|게이트 밸브|The gate valve isolates the chamber.|게이트 밸브는 챔버를 분리한다.
+Throttle Valve|스로틀 밸브|The throttle valve adjusts the chamber pressure.|스로틀 밸브는 챔버 압력을 조절한다.
+Foreline|포어라인|The foreline connects the pumps.|포어라인은 펌프들을 연결한다.
+Dry Pump|드라이 펌프|A dry pump uses no oil.|드라이 펌프는 오일을 사용하지 않는다.
+Cryopump|크라이오 펌프|A cryopump traps gas on cold surfaces.|크라이오 펌프는 차가운 표면에 기체를 붙잡는다.
+Pirani Gauge|피라니 게이지|A Pirani gauge measures low vacuum.|피라니 게이지는 저진공을 측정한다.
+Capacitance Manometer|정전용량 압력계|A capacitance manometer measures pressure accurately.|정전용량 압력계는 압력을 정확히 측정한다.
+O-ring|오링|Replace the O-ring if the seal is worn.|씰이 마모되면 O링을 교체한다.`,
+9:`Transfer Chamber|이송 챔버|The transfer chamber moves wafers between modules.|이송 챔버는 모듈 사이에서 웨이퍼를 옮긴다.
+Cluster Tool|클러스터 장비|A cluster tool has several chambers around a robot.|클러스터 장비는 로봇 주위에 여러 챔버가 있다.
+Loadport|로드포트|The loadport receives the wafer carrier.|로드포트는 웨이퍼 운반 용기를 받는다.
+FOUP|푸프(웨이퍼 운반 용기)|A FOUP carries twenty-five wafers.|푸프는 웨이퍼 25장을 운반한다.
+Wafer Handler|웨이퍼 이송기|The wafer handler places the wafer on the stage.|웨이퍼 이송기는 웨이퍼를 스테이지에 올려 놓는다.
+End Effector|엔드 이펙터|The end effector holds the wafer gently.|엔드 이펙터는 웨이퍼를 조심스럽게 잡는다.
+Wafer Stage|웨이퍼 스테이지|The wafer stage moves with high accuracy.|웨이퍼 스테이지는 높은 정밀도로 움직인다.
+Heater|히터|The heater keeps the chamber wall warm.|히터는 챔버 벽을 따뜻하게 유지한다.
+Chiller|칠러|The chiller cools the equipment.|칠러는 장비를 냉각한다.
+Showerhead|샤워헤드|The showerhead spreads gas evenly.|샤워헤드는 가스를 고르게 분사한다.
+Gas Cabinet|가스 캐비닛|Hazardous gas is stored in a gas cabinet.|위험 가스는 가스 캐비닛에 보관한다.
+Scrubber|스크러버|The scrubber treats the exhaust gas.|스크러버는 배기가스를 처리한다.
+RF Generator|RF 발생기|The RF generator supplies power to the plasma.|RF 발생기는 플라즈마에 전력을 공급한다.
+Matching Network|매칭 네트워크|The matching network reduces reflected power.|매칭 네트워크는 반사 전력을 줄인다.
+Power Supply|전원 공급 장치|The power supply provides stable voltage.|전원 공급 장치는 안정적인 전압을 제공한다.
+Pressure Gauge|압력 게이지|The pressure gauge is mounted on the chamber.|압력 게이지는 챔버에 설치되어 있다.
+Interlock|인터록|The interlock stops the tool when a door opens.|인터록은 도어가 열리면 장비를 멈춘다.
+Control Panel|제어 패널|The control panel shows the tool status.|제어 패널은 장비 상태를 보여준다.
+Recipe|레시피|The recipe contains all process settings.|레시피에는 모든 공정 설정이 들어 있다.
+Alarm|경보|An alarm sounds when pressure is abnormal.|압력이 비정상이면 경보가 울린다.
+Slit Valve|슬릿 밸브|The slit valve opens for wafer transfer.|슬릿 밸브는 웨이퍼 이송을 위해 열린다.`
+};
+Object.keys(more3).forEach(i=>more3[i].split('\n').forEach(l=>{const p=l.split('|');modules[i][2].push([p[0],'',p[1],p[2],p[3]])}));
+const more4={
+10:`SEM|주사전자현미경|An SEM shows the pattern in great detail.|SEM은 패턴을 매우 자세히 보여준다.
+TEM|투과전자현미경|A TEM shows the atomic structure.|TEM은 원자 구조를 보여준다.
+AFM|원자힘현미경|An AFM measures surface roughness.|AFM은 표면 거칠기를 측정한다.
+XRD|엑스선 회절|XRD analyzes the crystal structure.|XRD는 결정 구조를 분석한다.
+Four-point Probe|4점 탐침|A four-point probe measures sheet resistance.|4점 탐침은 면저항을 측정한다.
+Spectrometer|분광기|The spectrometer analyzes light from the plasma.|분광기는 플라즈마에서 나오는 빛을 분석한다.
+Reflectometer|반사율 측정기|A reflectometer measures film thickness quickly.|반사율 측정기는 박막 두께를 빠르게 측정한다.
+Profilometer|단차 측정기|A profilometer measures the step height.|단차 측정기는 단차 높이를 측정한다.
+Optical Inspection|광학 검사|Optical inspection finds surface defects.|광학 검사는 표면 결함을 찾는다.
+Wafer Map|웨이퍼 맵|The wafer map shows where defects are located.|웨이퍼 맵은 결함의 위치를 보여준다.
+Sampling|샘플링|Sampling checks only some wafers in a lot.|샘플링은 로트 중 일부 웨이퍼만 검사한다.
+Lot|로트|One lot contains twenty-five wafers.|한 로트에는 웨이퍼 25장이 들어 있다.
+Test Pattern|테스트 패턴|The test pattern is placed between chips.|테스트 패턴은 칩 사이에 배치된다.
+Electrical Test|전기적 시험|An electrical test checks the chip function.|전기적 시험은 칩의 기능을 확인한다.
+Voltage|전압|Measure the voltage at the test pad.|테스트 패드에서 전압을 측정한다.
+Current|전류|The current is measured in microamperes.|전류는 마이크로암페어 단위로 측정한다.
+Capacitance|정전용량|Capacitance shows the oxide quality.|정전용량은 산화막 품질을 보여준다.
+Accuracy|정확도|The tool has an accuracy of one nanometer.|이 장비의 정확도는 1나노미터다.
+Repeatability|반복성|Good repeatability gives stable results.|반복성이 좋으면 결과가 안정적이다.
+Data Logging|데이터 기록|Data logging stores every measurement.|데이터 기록은 모든 측정값을 저장한다.
+Metrology|계측학|Metrology is essential for process control.|계측은 공정 관리에 필수다.`,
+11:`Defect Inspection|결함 검사|Defect inspection is done after each key step.|결함 검사는 주요 공정마다 수행한다.
+Pinhole|핀홀|A pinhole in the film causes leakage.|박막의 핀홀은 누설을 일으킨다.
+Crack|균열|A crack can spread across the wafer.|균열은 웨이퍼 전체로 퍼질 수 있다.
+Particle Defect|입자 결함|A particle defect blocks the pattern.|입자 결함은 패턴을 가린다.
+Bridge Defect|브리지 결함|A bridge defect connects two metal lines.|브리지 결함은 두 금속 배선을 연결해 버린다.
+Open Circuit|단선|An open circuit stops the current.|단선은 전류를 멈추게 한다.
+Short Circuit|단락|A short circuit damages the chip.|단락은 칩을 손상시킨다.
+Good Die|양품 다이|A good die passes all tests.|양품 다이는 모든 시험을 통과한다.
+Bad Die|불량 다이|A bad die is marked on the wafer map.|불량 다이는 웨이퍼 맵에 표시된다.
+Yield Loss|수율 손실|Contamination is a major cause of yield loss.|오염은 수율 손실의 주요 원인이다.
+Process Window|공정 마진|The process window is the safe range of settings.|공정 마진은 안전하게 설정할 수 있는 범위다.
+Process Control|공정 관리|Process control keeps results stable.|공정 관리는 결과를 안정적으로 유지한다.
+SPC|통계적 공정 관리|SPC charts show process trends.|SPC 차트는 공정 추세를 보여준다.
+Control Chart|관리도|The control chart shows a point above the limit.|관리도에 한계를 넘은 점이 있다.
+Standard Deviation|표준편차|A small standard deviation means stable quality.|표준편차가 작으면 품질이 안정적이다.
+Variation|변동|Process variation must be reduced.|공정 변동을 줄여야 한다.
+Root Cause|근본 원인|Find the root cause of the defect.|결함의 근본 원인을 찾는다.
+Corrective Action|시정 조치|Corrective action prevents the problem from returning.|시정 조치는 문제의 재발을 막는다.
+Quality Control|품질 관리|Quality control checks every lot.|품질 관리는 모든 로트를 점검한다.
+Traceability|추적성|Traceability links each chip to its lot.|추적성은 각 칩을 해당 로트와 연결한다.
+Burn-in Test|번인 시험|A burn-in test finds early failures.|번인 시험은 초기 고장을 찾아낸다.`,
+12:`Corrective Maintenance|사후 정비|Corrective maintenance fixes a broken tool.|사후 정비는 고장 난 장비를 수리한다.
+Maintenance Schedule|정비 일정|Follow the maintenance schedule strictly.|정비 일정을 엄격히 따른다.
+Checklist|점검표|Complete the checklist after each task.|작업이 끝날 때마다 점검표를 작성한다.
+Wear|마모|Wear reduces the life of the part.|마모는 부품 수명을 줄인다.
+Filter|필터|Clean the filter before it clogs.|필터가 막히기 전에 청소한다.
+Seal|실, 밀봉|A damaged seal causes a leak.|손상된 실은 누설을 일으킨다.
+Bearing|베어링|The bearing makes noise when worn.|베어링이 마모되면 소음이 난다.
+Belt|벨트|Check the belt tension monthly.|벨트 장력을 매달 점검한다.
+Fuse|퓨즈|Replace the blown fuse.|끊어진 퓨즈를 교체한다.
+Wiring|배선|Inspect the wiring for damage.|배선에 손상이 없는지 점검한다.
+Vibration|진동|Abnormal vibration signals a problem.|비정상 진동은 문제의 신호다.
+Noise|소음|Report any strange noise from the pump.|펌프에서 이상한 소음이 나면 보고한다.
+Overheating|과열|Overheating can damage the motor.|과열은 모터를 손상시킬 수 있다.
+Malfunction|오작동|A malfunction stopped the process.|오작동으로 공정이 멈췄다.
+Fault Code|고장 코드|The screen shows a fault code.|화면에 고장 코드가 표시된다.
+Diagnosis|진단|Diagnosis starts with the alarm history.|진단은 경보 기록 확인에서 시작한다.
+Repair|수리하다|Repair the valve before restarting.|재가동 전에 밸브를 수리한다.
+Realign|재정렬하다|Realign the robot after replacing parts.|부품 교체 후 로봇을 다시 정렬한다.
+Torque|토크|Tighten the bolts to the specified torque.|볼트를 규정 토크로 조인다.
+Service Log|정비 일지|Write the work in the service log.|작업 내용을 정비 일지에 기록한다.
+Warm-up|예열|Warm-up is required before operation.|운전 전에 예열이 필요하다.`,
+13:`Safety Rule|안전 수칙|Every worker must follow the safety rules.|모든 작업자는 안전 수칙을 따라야 한다.
+Safety Glasses|보안경|Wear safety glasses near chemicals.|화학물질 근처에서는 보안경을 착용한다.
+Cleanroom Suit|클린룸 방진복|Put on the cleanroom suit before entry.|입실 전에 클린룸 방진복을 입는다.
+Face Shield|안면 보호구|Use a face shield for acid work.|산 작업에는 안면 보호구를 사용한다.
+Respirator|호흡 보호구|A respirator protects against harmful vapors.|호흡 보호구는 유해 증기를 막아 준다.
+Hazardous Chemical|유해 화학물질|Store hazardous chemicals in a labeled cabinet.|유해 화학물질은 표지가 붙은 보관함에 둔다.
+Safety Data Sheet|물질안전보건자료|Read the safety data sheet before use.|사용 전에 물질안전보건자료를 읽는다.
+Flammable|인화성의|Keep flammable liquids away from heat.|인화성 액체는 열원에서 멀리 둔다.
+Corrosive|부식성의|Hydrofluoric acid is highly corrosive.|불산은 부식성이 매우 강하다.
+Gas Detector|가스 감지기|The gas detector triggers an alarm.|가스 감지기가 경보를 울린다.
+Ventilation|환기|Good ventilation removes harmful fumes.|충분한 환기는 유해 가스를 제거한다.
+Fire Extinguisher|소화기|Know where the fire extinguisher is.|소화기의 위치를 알아 둔다.
+Emergency Stop|비상 정지|Press the emergency stop button.|비상 정지 버튼을 누른다.
+Emergency Exit|비상구|Keep the emergency exit clear.|비상구를 막지 않는다.
+Eyewash Station|눈 세척기|Use the eyewash station after a splash.|화학물질이 튀면 눈 세척기를 사용한다.
+Safety Shower|비상 샤워기|The safety shower is near the wet bench.|비상 샤워기는 습식 작업대 근처에 있다.
+First Aid|응급처치|Give first aid and call for help.|응급처치를 하고 도움을 요청한다.
+Electric Shock|감전|Turn off the power to avoid electric shock.|감전을 피하려면 전원을 끈다.
+Radiation|방사선|Follow the rules near radiation sources.|방사선원 근처에서는 규칙을 따른다.
+Risk Assessment|위험성 평가|Risk assessment is done before new work.|새 작업 전에 위험성 평가를 한다.
+Near Miss|아차 사고|Report every near miss to the supervisor.|모든 아차 사고를 감독자에게 보고한다.`,
+14:`Turn On|켜다|Turn on the main power switch.|주 전원 스위치를 켠다.
+Turn Off|끄다|Turn off the gas supply after use.|사용 후 가스 공급을 끈다.
+Open|열다|Open the valve slowly.|밸브를 천천히 연다.
+Close|닫다|Close the chamber lid.|챔버 덮개를 닫는다.
+Load|적재하다|Load the wafers into the cassette.|웨이퍼를 카세트에 적재한다.
+Unload|꺼내다|Unload the wafers after the run.|공정이 끝나면 웨이퍼를 꺼낸다.
+Select Recipe|레시피를 선택하다|Select the recipe on the screen.|화면에서 레시피를 선택한다.
+Start Process|공정을 시작하다|Start the process after the door is closed.|도어를 닫은 뒤 공정을 시작한다.
+Monitor|모니터링하다|Monitor the pressure during the run.|공정 중 압력을 감시한다.
+Confirm|확인하다|Confirm the setting with your supervisor.|감독자와 설정값을 확인한다.
+Tighten|조이다|Tighten the bolt firmly.|볼트를 단단히 조인다.
+Loosen|풀다|Loosen the screw carefully.|나사를 조심스럽게 푼다.
+Clean|청소하다|Clean the chamber with a lint-free cloth.|무진 천으로 챔버를 청소한다.
+Wipe|닦다|Wipe the surface with alcohol.|표면을 알코올로 닦는다.
+Measure|측정하다|Measure the thickness of the film.|박막 두께를 측정한다.
+Wait|대기하다|Wait until the temperature is stable.|온도가 안정될 때까지 대기한다.
+Stop the Process|공정을 중단하다|Stop the process if an alarm sounds.|경보가 울리면 공정을 중단한다.
+Restart|재시작하다|Restart the system after the repair.|수리 후 시스템을 재시작한다.
+Ask for Help|도움을 요청하다|Ask for help if you are not sure.|확실하지 않으면 도움을 요청한다.
+Follow the Procedure|절차를 따르다|Always follow the procedure.|항상 절차를 따른다.
+Shift Change|교대|Hand over the status at shift change.|교대 시 상태를 인계한다.`
+};
+Object.keys(more4).forEach(i=>more4[i].split('\n').forEach(l=>{const p=l.split('|');modules[i][2].push([p[0],'',p[1],p[2],p[3]])}));
+let _v=null;function pickVoice(){const l=speechSynthesis.getVoices();_v=l.find(v=>/^en[-_]US/i.test(v.lang))||l.find(v=>/^en/i.test(v.lang))||null}
+if(window.speechSynthesis){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function toast(m){let d=document.getElementById('toast');if(!d){d=document.createElement('div');d.id='toast';d.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#10243a;color:#fff;padding:10px 16px;border-radius:10px;font-size:.9rem;z-index:99;max-width:90%';document.body.appendChild(d)}d.textContent=m;d.style.display='block';clearTimeout(d._t);d._t=setTimeout(()=>d.style.display='none',3500)}
+function speak(t){t=String(t).trim();const ss=window.speechSynthesis;let done=false;
+const fallback=()=>{if(done)return;done=true;try{const a=new Audio('https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=en&q='+encodeURIComponent(t));a.play().catch(()=>toast('이 환경에서는 소리를 낼 수 없다. 크롬·엣지 브라우저에서 파일을 직접 열어 사용한다.'))}catch(e){toast('이 환경에서는 소리를 낼 수 없다. 크롬·엣지 브라우저에서 파일을 직접 열어 사용한다.')}};
+if(!ss||!window.SpeechSynthesisUtterance){fallback();return}
+ss.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.85;if(!_v)pickVoice();if(_v)u.voice=_v;
+u.onstart=()=>{done=true};u.onerror=e=>{if(e.error!=='canceled'&&e.error!=='interrupted')fallback()};
+setTimeout(()=>{ss.resume();ss.speak(u)},80);setTimeout(()=>{if(!done)fallback()},1800)}
+let current=0, quizMode=false;
+const nav=document.getElementById('navlist'), cat=document.getElementById('category'), content=document.getElementById('content');
+modules.forEach((m,i)=>{let b=document.createElement('button');b.className='navbtn';b.textContent=String(i+1).padStart(2,'0')+'. '+m[0];b.onclick=()=>render(i);nav.appendChild(b);let o=document.createElement('option');o.value=i;o.textContent=String(i+1).padStart(2,'0')+'. '+m[0];cat.appendChild(o)});
+function render(i){current=i;quizMode=false;document.querySelectorAll('.navbtn').forEach((b,j)=>b.classList.toggle('active',j===i));cat.value=i;let m=modules[i];content.innerHTML=`<h2 class="section-title">${String(i+1).padStart(2,'0')}. ${m[0]}</h2><p class="sub">학습 항목 ${m[2].length}개 · 듣기 · 의미 · 예문 · 한글 번역</p>`+m[2].map(w=>`<article class="word"><div class="word-top"><h3>${w[0]} <button class="spk" onclick="speak(this.parentNode.firstChild.textContent)">🔊</button></h3><span class="tag">${m[0]}</span></div>${w[1]?`<div class="pron">발음: ${w[1]}</div>`:''}<div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><div class="translation" id="tr-${i}-${m[2].indexOf(w)}">${w[4]}</div><button class="spk" style="margin-top:8px" onclick="speak(this.parentNode.querySelector('b').textContent)">🔊 듣기</button> <button class="primary" style="margin-top:8px" onclick="toggleTranslation('tr-${i}-${m[2].indexOf(w)}',this)">한글 번역</button></div></article>`).join('')+`<button class="primary" onclick="showQuiz()">이 모듈 복습 퀴즈</button>`}
+function toggleTranslation(id,btn){
+ const el=document.getElementById(id); if(!el)return;
+ el.classList.toggle('show');
+ btn.textContent=el.classList.contains('show')?'번역 숨기기':'한글 번역';
+}
+function showQuiz(){quizMode=true;let words=modules[current][2];let q=words.map((w,i)=>{let opts=[w[2],...words.filter((x,j)=>j!==i).map(x=>x[2])].sort(()=>Math.random()-.5);return `<div class="quiz-q"><b>${i+1}. '${w[0]}'의 뜻은?</b>${opts.map(o=>`<label><input type="radio" name="q${i}" value="${o}"> ${o}</label>`).join('')}<div class="feedback" id="f${i}"></div></div>`}).join('');content.innerHTML=`<h2 class="section-title">${modules[current][0]} 복습 퀴즈</h2><p class="sub">각 영어 용어에 해당하는 한국어 뜻을 선택한다.</p>${q}<button class="primary" onclick="grade()">채점하기</button> <button onclick="render(current)">학습으로 돌아가기</button><p id="score"></p>`}
+function grade(){let words=modules[current][2],score=0;words.forEach((w,i)=>{let v=document.querySelector(`input[name=q${i}]:checked`);let ok=v&&v.value===w[2];if(ok)score++;let f=document.getElementById('f'+i);f.textContent=ok?'정답입니다.':'정답: '+w[2];f.style.color=ok?'#16835d':'#b54735'});document.getElementById('score').innerHTML=`<b>점수: ${score} / ${words.length}</b> · 정답과 해설을 확인하고 다시 학습한다.`}
+document.getElementById('category').addEventListener('change',e=>render(Number(e.target.value)));
+document.getElementById('search').addEventListener('input',e=>{let q=e.target.value.trim().toLowerCase();if(!q){render(current);return}let found=[];modules.forEach((m,i)=>m[2].forEach(w=>{if(w.join(' ').toLowerCase().includes(q))found.push({m,i,w})}));document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));content.innerHTML=`<h2 class="section-title">검색 결과</h2><p class="sub">${found.length}개 용어를 찾았다.</p>`+(found.length?found.map(x=>`<article class="word"><div class="word-top"><h3>${x.w[0]} <button class="spk" onclick="speak(this.parentNode.firstChild.textContent)">🔊</button></h3><span class="tag">${x.m[0]}</span></div>${x.w[1]?`<div class="pron">발음: ${x.w[1]}</div>`:''}<div class="meaning">${x.w[2]}</div><div class="example"><b>${x.w[3]}</b><div class="translation" id="sr-${x.i}-${x.m[2].indexOf(x.w)}">${x.w[4]}</div><button class="spk" style="margin-top:8px" onclick="speak(this.parentNode.querySelector('b').textContent)">🔊 듣기</button> <button class="primary" style="margin-top:8px" onclick="toggleTranslation('sr-${x.i}-${x.m[2].indexOf(x.w)}',this)">한글 번역</button></div><button onclick="render(${x.i})">모듈에서 학습</button></article>`).join(''):'검색 결과가 없다.')});
+document.getElementById('wordCount').textContent=modules.reduce((a,m)=>a+m[2].length,0)+'개';
+render(0);
+</script>
+</body></html>
