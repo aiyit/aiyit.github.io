@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 오답노트</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.7 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 18px/1.4 "Noto Sans KR",sans-serif;margin:0 0 8px}
+.lead{color:var(--sub);margin:0 0 14px}
+a{color:var(--acc)}
+.box{background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:16px;margin-bottom:14px}
+.big{font:400 44px/1.1 "Black Han Sans","Noto Sans KR",sans-serif;color:var(--bad)}
+.row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:14px}
+.row span:first-child{flex:0 0 46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row i{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.row i b{display:block;height:100%;background:var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:99px;padding:6px 14px;font:700 14px "Noto Sans KR",sans-serif;cursor:pointer;min-height:40px}
+.chip.on{border-color:var(--acc);color:var(--acc)}
+.item{background:var(--card);border-left:6px solid var(--bad);border-radius:0 8px 8px 0;padding:12px 14px;margin:10px 0}
+.item b{display:block}
+.item .ans{color:var(--ok);font-weight:700}
+.item small{color:var(--sub);display:block}
+.tag{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:12px;padding:0 9px;border-radius:99px;margin-right:6px}
+.btn{border:0;border-radius:8px;padding:11px 16px;font:700 15px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.sm{min-height:36px;padding:4px 12px;font-size:13px;margin-top:6px}
+.btn:disabled{opacity:.4}
+.o{display:block;width:100%;text-align:left;margin:8px 0;padding:11px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:46px}
+.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.hide{display:none}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+button:focus-visible,a:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>오답노트</h1>
+<p class="lead"><a href="elecExam.html">← 목록으로</a> · 단원 퀴즈와 모의고사에서 틀린 문제가 자동으로 모인다. 이 브라우저에만 저장된다.</p>
+
+<div id="view">
+<div class="box"><div class="big" id="cnt">0</div><p class="lead" style="margin:0">틀린 문제</p><div id="byunit" style="margin-top:10px"></div></div>
+<div class="chips" id="chips"></div>
+<div class="bar"><button class="btn" id="retry" type="button">다시 풀기</button><button class="btn ghost" id="clear" type="button">전체 삭제</button></div>
+<p id="msg" class="lead"></p>
+<div id="list"></div>
+</div>
+
+<div id="quiz" class="hide">
+<div class="box"><span class="tag" id="qt"></span><p style="font-weight:700;margin:6px 0" id="qq"></p><div id="qo"></div><p id="qe" class="lead" style="margin-top:6px"></p></div>
+<div class="bar"><button class="btn" id="qn" type="button" disabled>다음</button><button class="btn ghost" id="qx" type="button">그만하기</button></div>
+</div>
+</main>
+<script>
+const SUBJ=["전기이론","전기기기","전기설비"];
+const $=id=>document.getElementById(id);
+const sub=u=>{const n=parseInt(u,10);return n<=7?0:n<=13?1:2};
+let filt=-1,pool=[],pi=0,got=0,miss=0,pending=false;
+function load(){try{return JSON.parse(localStorage.getItem("elecWQ")||"[]")}catch(e){return[]}}
+function save(a){try{localStorage.setItem("elecWQ",JSON.stringify(a))}catch(e){}}
+function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e}
+function render(){
+ const all=load();$("cnt").textContent=all.length;
+ const by={};all.forEach(r=>by[r.u]=(by[r.u]||0)+1);
+ const bu=$("byunit");bu.innerHTML="";
+ const ent=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+ const mx=ent.length?ent[0][1]:1;
+ ent.slice(0,6).forEach(([u,n])=>{const r=el("div","row");r.appendChild(el("span","",u));const i=el("i");const b=el("b");b.style.width=(n/mx*100)+"%";i.appendChild(b);r.appendChild(i);r.appendChild(el("span","",n+"개"));bu.appendChild(r)});
+ const ch=$("chips");ch.innerHTML="";
+ [["전체",-1],...SUBJ.map((s,i)=>[s,i])].forEach(([t,v])=>{const b=el("button","chip"+(filt===v?" on":""),t);b.type="button";b.onclick=()=>{filt=v;render()};ch.appendChild(b)});
+ const rows=all.filter(r=>filt<0||sub(r.u)===filt).sort((a,b)=>(b.n||1)-(a.n||1)||(b.t||0)-(a.t||0));
+ $("retry").disabled=!rows.length;
+ const L=$("list");L.innerHTML="";
+ if(!rows.length){L.appendChild(el("p","lead",all.length?"이 과목에는 틀린 문제가 없다.":"아직 틀린 문제가 없다. 단원 퀴즈나 모의고사를 풀어 보자."));return}
+ rows.forEach(r=>{
+  const d=el("div","item");
+  const h=el("b","");h.appendChild(el("span","tag",r.u));h.appendChild(document.createTextNode(r.q));d.appendChild(h);
+  d.appendChild(el("span","ans","정답: "+r.o[r.a]));
+  d.appendChild(el("small","","해설: "+r.e+" · 틀린 횟수 "+(r.n||1)+"회"));
+  const x=el("button","btn ghost sm","정복했다(삭제)");x.type="button";
+  x.onclick=()=>{save(load().filter(z=>z.q!==r.q));render()};d.appendChild(x);L.appendChild(d)});
+}
+let armed=false;
+$("clear").onclick=()=>{
+ if(!armed){armed=true;$("msg").textContent="모든 오답이 지워진다. 한 번 더 누르면 삭제한다.";return}
+ armed=false;save([]);$("msg").textContent="";render();
+};
+$("retry").onclick=()=>{
+ const all=load();
+ pool=shuf(all.filter(r=>filt<0||sub(r.u)===filt));pi=0;got=0;miss=0;
+ if(!pool.length)return;
+ $("view").classList.add("hide");$("quiz").classList.remove("hide");ask();
+};
+function ask(){
+ if(pi>=pool.length){end();return}
+ const r=pool[pi];pending=true;
+ $("qt").textContent=(pi+1)+" / "+pool.length+" · "+r.u;$("qq").textContent=r.q;$("qe").textContent="";
+ $("qn").disabled=true;$("qn").textContent=pi===pool.length-1?"결과 보기":"다음";
+ const o=$("qo");o.innerHTML="";
+ const idx=shuf(r.o.map((_,i)=>i));
+ idx.forEach(i=>{const b=el("button","o",r.o[i]);b.type="button";
+  b.onclick=()=>{
+   if(!pending)return;pending=false;
+   const bs=[...o.children];
+   if(i===r.a){b.classList.add("right");got++;save(load().filter(z=>z.q!==r.q))}
+   else{b.classList.add("wrong");miss++;bs[idx.indexOf(r.a)].classList.add("right");
+    const st=load();const f=st.find(z=>z.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now();save(st)}}
+   $("qe").textContent=(i===r.a?"정답이다. 오답노트에서 지웠다. ":"오답이다. ")+"해설: "+r.e;
+   $("qn").disabled=false;
+  };o.appendChild(b)});
+}
+$("qn").onclick=()=>{pi++;ask()};
+function end(){
+ $("quiz").classList.add("hide");$("view").classList.remove("hide");
+ $("msg").textContent="다시 풀기 결과: "+got+"문제 정복, "+miss+"문제는 노트에 남아 있다.";
+ render();
+}
+$("qx").onclick=end;
+render();
+</script>
+</body>
+</html>
