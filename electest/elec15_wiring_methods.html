@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec15를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 전선 접속과 배선 방법</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">보통</span>전기기능사 필기 · 전기설비 15단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>전선 접속과 배선 방법</h1>
+<p class="meta">전선 접속 원칙과 배선 공사의 종류를 익힌다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 전선 접속의 원칙을 말한다.<br>② 접속 방법의 종류를 구분한다.<br>③ 합성수지관공사의 시설 기준을 안다.</p></section>
+
+<section><h2>핵심 이론</h2><p><b>접속 원칙</b>은 세 가지이다. 접속 부분의 전기저항이 늘지 않게 하고, 전선 강도를 <b>80% 이상</b> 유지하며(20% 이상 줄이면 안 된다), 접속 부분을 절연 전선과 같은 정도로 절연한다.</p><p>접속 방법은 전선 굵기와 용도에 따라 다르다. 가는 단선은 트위스트(쥐꼬리) 접속, 굵은 단선의 직선 접속은 <b>브리타니아 접속</b>, 연선과 단자는 슬리브나 압착단자를 쓴다.</p><div class="formula">합성수지관 지지점 간격 ≤ 1.5m<small>관 상호 접속 시 삽입 깊이 ≥ 관 바깥지름의 1.2배 (접착제 사용 시 0.8배)</small></div><div class="lab"><h2>직접 해 보기: 공사 종류와 특징 짝짓기</h2><p style="font-size:14px;margin:0 0 8px">왼쪽에서 공사를 고른 뒤 오른쪽에서 알맞은 특징을 누른다.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div id="tl15" style="display:grid;gap:8px"></div><div id="us15" style="display:grid;gap:8px"></div></div><p id="r15" style="font-weight:700;margin:10px 0 6px"></p><button type="button" class="btn ghost" id="rs15">다시 하기</button></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>공사</th><th>특징</th></tr><tr><td>합성수지관공사</td><td>절연·내식성 좋음, 열과 충격에 약함</td></tr><tr><td>금속관공사</td><td>튼튼함, 접지 필요, 화재·폭발 위험 장소 가능</td></tr><tr><td>가요전선관공사</td><td>구부러지는 관, 전동기 인입부</td></tr><tr><td>금속몰드·덕트공사</td><td>노출 배선, 증설 쉬움</td></tr><tr><td>케이블공사</td><td>지지점 간격 2m 이하</td></tr><tr><td>애자사용공사</td><td>노출 배선, 전선을 애자로 지지</td></tr></table><div class="tip"><b>함정</b><br>합성수지관은 지지점 간격 1.5m 이하이다. 케이블공사(2m 이하)와 숫자를 바꿔 외우지 말자.</div><div class="tip">접속부 절연은 절연테이프를 반폭씩 겹쳐 감는 것이 원칙이다. 수치는 KEC 개정에 따라 바뀔 수 있으니 교재와 함께 확인하자.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• 접속: 저항 증가 금지, 강도 80% 이상, 절연 보강<br>• 합성수지관 지지점 1.5m 이하, 삽입 깊이 1.2배<br>• 노출 배선: 몰드·덕트·애자, 매입: 관 공사</p><p>다음 단원: <b>16. 보호기기와 접지</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec15")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec15",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["전선 접속 시 전선의 강도는 원래 강도의 몇 % 이상 유지해야 하는가?", ["50%", "70%", "80%", "95%"], 2, "강도를 20% 이상 줄이면 안 되므로 80% 이상 유지한다"], ["합성수지관공사에서 관의 지지점 간 거리는?", ["1m 이하", "1.5m 이하", "2m 이하", "3m 이하"], 1, "합성수지관의 지지점 간격은 1.5m 이하이다"], ["합성수지관을 접착제 없이 접속할 때 삽입 깊이는 관 바깥지름의 몇 배 이상인가?", ["0.8배", "1.0배", "1.2배", "2배"], 2, "접착제를 쓰지 않으면 1.2배 이상, 쓰면 0.8배 이상이다"], ["전선 접속 부분의 전기저항은 어떻게 해야 하는가?", ["커져도 된다", "증가시키지 않는다", "작아지게 해야 한다", "상관없다"], 1, "접속으로 전기저항이 증가하면 안 된다"], ["굵은 단선의 직선 접속에 쓰는 방법은?", ["트위스트 접속", "브리타니아 접속", "쥐꼬리 접속", "종단 접속"], 1, "굵은 단선은 브리타니아 접속을 한다"], ["전선 접속부의 절연은 어떻게 해야 하는가?", ["절연하지 않는다", "절연전선의 절연 효력 이상으로 한다", "절반만 절연한다", "도체를 노출한다"], 1, "접속부도 전선과 같거나 그 이상으로 절연해야 한다"], ["합성수지관 1본의 표준 길이는?", ["2m", "3m", "4m", "6m"], 2, "합성수지관은 보통 1본이 4m이다"], ["합성수지관공사의 단점은?", ["열과 충격에 약하다", "녹이 쓴다", "전기가 통한다", "접지가 필요하다"], 0, "합성수지관은 열과 기계적 충격에 약하다"], ["전동기와 배관의 연결부처럼 구부러지는 곳에 쓰는 공사는?", ["금속관공사", "가요전선관공사", "애자사용공사", "합성수지관공사"], 1, "가요전선관은 자유롭게 구부러져 전동기 인입부에 쓴다"], ["케이블공사의 지지점 간격은?", ["1m 이하", "1.5m 이하", "2m 이하", "3m 이하"], 2, "케이블공사는 지지점 간격 2m 이하이다"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"15. 전선 접속과 배선 방법",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);
+const P=[["합성수지관공사", "열과 충격에 약함"], ["금속관공사", "튼튼하고 접지가 필요"], ["가요전선관공사", "전동기 연결부처럼 구부러지는 곳"], ["케이블공사", "지지점 간격 2m 이하"], ["애자사용공사", "전선을 애자로 지지하는 노출 배선"], ["금속덕트공사", "노출 배선, 증설이 쉬움"]];
+let sel=-1,done=0,miss=0,tb=[];
+function mk(t){const b=document.createElement("button");b.type="button";b.className="btn ghost";b.style.textAlign="left";b.style.minHeight="48px";b.textContent=t;return b}
+function build(){sel=-1;done=0;miss=0;$("tl15").innerHTML="";$("us15").innerHTML="";tb=[];
+P.forEach((p,i)=>{const b=mk(p[0]);b.onclick=()=>{if(b.disabled)return;sel=i;tb.forEach(x=>x.style.borderColor="");b.style.borderColor="var(--acc)"};$("tl15").appendChild(b);tb.push(b)});
+P.map((_,i)=>i).sort(()=>Math.random()-0.5).forEach(i=>{const b=mk(P[i][1]);b.onclick=()=>{if(b.disabled)return;if(sel<0){$("r15").textContent="먼저 왼쪽에서 항목을 고르자.";return}
+if(sel===i){[tb[i],b].forEach(x=>{x.disabled=true;x.style.background="var(--ok)";x.style.color="#fff";x.style.borderColor="var(--ok)";x.style.opacity="1"});done++;sel=-1;$("r15").textContent=done===P.length?"모두 맞혔다. 틀린 횟수 "+miss+"회":"정답이다. "+done+" / "+P.length}
+else{miss++;$("r15").textContent="아니다. 다시 골라 보자. (틀린 횟수 "+miss+"회)"}};$("us15").appendChild(b)});
+$("r15").textContent="0 / "+P.length}
+$("rs15").onclick=build;build();})();</script>
+</body>
+</html>

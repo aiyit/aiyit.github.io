@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec16를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 보호기기와 접지</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">보통</span>전기기능사 필기 · 전기설비 16단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>보호기기와 접지</h1>
+<p class="meta">과전류·누전 보호기기와 접지의 목적과 기준을 익힌다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 퓨즈, 배선용 차단기, 누전차단기의 역할을 구분한다.<br>② 접지의 목적을 설명한다.<br>③ 접지 시스템의 기본 기준을 안다.</p></section>
+
+<section><h2>핵심 이론</h2><p><b>보호기기</b>는 사고 전류로부터 사람과 설비를 지킨다. 퓨즈는 과전류가 흐르면 열로 녹아 끊어지고(1회용), 배선용 차단기는 과전류를 감지해 개폐기가 열린다(재사용). <b>누전차단기</b>는 전류가 밖으로 새는 누전과 지락을 감지해 전로를 끊는다.</p><div class="formula">감전보호용 누전차단기: 30mA 이하, 0.03초 이내<small>정격감도전류와 동작시간</small></div><p><b>접지</b>는 전기설비를 대지와 연결하는 것이다. 목적은 감전 방지, 지락 전류를 흘려 보호장치를 확실히 동작시키는 것, 이상전압의 억제이다. 접지저항은 낮을수록 안전하다.</p><div class="lab"><h2>직접 해 보기: 누전차단기(30mA) 동작</h2><svg viewBox="0 0 360 120" role="img" aria-label="누설전류와 차단 기준"><rect x="20" y="30" width="300" height="16" rx="8" fill="var(--line)"/><rect id="lk16" x="20" y="30" height="16" rx="8" fill="var(--acc)"/><line x1="110" y1="20" x2="110" y2="58" stroke="var(--bad)" stroke-width="3"/><text x="110" y="74" text-anchor="middle" fill="var(--bad)" font-size="12" font-weight="700">30mA</text><circle id="lp16" cx="60" cy="100" r="12" stroke="var(--ink)" stroke-width="2"/><text id="st16" x="82" y="105" fill="var(--ink)" font-size="14" font-weight="700"></text></svg><label>누설(지락) 전류 <input type="range" id="l16" min="0" max="100" step="1" value="0"> <span id="l16v">0</span>mA</label><button type="button" class="btn ghost" id="rs16" style="margin-top:8px">차단기 복귀</button><p id="m16" style="font-size:14px;margin:8px 0 0"></p></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>항목</th><th>기준</th></tr><tr><td>접지도체 최소 굵기</td><td>구리 6mm² 이상</td></tr><tr><td>접지극 매설 깊이</td><td>지하 0.75m 이상</td></tr><tr><td>접지도체 보호</td><td>지하 0.75m ~ 지상 2m는 합성수지관 등으로 보호</td></tr><tr><td>계통접지 구분</td><td>TN, TT, IT 방식</td></tr></table><div class="tip"><b>알아두기</b><br>예전의 제1·2·3종 접지공사 구분은 KEC 시행 후 접지 시스템(계통접지, 보호접지, 피뢰시스템접지)으로 바뀌었다. 교재가 구 기준이면 어느 기준인지 먼저 확인하자.</div><div class="tip">계통접지 문자: 첫 글자는 전원 쪽 접지(T 대지 직접, I 절연 또는 임피던스), 둘째 글자는 설비의 노출 부분 접지(T 대지 직접, N 전원 접지점에 연결).</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• 누전차단기: 30mA 이하, 0.03초 이내<br>• 접지: 감전 방지, 보호장치 동작 확보<br>• 접지도체 구리 6mm² 이상, 매설 0.75m 이상</p><p>다음 단원: <b>17. 옥내배선과 조명</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec16")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec16",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["인체 감전보호용 누전차단기의 정격감도전류는?", ["30mA 이하", "100mA 이하", "500mA 이하", "1A 이하"], 0, "인체 감전보호용은 정격감도전류 30mA 이하이다"], ["인체 감전보호용 누전차단기의 동작시간은?", ["0.03초 이내", "0.5초 이내", "1초 이내", "3초 이내"], 0, "동작시간은 0.03초 이내이다"], ["접지의 목적으로 틀린 것은?", ["감전 방지", "이상전압 억제", "보호장치 동작 확보", "부하 전류 증가"], 3, "접지는 부하 전류를 늘리는 것과 관계없다"], ["접지도체의 최소 굵기(구리)는?", ["2.5mm²", "4mm²", "6mm²", "10mm²"], 2, "일반적으로 구리 6mm² 이상을 사용한다"], ["퓨즈가 끊어지는 원리는 전류의 어떤 작용인가?", ["자기 작용", "열 작용", "화학 작용", "광 작용"], 1, "전류의 열 작용으로 퓨즈가 녹아 끊어진다"], ["용단되면 교체해야 하는 과전류 보호기기는?", ["배선용 차단기", "퓨즈", "누전차단기", "개폐기"], 1, "퓨즈는 녹아 끊어지면 새것으로 교체한다"], ["누전차단기가 검출하는 것은?", ["과전압", "누설(지락) 전류", "저전압", "주파수 변화"], 1, "누설(지락) 전류를 검출해 차단한다"], ["접지저항은 어떠해야 안전한가?", ["높을수록 좋다", "낮을수록 좋다", "상관없다", "일정해야 한다"], 1, "접지저항은 낮을수록 안전하다"], ["접지극의 매설 깊이는 지하 몇 m 이상인가?", ["0.3m", "0.5m", "0.75m", "1.5m"], 2, "접지극은 지하 0.75m 이상에 시설한다"], ["피뢰기의 설치 목적은?", ["단락 보호", "이상전압(뇌서지) 보호", "과부하 보호", "역률 개선"], 1, "피뢰기는 뇌서지 등 이상전압에서 설비를 보호한다"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"16. 보호기기와 접지",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);let trip=false;
+function d(){const l=+$("l16").value;$("l16v").textContent=l;if(l>=30)trip=true;
+$("lk16").setAttribute("width",Math.max(2,l/100*300));$("lk16").setAttribute("fill",l>=30?"var(--bad)":"var(--acc)");
+$("lp16").setAttribute("fill",trip?"var(--bad)":"var(--ok)");$("st16").textContent=trip?"차단됨 (0.03초 이내)":"정상 공급 중";
+$("m16").textContent=trip?(l>=30?"누설전류가 30mA 이상이라 차단되었다. 누전 원인을 먼저 없애고 복귀한다.":"차단된 상태이다. 누전 원인이 사라졌으면 복귀 버튼을 누른다."):"누설전류가 30mA 미만이라 정상 공급 중이다. 슬라이더를 30mA 이상으로 올려 보자."}
+$("l16").oninput=d;$("rs16").onclick=()=>{trip=+$("l16").value>=30;d();if(trip)$("m16").textContent="누전이 남아 있어 복귀해도 다시 차단된다. 슬라이더를 낮춘 뒤 복귀하자."};d();})();</script>
+</body>
+</html>

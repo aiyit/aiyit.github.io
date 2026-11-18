@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 이론 학습</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.7 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:760px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(32px,9vw,48px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0}
+.lead{color:var(--sub);margin:0 0 16px}
+.total{background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:14px 16px;margin-bottom:22px}
+.total b{color:var(--acc)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:26px;font-size:14px}
+.how div{background:var(--card);border-left:6px solid var(--sig);border-radius:0 8px 8px 0;padding:8px 10px}
+.sub{margin:28px 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:3px solid var(--ink);padding-bottom:6px}
+.sub span{color:var(--sub);font-size:14px}
+.grid{display:grid;gap:10px}
+.card{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:12px;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:12px;text-decoration:none;color:var(--ink);min-height:64px}
+a.card{border-color:var(--ink)}
+a.card:hover{border-color:var(--acc)}
+.card.off{opacity:.55}
+.no{font:400 24px "Black Han Sans",sans-serif;color:var(--acc);text-align:center}
+.card b{display:block;font-size:16px;line-height:1.4}
+.card small{color:var(--sub);font-size:13px}
+.st{font-size:13px;font-weight:700;padding:2px 10px;border-radius:99px;border:2px solid var(--line);color:var(--sub);white-space:nowrap}
+.st.ing{border-color:var(--sig);color:var(--ink);background:var(--sig)}
+.st.fin{border-color:var(--ok);background:var(--ok);color:#fff}
+.exam{margin-top:30px;background:var(--ink);color:var(--bg);border-radius:10px;padding:16px}
+.exam p{margin:4px 0 0;opacity:.85;font-size:14px}
+a:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+@media (max-width:520px){.how{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<h1>전기기능사 필기</h1>
+<p class="lead">3과목 19단원을 순서대로 학습한다. 한 단원은 약 15~20분이다.</p>
+<div class="total"><span>전체 진도 <b id="pct">0%</b> (<span id="cnt">0</span> / 19단원 완료)</span><div class="bar"><i id="bar"></i></div></div>
+<div class="how"><div>1. 단원 순서대로 읽는다</div><div>2. 퀴즈로 바로 확인한다</div><div>3. 틀린 문제는 해설을 다시 본다</div></div>
+<div id="list"></div>
+<div class="exam"><h2>모의고사</h2><p>과목별 20문항, 전과목 60문항(60분)으로 실력을 확인한다.</p><p><a href="elecMock.html" style="color:var(--sig);font-weight:700">모의고사 시작하기</a>　<a href="elecWrong.html" style="color:var(--sig);font-weight:700">오답노트 보기</a></p></div>
+</main>
+<script>
+const SUBJ=[
+{n:"전기이론",d:"회로와 전기·자기의 기초",u:[
+["옴의 법칙","기초","elec01_ohm.html"],["직류 회로와 키르히호프 법칙","보통","elec02_kirchhoff.html"],["정전기와 콘덴서","보통","elec03_capacitor.html"],["자기와 전자유도","보통","elec04_magnetic.html"],["교류 기초","보통","elec05_ac.html"],["R·L·C 회로","심화","elec06_rlc.html"],["3상 교류","심화","elec07_3phase.html"]]},
+{n:"전기기기",d:"전동기·변압기·보호 장치",u:[
+["직류기","보통","elec08_dcmachine.html"],["변압기","보통","elec09_transformer.html"],["유도전동기","보통","elec10_induction.html"],["동기기","보통","elec11_synchronous.html"],["정류기와 전력변환","보통","elec12_rectifier.html"],["제어기기와 보호계전기","심화","elec13_control_relay.html"]]},
+{n:"전기설비",d:"배선·접지·안전 규정",u:[
+["배선재료와 공구","기초","elec14_materials_tools.html"],["전선 접속과 배선 방법","보통","elec15_wiring_methods.html"],["보호기기와 접지","보통","elec16_protection_ground.html"],["옥내배선과 조명","보통","elec17_indoor_lighting.html"],["특수장소와 전기 안전","심화","elec18_hazard_safety.html"],["KEC 핵심 규정","심화","elec19_kec.html"]]}];
+const list=document.getElementById("list");
+let n=0,fin=0;
+SUBJ.forEach(s=>{
+ const h=document.createElement("div");h.className="sub";
+ h.innerHTML="<h2></h2><span></span>";h.firstChild.textContent=s.n;h.lastChild.textContent=s.d;list.appendChild(h);
+ const g=document.createElement("div");g.className="grid";
+ s.u.forEach(u=>{
+  n++;
+  const key="elec"+String(n).padStart(2,"0");
+  let c=0;
+  try{c=new Set(JSON.parse(localStorage.getItem(key)||"[]")).size}catch(e){}
+  const on=!!u[2];
+  const el=document.createElement(on?"a":"div");
+  el.className="card"+(on?"":" off");
+  if(on)el.href=u[2];
+  const stc=c>=4?"fin":c>0?"ing":"";
+  if(c>=4)fin++;
+  el.innerHTML='<div class="no"></div><div><b></b><small></small></div><span class="st '+stc+'"></span>';
+  el.querySelector(".no").textContent=n;
+  el.querySelector("b").textContent=u[0];
+  el.querySelector("small").textContent=u[1]+" · 약 15분";
+  el.querySelector(".st").textContent=!on?"준비 중":c>=4?"완료":c>0?"학습 중":"시작 전";
+  g.appendChild(el);
+ });
+ list.appendChild(g);
+});
+const pct=Math.round(fin/n*100);
+document.getElementById("pct").textContent=pct+"%";
+document.getElementById("cnt").textContent=fin;
+document.getElementById("bar").style.width=pct+"%";
+</script>
+</body>
+</html>

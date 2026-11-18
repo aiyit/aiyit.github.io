@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec10를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 유도전동기</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">보통</span>전기기능사 필기 · 전기기기 10단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>유도전동기</h1>
+<p class="meta">회전자계, 슬립, 기동법을 익힌다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 동기속도와 슬립을 계산한다.<br>② 농형과 권선형을 구분한다.<br>③ 기동법과 회전방향 변경법을 말한다.</p></section>
+
+<section><h2>핵심 이론</h2><p>3상 고정자 권선에 3상 교류를 흘리면 <b>회전자계</b>가 생기고, 회전자는 이 자계를 뒤따라 돈다. 자계보다 조금 느리게 돌기 때문에 유도전동기라 부른다.</p><div class="formula">Nₛ = 120f ÷ P (rpm)<small>동기속도: f 주파수, P 극수</small></div><div class="formula">s = (Nₛ − N) ÷ Nₛ<small>슬립: 정지 때 s = 1, 정상 운전은 수 %</small></div><div class="formula">N = (1 − s) × Nₛ<small>회전자 속도</small></div><div class="lab"><h2>직접 해 보기: 슬립과 회전속도</h2><svg viewBox="0 0 360 180" role="img" aria-label="회전자계와 회전자의 속도 비교"><g transform="translate(95 85)"><circle r="62" fill="none" stroke="var(--line)" stroke-width="3"/><g id="fg10"><circle cx="0" cy="-62" r="9" fill="var(--bad)"/><circle cx="0" cy="62" r="9" fill="var(--acc)"/><line x1="0" y1="-62" x2="0" y2="62" stroke="var(--line)" stroke-width="2"/></g><text y="4" text-anchor="middle" fill="var(--sub)" font-size="12">회전자계</text></g><g transform="translate(265 85)"><circle r="62" fill="none" stroke="var(--line)" stroke-width="3"/><g id="rg10"><line x1="0" y1="0" x2="0" y2="-56" stroke="var(--sig)" stroke-width="8" stroke-linecap="round"/><circle r="6" fill="var(--ink)"/></g><text y="84" text-anchor="middle" fill="var(--sub)" font-size="12">회전자</text></g><text x="95" y="172" text-anchor="middle" fill="var(--sub)" font-size="12">동기속도 Nₛ</text><text x="265" y="172" text-anchor="middle" fill="var(--sub)" font-size="12">회전속도 N</text></svg><label>주파수 f <input type="range" id="f10" min="50" max="60" step="10" value="60"> <span id="f10v">60</span>Hz</label><label>극수 P <input type="range" id="p10" min="2" max="10" step="2" value="4"> <span id="p10v">4</span>극</label><label>슬립 s <input type="range" id="s10" min="0" max="100" step="1" value="5"> <span id="s10v">5</span>%</label><div class="out"><div>동기속도 Nₛ<b id="o10n">1800</b>rpm</div><div>회전속도 N<b id="o10r">1710</b>rpm</div><div>상태<b id="o10s" style="font-size:16px">운전</b></div></div><p style="font-size:14px;color:var(--sub);margin:8px 0 0">화면의 회전 속도는 실제의 약 1/15로 느리게 보여 준다. 슬립이 커질수록 회전자는 회전자계를 따라가지 못하고, 100%이면 정지(기동 순간)이다.</p></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>종류</th><th>장점</th><th>특징</th></tr><tr><td>농형</td><td>구조 간단, 튼튼</td><td>기동토크 작음</td></tr><tr><td>권선형</td><td>2차 저항으로 조절</td><td>기동토크 크고 비례추이</td></tr></table><table><tr><th>기동법</th><th>적용 용량</th></tr><tr><td>직입</td><td>5kW 이하</td></tr><tr><td>Y-Δ</td><td>5~15kW, 기동전류 ⅓</td></tr><tr><td>기동보상기</td><td>15kW 이상</td></tr></table><div class="tip"><b>암기</b><br>회전방향을 바꾸려면 전원 3선 중 <b>2선</b>의 접속을 바꾼다. 토크는 전압의 제곱에 비례한다.</div><div class="tip">속도 제어는 주파수, 극수, 슬립(전압·2차 저항)으로 한다. 인버터는 주파수 제어이다.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• Nₛ = 120f ÷ P, s = (Nₛ − N) ÷ Nₛ<br>• 농형은 간단, 권선형은 기동토크 큼<br>• 회전방향 변경: 3선 중 2선 교체</p><p>다음 단원: <b>11. 동기기</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec10")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec10",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["60Hz, 4극 유도전동기의 동기속도는?", ["900rpm", "1200rpm", "1800rpm", "3600rpm"], 2, "Nₛ = 120 × 60 ÷ 4 = 1800rpm"], ["동기속도 1800rpm, 회전속도 1710rpm일 때 슬립은?", ["2%", "5%", "10%", "15%"], 1, "s = (1800 − 1710) ÷ 1800 = 0.05, 5%"], ["3상 유도전동기의 회전방향을 바꾸는 방법은?", ["3선을 모두 바꾼다", "2선을 서로 바꾼다", "전압을 높인다", "주파수를 낮춘다"], 1, "3선 중 2선을 바꾸면 회전자계 방향이 반대가 된다"], ["Y-Δ 기동 시 기동전류는 직입 기동에 비해?", ["⅓", "½", "2배", "3배"], 0, "Y결선으로 기동하면 기동전류가 ⅓로 줄어든다"], ["2차 저항으로 기동토크를 크게 하고 속도를 제어할 수 있는 전동기는?", ["농형", "권선형", "동기형", "단상형"], 1, "권선형은 슬립링으로 2차 저항을 조절한다(비례추이)"], ["6극, 60Hz 유도전동기의 동기속도는?", ["900rpm", "1200rpm", "1800rpm", "3600rpm"], 1, "Nₛ = 120 × 60 ÷ 6 = 1200rpm"], ["동기속도 1800rpm, 슬립 4%인 전동기의 회전속도는?", ["1710rpm", "1728rpm", "1764rpm", "1800rpm"], 1, "N = (1 − 0.04) × 1800 = 1728rpm"], ["단상 유도전동기가 스스로 기동하지 못하는 이유는?", ["회전자계가 생기지 않아서", "슬립이 커서", "저항이 커서", "주파수가 낮아서"], 0, "단상 전원은 교번자계라 회전자계가 생기지 않는다"], ["정상 운전 중인 유도전동기의 슬립은 보통 어느 정도인가?", ["50% 이상", "수 % 정도", "0%", "100%"], 1, "정격 운전의 슬립은 수 % 정도이다"], ["인버터로 유도전동기 속도를 제어하는 방식은?", ["극수 변환", "주파수 제어", "슬립 증가", "전압 감소"], 1, "인버터는 주파수를 바꿔 속도를 제어한다"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"10. 유도전동기",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);let fa=0,ra=0,last=0,ns=1800,n=1710;
+const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function d(){const f=+$("f10").value,p=+$("p10").value,s=+$("s10").value;
+$("f10v").textContent=f;$("p10v").textContent=p;$("s10v").textContent=s;
+ns=120*f/p;n=ns*(1-s/100);
+$("o10n").textContent=+ns.toFixed(0);$("o10r").textContent=+n.toFixed(0);
+$("o10s").textContent=s===0?"동기속도(이상)":s>=100?"정지(기동)":s<=6?"정격 운전":"과부하·기동 중";
+if(rm){$("fg10").setAttribute("transform","rotate(0)");$("rg10").setAttribute("transform","rotate("+(360*(1-s/100)*0.25)+")")}}
+function tick(t){const dt=last?t-last:0;last=t;fa=(fa+ns/60/15*360*dt/1000)%360;ra=(ra+n/60/15*360*dt/1000)%360;
+$("fg10").setAttribute("transform","rotate("+fa+")");$("rg10").setAttribute("transform","rotate("+ra+")");requestAnimationFrame(tick)}
+["f10","p10","s10"].forEach(i=>$(i).oninput=d);d();if(!rm)requestAnimationFrame(tick);})();</script>
+</body>
+</html>

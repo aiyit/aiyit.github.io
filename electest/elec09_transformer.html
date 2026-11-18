@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec09를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 변압기</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">보통</span>전기기능사 필기 · 전기기기 9단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>변압기</h1>
+<p class="meta">권수비, 손실, 결선, 병렬운전을 익힌다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 권수비로 전압과 전류를 구한다.<br>② 철손과 동손을 구분한다.<br>③ 3상 결선과 병렬운전 조건을 말한다.</p></section>
+
+<section><h2>핵심 이론</h2><p>변압기는 상호유도 작용으로 교류 전압을 바꾸는 장치이다. 주파수는 변하지 않는다.</p><div class="formula">a = N₁ ÷ N₂ = V₁ ÷ V₂ = I₂ ÷ I₁<small>권수비: 전압은 권수에 비례, 전류는 반비례</small></div><p><b>손실</b>은 두 가지이다. 철손은 부하와 관계없이 일정하고(히스테리시스손 + 와류손), 동손은 부하전류의 제곱에 비례한다.</p><div class="formula">η = 출력 ÷ (출력 + 손실) × 100%<small>효율</small></div><div class="formula">ε = (V₂₀ − V₂ₙ) ÷ V₂ₙ × 100%<small>전압변동률</small></div><div class="lab"><h2>직접 해 보기: 변압기 권수비</h2><svg viewBox="0 0 360 190" role="img" aria-label="1차·2차 권선의 감은 수 비교"><rect x="130" y="40" width="100" height="110" fill="none" stroke="var(--ink)" stroke-width="12"/><g id="c1_9" stroke="var(--acc)" stroke-width="4"></g><g id="c2_9" stroke="var(--sig)" stroke-width="4"></g><text id="t1_9" x="8" y="95" fill="var(--acc)" font-size="14" font-weight="700"></text><text id="t2_9" x="352" y="95" text-anchor="end" fill="var(--ink)" font-size="14" font-weight="700"></text><text x="8" y="115" fill="var(--sub)" font-size="12">1차(전원 쪽)</text><text x="352" y="115" text-anchor="end" fill="var(--sub)" font-size="12">2차(부하 쪽)</text></svg><label>1차 전압 V₁ <input type="range" id="v9" min="100" max="6600" step="100" value="6600"> <span id="v9v">6600</span>V</label><label>1차 권수 N₁ <input type="range" id="n19" min="100" max="3000" step="100" value="3000"> <span id="n19v">3000</span>회</label><label>2차 권수 N₂ <input type="range" id="n29" min="100" max="3000" step="100" value="100"> <span id="n29v">100</span>회</label><label>부하저항 R <input type="range" id="r9" min="1" max="100" step="1" value="10"> <span id="r9v">10</span>Ω</label><div class="out"><div>권수비 a<b id="o9a">30</b></div><div>2차 전압 V₂<b id="o9v">220</b>V</div><div>2차 전류 I₂<b id="o9i2">22</b>A</div><div>1차 전류 I₁<b id="o9i1">0.73</b>A</div><div>출력 전력<b id="o9p">4840</b>W</div><div>구분<b id="o9k" style="font-size:16px">강압</b></div></div><p style="font-size:14px;color:var(--sub);margin:8px 0 0">이상적인 변압기로 계산한다. 권수가 많은 쪽이 전압은 높고 전류는 작다. 입력 전력과 출력 전력은 같다.</p></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>결선</th><th>특징</th></tr><tr><td>Y-Y</td><td>제3고조파 문제</td></tr><tr><td>Δ-Δ</td><td>고조파 제거, 1대 고장 시 V결선</td></tr><tr><td>V-V</td><td>출력 √3P, 이용률 86.6%</td></tr><tr><td>Y-Δ, Δ-Y</td><td>30° 위상차, 승·강압용</td></tr></table><div class="tip"><b>병렬운전 조건</b><br>극성, 권수비와 정격전압, %임피던스, 상회전 방향과 위상이 같아야 한다. 용량이 같을 필요는 없다.</div><div class="tip">단권 변압기는 권선 하나를 1차·2차가 공용한다. 소형·고효율이지만 1·2차가 절연되지 않는다.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• 권수비 a = V₁÷V₂ = I₂÷I₁<br>• 철손은 일정, 동손은 전류의 제곱에 비례<br>• V결선 이용률 86.6%</p><p>다음 단원: <b>10. 유도전동기</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec09")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec09",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["1차 6600V, 2차 220V인 변압기의 권수비는?", ["10", "20", "30", "60"], 2, "a = 6600 ÷ 220 = 30"], ["1차 권수 1000, 2차 권수 100이고 1차 전류가 1A일 때 2차 전류는?", ["0.1A", "1A", "10A", "100A"], 2, "I₂ = I₁ × (N₁ ÷ N₂) = 1 × 10 = 10A"], ["부하와 관계없이 일정한 변압기 손실은?", ["동손", "철손", "표유부하손", "유전체손"], 1, "철손(무부하손)은 부하와 관계없이 일정하다"], ["단상 변압기 2대로 3상을 만드는 결선의 이용률은?", ["57.7%", "66.7%", "86.6%", "100%"], 2, "V결선의 이용률은 √3 ÷ 2 ≈ 86.6%이다"], ["변압기 병렬운전 조건이 아닌 것은?", ["극성이 같을 것", "권수비와 정격전압이 같을 것", "용량이 같을 것", "%임피던스가 같을 것"], 2, "용량은 달라도 병렬운전이 가능하다"], ["권수비 20인 변압기의 2차 전압이 220V이면 1차 전압은?", ["1100V", "4400V", "8800V", "11000V"], 1, "V₁ = a × V₂ = 20 × 220 = 4400V"], ["변압기에서 와류손을 줄이는 방법은?", ["철심을 두껍게 한다", "얇은 강판을 성층한다", "철심을 없앤다", "권선을 굵게 한다"], 1, "얇은 강판을 서로 절연해 겹치면 와류손이 줄어든다"], ["변압기유의 역할은?", ["절연과 냉각", "윤활", "발열", "도전"], 0, "변압기유는 절연과 냉각을 한다"], ["출력 100kW, 손실 5kW인 변압기의 효율은 약 얼마인가?", ["90.5%", "95.2%", "97%", "99%"], 1, "η = 100 ÷ (100+5) ≈ 95.2%"], ["2차를 개방하고 1차에 정격전압을 가할 때 흐르는 전류는?", ["단락전류", "여자전류", "부하전류", "지락전류"], 1, "무부하 시 흐르는 전류가 여자전류이다"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"9. 변압기",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);
+function coil(g,n,x,c){let h="";const k=Math.min(14,Math.max(2,Math.round(n/220)));for(let i=0;i<k;i++){const y=50+i*(90/(k-1));h+='<line x1="'+(x-18)+'" y1="'+y+'" x2="'+(x+18)+'" y2="'+y+'"/>'}$(g).innerHTML=h}
+function d(){const v1=+$("v9").value,n1=+$("n19").value,n2=+$("n29").value,r=+$("r9").value;
+["v9","n19","n29","r9"].forEach(k=>$(k+"v").textContent=+$(k).value);
+const a=n1/n2,v2=v1/a,i2=v2/r,i1=i2/a;
+coil("c1_9",n1,130,"");coil("c2_9",n2,230,"");
+$("t1_9").textContent="V₁ "+v1+"V";$("t2_9").textContent="V₂ "+(+v2.toFixed(1))+"V";
+$("o9a").textContent=+a.toFixed(2);$("o9v").textContent=+v2.toFixed(1);$("o9i2").textContent=+i2.toFixed(2);$("o9i1").textContent=+i1.toFixed(2);
+$("o9p").textContent=Math.round(v2*i2);$("o9k").textContent=a>1?"강압":a<1?"승압":"1:1"}
+["v9","n19","n29","r9"].forEach(k=>$(k).oninput=d);d();})();</script>
+</body>
+</html>

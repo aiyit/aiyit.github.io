@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec18를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 특수장소와 전기 안전</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">심화</span>전기기능사 필기 · 전기설비 18단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>특수장소와 전기 안전</h1>
+<p class="meta">위험 장소의 배선과 감전·화재 안전을 익힌다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 위험 장소별 배선 공사를 구분한다.<br>② 감전의 위험 요소와 응급 조치를 안다.<br>③ 전기 화재의 원인과 소화 방법을 말한다.</p></section>
+
+<section><h2>핵심 이론</h2><p>분진, 가스, 화약류가 있는 장소는 전기 불꽃 하나가 폭발로 이어진다. 그래서 일반 장소보다 튼튼한 배선과 밀폐 구조를 쓴다.</p><p><b>감전</b>의 위험은 인체에 흐르는 전류의 크기와 통전 시간으로 정해진다. 전류가 클수록, 시간이 길수록 위험하고 심장을 통과하면 특히 위험하다. 감전 사고가 나면 구조자는 <b>먼저 전원을 차단</b>한 뒤 구조하고 필요하면 심폐소생술을 한다.</p><div class="lab"><h2>직접 해 보기: 감전 사고 대처 순서</h2><p style="font-size:14px;margin:0 0 8px">알맞은 순서대로 단계를 누른다.</p><div id="st18" style="display:grid;gap:8px"></div><p id="r18" style="font-weight:700;margin:10px 0 6px"></p><button type="button" class="btn ghost" id="rs18">다시 하기</button></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>장소</th><th>배선 공사</th></tr><tr><td>폭연성 분진</td><td>금속관공사 또는 케이블공사</td></tr><tr><td>가연성 분진</td><td>합성수지관·금속관·케이블공사</td></tr><tr><td>가연성 가스·위험물</td><td>금속관공사 또는 케이블공사</td></tr><tr><td>화약류 저장소</td><td>전로의 대지전압 300V 이하</td></tr></table><div class="tip"><b>전기 화재 원인</b><br>단락(합선), 과전류, 누전, 접촉 불량, 정전기 불꽃이 대표적이다. 소화는 이산화탄소·분말 소화기를 쓰고, 통전 중에는 물을 쓰지 않는다.</div><div class="tip">안전 용구: 절연장갑, 안전모, 절연화, 검전기. 작업 전 검전기로 무전압을 확인하고 접지한다. 구체적인 기준은 교재와 현행 규정으로 확인하자.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• 분진·가스 장소는 금속관·케이블공사<br>• 감전 사고는 전원 차단이 먼저<br>• 화재 원인: 단락·과전류·누전·접촉 불량</p><p>다음 단원: <b>19. KEC 핵심 규정</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec18")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec18",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["전기 화재를 소화할 때 적합한 소화기는?", ["물", "이산화탄소 소화기", "포말 소화기", "젖은 담요"], 1, "통전 중에는 물을 쓰면 안 되고 이산화탄소·분말 소화기를 쓴다"], ["감전 사고가 났을 때 구조자가 가장 먼저 해야 할 일은?", ["환자를 끌어당긴다", "전원을 차단한다", "물을 붓는다", "병원에 먼저 간다"], 1, "구조자의 감전을 막기 위해 먼저 전원을 차단한다"], ["폭연성 분진이 있는 장소에 적합한 배선 공사는?", ["애자사용공사", "금속관공사", "합성수지몰드공사", "가요전선관공사"], 1, "폭연성 분진 장소는 금속관공사나 케이블공사를 한다"], ["화약류 저장소에 시설하는 전로의 대지전압은?", ["150V 이하", "300V 이하", "600V 이하", "1000V 이하"], 1, "화약류 저장소는 대지전압을 300V 이하로 한다"], ["전기 화재의 원인이 아닌 것은?", ["단락", "누전", "접촉 불량", "절연 강화"], 3, "절연 강화는 화재를 막는 조치이다"], ["감전의 위험도를 좌우하는 요소는?", ["전선 색상", "전류의 크기와 통전 시간", "전선 길이", "설비 가격"], 1, "전류가 클수록, 통전 시간이 길수록 위험하다"], ["검전기의 용도는?", ["전류 측정", "충전 여부 확인", "절연저항 측정", "접지저항 측정"], 1, "검전기로 전로의 충전 여부(전압 유무)를 확인한다"], ["가연성 분진이 있는 장소에 시설할 수 없는 공사는?", ["금속관공사", "케이블공사", "합성수지관공사", "애자사용공사"], 3, "가연성 분진 장소는 관·케이블공사를 하며 애자사용공사는 쓰지 않는다"], ["감전으로 호흡이 멈춘 사람을 구조한 뒤 해야 할 조치는?", ["물을 먹인다", "인공호흡·심폐소생술", "그대로 눕혀 둔다", "몸을 흔든다"], 1, "즉시 인공호흡과 심폐소생술을 하고 119에 연락한다"], ["정전기로 인한 화재를 막는 방법은?", ["가습을 금지한다", "도체를 접지하고 습도를 유지한다", "절연을 줄인다", "전압을 올린다"], 1, "접지와 적정 습도 유지로 정전기 축적을 막는다"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"18. 특수장소와 전기 안전",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);
+const S=["전원을 차단한다","안전을 확인하고 환자를 위험 구역에서 옮긴다","의식과 호흡을 확인한다","119에 신고한다","인공호흡·심폐소생술을 한다"];
+let n=0,miss=0;
+function build(){n=0;miss=0;$("st18").innerHTML="";$("r18").textContent="1단계부터 순서대로 눌러 보자.";
+S.map((_,i)=>i).sort(()=>Math.random()-0.5).forEach(i=>{const b=document.createElement("button");b.type="button";b.className="btn ghost";b.style.textAlign="left";b.style.minHeight="48px";b.textContent=S[i];
+b.onclick=()=>{if(b.disabled)return;if(i===n){n++;b.disabled=true;b.style.background="var(--ok)";b.style.color="#fff";b.style.borderColor="var(--ok)";b.style.opacity="1";b.textContent=n+". "+S[i];$("r18").textContent=n===S.length?"순서가 맞다. 틀린 횟수 "+miss+"회":n+" / "+S.length}
+else{miss++;$("r18").textContent="순서가 아니다. 구조자의 안전을 먼저 생각하자. (틀린 횟수 "+miss+"회)"}};$("st18").appendChild(b)})}
+$("rs18").onclick=build;build();})();</script>
+</body>
+</html>

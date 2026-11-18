@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec06를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · R·L·C 회로</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">심화</span>전기기능사 필기 · 전기이론 6단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>R·L·C 회로</h1>
+<p class="meta">리액턴스, 임피던스, 역률, 공진을 계산한다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 유도성·용량성 리액턴스를 계산한다.<br>② R-L, R-C, R-L-C 직렬회로의 임피던스를 구한다.<br>③ 역률과 직렬공진 조건을 설명한다.</p></section>
+
+<section><h2>핵심 이론</h2><p>코일(L)과 콘덴서(C)는 교류에서 저항처럼 전류를 방해한다. 이 방해를 <b>리액턴스</b>라 하고 단위는 Ω이다.</p><div class="formula">X_L = ωL = 2πfL<small>주파수가 높을수록 커진다</small></div><div class="formula">X_C = 1 ÷ (ωC) = 1 ÷ (2πfC)<small>주파수가 높을수록 작아진다</small></div><p>저항과 리액턴스는 직각으로 합성한다. 그냥 더하면 안 된다.</p><div class="formula">Z = √(R² + X²)<small>R-L 직렬: X = X_L　R-C 직렬: X = X_C</small></div><div class="formula">Z = √(R² + (X_L − X_C)²)<small>R-L-C 직렬</small></div><div class="formula">역률 cosθ = R ÷ Z<small>직렬회로의 역률</small></div><div class="lab"><h2>직접 해 보기: 임피던스 삼각형</h2><svg viewBox="0 0 360 240" role="img" aria-label="임피던스 삼각형"><line x1="30" y1="120" x2="350" y2="120" stroke="var(--line)" stroke-width="2"/><polygon id="t6" fill="color-mix(in srgb,var(--acc) 15%,transparent)" stroke="var(--ink)" stroke-width="2"/><line id="z6" stroke="var(--acc)" stroke-width="4"/><text id="lr6" fill="var(--ink)" font-size="13" font-weight="700"></text><text id="lx6" fill="var(--ink)" font-size="13" font-weight="700"></text><text id="lz6" fill="var(--acc)" font-size="14" font-weight="700"></text></svg><label>저항 R <input type="range" id="r6" min="1" max="20" value="6"> <span id="r6v">6</span>Ω</label><label>유도성 X_L <input type="range" id="xl6" min="0" max="20" value="8"> <span id="xl6v">8</span>Ω</label><label>용량성 X_C <input type="range" id="xc6" min="0" max="20" value="0"> <span id="xc6v">0</span>Ω</label><div class="out"><div>임피던스 Z<b id="o6z">10</b>Ω</div><div>역률 cosθ<b id="o6p">0.6</b></div><div>전류 위상<b id="o6s">지상</b></div></div><p style="font-size:14px;color:var(--sub);margin:8px 0 0">X_L과 X_C를 같게 하면 공진이 되어 Z = R, 역률 1이 된다.</p></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>회로</th><th>위상</th><th>특징</th></tr><tr><td>R-L 직렬</td><td>전류가 전압보다 뒤진다(지상)</td><td>cosθ = R÷Z</td></tr><tr><td>R-C 직렬</td><td>전류가 전압보다 앞선다(진상)</td><td>cosθ = R÷Z</td></tr><tr><td>직렬 공진</td><td>X_L = X_C, Z = R(최소)</td><td>전류 최대</td></tr></table><div class="tip"><b>암기</b><br>코일은 전류가 늦고, 콘덴서는 전류가 앞선다. 공진 주파수는 f₀ = 1 ÷ (2π√(LC))이다.</div><div class="tip">병렬 공진에서는 반대로 임피던스가 최대, 전류가 최소가 된다.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• X_L = 2πfL, X_C = 1 ÷ 2πfC<br>• Z = √(R² + X²), cosθ = R ÷ Z<br>• 직렬 공진: X_L = X_C, 전류 최대</p><p>다음 단원: <b>7. 3상 교류</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec06")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec06",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["R = 3Ω, X_L = 4Ω인 R-L 직렬회로의 임피던스는?", ["1Ω", "5Ω", "7Ω", "12Ω"], 1, "Z = √(3² + 4²) = 5Ω"], ["L = 0.1H 코일의 60Hz에서의 유도성 리액턴스는 약 얼마인가?", ["6Ω", "37.7Ω", "60Ω", "377Ω"], 1, "X_L = 2π × 60 × 0.1 ≈ 37.7Ω"], ["R-L 직렬회로에서 전류와 전압의 위상 관계는?", ["전류가 앞선다", "전류가 뒤진다", "같다", "90° 앞선다"], 1, "코일이 있으면 전류가 전압보다 뒤진다(지상)"], ["R-L-C 직렬 공진의 조건은?", ["R = X_L", "X_L = X_C", "R = X_C", "L = R"], 1, "공진은 X_L = X_C일 때 생기고 Z = R이 된다"], ["R = 8Ω, X_L = 6Ω인 직렬회로의 역률은?", ["0.6", "0.75", "0.8", "1.0"], 2, "Z = 10Ω이므로 cosθ = 8 ÷ 10 = 0.8"], ["주파수가 높아지면 용량성 리액턴스는?", ["커진다", "작아진다", "변화 없다", "무한대가 된다"], 1, "X_C = 1 ÷ 2πfC이므로 주파수가 높을수록 작아진다"], ["주파수가 높아지면 유도성 리액턴스는?", ["커진다", "작아진다", "변화 없다", "0이 된다"], 0, "X_L = 2πfL이므로 주파수에 비례해 커진다"], ["R = 6Ω, X_C = 8Ω인 R-C 직렬회로의 임피던스는?", ["2Ω", "10Ω", "14Ω", "48Ω"], 1, "Z = √(6² + 8²) = 10Ω"], ["R-C 직렬회로에서 전류와 전압의 위상 관계는?", ["전류가 뒤진다", "전류가 앞선다", "같다", "180° 뒤진다"], 1, "콘덴서가 있으면 전류가 전압보다 앞선다(진상)"], ["R = 3Ω, X_L = 7Ω, X_C = 3Ω인 직렬회로의 임피던스는?", ["3Ω", "4Ω", "5Ω", "13Ω"], 2, "Z = √(3² + (7−3)²) = √25 = 5Ω"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"6. R·L·C 회로",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);
+function d(){const r=+$("r6").value,l=+$("xl6").value,c=+$("xc6").value,x=l-c;
+$("r6v").textContent=r;$("xl6v").textContent=l;$("xc6v").textContent=c;
+const k=5.5,ox=40,oy=120,px=ox+r*k,py=oy-x*k;
+$("t6").setAttribute("points",ox+","+oy+" "+px+","+oy+" "+px+","+py);
+$("z6").setAttribute("x1",ox);$("z6").setAttribute("y1",oy);$("z6").setAttribute("x2",px);$("z6").setAttribute("y2",py);
+$("lr6").setAttribute("x",ox+r*k/2-8);$("lr6").setAttribute("y",oy+(x>=0?16:-6));$("lr6").textContent="R";
+$("lx6").setAttribute("x",px+6);$("lx6").setAttribute("y",oy-x*k/2);$("lx6").textContent=x===0?"":"X="+x;
+const z=Math.hypot(r,x);$("lz6").setAttribute("x",ox+r*k/2-10);$("lz6").setAttribute("y",oy-x*k/2-8);$("lz6").textContent="Z";
+$("o6z").textContent=+z.toFixed(2);$("o6p").textContent=+(r/z).toFixed(2);
+$("o6s").textContent=x>0?"뒤진다(지상)":x<0?"앞선다(진상)":"공진(같다)"}
+["r6","xl6","xc6"].forEach(i=>$(i).oninput=d);d();})();</script>
+</body>
+</html>

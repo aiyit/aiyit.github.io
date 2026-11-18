@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec13를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 제어기기와 보호계전기</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">심화</span>전기기능사 필기 · 전기기기 13단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>제어기기와 보호계전기</h1>
+<p class="meta">시퀀스 제어 기기와 보호계전기의 역할을 구분한다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① a접점과 b접점을 구분한다.<br>② 전자접촉기, 열동계전기, 타이머의 역할을 말한다.<br>③ 보호계전기의 종류와 용도를 짝짓는다.</p></section>
+
+<section><h2>핵심 이론</h2><p><b>시퀀스 제어</b>는 정해진 순서대로 동작시키는 제어이다. 접점은 세 종류이다. <b>a접점</b>은 평소 열려 있다가 신호가 오면 닫히고, <b>b접점</b>은 평소 닫혀 있다가 신호가 오면 열린다. c접점은 둘을 전환한다.</p><p>주요 제어기기는 다음과 같다. 전자접촉기(MC)는 큰 전류를 개폐하고, 열동계전기(THR)는 전동기 과부하를 보호하며, 둘을 합친 것이 전자개폐기(MS)이다. 자기유지와 인터록은 이 기기들로 만든다.</p><div class="lab"><h2>직접 해 보기: a·b접점과 자기유지</h2><p style="margin:0 0 6px"><b>① a접점·b접점</b></p><button type="button" class="btn" id="pb13">버튼 누르기</button><svg viewBox="0 0 360 90" role="img" aria-label="a접점과 b접점 램프"><circle id="la13" cx="100" cy="40" r="20" stroke="var(--ink)" stroke-width="3"/><circle id="lb13" cx="260" cy="40" r="20" stroke="var(--ink)" stroke-width="3"/><text x="100" y="82" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="700">a접점 램프</text><text x="260" y="82" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="700">b접점 램프</text></svg><p id="d13" style="font-size:14px;margin:4px 0 12px"></p><hr style="border:0;border-top:2px dashed var(--line);margin:8px 0"><p style="margin:0 0 6px"><b>② 자기유지</b></p><div style="display:flex;gap:8px;margin-bottom:6px"><button type="button" class="btn" id="st13">기동(PB1, a접점)</button><button type="button" class="btn ghost" id="sp13">정지(PB2, b접점)</button></div><svg viewBox="0 0 360 80" role="img" aria-label="전자접촉기 램프"><circle id="mc13" cx="60" cy="40" r="22" stroke="var(--ink)" stroke-width="3"/><text x="60" y="45" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="700">MC</text><text id="sh13" x="110" y="45" fill="var(--ink)" font-size="14" font-weight="700"></text></svg><p id="e13" style="font-size:14px;margin:4px 0 0"></p></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>계전기</th><th>용도</th></tr><tr><td>과전류 계전기(OCR)</td><td>과전류 보호</td></tr><tr><td>부족전압 계전기(UVR)</td><td>전압 저하 보호</td></tr><tr><td>지락 계전기 + 영상변류기(ZCT)</td><td>지락 사고 검출</td></tr><tr><td>비율차동 계전기</td><td>변압기·발전기 내부 고장</td></tr><tr><td>부흐홀츠 계전기</td><td>변압기 내부 고장 (가스·유속)</td></tr></table><div class="tip"><b>암기</b><br>열동계전기는 과부하(열), 과전류 계전기는 단락 같은 큰 전류에 동작한다. 용도를 구분해 외우자.</div><div class="tip">타이머의 on-delay는 신호를 받은 뒤 설정 시간이 지나야 접점이 동작하고, off-delay는 신호가 끊긴 뒤 설정 시간이 지나야 복귀한다.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• a접점은 상시 열림, b접점은 상시 닫힘<br>• MC는 개폐, THR은 과부하 보호, MS = MC + THR<br>• 비율차동·부흐홀츠는 변압기 내부 고장 보호</p><p>다음 단원: <b>14. 배선재료와 공구 (전기설비)</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec13")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec13",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["전동기의 과부하를 보호하는 기기는?", ["전자접촉기", "열동계전기", "푸시버튼", "리밋스위치"], 1, "열동계전기(THR)가 과부하를 열로 감지해 보호한다"], ["평소 열려 있다가 신호가 오면 닫히는 접점은?", ["a접점", "b접점", "c접점", "복합접점"], 0, "a접점은 상시 열림(NO) 접점이다"], ["변압기 내부 고장 시 발생하는 가스나 유속으로 동작하는 계전기는?", ["과전류 계전기", "부흐홀츠 계전기", "부족전압 계전기", "역상 계전기"], 1, "부흐홀츠 계전기는 절연유 속 가스를 감지한다"], ["변압기나 발전기의 내부 고장을 전류의 차로 검출하는 계전기는?", ["과전압 계전기", "거리 계전기", "비율차동 계전기", "온도 계전기"], 2, "입력·출력 전류의 차를 비교하는 것이 비율차동 계전기이다"], ["지락 사고 검출에 쓰이는 변류기는?", ["CT", "PT", "ZCT", "LA"], 2, "영상변류기(ZCT)가 지락 전류를 검출한다"], ["평소 닫혀 있다가 신호가 오면 열리는 접점은?", ["a접점", "b접점", "c접점", "d접점"], 1, "b접점은 상시 닫힘(NC) 접점이다"], ["전자접촉기의 약호는?", ["THR", "MC", "OCR", "PB"], 1, "전자접촉기는 MC이다"], ["누름버튼 스위치의 약호는?", ["PB", "MC", "THR", "LS"], 0, "푸시버튼은 PB이다"], ["on-delay 타이머의 동작은?", ["신호 즉시 동작", "설정 시간이 지난 뒤 접점이 동작", "신호가 끊기면 즉시 복귀", "동작하지 않는다"], 1, "신호를 받은 뒤 설정 시간이 지나야 접점이 동작한다"], ["부족전압 계전기가 동작하는 경우는?", ["과전류", "전압이 정해진 값 아래로 떨어질 때", "지락", "온도 상승"], 1, "전압 저하를 감지해 동작한다"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"13. 제어기기와 보호계전기",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);let pr=false,mc=false;
+function d(){$("pb13").textContent=pr?"버튼 놓기":"버튼 누르기";
+$("la13").setAttribute("fill",pr?"var(--sig)":"var(--line)");$("lb13").setAttribute("fill",pr?"var(--line)":"var(--sig)");
+$("d13").textContent=pr?"누르는 중: a접점은 닫혀 램프가 켜지고, b접점은 열려 램프가 꺼진다.":"놓은 상태: a접점은 열려 램프가 꺼지고, b접점은 닫혀 램프가 켜진다.";
+$("mc13").setAttribute("fill",mc?"var(--sig)":"var(--line)");
+$("sh13").textContent=mc?"자기유지 접점: 닫힘":"자기유지 접점: 열림";
+$("e13").textContent=mc?"MC가 동작 중이다. 기동 버튼에서 손을 떼도 자기유지 접점이 전류를 이어 준다. 정지를 누르면 회로가 끊긴다.":"MC가 정지 상태이다. 기동을 한 번 눌러 보자."}
+$("pb13").onclick=()=>{pr=!pr;d()};
+$("st13").onclick=()=>{mc=true;d()};$("sp13").onclick=()=>{mc=false;d()};d();})();</script>
+</body>
+</html>

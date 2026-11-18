@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec11를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 동기기</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">보통</span>전기기능사 필기 · 전기기기 11단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>동기기</h1>
+<p class="meta">동기발전기와 동기전동기의 특성을 익힌다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 동기발전기의 회전수와 구조를 설명한다.<br>② 단락비와 병렬운전 조건을 말한다.<br>③ 동기조상기의 역할을 설명한다.</p></section>
+
+<section><h2>핵심 이론</h2><p>동기기는 회전자가 항상 <b>동기속도</b>로 도는 기기이다. 발전기로 쓰면 동기발전기, 전동기로 쓰면 동기전동기이다.</p><div class="formula">Nₛ = 120f ÷ P<small>f가 같으면 극수가 많을수록 느리다</small></div><div class="formula">E = 4.44 × f × N × φ × k<small>유기기전력(k: 권선계수)</small></div><p>회전계자형은 계자를 돌리고 전기자를 고정한다. 대용량·고전압에 유리하다. <b>원통형</b>은 고속 터빈 발전기, <b>철극형</b>은 저속 수차 발전기에 쓴다.</p><div class="lab"><h2>직접 해 보기: 동기조상기 위상특성곡선(V곡선)</h2><svg viewBox="0 0 360 180" role="img" aria-label="계자전류와 전기자전류의 V곡선"><line x1="20" y1="150" x2="350" y2="150" stroke="var(--line)" stroke-width="2"/><line x1="185" y1="20" x2="185" y2="150" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"/><path id="cv11" fill="none" stroke="var(--acc)" stroke-width="3"/><circle id="mk11" r="8" fill="var(--sig)" stroke="var(--ink)" stroke-width="2"/><text x="24" y="172" fill="var(--sub)" font-size="12">부족여자(지상)</text><text x="346" y="172" text-anchor="end" fill="var(--sub)" font-size="12">과여자(진상)</text><text x="24" y="16" fill="var(--sub)" font-size="12">전기자 전류 ↑</text></svg><label>여자 정도 (계자전류) <input type="range" id="x11" min="-100" max="100" step="5" value="0"> <span id="x11v">0</span>%</label><div class="out"><div>전기자 전류<b id="o11i">100</b>%</div><div>작용<b id="o11a" style="font-size:15px">역률 1</b></div><div>쓰임<b id="o11u" style="font-size:14px">최소 전류</b></div></div><p style="font-size:13px;color:var(--sub);margin:8px 0 0">계자전류를 늘리면(과여자) 진상 전류가 흘러 콘덴서처럼, 줄이면(부족여자) 지상 전류가 흘러 리액터처럼 작용한다. 곡선이 V자 모양이라 V곡선이라 부른다.</p></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>동기발전기 병렬운전 조건</th><th>조건</th></tr><tr><td>기전력 크기</td><td>같을 것</td></tr><tr><td>위상</td><td>같을 것</td></tr><tr><td>주파수</td><td>같을 것</td></tr><tr><td>파형</td><td>같을 것</td></tr><tr><td>상회전 방향</td><td>같을 것</td></tr></table><div class="tip"><b>단락비가 큰 발전기</b><br>전압변동률이 작고 안정도가 좋지만 크고 무겁고 비싸다.</div><div class="tip">동기전동기는 스스로 기동하지 못한다. 역률을 조정할 수 있고, 무부하로 돌린 것이 동기조상기이다. 과여자는 콘덴서처럼(진상), 부족여자는 리액터처럼(지상) 작용한다.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• 동기속도 Nₛ = 120f ÷ P<br>• 단락비 큼: 전압변동률 작음, 안정도 좋음<br>• 동기조상기: 과여자 = 콘덴서, 부족여자 = 리액터</p><p>다음 단원: <b>12. 정류기와 전력변환</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec11")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec11",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["60Hz, 6극 동기발전기의 회전수는?", ["600rpm", "1000rpm", "1200rpm", "1800rpm"], 2, "Nₛ = 120 × 60 ÷ 6 = 1200rpm"], ["저속의 수차발전기에 적합한 회전자 형태는?", ["원통형", "철극형", "농형", "권선형"], 1, "저속 수차발전기는 철극형을 쓴다"], ["단락비가 큰 동기발전기의 특징은?", ["전압변동률이 작다", "소형 경량이다", "가격이 싸다", "효율이 가장 높다"], 0, "단락비가 크면 전압변동률이 작고 안정도가 좋다"], ["동기발전기 병렬운전 조건이 아닌 것은?", ["기전력의 크기가 같을 것", "위상이 같을 것", "주파수가 같을 것", "용량이 같을 것"], 3, "용량은 달라도 된다"], ["동기조상기를 과여자로 운전하면 어떻게 작용하는가?", ["리액터", "콘덴서", "저항", "변압기"], 1, "과여자는 진상 전류를 흘려 콘덴서처럼 작용한다"], ["동기전동기의 특징은?", ["기동토크가 크다", "역률을 조정할 수 있다", "슬립이 있다", "속도가 부하에 따라 변한다"], 1, "계자전류로 역률을 조정할 수 있다"], ["지상 역률 부하일 때 동기발전기의 전기자 반작용은?", ["증자작용", "감자작용", "교차자화작용", "없다"], 1, "전류가 뒤지면 감자작용이 생긴다"], ["동기전동기의 기동에 쓰는 방법은?", ["제동권선을 이용한 자기동법", "계자전류를 끊는 법", "전원 극성을 바꾸는 법", "주파수를 낮추는 법"], 0, "스스로 기동하지 못해 제동권선 자기동법 등을 쓴다"], ["8극, 60Hz 동기발전기의 회전수는?", ["600rpm", "750rpm", "900rpm", "1200rpm"], 2, "Nₛ = 120 × 60 ÷ 8 = 900rpm"], ["부족여자로 운전하는 동기조상기는 어떻게 작용하는가?", ["콘덴서", "리액터", "저항", "변압기"], 1, "부족여자는 지상 전류를 흘려 리액터처럼 작용한다"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"11. 동기기",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);
+const ia=x=>Math.sqrt(100+Math.pow(0.4*x,2)),px=x=>185+x*1.55,py=v=>150-v*3;
+let p="";for(let x=-100;x<=100;x+=4)p+=(x>-100?"L":"M")+px(x).toFixed(1)+" "+py(ia(x)).toFixed(1);$("cv11").setAttribute("d",p);
+function d(){const x=+$("x11").value;$("x11v").textContent=x;const v=ia(x);
+$("mk11").setAttribute("cx",px(x));$("mk11").setAttribute("cy",py(v));
+$("o11i").textContent=Math.round(v/10*100);
+$("o11a").textContent=x>5?"과여자: 콘덴서":x<-5?"부족여자: 리액터":"역률 1";
+$("o11u").textContent=x>5?"역률 개선":x<-5?"페란티 현상 방지":"최소 전류"}
+$("x11").oninput=d;d();})();</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- 사용법: elec17를 허브 번호(elec02, elec03…)로 바꾸고 파일명을 허브 목록에 등록한다. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>전기기능사 필기 · 옥내배선과 조명</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eaf1f4;--ink:#10303d;--sub:#4b6672;--card:#fff;--line:#c5d5dc;--acc:#0b7a86;--sig:#f2b705;--ok:#1d8a4b;--bad:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1d24;--ink:#e4eef2;--sub:#9db3bd;--card:#162830;--line:#2b424d;--acc:#4cc3cf;--sig:#f2c53a;--ok:#4cc07f;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.75 "Noto Sans KR",system-ui,sans-serif;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+main{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font:400 clamp(30px,8vw,44px)/1.2 "Black Han Sans","Noto Sans KR",sans-serif;margin:8px 0 6px}
+h2{font:700 20px/1.4 "Noto Sans KR",sans-serif;margin:0 0 10px}
+.meta{color:var(--sub);font-size:14px;margin:0 0 16px}
+.badge{display:inline-block;background:var(--sig);color:#10303d;font-weight:700;font-size:13px;padding:1px 10px;border-radius:99px;margin-right:6px}
+.steps{display:flex;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.steps button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--sub);border-radius:8px;padding:8px 2px;font:700 13px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.steps button.on{border-color:var(--acc);color:var(--acc)}
+.steps button.done{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+section{display:none;background:var(--card);border:2px solid var(--ink);border-radius:10px;padding:18px}
+section.on{display:block}
+p{margin:0 0 12px}
+.formula{background:var(--ink);color:var(--bg);border-radius:8px;padding:14px;text-align:center;font:700 26px/1.5 "Noto Sans KR",sans-serif;margin:12px 0}
+.formula small{display:block;font:400 14px "Noto Sans KR",sans-serif;opacity:.85}
+.tip{border-left:6px solid var(--sig);background:color-mix(in srgb,var(--sig) 14%,transparent);padding:10px 14px;margin:12px 0;border-radius:0 8px 8px 0}
+.lab{border:2px dashed var(--acc);border-radius:10px;padding:12px;margin:14px 0}
+.lab svg{width:100%;height:auto;display:block}
+.lab label{display:flex;align-items:center;gap:10px;font-weight:700}
+.lab input[type=range]{flex:1;accent-color:var(--acc);min-height:32px}
+.out{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:8px}
+.out div{background:var(--bg);border-radius:8px;padding:6px;font-size:14px}
+.out b{display:block;font-size:22px;color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--bg)}
+.q{margin:0 0 18px}
+.q p{font-weight:700;margin-bottom:6px}
+.q button.o{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:400 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:44px}
+.q button.o.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
+.q button.o.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.ex{display:none;font-size:14px;color:var(--sub);padding:6px 10px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:8px;padding:12px 18px;font:700 16px "Noto Sans KR",sans-serif;cursor:pointer;min-height:48px;background:var(--acc);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+#score{font-weight:700;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="meta"><span class="badge">보통</span>전기기능사 필기 · 전기설비 17단원 · 약 15분</p>
+<p class="meta"><a href="elecExam.html">← 목록으로</a></p>
+<h1>옥내배선과 조명</h1>
+<p class="meta">전압강하 계산과 조명의 기본 단위를 익힌다.</p>
+<ul class="steps" id="steps"></ul>
+<div class="bar"><i id="bar"></i></div>
+
+<section><h2>학습 목표</h2><p>이 단원을 마치면 다음을 할 수 있다.</p><p>① 단상·3상의 전압강하를 계산한다.<br>② 광속·광도·조도·휘도를 구분한다.<br>③ 조도의 역제곱 법칙을 계산한다.</p></section>
+
+<section><h2>핵심 이론</h2><p>전선에도 저항이 있어서 부하에 도착하는 전압은 전원보다 낮다. 이 차이가 <b>전압강하</b>이다. 전선이 길수록, 전류가 클수록, 가늘수록 커진다.</p><div class="formula">단상 2선식: e = 2 I R<small>3상 3선식: e = √3 I R</small></div><div class="formula">e = 35.6 L I ÷ (1000 A)　(단상 2선식)<small>L은 길이(m), A는 전선 단면적(mm²)</small></div><p><b>조명</b>의 기본 단위는 네 가지이다. 광원이 내는 빛의 양이 <b>광속</b>, 특정 방향으로 나가는 빛의 세기가 <b>광도</b>, 비춰지는 면의 밝기가 <b>조도</b>, 눈에 보이는 광원의 밝기가 <b>휘도</b>이다.</p><div class="formula">E = I ÷ r²　(점광원 수직 조도)<small>거리가 2배면 조도는 ¼</small></div><div class="formula">E = F ÷ A<small>F 광속(lm), A 면적(m²)</small></div><div class="lab"><h2>직접 해 보기: 전압강하와 조도</h2><div style="display:flex;gap:8px;margin-bottom:8px"><button type="button" class="btn" id="m1_17">단상 2선식 220V</button><button type="button" class="btn ghost" id="m3_17">3상 3선식 380V</button></div><label>선로 길이 L <input type="range" id="l17" min="10" max="200" step="10" value="50"> <span id="l17v">50</span>m</label><label>부하전류 I <input type="range" id="i17" min="1" max="50" step="1" value="10"> <span id="i17v">10</span>A</label><label>전선 굵기 A <input type="range" id="a17" min="0" max="8" step="1" value="3"> <span id="a17v">6</span>mm²</label><div class="out"><div>전압강하 e<b id="o17e">2.97</b>V</div><div>강하율<b id="o17p">1.35</b>%</div><div>판정<b id="o17j" style="font-size:16px">양호</b></div></div><p style="font-size:13px;color:var(--sub);margin:6px 0 10px">e = 35.6·L·I ÷ (1000·A) (단상), 30.8·L·I ÷ (1000·A) (3상). 판정은 강하율 3% 이하를 양호로 보는 참고 기준이다.</p><hr style="border:0;border-top:2px dashed var(--line);margin:10px 0"><svg viewBox="0 0 360 170" role="img" aria-label="광원과 거리에 따른 조도"><line x1="20" y1="150" x2="340" y2="150" stroke="var(--ink)" stroke-width="4"/><line x1="180" y1="10" x2="180" y2="150" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"/><line id="ray17" stroke="var(--sig)" stroke-width="3"/><circle id="bulb17" cx="180" r="12" fill="var(--sig)" stroke="var(--ink)" stroke-width="2"/><rect id="lux17" x="30" y="160" height="8" fill="var(--acc)" rx="4"/></svg><label>광도 I <input type="range" id="c17" min="10" max="500" step="10" value="100"> <span id="c17v">100</span>cd</label><label>거리 r <input type="range" id="r17" min="0.5" max="5" step="0.5" value="2"> <span id="r17v">2</span>m</label><label>입사각 θ <input type="range" id="t17" min="0" max="60" step="5" value="0"> <span id="t17v">0</span>°</label><div class="out"><div>조도 E<b id="o17l">25</b>lx</div><div>cosθ<b id="o17c">1</b></div><div>거리 2배 시<b id="o17h">6.3</b>lx</div></div><p style="font-size:13px;color:var(--sub);margin:6px 0 0">E = I ÷ r² × cosθ. 거리를 2배로 하면 조도는 ¼이 된다.</p></div></section>
+
+<section><h2>시험 포인트</h2><table><tr><th>양</th><th>단위</th></tr><tr><td>광속</td><td>lm(루멘)</td></tr><tr><td>광도</td><td>cd(칸델라)</td></tr><tr><td>조도</td><td>lx(럭스)</td></tr><tr><td>휘도</td><td>cd/m² (nt)</td></tr></table><div class="tip"><b>광원 특징</b><br>LED는 효율이 높고 수명이 길다. 나트륨등은 단색(황색)이고 효율이 높아 터널·도로에 쓴다. 형광등은 백열전구보다 효율이 좋다.</div><div class="tip">조도는 광원과의 거리의 제곱에 반비례하고, 빛이 비스듬히 들어오면(입사각 θ) cosθ를 곱한다.</div></section>
+
+<section>
+<h2>확인 퀴즈 <span id="score"></span></h2>
+<div id="quiz"></div>
+<button class="btn ghost" id="retry" type="button">다시 풀기</button>
+</section>
+
+<section><h2>요약</h2><p>• 전압강하: 단상 2IR, 3상 √3 IR<br>• 광속 lm, 광도 cd, 조도 lx, 휘도 cd/m²<br>• 조도는 거리의 제곱에 반비례</p><p>다음 단원: <b>18. 특수장소와 전기 안전</b></p></section>
+
+<div class="nav"><button class="btn ghost" id="prev" type="button">이전</button><button class="btn" id="next" type="button">다음 단계</button></div>
+</main>
+<script>
+const names=["목표","이론","포인트","퀴즈","요약"];
+const secs=[...document.querySelectorAll("section")];
+let cur=0,done=new Set();
+try{done=new Set(JSON.parse(localStorage.getItem("elec17")||"[]"))}catch(e){}
+const st=document.getElementById("steps");
+names.forEach((n,i)=>{const li=document.createElement("li");li.style.flex=1;const b=document.createElement("button");b.type="button";b.textContent=(i+1)+" "+n;b.onclick=()=>go(i);li.appendChild(b);st.appendChild(li)});
+function go(i){
+ done.add(cur);cur=i;
+ try{localStorage.setItem("elec17",JSON.stringify([...done]))}catch(e){}
+ secs.forEach((s,k)=>s.classList.toggle("on",k===i));
+ [...st.querySelectorAll("button")].forEach((b,k)=>{b.className=(k===i?"on ":"")+(done.has(k)&&k!==i?"done":"")});
+ document.getElementById("bar").style.width=((i+1)/names.length*100)+"%";
+ document.getElementById("prev").disabled=i===0;
+ const nx=document.getElementById("next");nx.disabled=i===names.length-1;
+ scrollTo({top:0});
+}
+document.getElementById("prev").onclick=()=>go(cur-1);
+document.getElementById("next").onclick=()=>go(cur+1);
+
+/* 퀴즈 */
+const Q=[["조도의 단위는?", ["lm", "cd", "lx", "nt"], 2, "조도는 럭스(lx)이다"], ["광도의 단위는?", ["lm", "cd", "lx", "nt"], 1, "광도는 칸델라(cd)이다"], ["광도 100cd인 점광원에서 2m 떨어진 곳의 수직 조도는?", ["10lx", "25lx", "50lx", "200lx"], 1, "E = I ÷ r² = 100 ÷ 4 = 25lx"], ["단상 2선식에서 I = 10A, 전선 한 가닥 저항 0.5Ω일 때 전압강하는?", ["5V", "10V", "15V", "20V"], 1, "e = 2IR = 2 × 10 × 0.5 = 10V"], ["터널·도로 조명에 많이 쓰는 단색 광원은?", ["백열전구", "형광등", "나트륨등", "수은등"], 2, "나트륨등은 단색 황색광이고 효율이 높다"], ["형광등을 점등할 때 필요한 기구는?", ["변압기", "안정기", "정류기", "전동기"], 1, "형광등은 안정기로 전류를 제한한다"], ["3상 3선식의 전압강하를 구하는 식은?", ["I R", "2 I R", "√3 I R", "3 I R"], 2, "3상 3선식은 e = √3 I R이다"], ["광속 1000lm이 10m²에 균일하게 비칠 때 조도는?", ["10lx", "100lx", "1000lx", "10000lx"], 1, "E = F ÷ A = 1000 ÷ 10 = 100lx"], ["휘도의 단위는?", ["lx", "lm", "cd", "cd/m²"], 3, "휘도는 cd/m²이다"], ["100W 전구를 10시간 사용했을 때 전력량은?", ["0.1kWh", "1kWh", "10kWh", "100kWh"], 1, "W = P × t = 0.1kW × 10h = 1kWh"]];
+function saveWrong(r){try{const st=JSON.parse(localStorage.getItem("elecWQ")||"[]");const f=st.find(x=>x.q===r.q);if(f){f.n=(f.n||1)+1;f.t=Date.now()}else{st.push({...r,n:1,t:Date.now()})}localStorage.setItem("elecWQ",JSON.stringify(st))}catch(e){}}
+let sc=0,ans=0;
+function build(){
+ sc=0;ans=0;const box=document.getElementById("quiz");box.innerHTML="";
+ document.getElementById("score").textContent="";
+ Q.forEach((q,qi)=>{
+  const d=document.createElement("div");d.className="q";
+  const p=document.createElement("p");p.textContent=(qi+1)+". "+q[0];d.appendChild(p);
+  const ex=document.createElement("div");ex.className="ex";ex.textContent="해설: "+q[3];
+  q[1].forEach((t,oi)=>{
+   const b=document.createElement("button");b.type="button";b.className="o";b.textContent=t;
+   b.onclick=()=>{
+    if(d.dataset.done)return;d.dataset.done=1;ans++;
+    const bs=d.querySelectorAll("button.o");
+    bs[q[2]].classList.add("right");
+    if(oi===q[2])sc++;else{b.classList.add("wrong");saveWrong({u:"17. 옥내배선과 조명",q:q[0],o:q[1],a:q[2],e:q[3]})}
+    ex.style.display="block";
+    document.getElementById("score").textContent="("+sc+" / "+ans+")";
+   };
+   d.appendChild(b)});
+  d.appendChild(ex);box.appendChild(d)});
+}
+document.getElementById("retry").onclick=build;build();go(0);
+</script>
+<script>(function(){const $=i=>document.getElementById(i);let one=true;const AS=[1.5,2.5,4,6,10,16,25,35,50];
+function d(){const L=+$("l17").value,I=+$("i17").value,A=AS[+$("a17").value];
+$("l17v").textContent=L;$("i17v").textContent=I;$("a17v").textContent=A;
+const e=(one?35.6:30.8)*L*I/(1000*A),p=e/(one?220:380)*100;
+$("o17e").textContent=+e.toFixed(2);$("o17p").textContent=+p.toFixed(2);$("o17j").textContent=p<=3?"양호":"기준 초과";
+$("m1_17").className="btn"+(one?"":" ghost");$("m3_17").className="btn"+(one?" ghost":"");
+const c=+$("c17").value,r=+$("r17").value,t=+$("t17").value;
+$("c17v").textContent=c;$("r17v").textContent=r;$("t17v").textContent=t;
+const th=t*Math.PI/180,E=c/(r*r)*Math.cos(th),by=150-r*26,px=Math.min(340,180+r*26*Math.tan(th));
+$("bulb17").setAttribute("cy",by);const ry=$("ray17");ry.setAttribute("x1",180);ry.setAttribute("y1",by);ry.setAttribute("x2",px);ry.setAttribute("y2",150);
+$("lux17").setAttribute("width",Math.max(4,Math.min(1,Math.sqrt(E/2000))*300));
+$("o17l").textContent=+E.toFixed(1);$("o17c").textContent=+Math.cos(th).toFixed(2);$("o17h").textContent=+(c/(4*r*r)*Math.cos(th)).toFixed(1)}
+$("m1_17").onclick=()=>{one=true;d()};$("m3_17").onclick=()=>{one=false;d()};
+["l17","i17","a17","c17","r17","t17"].forEach(i=>$(i).oninput=d);d();})();</script>
+</body>
+</html>
