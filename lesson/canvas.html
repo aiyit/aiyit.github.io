@@ -248,6 +248,132 @@ function animate() {
             <li>재귀 함수를 이용해 사각형 프랙탈을 구현한다.</li>
         </ol>
     </div>
+
+
+    <section class="lesson">
+        <h2>11. 예제 통합 HTML 구조</h2>
+        <p>아래는 앞에서 살펴본 기본 구조, 사각형, 선, 원, 삼각형, 그라데이션, 텍스트, 좌표 변환, 애니메이션을 하나의 HTML 문서 안에 정리한 통합 예제입니다. 원본의 각 예제와 설명은 그대로 두고, 참고용 통합 코드를 하단에 추가했습니다.</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+  &lt;title&gt;Canvas 예제 통합 구조&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main&gt;
+    &lt;h1&gt;Canvas 예제 통합 실습&lt;/h1&gt;
+    &lt;section&gt;&lt;h2&gt;기본 구조와 도형 예제&lt;/h2&gt;
+      &lt;canvas id=&quot;shapeCanvas&quot; width=&quot;600&quot; height=&quot;420&quot;&gt;&lt;/canvas&gt;
+    &lt;/section&gt;
+    &lt;section&gt;&lt;h2&gt;애니메이션 예제&lt;/h2&gt;
+      &lt;canvas id=&quot;animationCanvas&quot; width=&quot;600&quot; height=&quot;180&quot;&gt;&lt;/canvas&gt;
+      &lt;button id=&quot;startBtn&quot; type=&quot;button&quot;&gt;시작&lt;/button&gt;
+      &lt;button id=&quot;pauseBtn&quot; type=&quot;button&quot;&gt;일시 정지&lt;/button&gt;
+      &lt;button id=&quot;resetBtn&quot; type=&quot;button&quot;&gt;초기화&lt;/button&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+  &lt;script&gt;
+    // 하나의 Canvas에 사각형, 선, 원, 삼각형, 그라데이션, 텍스트, 회전을 통합합니다.
+    const canvas = document.getElementById(&quot;shapeCanvas&quot;);
+    const ctx = canvas.getContext(&quot;2d&quot;);
+
+    // 사각형
+    ctx.fillStyle = &quot;skyblue&quot;;
+    ctx.fillRect(30, 30, 120, 70);
+    ctx.strokeStyle = &quot;red&quot;;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(175, 30, 120, 70);
+
+    // 선
+    ctx.beginPath();
+    ctx.moveTo(330, 100);
+    ctx.lineTo(390, 25);
+    ctx.lineTo(450, 100);
+    ctx.strokeStyle = &quot;blue&quot;;
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    // 원
+    ctx.beginPath();
+    ctx.arc(95, 195, 45, 0, Math.PI * 2);
+    ctx.fillStyle = &quot;orange&quot;;
+    ctx.fill();
+    ctx.strokeStyle = &quot;#333&quot;;
+    ctx.stroke();
+
+    // 삼각형
+    ctx.beginPath();
+    ctx.moveTo(245, 145);
+    ctx.lineTo(195, 235);
+    ctx.lineTo(295, 235);
+    ctx.closePath();
+    ctx.fillStyle = &quot;gold&quot;;
+    ctx.fill();
+    ctx.stroke();
+
+    // 그라데이션
+    const gradient = ctx.createLinearGradient(340, 0, 560, 0);
+    gradient.addColorStop(0, &quot;red&quot;);
+    gradient.addColorStop(0.5, &quot;yellow&quot;);
+    gradient.addColorStop(1, &quot;blue&quot;);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(330, 155, 230, 55);
+
+    // 텍스트
+    ctx.font = &quot;bold 25px Arial&quot;;
+    ctx.fillStyle = &quot;navy&quot;;
+    ctx.fillText(&quot;Hello Canvas!&quot;, 30, 300);
+    ctx.font = &quot;bold 23px Arial&quot;;
+    ctx.strokeStyle = &quot;tomato&quot;;
+    ctx.strokeText(&quot;JavaScript&quot;, 30, 345);
+
+    // 좌표 이동 및 회전
+    ctx.save();
+    ctx.translate(420, 300);
+    ctx.rotate(Math.PI / 4); // 45도는 Math.PI / 4 라디안
+    ctx.fillStyle = &quot;purple&quot;;
+    ctx.fillRect(-35, -35, 70, 70);
+    ctx.restore();
+
+    // requestAnimationFrame을 사용하는 이동·회전 애니메이션
+    const movingCanvas = document.getElementById(&quot;animationCanvas&quot;);
+    const movingCtx = movingCanvas.getContext(&quot;2d&quot;);
+    let x = 60, angle = 0, direction = 1, animationId = null;
+
+    function animate() {
+      movingCtx.clearRect(0, 0, movingCanvas.width, movingCanvas.height);
+      movingCtx.save();
+      movingCtx.translate(x, 90);
+      movingCtx.rotate(angle);
+      movingCtx.fillStyle = &quot;deepskyblue&quot;;
+      movingCtx.fillRect(-30, -30, 60, 60);
+      movingCtx.restore();
+      x += 2 * direction;
+      angle += 0.04;
+      if (x &gt; movingCanvas.width - 50 || x &lt; 50) direction *= -1;
+      animationId = requestAnimationFrame(animate);
+    }
+
+    document.getElementById(&quot;startBtn&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+      if (animationId === null) animationId = requestAnimationFrame(animate);
+    });
+    document.getElementById(&quot;pauseBtn&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+      if (animationId !== null) cancelAnimationFrame(animationId);
+      animationId = null;
+    });
+    document.getElementById(&quot;resetBtn&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+      if (animationId !== null) cancelAnimationFrame(animationId);
+      animationId = null;
+      x = 60;
+      angle = 0;
+      direction = 1;
+      movingCtx.clearRect(0, 0, movingCanvas.width, movingCanvas.height);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </section>
 </main>
 
 <script>
