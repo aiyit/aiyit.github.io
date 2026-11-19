@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>웹 기본 래더 PLC 시뮬레이터</title>
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--line:#334155;--text:#e2e8f0;--accent:#38bdf8;--green:#22c55e;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+h1{font-size:18px;margin:0}
+button{background:#334155;color:#fff;border:0;border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer}
+button:hover{background:#475569}
+button.primary{background:var(--accent);color:#06283d}
+button.danger{background:var(--red)}
+button:disabled{opacity:.45;cursor:not-allowed}
+main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;padding:16px}
+@media(max-width:980px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.panel h2{margin:0 0 10px;font-size:15px;color:#94a3b8}
+#rungs{display:flex;flex-direction:column;gap:10px}
+.rung{background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:10px}
+.rung-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rung-no{font-size:12px;color:#94a3b8}
+.ladder{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:6px 0}
+.node{min-width:76px;border:1px solid #475569;border-radius:8px;padding:8px 6px;text-align:center;background:#111827;cursor:pointer;user-select:none}
+.node.active{border-color:var(--green);box-shadow:0 0 0 2px rgba(34,197,94,.25)}
+.node .type{font-size:11px;color:#94a3b8}
+.node .tag{font-weight:800;font-size:14px}
+.wire{width:26px;height:2px;background:#64748b;flex:0 0 auto}
+.wire.on{background:var(--green);box-shadow:0 0 8px rgba(34,197,94,.7)}
+.add{opacity:.7}
+.io-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.io{display:flex;justify-content:space-between;align-items:center;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:8px}
+.io .name{font-weight:800}
+.badge{font-size:11px;padding:3px 7px;border-radius:999px;background:#334155}
+.badge.on{background:var(--green);color:#052e16}
+.badge.out.on{background:var(--amber);color:#3f2403}
+select,input{background:#0b1220;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px}
+.status{margin-top:10px;font-size:12px;color:#94a3b8}
+</style>
+</head>
+<body>
+<header>
+<h1>웹 기본 래더 PLC 시뮬레이터</h1>
+<button id="run" class="primary">▶ 실행</button>
+<button id="stop">■ 정지</button>
+<button id="step">⏭ 1스캔</button>
+<button id="addRung">+ 랑 추가</button>
+<button id="clear" class="danger">초기화</button>
+</header>
+<main>
+<section class="panel">
+<h2>래더 로직</h2>
+<div id="rungs"></div>
+</section>
+<aside>
+<div class="panel">
+<h2>입력 I</h2>
+<div class="io-grid" id="inputs"></div>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>출력 Q</h2>
+<div class="io-grid" id="outputs"></div>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>내부 릴레이 M</h2>
+<div id="relays" class="io-grid"></div>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>타이머 T</h2>
+<div id="timers" class="io-grid"></div>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>사용법</h2>
+<ol style="margin:0;padding-left:18px;line-height:1.7;font-size:13px">
+<li><b>▶ 실행</b>을 누르면 100ms마다 한 번씩 스캔 사이클이 실행됩니다.</li>
+<li>왼쪽의 <b>I0, I1, I2</b>를 클릭하면 입력 스위치가 ON/OFF됩니다.</li>
+<li>래더의 요소 상자를 클릭하면 <b>a접점 → b접점 → 코일 → TON 타이머</b> 순서로 바뀝니다.</li>
+<li><b>+ 랑 추가</b>로 새 논리 줄을 만들고, <b>+ 요소</b>로 접점·코일·타이머를 추가합니다.</li>
+<li><b>⏭ 1스캔</b>은 실행을 멈춘 상태에서 논리를 한 주기만 평가합니다.</li>
+<li>초록색 선과 상자는 현재 통전 중임을 뜻합니다.</li>
+</ol>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 1: 기본 ON/OFF</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">스위치 I0를 ON하면 램프 Q0가 켜집니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I0 ──[ ]── ( Q0 )</div>
+<p style="margin:8px 0 0;font-size:13px">설정: 첫 요소 <b>a접점 I0</b>, 마지막 요소 <b>코일 Q0</b>. `I0`를 클릭해 ON으로 바꾸면 `Q0`가 ON됩니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 2: AND 조건</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">안전 스위치와 시작 스위치가 모두 ON일 때만 모터가 작동합니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I0 ──[ ]── I1 ──[ ]── ( Q0 )</div>
+<p style="margin:8px 0 0;font-size:13px">설정: <b>a접점 I0</b>, <b>a접점 I1</b>, <b>코일 Q0</b>. 두 입력이 모두 ON되어야 `Q0`가 ON됩니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 3: 지연 켜짐</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">스위치를 켠 뒤 약 1초 후에 램프가 켜집니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I1 ──[ ]── TON T0 ── ( Q1 )</div>
+<p style="margin:8px 0 0;font-size:13px">설정: <b>a접점 I1</b>, <b>TON 타이머 T0</b>, <b>코일 Q1</b>. `I1`을 ON하면 `T0`가 100ms씩 누적되고, 1000ms가 되면 `Q1`이 ON됩니다. `I1`을 끄면 타이머가 초기화됩니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 4: 정지 우선</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">비상정지 I2가 ON이면 시작 스위치를 눌러도 출력이 켜지지 않습니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I2 ──[/]── I0 ──[ ]── ( Q2 )</div>
+<p style="margin:8px 0 0;font-size:13px">설정: <b>b접점 I2</b>, <b>a접점 I0</b>, <b>코일 Q2</b>. `I2`가 OFF이고 `I0`가 ON일 때만 `Q2`가 ON됩니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 5: 3상 모터 기본 기동</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">시작 스위치와 열동계전기 접점으로 주접촉기 MC를 제어합니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I2 ──[/]── I0 ──[ ]── ( Q0 )</div>
+<p style="margin:8px 0 0;font-size:13px"><b>해석:</b> `I0`=운전 스위치, `I2`=열동계전기/비상정지 접점, `Q0`=주접촉기 MC. `I2`가 OFF이고 `I0`가 ON이면 모터용 접촉기 `Q0`가 ON됩니다. 실제 3상 전원에는 R·S·T 상에 MC 주접점과 과부하계전기가 직렬로 배치됩니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 6: 자기유지 회로</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">누름 후 손을 떼어도 출력이 유지되고, 정지 스위치로만 해제됩니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I2 ──[/]── I0 ──[ ]── (SET M0)<br>M0 ──[ ]──────────────── ( Q0 )<br>I1 ──[ ]──────────────── (RST M0)</div>
+<p style="margin:8px 0 0;font-size:13px"><b>조작:</b> `I0`를 한 번 ON하면 `M0`가 SET되어 유지됩니다. 이후 `I0`를 OFF해도 `Q0`는 ON 상태를 유지합니다. `I1`=정지 스위치를 ON하면 `M0`가 RST되어 `Q0`가 OFF됩니다. `I2`=열동계전기 접점이면 이상 시 자기유지가 해제됩니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 7: Y-Δ 기동</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">기동 초기에는 Y결선으로 저전압 기동하고, 일정 시간 후 Δ결선으로 전환합니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I2 ──[/]── I0 ──[ ]── (SET M0)<br>M0 ──[ ]── TON T0 ── ( Q1 )  // Y접촉기<br>T0 ──[ ]────────────── ( Q2 )  // Δ접촉기<br>Q2 ──[/]───────────── ( Q1 )  // Y 차단 인터록<br>Q1 ──[/]───────────── ( Q2 )  // Δ 차단 인터록</div>
+<p style="margin:8px 0 0;font-size:13px"><b>해석:</b> `Q0`=주접촉기 MC, `Q1`=Y접촉기, `Q2`=Δ접촉기입니다. 기동 시 `Q0`와 `Q1`이 ON되고, `T0`가 설정시간에 도달하면 `Q2`가 ON됩니다. `Q1`과 `Q2`의 b접점 인터록으로 두 접촉기가 동시에 ON되는 것을 방지합니다. 실제 전환 시에는 Y접촉기가 먼저 완전히 OFF된 뒤 Δ접촉기가 ON되도록 순서와 지연을 검증해야 합니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>예제 8: 정회전·역회전 인터록</h2>
+<p style="margin:0 0 8px;font-size:13px;color:#94a3b8">정회전과 역회전 접촉기가 동시에 ON되어 상간 단락되는 것을 방지합니다.</p>
+<div style="font-family:ui-monospace,monospace;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px">I2 ──[/]── I0 ──[ ]── Q2 ──[/]── ( Q1 )  // 정회전<br>I2 ──[/]── I1 ──[ ]── Q1 ──[/]── ( Q2 )  // 역회전</div>
+<p style="margin:8px 0 0;font-size:13px"><b>해석:</b> `Q1`=정회전 접촉기, `Q2`=역회전 접촉기입니다. 정회전 중에는 `Q2`의 b접점이 열려 역회전 명령이 무시되고, 역회전 중에는 반대로 작동합니다. 안전을 위해 실제 배선에도 전기적 인터록과 기계적 인터록을 함께 적용하는 것이 표준적인 방법입니다.</p>
+</div>
+<div class="panel" style="margin-top:14px">
+<h2>스캔 상태</h2>
+<div class="status">스캔: <b id="scanCount">0</b> · 주기: <b id="cycle">100</b> ms<br>실행 중인 랑: <b id="activeRungs">0</b></div>
+</div>
+</aside>
+</main>
+<script>
+const state={running:false,scan:0,timer:null,inputs:{I0:false,I1:false,I2:false},outputs:{Q0:false,Q1:false,Q2:false},relays:{M0:false,M1:false,M2:false},timers:{T0:{preset:1000,elapsed:0,dn:false},T1:{preset:2000,elapsed:0,dn:false}},rungs:[]};
+const types={NO:'a접점',NC:'b접점',COIL:'코일',SET:'셋 SET',RST:'리셋 RST',TON:'TON 타이머'};
+function makeRung(){return{nodes:[{type:'NO',tag:'I0'},{type:'COIL',tag:'Q0'}]}}
+state.rungs=[makeRung(),{nodes:[{type:'NO',tag:'I1'},{type:'TON',tag:'T0'},{type:'COIL',tag:'Q1'}]}];
+function renderIO(){const i=document.getElementById('inputs');i.innerHTML='';for(const k in state.inputs){const d=document.createElement('div');d.className='io';d.innerHTML=`<span class="name">${k}</span><span class="badge ${state.inputs[k]?'on':''}">${state.inputs[k]?'ON':'OFF'}</span>`;d.onclick=()=>{state.inputs[k]=!state.inputs[k];renderIO()};i.appendChild(d)}
+const o=document.getElementById('outputs');o.innerHTML='';for(const k in state.outputs){const d=document.createElement('div');d.className='io';d.innerHTML=`<span class="name">${k}</span><span class="badge out ${state.outputs[k]?'on':''}">${state.outputs[k]?'ON':'OFF'}</span>`;o.appendChild(d)}
+const r=document.getElementById('relays');r.innerHTML='';for(const k in state.relays){const d=document.createElement('div');d.className='io';d.innerHTML=`<span class="name">${k}</span><span class="badge ${state.relays[k]?'on':''}">${state.relays[k]?'ON':'OFF'}</span>`;r.appendChild(d)}
+const t=document.getElementById('timers');t.innerHTML='';for(const k in state.timers){const x=state.timers[k];const d=document.createElement('div');d.className='io';d.innerHTML=`<span>${k}<br><small>${x.elapsed}/${x.preset}ms</small></span><span class="badge ${x.dn?'on':''}">${x.dn?'DN':'RUN'}</span>`;t.appendChild(d)}}
+function renderRungs(){const c=document.getElementById('rungs');c.innerHTML='';state.rungs.forEach((r,ri)=>{const d=document.createElement('div');d.className='rung';d.innerHTML=`<div class="rung-head"><span class="rung-no">Rung ${ri+1}</span><button data-del="${ri}">삭제</button></div>`;const l=document.createElement('div');l.className='ladder';r.nodes.forEach((n,ni)=>{if(ni>0){const w=document.createElement('div');w.className='wire'+(r.nodes[ni-1].powered?' on':'');l.appendChild(w)}const b=document.createElement('div');b.className='node'+(n.powered?' active':'');b.innerHTML=`<div class="type">${types[n.type]}</div><div class="tag">${n.tag}</div>`;b.onclick=()=>cycleNode(ri,ni);l.appendChild(b)});const add=document.createElement('div');add.className='node add';add.innerHTML='+ 요소';add.onclick=()=>{r.nodes.push({type:'NO',tag:'I0'});renderRungs()};l.appendChild(add);d.appendChild(l);c.appendChild(d)});document.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{state.rungs.splice(+b.dataset.del,1);renderRungs()});document.getElementById('activeRungs').textContent=state.rungs.filter(r=>r.nodes.some(n=>n.powered)).length}
+function cycleNode(ri,ni){const n=state.rungs[ri].nodes[ni];const order=['NO','NC','COIL','SET','RST','TON'];n.type=order[(order.indexOf(n.type)+1)%order.length];if((n.type==='SET'||n.type==='RST')&&!state.relays[n.tag])n.tag='M0';
+if(n.type==='TON'&&!state.timers[n.tag])state.timers[n.tag]={preset:1000,elapsed:0,dn:false};renderRungs()}
+function evaluate(){state.rungs.forEach(r=>{let power=true;r.nodes.forEach(n=>{const bit=t=>t.startsWith('I')?state.inputs[t]:(t.startsWith('M')?state.relays[t]:(state.timers[t]?state.timers[t].dn:false));
+if(n.type==='NO')n.powered=power&&bit(n.tag)===true;else if(n.type==='NC')n.powered=power&&bit(n.tag)!==true;else if(n.type==='COIL'){n.powered=power;state.outputs[n.tag]=power}else if(n.type==='SET'){n.powered=power;if(power)state.relays[n.tag]=true}else if(n.type==='RST'){n.powered=power;if(power)state.relays[n.tag]=false}else if(n.type==='TON'){n.powered=power;const t=state.timers[n.tag]||(state.timers[n.tag]={preset:1000,elapsed:0,dn:false});if(power){t.elapsed=Math.min(t.preset,t.elapsed+100);t.dn=t.elapsed>=t.preset}else{t.elapsed=0;t.dn=false}n.powered=t.dn}power=n.powered})})}
+function scan(){state.scan++;evaluate();document.getElementById('scanCount').textContent=state.scan;renderRungs();renderIO()}
+function start(){if(state.running)return;state.running=true;state.timer=setInterval(scan,100);document.getElementById('run').disabled=true}
+function stop(){state.running=false;clearInterval(state.timer);document.getElementById('run').disabled=false}
+document.getElementById('run').onclick=start;document.getElementById('stop').onclick=stop;document.getElementById('step').onclick=scan;document.getElementById('addRung').onclick=()=>{state.rungs.push(makeRung());renderRungs()};document.getElementById('clear').onclick=()=>{stop();state.scan=0;state.rungs=[makeRung()];for(const k in state.timers){state.timers[k].elapsed=0;state.timers[k].dn=false}renderRungs();renderIO();document.getElementById('scanCount').textContent=0};
+renderRungs();renderIO();
+</script>
+</body>
+</html>
