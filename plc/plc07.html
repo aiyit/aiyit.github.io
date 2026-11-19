@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>7주차. SCL 문법과 제어문·반복문</title><style>
+:root {
+  --primary: #0b3d91;
+  --accent: #e6b15a;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #222;
+  --muted: #555;
+  --border: #e0e4ea;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+header {
+  background: linear-gradient(135deg, #0b3d91 0%, #1a5fb4 100%);
+  color: white;
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+}
+header .week-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #111;
+  font-weight: 700;
+  padding: 0.25rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+header p { opacity: 0.92; font-size: 1rem; }
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.8rem 1.2rem 3rem;
+}
+.section {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.8rem;
+  overflow: hidden;
+}
+.section-header {
+  background: #f0f4fa;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.section-header .num {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+.section-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+.section-body p { margin-bottom: 1rem; }
+.section-body ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+.section-body li { margin-bottom: 0.45rem; }
+.highlight {
+  background: #e8f4fd;
+  border-left: 5px solid #1a5fb4;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.tip {
+  background: #fff8e6;
+  border-left: 5px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.img-box {
+  margin: 1.4rem 0;
+  text-align: center;
+}
+.img-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+.img-caption {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+.goal-box {
+  background: linear-gradient(135deg, #e8f4fd, #f0f7ff);
+  border: 1px solid #b6d4f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.goal-box h3 {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+}
+th {
+  background: #f0f4fa;
+  color: var(--primary);
+  font-weight: 600;
+}
+tr:nth-child(even) { background: #fafbfc; }
+.summary {
+  background: #1a5fb4;
+  color: white;
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem;
+  margin-top: 2rem;
+}
+.summary h3 { margin-bottom: 0.8rem; font-size: 1.15rem; }
+.summary ul { padding-left: 1.3rem; }
+.summary li { margin-bottom: 0.4rem; }
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  font-size: 0.88rem;
+}
+
+pre {background:#12233d;color:#e5efff;padding:1.15rem;border-radius:9px;overflow-x:auto;line-height:1.65;font-size:.9rem;margin:1rem 0;tab-size:4} code {font-family:Consolas,'Courier New',monospace} p code,li code,td code {background:#edf2fa;color:#0b3d91;padding:.1rem .3rem;border-radius:3px} h3 {margin:1.2rem 0 .5rem;color:var(--primary);font-size:1.05rem} ol {padding-left:1.5rem;margin-bottom:1rem} li {margin-bottom:.45rem} details {border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;margin:.8rem 0} summary {cursor:pointer;color:var(--primary);font-weight:600} .flow {display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6rem;margin:1.2rem 0}.flow span {padding:.6rem .9rem;background:#e8f4fd;border:1px solid #b6d4f0;border-radius:8px} .small {font-size:.88rem;color:var(--muted)} a {color:#1455a0;overflow-wrap:anywhere} @media(max-width:600px){header h1{font-size:1.35rem}.section-body{padding:1.1rem}.container{padding:1.2rem .7rem}th,td{padding:.55rem}pre{font-size:.8rem}} @media print{body{background:white;font-size:11pt}.section{box-shadow:none;border:1px solid #ddd;break-inside:auto}header{background:#0b3d91!important;print-color-adjust:exact}.section-header{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f4fa;color:#111}details{display:block}details>*{display:block}footer{color:#555}}
+
+.lab{padding:1rem;background:#f7faff;border:1px solid #b6d4f0;border-radius:9px}.lab label{display:block;margin:.7rem 0 .3rem}.lab input{font:inherit;padding:.55rem;border:1px solid #8196b3;border-radius:6px;width:100%;max-width:480px}.controls{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}.lab button{font:inherit;padding:.6rem .85rem;border:2px solid #8196b3;border-radius:7px;background:white;color:#15304f;cursor:pointer}.lab .execute{background:#0b3d91;color:white;border-color:#0b3d91}.lab input:focus-visible,.lab button:focus-visible{outline:3px solid #e6b15a;outline-offset:3px}.lab output{display:block;white-space:pre-line;padding:1rem;background:white;border:1px solid #dbe5f2;border-radius:7px}.history{max-height:250px;overflow:auto;font-size:.9rem;margin-top:1rem}.history li{padding:.3rem 0;border-bottom:1px solid #e0e4ea}.array-cells{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}.array-cell{padding:.5rem .8rem;border:1px solid #b6d4f0;background:white;border-radius:7px;min-width:70px;text-align:center}.array-cell small{display:block;color:#555}.array-cell.current{background:#fff1c9;border:2px solid #95630b}.lab p{margin-top:.6rem}.link-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:1.3rem;margin-top:1.5rem}@media print{.controls,.history{display:none}}
+</style><meta content="PLC 7주차 교안: SCL 기본 문법, IF CASE FOR WHILE REPEAT, 배열·상태 제어와 반복 추적 실습" name="description"/></head><body><header><div class="week-badge">7주차 · Module 07</div><h1>SCL 문법과 제어문·반복문</h1><p>조건 분기와 반복 구조를 이해하고 읽기 쉬운 PLC 프로그램을 작성한다</p></header><main class="container"><div class="goal-box"><h3>오늘의 학습 목표</h3><ul><li>SCL 변수, 자료형, 대입문과 비교식을 구분할 수 있다.</li><li>IF·CASE로 조건에 따른 실행 흐름을 작성할 수 있다.</li><li>FOR·WHILE·REPEAT의 차이를 설명하고 배열 처리에 적용할 수 있다.</li><li>PLC 스캔을 고려해 반복문과 상태 제어를 구분할 수 있다.</li></ul><p class="small">선수학습: PLC 기본 스캔 및 LD·FBD 기초 / 실습 범위: S7-1200·S7-1500 SCL / 예제는 블록 본문용이며 인터페이스를 먼저 선언합니다.</p></div><section class="section" id="section1"><div class="section-header"><div class="num">1</div><h2>SCL이란? — 문자로 표현하는 PLC 로직</h2></div><div class="section-body"><p>SCL(Structured Control Language)은 Siemens PLC에서 사용하는 구조화된 텍스트 기반 프로그래밍 언어입니다. 접점과 코일을 그리는 LD와 달리, 계산식·조건문·반복문을 문자로 작성합니다. 이 강의는 TIA Portal의 S7-1200 / S7-1500 SCL 블록을 기준으로 합니다.</p><p>앞선 LD·FBD 실습에서 다룬 논리를 SCL로 옮겨 보고, 여러 값의 계산과 배열 처리를 간결하게 작성하는 것이 목표입니다.</p><pre><code>// 실행 허가와 시작 조건이 모두 참일 때
+#RunCmd := #Enable AND #Start;</code></pre><div class="highlight">읽는 방법: “Enable과 Start가 모두 TRUE이면 RunCmd에 TRUE를 대입한다.”<br/>예제의 #은 블록 내부에 선언한 지역 태그를 뜻합니다. PLC 전역 태그는 보통 "StartPB"처럼 큰따옴표로 표시됩니다.</div><div class="tip">모든 예제는 학습용입니다. 실제 모터·히터 출력에 바로 연결하지 말고, 내부 태그와 시뮬레이션으로 먼저 검증하세요. 비상정지와 안전 기능은 일반 SCL 예제만으로 구현하지 않습니다.</div></div></section><section class="section" id="section2"><div class="section-header"><div class="num">2</div><h2>변수 선언과 기본 자료형</h2></div><div class="section-body"><p>코드에 쓰는 태그는 먼저 블록 인터페이스에 이름, 자료형, 구분을 선언합니다. 아래 선언은 예제별로 필요한 항목을 골라 사용하세요.</p><div class="table-wrap"><table><thead><tr><th>구분</th><th>의미</th><th>예시</th></tr></thead><tbody><tr><td>Input</td><td>블록이 읽는 입력값</td><td>Enable : Bool, Temp : Real</td></tr><tr><td>Output</td><td>블록이 계산해 내보내는 결과</td><td>RunCmd : Bool, Grade : Int</td></tr><tr><td>Temp</td><td>이번 호출에서 쓰는 임시 계산값</td><td>i : Int, Sum : DInt</td></tr><tr><td>Static (FB)</td><td>호출 사이에 상태를 보관</td><td>State : Int, PrevStart : Bool</td></tr></tbody></table></div><div class="table-wrap"><table><thead><tr><th>자료형</th><th>용도</th><th>예시 리터럴</th></tr></thead><tbody><tr><td>Bool</td><td>참/거짓</td><td>TRUE, FALSE</td></tr><tr><td>Int</td><td>16비트 부호 있는 정수</td><td>0, 25, -10</td></tr><tr><td>DInt</td><td>32비트 부호 있는 정수</td><td>DINT#100000</td></tr><tr><td>Real</td><td>실수 계산</td><td>25.0, 0.5</td></tr><tr><td>Time</td><td>시간값</td><td>T#2s, T#500ms</td></tr><tr><td>Array[0..4] of Int</td><td>같은 자료형을 묶은 배열</td><td>Values[0] ~ Values[4]</td></tr></tbody></table></div><div class="tip">Temp 변수는 이전 스캔의 값을 저장하는 용도로 쓰지 않습니다. 읽기 전에 반드시 값을 대입하세요. FB Static이 호출 사이 상태를 보관한다는 것과 전원 차단 후에도 유지하는 리테인(Retain) 설정은 서로 다릅니다.</div></div></section><section class="section" id="section3"><div class="section-header"><div class="num">3</div><h2>기본 문법과 연산자</h2></div><div class="section-body"><pre><code>// 한 줄 주석
+(* 여러 줄에 걸쳐
+   설명하는 주석 *)
+#Count := 10;                 // 대입
+#NextCount := #Count + 1;     // 산술 계산
+#IsTarget := (#Count = 10);   // 같은지 비교
+#Allowed := #Enable AND NOT #Fault;</code></pre><div class="table-wrap"><table><thead><tr><th>분류</th><th>표기</th><th>의미</th></tr></thead><tbody><tr><td>대입</td><td>:=</td><td>오른쪽 계산 결과를 왼쪽 변수에 저장</td></tr><tr><td>비교</td><td>=, &lt;&gt;, &lt;, &gt;, &lt;=, &gt;=</td><td>같음, 다름, 크기 비교</td></tr><tr><td>산술</td><td>+, -, *, /, MOD</td><td>사칙연산과 정수 나머지</td></tr><tr><td>논리</td><td>AND, OR, XOR, NOT</td><td>논리 결합 및 반전</td></tr><tr><td>문장 끝</td><td>;</td><td>대입문·제어문 종료 표시</td></tr></tbody></table></div><div class="highlight">대입 <code>:=</code>과 비교 <code>=</code>를 구분하세요. 조건식에는 괄호를 사용해 의도를 명확히 표현하고, 정수/실수 혼합 계산에서는 명시적인 자료형 변환을 권장합니다.</div><pre><code>// Count : Int, Ratio : Real
+#Ratio := INT_TO_REAL(#Count) / 100.0;</code></pre></div></section><section class="section" id="section4"><div class="section-header"><div class="num">4</div><h2>IF · ELSIF · ELSE — 조건에 따라 실행</h2></div><div class="section-body"><p>IF는 위에서부터 조건을 검사해 처음 TRUE가 된 분기 하나를 실행합니다. ELSIF와 ELSE는 필요한 경우에만 작성합니다.</p><pre><code>// Temp : Real (Input), Level : Int (Output)
+IF #Temp &gt;= 80.0 THEN
+    #Level := 2;      // 고온
+ELSIF #Temp &gt;= 50.0 THEN
+    #Level := 1;      // 주의
+ELSE
+    #Level := 0;      // 정상
+END_IF;</code></pre><div class="table-wrap"><table><thead><tr><th>Temp</th><th>실행 분기</th><th>Level</th></tr></thead><tbody><tr><td>35.0</td><td>ELSE</td><td>0</td></tr><tr><td>50.0</td><td>ELSIF</td><td>1</td></tr><tr><td>80.0</td><td>첫 번째 IF</td><td>2</td></tr></tbody></table></div><p>80.0은 두 비교 조건을 모두 만족하지만, 위쪽 분기가 먼저 선택되므로 Level은 2가 됩니다.</p><pre><code>// 매 호출마다 결과를 확실하게 결정하는 패턴
+#RunCmd := FALSE;
+IF #Enable AND NOT #Fault THEN
+    #RunCmd := TRUE;
+END_IF;</code></pre><div class="tip">어떤 경로에서도 출력에 값을 쓰지 않으면 이전 값이 남을 수 있습니다. 의도적인 상태 저장이 아니라면 기본값 또는 ELSE 분기로 결과를 명확하게 정의하세요.</div></div></section><section class="section" id="section5"><div class="section-header"><div class="num">5</div><h2>CASE — 모드별 다중 분기</h2></div><div class="section-body"><p>하나의 정수형 값으로 여러 동작 중 하나를 선택할 때 CASE를 사용하면 조건이 명확해집니다. 선택된 분기만 실행하며, 일치하는 값이 없으면 ELSE를 실행합니다.</p><pre><code>// Mode : Int (Input), SpeedRef : Real (Output)
+CASE #Mode OF
+    0:
+        #SpeedRef := 0.0;      // 정지
+    1:
+        #SpeedRef := 20.0;     // 저속
+    2:
+        #SpeedRef := 50.0;     // 고속
+    3, 4:
+        #SpeedRef := 10.0;     // 점검 모드
+    ELSE
+        #SpeedRef := 0.0;      // 정의되지 않은 모드
+END_CASE;</code></pre><div class="highlight">IF는 범위·복합 조건에, CASE는 모드 번호·단계 번호처럼 한 값에 따른 선택에 적합합니다. CASE는 C 언어의 switch와 달리 다음 분기로 자동으로 흘러가지 않으므로 분기마다 break를 넣지 않습니다.</div></div></section><section class="section" id="section6"><div class="section-header"><div class="num">6</div><h2>FOR — 횟수가 정해진 반복</h2></div><div class="section-body"><p>FOR는 시작값부터 종료값까지 카운터를 바꾸며 반복합니다. BY를 생략하면 1씩 증가합니다. 배열 전체 합산처럼 범위가 명확한 작업에 사용합니다.</p><pre><code>// Values : Array[0..4] of Int (Input)
+// Sum : DInt (Output), i : Int (Temp)
+#Sum := 0;
+FOR #i := 0 TO 4 DO
+    #Sum := #Sum + INT_TO_DINT(#Values[#i]);
+END_FOR;</code></pre><p>Values가 [10, 20, 30, 40, 50]이면 반복은 5회 실행되고 Sum은 150입니다.</p><pre><code>// 역순 처리: 4, 3, 2, 1, 0
+FOR #i := 4 TO 0 BY -1 DO
+    #Buffer[#i] := 0;
+END_FOR;</code></pre><div class="tip">Buffer는 Array[0..4] of Int인 Output 또는 InOut 태그로 별도 선언합니다. 배열 범위를 넘지 않도록 시작값·종료값을 맞추고, 카운터 자료형의 한계값에 가까운 반복 범위나 0인 증가값은 피하세요.</div></div></section><section class="section" id="section7"><div class="section-header"><div class="num">7</div><h2>WHILE · REPEAT — 조건으로 반복</h2></div><div class="section-body"><h3>WHILE: 실행하기 전에 조건 검사</h3><p>조건이 TRUE인 동안 반복합니다. 처음부터 FALSE이면 본문을 한 번도 실행하지 않습니다.</p><pre><code>// N : Int (Input, 실습값 0~10)
+// Count : Int (Output), i : Int (Temp)
+#i := 0;
+#Count := 0;
+WHILE (#i &lt; #N) AND (#i &lt; 10) DO
+    #Count := #Count + 1;
+    #i := #i + 1;
+END_WHILE;</code></pre><h3>REPEAT: 한 번 실행한 뒤 종료 조건 검사</h3><p>UNTIL 뒤의 조건이 TRUE이면 종료합니다. 본문은 최소 한 번 실행됩니다.</p><pre><code>#i := 0;
+#Count := 0;
+REPEAT
+    #Count := #Count + 1;
+    #i := #i + 1;
+UNTIL (#i &gt;= #N) OR (#i &gt;= 10)
+END_REPEAT;</code></pre><div class="table-wrap"><table><thead><tr><th>항목</th><th>WHILE 예제</th><th>REPEAT 예제</th></tr></thead><tbody><tr><td>N = 0</td><td>0회</td><td>1회</td></tr><tr><td>N = 3</td><td>3회</td><td>3회</td></tr><tr><td>검사 시점</td><td>본문 실행 전</td><td>본문 실행 후</td></tr><tr><td>조건 의미</td><td>TRUE이면 계속</td><td>TRUE이면 종료</td></tr></tbody></table></div><div class="tip">반복 조건에 영향을 주는 값을 본문에서 갱신하고, 최대 반복 횟수도 제한하세요. 바뀌지 않는 TRUE 조건은 끝나지 않는 반복을 만들 수 있습니다.</div></div></section><section class="section" id="section8"><div class="section-header"><div class="num">8</div><h2>EXIT · CONTINUE — 반복 흐름 조절</h2></div><div class="section-body"><p>EXIT는 현재의 가장 안쪽 반복문을 즉시 빠져나옵니다. CONTINUE는 현재 회차의 나머지 코드를 건너뛰고 다음 반복 판단으로 이동합니다.</p><pre><code>// Values : Array[0..4] of Int (Input)
+// FoundIndex : Int (Output), i : Int (Temp)
+#FoundIndex := -1;
+FOR #i := 0 TO 4 DO
+    IF #Values[#i] &lt; 0 THEN
+        CONTINUE;              // 음수는 검색에서 제외
+    END_IF;
+    IF #Values[#i] &gt;= 100 THEN
+        #FoundIndex := #i;
+        EXIT;                  // 첫 번째 일치 항목에서 종료
+    END_IF;
+END_FOR;</code></pre><p>입력값이 [-5, 20, 120, 150, 30]이면 FoundIndex는 2입니다. 배열 인덱스는 이 예제에서 0부터 시작합니다. 일치 항목이 없으면 -1을 유지합니다.</p><div class="tip">WHILE에서 CONTINUE를 쓰면 카운터 갱신 코드를 건너뛸 수 있습니다. 갱신 위치에 따라 무한 반복이 생길 수 있으므로 초보 실습에서는 FOR부터 익히세요.</div></div></section><section class="section" id="section9"><div class="section-header"><div class="num">9</div><h2>PLC 스캔과 반복문 — 기다리는 코드를 만들지 않기</h2></div><div class="section-body"><p>반복문은 기본적으로 현재 블록 호출 안에서 연속 실행됩니다. FOR를 10번 반복한다고 PLC 스캔이 10번 진행되거나 10초가 지나는 것이 아닙니다. 반복량이 많으면 사이클 시간이 길어질 수 있습니다.</p><div aria-label="스캔 내 실행 개념도" class="flow"><span>블록 호출</span>→<span>반복문 전체 실행</span>→<span>다음 명령</span>→<span>호출 종료</span></div><pre><code>// 작성하면 안 되는 대기 방식의 개념 예시
+// WHILE NOT #Sensor DO
+//     센서가 바뀔 때까지 이 자리에 머무름
+// END_WHILE;</code></pre><p>일반적인 프로세스 이미지 입력이 반복 중 알아서 다음 스캔 값으로 갱신된다고 기대해서는 안 됩니다. 센서 대기는 매 스캔 조건을 확인하는 상태 변수로 구성하고, 시간 대기는 적절한 타이머를 사용합니다.</p><div class="highlight">데이터 여러 개를 지금 계산한다 → 반복문<br/>센서·시간 조건을 여러 스캔에 걸쳐 기다린다 → 상태 전이 + 타이머<br/>대용량 데이터 → 스캔당 처리량을 제한해 분할 처리</div><p class="small">CPU는 사이클 시간 감시 기능을 제공합니다. 실제 허용 실행 시간과 오류 반응은 CPU 및 프로젝트 설정을 확인하세요.</p></div></section><section class="section" id="section10"><div class="section-header"><div class="num">10</div><h2>종합 예제 — CASE로 단계 제어하기</h2></div><div class="section-body"><p>FB를 만들고 아래 인터페이스를 선언합니다. State와 PrevStart는 Static으로 선언하고 시작값을 각각 0과 FALSE로 설정합니다. FB는 주기 프로그램에서 매 스캔 호출합니다.</p><div class="table-wrap"><table><thead><tr><th>구분</th><th>이름</th><th>자료형·설명</th></tr></thead><tbody><tr><td>Input</td><td>Start, Reset, Sensor</td><td>각각 Bool</td></tr><tr><td>Output</td><td>RunCmd, Done</td><td>각각 Bool</td></tr><tr><td>Static</td><td>State</td><td>Int, 시작값 0</td></tr><tr><td>Static</td><td>PrevStart</td><td>Bool, 시작값 FALSE</td></tr><tr><td>Temp</td><td>StartEdge</td><td>Bool</td></tr></tbody></table></div><pre><code>// 시작 신호의 상승 에지 검출
+#StartEdge := #Start AND NOT #PrevStart;
+#PrevStart := #Start;
+
+// Reset이 단계 전이보다 우선
+IF #Reset THEN
+    #State := 0;
+ELSE
+    CASE #State OF
+        0: // 대기
+            IF #StartEdge AND NOT #Sensor THEN
+                #State := 10;
+            END_IF;
+        10: // 가동, 다음 스캔에서도 센서 확인
+            IF #Sensor THEN
+                #State := 20;
+            END_IF;
+        20: // 완료, Reset까지 유지
+            #State := 20;
+        ELSE
+            #State := 0;
+    END_CASE;
+END_IF;
+
+// 전이 이후 상태로 출력을 계산
+#RunCmd := (#State = 10);
+#Done := (#State = 20);</code></pre><div class="flow"><span>0: 대기</span>→<span>10: 가동</span>→<span>20: 완료</span></div><p>Start의 FALSE→TRUE 변화가 들어오고 Sensor가 FALSE이면 가동합니다. Sensor가 TRUE이면 완료 상태로 바뀌며 RunCmd는 FALSE, Done은 TRUE가 됩니다. Reset은 어느 단계에서나 대기로 돌려보냅니다.</p><div class="tip">이 예제에는 운전 시간 초과 감시, 고장 처리, 안전 인터록이 포함되어 있지 않습니다. 실제 설비용 완성 로직이 아닙니다. Reset 동안 Start를 계속 누르고 있으면 해제만으로 재시작하지 않으며, 새 상승 에지가 필요합니다.</div></div></section><section class="section" id="section11"><div class="section-header"><div class="num">11</div><h2>실습 — TIA Portal에서 작성하고 확인하기</h2></div><div class="section-body"><ol><li>실습용 프로젝트에서 대상 CPU를 선택하고, 프로그램 블록에 SCL 언어의 FC 또는 FB를 추가합니다. 메뉴 이름은 버전에 따라 다를 수 있습니다.</li><li>섹션 4의 IF 예제는 FC에, 섹션 10의 상태 제어 예제는 FB에 작성합니다. 인터페이스 표대로 지역 태그를 먼저 선언합니다.</li><li>FB를 주기 프로그램에서 호출하고 인스턴스 DB를 생성합니다. 입출력은 실제 I/O 대신 실습용 DB 태그에 연결합니다.</li><li>컴파일하여 태그 미선언, 자료형 불일치, 세미콜론 누락을 수정합니다.</li><li>지원되는 시뮬레이션 환경에서 실행하고 감시 테이블로 입력과 결과를 확인합니다. 실제 설비에 연결된 출력은 사용하지 않습니다.</li></ol><div class="table-wrap"><table><thead><tr><th>순서</th><th>입력 조작</th><th>기대 결과</th></tr></thead><tbody><tr><td>1</td><td>Reset=TRUE, Start=FALSE, Sensor=FALSE</td><td>State=0, RunCmd=FALSE, Done=FALSE</td></tr><tr><td>2</td><td>Reset=FALSE 후 Start=TRUE</td><td>State=10, RunCmd=TRUE</td></tr><tr><td>3</td><td>Start=FALSE, Sensor=FALSE 유지</td><td>State=10 유지</td></tr><tr><td>4</td><td>Sensor=TRUE</td><td>State=20, RunCmd=FALSE, Done=TRUE</td></tr><tr><td>5</td><td>Sensor=FALSE만 변경</td><td>State=20, Done=TRUE 유지</td></tr><tr><td>6</td><td>Reset=TRUE</td><td>State=0, Done=FALSE</td></tr></tbody></table></div><h3>추가 과제: 합계·평균·최댓값</h3><p>Values : Array[0..4] of Int에 [12, 7, 25, 10, 6]을 넣고 FOR로 합계, 평균, 최댓값을 구하세요. Sum : DInt, Average : Real, MaxValue : Int를 Output에, i : Int를 Temp에 선언합니다.</p><details><summary>정답 코드와 예상 결과 보기</summary><pre><code>#Sum := 0;
+#MaxValue := #Values[0];
+FOR #i := 0 TO 4 DO
+    #Sum := #Sum + INT_TO_DINT(#Values[#i]);
+    IF #Values[#i] &gt; #MaxValue THEN
+        #MaxValue := #Values[#i];
+    END_IF;
+END_FOR;
+#Average := DINT_TO_REAL(#Sum) / 5.0;</code></pre><p>합계 60, 평균 12.0, 최댓값 25입니다. 최댓값은 0이 아니라 첫 번째 원소로 초기화해야 입력이 모두 음수여도 바르게 계산합니다.</p></details></div></section><section class="section" id="section12"><div class="section-header"><div class="num">12</div><h2>확인 문제와 자주 발생하는 오류</h2></div><div class="section-body"><details><summary>1. #Count := 5와 #Count = 5의 차이는?</summary><p>:=는 대입이고 =는 비교입니다. 전자는 Count에 5를 저장하며, 후자는 같은지를 판단하는 식입니다.</p></details><details><summary>2. FOR #i := 0 TO 4 DO는 몇 회 실행되나요?</summary><p>0, 1, 2, 3, 4의 총 5회입니다. BY 생략 시 증가값은 1입니다.</p></details><details><summary>3. 최초 조건이 FALSE인 WHILE과 종료 조건이 TRUE인 REPEAT의 차이는?</summary><p>WHILE 본문은 0회, REPEAT 본문은 최소 1회 실행됩니다.</p></details><details><summary>4. 왜 센서가 켜질 때까지 WHILE로 기다리면 안 되나요?</summary><p>블록 실행을 붙잡아 사이클 시간을 늘리거나 끝나지 않을 수 있습니다. 매 스캔 호출되는 상태 제어로 센서를 확인해야 합니다.</p></details><div class="table-wrap"><table><thead><tr><th>증상</th><th>확인할 점</th></tr></thead><tbody><tr><td>컴파일 오류</td><td>THEN, DO, END_IF;, END_FOR; 및 태그 선언 확인</td></tr><tr><td>배열 접근 오류</td><td>선언된 하한·상한과 반복 범위 확인</td></tr><tr><td>누적값이 예상보다 계속 증가</td><td>합계 초기화 위치와 호출 주기 확인</td></tr><tr><td>소수 결과가 의도와 다름</td><td>정수/실수 자료형과 명시 변환 확인</td></tr><tr><td>이전 출력이 남음</td><td>모든 분기에서 값이 정의되는지 확인</td></tr><tr><td>CPU 사이클 시간이 길어짐</td><td>종료 조건, 반복 상한, 중첩 반복량 확인</td></tr></tbody></table></div></div></section><section class="section" id="section13"><div class="section-header"><div class="num">13</div><h2>가상 배열 실습 — FOR 본문을 한 회씩 추적</h2></div><div class="section-body"><p>Int 값 다섯 개를 입력하고 합계·최댓값을 계산하는 각 반복 회차를 확인합니다. 이 모형은 정해진 예제만 수행하며 임의의 SCL 코드를 실행·컴파일하는 도구가 아닙니다.</p><pre><code>// Values : Array[0..4] of Int (Input)
+// Sum : DInt, MaxValue : Int (Output)
+// i : Int (Temp)
+#Sum := 0;
+#MaxValue := #Values[0];
+FOR #i := 0 TO 4 DO
+    #Sum := #Sum + INT_TO_DINT(#Values[#i]);
+    IF #Values[#i] &gt; #MaxValue THEN
+        #MaxValue := #Values[#i];
+    END_IF;
+END_FOR;</code></pre><div class="lab"><form id="array-form"><label for="array-values">Int 다섯 개를 쉼표로 구분 (각각 -32768~32767)</label><input autocomplete="off" id="array-values" required="" type="text" value="12, 7, 25, 10, 6"/><div class="controls"><button type="submit">입력 적용·초기화</button><button class="execute" id="next-iteration" type="button">반복 본문 1회 실행</button><button id="run-all" type="button">남은 반복 모두 실행</button></div></form><p class="small" id="array-status">초기값을 준비했습니다. 입력을 바꾸었다면 먼저 적용하세요.</p><div aria-label="배열 원소와 다음 처리 위치" class="array-cells" id="array-cells"></div><output aria-atomic="true" aria-live="polite" id="array-output">처리한 원소 0/5 · 다음 배열 인덱스 0
+Sum=0 / MaxValue=12 / 평균=아직 계산 전</output><ol aria-label="반복별 계산 기록" class="history" id="array-history"></ol><noscript><p>가상 실습은 JavaScript가 필요합니다. 기본 입력의 결과는 합계 60, 최댓값 25, 평균 12.0입니다.</p></noscript><p class="small">화면의 “다음 배열 인덱스”는 모형의 진행 표시입니다. 실제 SCL의 루프 종료 후 카운터 값에 대한 설명이 아닙니다. 반복 버튼 다섯 번이 실제 PLC 스캔 다섯 번을 뜻하지 않습니다. 실제 FOR 본문은 같은 블록 호출 안에서 이어서 실행됩니다.</p></div><div class="table-wrap"><table><thead><tr><th>입력</th><th>합계</th><th>최댓값</th><th>평균</th></tr></thead><tbody><tr><td>12, 7, 25, 10, 6</td><td>60</td><td>25</td><td>12.0</td></tr><tr><td>-8, -3, -12, -5, -10</td><td>-38</td><td>-3</td><td>-7.6</td></tr><tr><td>0, 0, 0, 0, 0</td><td>0</td><td>0</td><td>0.0</td></tr><tr><td>32767, 32767, 32767, 32767, 32767</td><td>163835</td><td>32767</td><td>32767.0</td></tr></tbody></table></div><div class="tip">Int 다섯 개의 합계는 Int 범위를 넘을 수 있어 DInt로 누적합니다. 최댓값의 초기값은 0이 아닌 첫 원소로 둡니다. 그래야 모든 원소가 음수여도 결과가 맞습니다.</div></div></section><section class="section" id="section14"><div class="section-header"><div class="num">14</div><h2>경계값·호출·초기화 검토와 제출 과제</h2></div><div class="section-body"><h3>반복문과 계산의 점검</h3><ul><li>배열 하한·상한을 실제 선언과 일치시켰는가?</li><li>FOR 카운터·시작값·끝값·증가값의 자료형과 범위를 확인했는가?</li><li>WHILE·REPEAT의 조건이 반드시 바뀌고 최대 반복량이 제한되는가?</li><li>CONTINUE 때문에 조건 갱신 코드를 건너뛰지 않는가?</li><li>누적 변수는 의도한 호출 단위에서 초기화하는가?</li><li>실수 결과가 필요하면 나눗셈 전에 자료형을 변환하는가?</li></ul><h3>CASE 상태 제어의 점검</h3><p>상태는 FB Static 등 호출 간 유지되는 공간에 두고 매 스캔 블록을 호출합니다. Reset, Stop, 고장, 정상 전이의 우선순위를 먼저 정의합니다. 예제에서 사용한 State의 호출 간 유지와 전원 차단 후 Retain은 서로 다릅니다.</p><div class="highlight">센서가 변하기를 반복문 안에서 기다리지 않습니다. 여러 스캔에 걸친 대기는 상태 전이·타이머로 설계하고 매 호출에 조건을 확인합니다.</div><div class="tip">앞의 CASE 종합 예제는 교육용 순서만 보여 줍니다. 시간 초과·고장·실제 위치 확인·전원 복귀 재무장·안전 기능이 완성된 프로그램이 아닙니다. 최초 호출에 Start가 TRUE이고 PrevStart가 FALSE이면 단순 상승 에지로 인식할 수 있으므로, 실제 요구가 다르면 초기 해제 확인을 설계합니다.</div><h3>제출 과제</h3><ol><li>IF·CASE·FOR·WHILE·REPEAT의 선택 기준을 한 문장씩 정리합니다.</li><li>입력 다섯 개의 합계·최댓값·평균을 구하는 인터페이스 표와 코드를 작성합니다.</li><li>양수·음수·0·Int 경계값으로 예상값과 관찰값을 기록합니다.</li><li>한 블록 호출 안의 반복과 여러 스캔에 걸친 단계 제어의 차이를 설명합니다.</li><li>선택 실습을 수행했다면 CPU·펌웨어·TIA Portal 버전, 컴파일 결과와 미실행 항목을 기록합니다.</li></ol><h3>다음 주: SFC를 이용한 시퀀스 설계</h3><p>이번 주의 CASE 기반 상태 제어를 단계·전이·동작 도식으로 정리합니다. 정상 순서뿐 아니라 인터록·시간 초과·정지·복귀를 함께 설계합니다.</p></div></section><div class="summary"><h3>7주차 핵심 정리</h3><ul><li>대입은 :=, 비교는 =, 문장 마침은 세미콜론입니다.</li><li>IF는 조건 판단, CASE는 값에 따른 분기에 사용합니다.</li><li>FOR는 범위 반복, WHILE은 선검사, REPEAT는 후검사 반복입니다.</li><li>반복문은 현재 호출 안에서 처리됩니다. 시간·센서 대기는 상태와 타이머로 구성합니다.</li><li>변수 초기화, 배열 범위, 종료 조건을 반드시 확인합니다.</li></ul></div><section class="section" style="margin-top:1.8rem"><div class="section-body"><h3>공식 문서 및 적용 범위</h3><p class="small">제어문 문법과 사이클 시간 개념은 Siemens 공식 문서를 참고했습니다. 예제·배열 모형·실습 데이터는 교육용 구성입니다. 실제 CPU·펌웨어·TIA Portal 버전에 따라 지원 범위를 확인하세요. 파일 구조·내부 링크·배열 계산·상태 전이의 가상 모델은 점검했으나 실제 TIA Portal 컴파일·PLCSIM 실행·브라우저 렌더링 및 클릭 자동 시험은 수행하지 않았습니다. 가상 배열 모형은 SCL 컴파일러가 아니며 실제 PLC의 실행 시간을 재현하지 않습니다.</p><ul><li><a href="https://docs.tia.siemens.cloud/r/simatic_s7_1200_manual_collection_enus_20/programming-concepts/programming-language/scl/scl-expressions-and-operations" rel="noopener noreferrer" target="_blank">Siemens STEP 7 — SCL expressions and operations</a></li><li><a href="https://docs.tia.siemens.cloud/r/simatic_s7_1200_manual_collection_enus_20/basic-instructions/program-control-operations/scl-program-control-statements/for?contentId=QxjYqWI47AhZhJJG~x8xsQ" rel="noopener noreferrer" target="_blank">Siemens S7-1200 — FOR</a></li><li><a href="https://docs.tia.siemens.cloud/r/en-us/v20/scl-s7-1200-s7-1500/program-control-operations-s7-1200-s7-1500/repeat-run-if-condition-is-not-met-s7-1200-s7-1500" rel="noopener noreferrer" target="_blank">Siemens STEP 7 — REPEAT (S7-1200, S7-1500)</a></li><li><a href="https://docs.tia.siemens.cloud/r/simatic_s7_1200_manual_collection_eses_20/plc-concepts/execution-of-the-user-program/monitoring-and-configuring-the-cycle-time?contentId=T9tNYL0EQ~ia2NyMdOGY8w" rel="noopener noreferrer" target="_blank">Siemens S7-1200 — Monitoring and configuring the cycle time</a></li><li><a href="https://docs.tia.siemens.cloud/r/en-us/v20/scl-s7-1200-s7-1500" rel="noopener noreferrer" target="_blank">Siemens STEP 7 — SCL 제어문 공식 개요</a></li><li><a href="https://docs.tia.siemens.cloud/r/en-us/v21/scl-s7-1200-s7-1500-s7-1200-g2/program-control-operations-s7-1200-s7-1500-s7-1200-g2/repeat-run-if-condition-is-not-met-s7-1200-s7-1500-s7-1200-g2" rel="noopener noreferrer" target="_blank">Siemens STEP 7 — REPEAT 공식 설명</a></li></ul></div></section><nav aria-label="교안 이동" class="link-nav"><a href="plc06.html">이전: 6주차 교안</a><a href="plcstudy.html">전체 강의 목차로</a><a href="plc08.html">다음: 8주차 교안</a></nav></main><footer>PLC 15주 강의 교안 · 7주차 · 초보자용 · 교육 목적</footer><script>
+(() => {
+ 'use strict';
+ const form=document.getElementById('array-form');
+ const input=document.getElementById('array-values');
+ const status=document.getElementById('array-status');
+ const cells=document.getElementById('array-cells');
+ const output=document.getElementById('array-output');
+ const history=document.getElementById('array-history');
+ const next=document.getElementById('next-iteration');
+ const all=document.getElementById('run-all');
+ let values=[12,7,25,10,6],index=0,sum=0,max=12;
+ function render(){
+  cells.replaceChildren();
+  values.forEach((v,i)=>{
+   const cell=document.createElement('span');cell.className='array-cell'+(i===index?' current':'');
+   const label=document.createElement('small');label.textContent='Values['+i+']'+(i===index?' · 다음':'');
+   cell.append(label,document.createTextNode(String(v)));cells.append(cell);
+  });
+  const avg=index===values.length?(sum/values.length).toFixed(3):'아직 계산 전';
+  output.textContent='처리한 원소 '+index+'/5 · '+(index<5?'다음 배열 인덱스 '+index:'반복 완료')+'\nSum='+sum+' / MaxValue='+max+' / 평균='+avg;
+  next.disabled=index>=values.length;all.disabled=index>=values.length;
+ }
+ function load(){
+  const parts=input.value.split(',').map(x=>x.trim());
+  if(parts.length!==5||parts.some(x=>!/^[-+]?\d+$/.test(x))){status.textContent='적용 실패: 정수 다섯 개를 쉼표로 구분하세요. 기존 진행 상태는 유지합니다.';return;}
+  const parsed=parts.map(Number);
+  if(parsed.some(x=>!Number.isInteger(x)||x < -32768||x > 32767)){status.textContent='적용 실패: 각 값은 Int 범위 -32768~32767이어야 합니다.';return;}
+  values=parsed;index=0;sum=0;max=values[0];history.replaceChildren();
+  status.textContent='입력 적용 완료. Sum=0, MaxValue=첫 원소로 초기화했습니다.';render();
+ }
+ function step(){
+  if(index>=values.length)return;
+  const oldSum=sum,oldMax=max,v=values[index];
+  sum+=v;if(v>max)max=v;
+  const li=document.createElement('li');
+  li.textContent='i='+index+': '+oldSum+' + ('+v+') = '+sum+' / MaxValue: '+oldMax+' → '+max;
+  history.append(li);index++;render();
+  status.textContent=index===5?'다섯 원소 처리 완료. 입력을 다시 적용하면 처음부터 시작합니다.':'본문 1회 실행 완료. 다음 원소를 처리할 수 있습니다.';
+ }
+ form.addEventListener('submit',e=>{e.preventDefault();load();});
+ input.addEventListener('input',()=>{status.textContent='입력 수정 대기: 입력 적용·초기화를 눌러야 새 값으로 계산합니다. 현재 버튼은 이전 적용값을 처리합니다.';});
+ next.addEventListener('click',step);
+ all.addEventListener('click',()=>{while(index<values.length)step();});
+ render();
+})();
+</script></body></html>

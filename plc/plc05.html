@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="PLC 5주차: 래더 심화, 자기유지, 정지 우선, 상승 에지, 인터록과 한 스캔 가상 실습"><title>5주차. 래더 다이어그램(LD) 심화</title><style>
+:root {
+  --primary: #0b3d91;
+  --accent: #e6b15a;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #222;
+  --muted: #555;
+  --border: #e0e4ea;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+header {
+  background: linear-gradient(135deg, #0b3d91 0%, #1a5fb4 100%);
+  color: white;
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+}
+header .week-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #111;
+  font-weight: 700;
+  padding: 0.25rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+header p { opacity: 0.92; font-size: 1rem; }
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.8rem 1.2rem 3rem;
+}
+.section {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.8rem;
+  overflow: hidden;
+}
+.section-header {
+  background: #f0f4fa;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.section-header .num {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+.section-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+.section-body p { margin-bottom: 1rem; }
+.section-body ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+.section-body li { margin-bottom: 0.45rem; }
+.highlight {
+  background: #e8f4fd;
+  border-left: 5px solid #1a5fb4;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.tip {
+  background: #fff8e6;
+  border-left: 5px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.img-box {
+  margin: 1.4rem 0;
+  text-align: center;
+}
+.img-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+.img-caption {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+.goal-box {
+  background: linear-gradient(135deg, #e8f4fd, #f0f7ff);
+  border: 1px solid #b6d4f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.goal-box h3 {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+}
+th {
+  background: #f0f4fa;
+  color: var(--primary);
+  font-weight: 600;
+}
+tr:nth-child(even) { background: #fafbfc; }
+.summary {
+  background: #1a5fb4;
+  color: white;
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem;
+  margin-top: 2rem;
+}
+.summary h3 { margin-bottom: 0.8rem; font-size: 1.15rem; }
+.summary ul { padding-left: 1.3rem; }
+.summary li { margin-bottom: 0.4rem; }
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  font-size: 0.88rem;
+}
+
+h3{color:var(--primary);font-size:1.05rem;margin:1.2rem 0 .5rem}ol{padding-left:1.5rem;margin:1rem 0}li{margin-bottom:.5rem}.small{font-size:.88rem;color:var(--muted)}a{color:#1455a0;overflow-wrap:anywhere}pre{background:#12233d;color:#e5efff;padding:1rem;border-radius:9px;overflow-x:auto;font:.85rem/1.7 Consolas,'Courier New',monospace;margin:1rem 0}code{font-family:Consolas,monospace}details{padding:.8rem 1rem;border:1px solid var(--border);border-radius:8px;margin:.8rem 0}summary{cursor:pointer;color:var(--primary);font-weight:600}.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6rem;margin:1rem 0}.flow span{background:#e8f4fd;border:1px solid #b6d4f0;border-radius:7px;padding:.6rem .8rem}.worksheet{padding:1rem;border:1px dashed #8da9cf;border-radius:8px;margin:1rem 0}.lab{padding:1rem;background:#f7faff;border:1px solid #b6d4f0;border-radius:9px}.controls{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}.lab button{font:inherit;border:2px solid #8196b3;background:white;color:#15304f;border-radius:7px;padding:.6rem .8rem;cursor:pointer}.lab button[aria-pressed=true]{background:#dbeeff;border-color:#0b3d91}.lab .execute{background:#0b3d91;color:white;border-color:#0b3d91}.lab button:focus-visible,.lab select:focus-visible{outline:3px solid #e6b15a;outline-offset:3px}.lab select{font:inherit;padding:.5rem;max-width:100%;border:1px solid #8196b3;border-radius:6px}.lab label{display:block;margin:.7rem 0 .3rem}.lab output{display:block;white-space:pre-line;padding:1rem;background:white;border:1px solid #dbe5f2;border-radius:7px}.history{max-height:250px;overflow:auto;margin-top:1rem;font-size:.9rem;padding-left:1.5rem}.lab .history li{padding:.25rem 0;border-bottom:1px solid #e0e4ea}@media(max-width:600px){header h1{font-size:1.3rem}.container{padding:1.2rem .7rem}.section-body{padding:1.1rem}th,td{padding:.5rem}table{font-size:.86rem}pre{font-size:.74rem}}@media print{body{background:white;font-size:11pt}.section{border:1px solid #ddd;box-shadow:none}.section-header{break-after:avoid}details>*{display:block}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3fa;color:#111}.controls,.history{display:none}}
+</style></head><body><header><div class="week-badge">5주차 · Module 05</div><h1>래더 다이어그램(LD) 심화</h1><p>자기유지·우선순위·에지·인터록을 스캔 단위로 이해한다</p></header><main class="container"><div class="goal-box"><h3>오늘의 학습 목표</h3><ul><li>접점·코일과 물리 배선의 의미를 구분한다.</li><li>정지 우선 자기유지와 Set/Reset 우선순위를 설명한다.</li><li>레벨 시작과 상승 에지 시작의 차이를 시험한다.</li><li>상태 기억·실행 순서·중복 코일 문제를 찾는다.</li><li>실제 출력 없이 내부 태그로 정상·정지·재시작 조건을 검토한다.</li></ul><p class="small">선수학습: 1~4주차 / 준비물: 웹 브라우저·기록 도구 / 선택 실습: 지원되는 TIA Portal·시뮬레이터 / 실제 I/O·모터·안전 제어 제외</p></div><section class="section"><div class="section-header"><div class="num">1</div><h2>LD를 읽는 기준 — 배선도가 아니라 실행 논리</h2></div><div class="section-body"><p>LD(Ladder Diagram)는 접점·코일·블록과 연결선으로 논리를 표현하는 그래픽 언어입니다. Siemens TIA Portal에서는 LAD라는 명칭으로 만납니다. 이번 주에는 단순 AND/OR를 넘어 호출 사이 상태 기억, 우선순위, 에지와 상호 배제를 학습합니다.</p><p>접점은 태그의 상태를 검사하고 일반 코일은 논리 결과를 변수에 대입합니다. 도식의 선은 물리적으로 흐르는 전력을 재현하는 것이 아닙니다.</p><div class="highlight">세 가지를 따로 읽습니다: 현재 입력 → 이번 네트워크 계산 → 다음 계산에 남는 변수값</div><div class="tip">문자 도식은 읽기용 개념도이며 TIA Portal로 가져올 수 있는 LAD 프로젝트 파일이 아닙니다. 실제 출력·모터·안전 회로에 연결하지 않고 내부 태그로만 학습합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">2</div><h2>접점·코일과 조건 결합 복습</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>요소</th><th>개념</th><th>읽는 법</th></tr></thead><tbody><tr><td>[ A ]</td><td>정상 논리 접점</td><td>A=TRUE이면 논리 경로가 참</td></tr><tr><td>[/ B ]</td><td>부정 논리 접점</td><td>B=FALSE이면 논리 경로가 참</td></tr><tr><td>( Q )</td><td>일반 코일</td><td>계산 결과가 TRUE/FALSE인지 Q에 대입</td></tr><tr><td>직렬 경로</td><td>AND</td><td>모든 조건 충족</td></tr><tr><td>병렬 경로</td><td>OR</td><td>하나 이상 조건 충족</td></tr></tbody></table></div><pre><code>|----[ Enable ]----[/ Blocked ]----( Lamp )----|
+
+Lamp = Enable AND NOT Blocked</code></pre><p>Blocked=TRUE이면 부정 논리 접점은 거짓입니다. 물리 NC 버튼을 연결했는지와는 별개입니다. 먼저 입력 태그의 TRUE 의미를 정의하고 그 값을 어떻게 검사할지 선택합니다.</p><div class="tip">코일의 네트워크가 실행되지 않으면 값을 갱신하지 않을 수 있습니다. “논리 경로 FALSE로 코일을 실행하는 것”과 “그 네트워크 자체를 건너뛰는 것”은 다릅니다.</div></div></section><section class="section"><div class="section-header"><div class="num">3</div><h2>자기유지 — 버튼을 놓아도 기억하기</h2></div><div class="section-body"><p>시작 입력이 잠깐 TRUE가 된 뒤에도 RunMemory를 유지하고 싶다면, 시작 조건과 이전 RunMemory를 병렬로 묶는 자기유지 구조를 사용할 수 있습니다.</p><pre><code>정지 우선 자기유지의 개념도
+
+|--[ Permit ]--[/ StopReq ]--+--[ Start ]-----+--( RunMemory )--|
+|                           |                |
+|                           +--[ RunMemory ]-+
+
+RunNext = Permit AND NOT StopReq AND (Start OR RunPrev)</code></pre><div class="table-wrap"><table><thead><tr><th>Permit</th><th>StopReq</th><th>Start</th><th>RunPrev</th><th>RunNext</th></tr></thead><tbody><tr><td>TRUE</td><td>FALSE</td><td>TRUE</td><td>FALSE</td><td>TRUE</td></tr><tr><td>TRUE</td><td>FALSE</td><td>FALSE</td><td>TRUE</td><td>TRUE</td></tr><tr><td>TRUE</td><td>TRUE</td><td>TRUE</td><td>TRUE</td><td>FALSE</td></tr><tr><td>FALSE</td><td>FALSE</td><td>TRUE</td><td>TRUE</td><td>FALSE</td></tr></tbody></table></div><div class="highlight">RunMemory는 현재 네트워크에서 쓰기 전 값으로 읽히고, 코일을 계산한 뒤 새 값으로 갱신됩니다. 이전 값을 읽는 자기유지 구조와 여러 곳에서 같은 태그에 쓰는 구조를 구분하세요.</div><p>이 방식은 Start가 레벨 신호이면 Permit 복구나 StopReq 해제 시 Start가 계속 TRUE일 때 다시 운전할 수 있습니다. 재시작 방지가 필요하면 새 상승 에지를 요구하는 정책으로 확장합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">4</div><h2>Set/Reset — 동시 입력의 우선순위</h2></div><div class="section-body"><p>Set은 상태를 TRUE로 저장하고 Reset은 FALSE로 저장하는 기능입니다. 둘 다 요청되지 않을 때 이전 상태를 유지합니다. 그러나 동시에 요청되었을 때는 Set 우선과 Reset 우선을 구분해야 합니다.</p><div class="table-wrap"><table><thead><tr><th>Set</th><th>Reset</th><th>Reset 우선 결과</th><th>Set 우선 결과</th></tr></thead><tbody><tr><td>FALSE</td><td>FALSE</td><td>이전 상태</td><td>이전 상태</td></tr><tr><td>TRUE</td><td>FALSE</td><td>TRUE</td><td>TRUE</td></tr><tr><td>FALSE</td><td>TRUE</td><td>FALSE</td><td>FALSE</td></tr><tr><td>TRUE</td><td>TRUE</td><td>FALSE</td><td>TRUE</td></tr></tbody></table></div><p>일반 정지 우선 운전 기억에는 충돌 시 FALSE가 되는 정책이 적합한 출발점입니다. 하지만 안전 기능은 이것만으로 구현되지 않으며 모든 공정이 같은 정책을 쓰는 것은 아닙니다.</p><div class="tip">RS/SR 이름만 보고 우선순위를 외우지 않습니다. 제조사·명령군·기종의 명령 도움말에서 S/R 입력 이름, 진리표와 우선순위를 확인하세요. 서로 다른 PLC 매뉴얼의 표기를 섞지 않습니다.</div><p>여러 네트워크에 Set 코일과 Reset 코일을 흩어 놓으면 실행 순서에 의해 결과를 해석해야 하는 경우가 생깁니다. 상태를 바꾸는 위치와 우선순위를 한눈에 확인할 수 있게 설계합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">5</div><h2>상승 에지 — 눌린 상태와 새로 누른 순간</h2></div><div class="section-body"><p>레벨은 현재 신호가 TRUE인지이고, 상승 에지는 이전 호출의 FALSE가 이번 호출에서 TRUE로 바뀌었는지입니다. 시작 입력을 계속 누르고 있어도 새 상승 에지는 한 번만 발생합니다.</p><div class="table-wrap"><table><thead><tr><th>이전 Start</th><th>현재 Start</th><th>StartEdge</th></tr></thead><tbody><tr><td>FALSE</td><td>FALSE</td><td>FALSE</td></tr><tr><td>FALSE</td><td>TRUE</td><td>TRUE</td></tr><tr><td>TRUE</td><td>TRUE</td><td>FALSE</td></tr><tr><td>TRUE</td><td>FALSE</td><td>FALSE</td></tr></tbody></table></div><pre><code>Network 1: 이전 상태를 쓰기 전에 에지 계산
+|----[ Start ]----[/ PrevStart ]----( StartEdge )----|
+
+Network 2: 다음 호출을 위해 현재 입력 저장
+|----[ Start ]----------------------( PrevStart )----|</code></pre><p>실제 프로젝트에서는 지원되는 상승 에지 명령·블록과 고유한 인스턴스/메모리를 사용하는 방식도 있습니다. 이 교안은 원리를 보여 주기 위해 두 네트워크로 풀어 썼습니다.</p><div class="highlight">PrevStart는 Reset·StopReq 중에도 매 스캔 갱신합니다. 그렇지 않으면 이미 눌린 버튼을 정지 해제 후 새 에지로 잘못 인식할 수 있습니다.</div><div class="tip">시작 시 PrevStart=FALSE이고 첫 스캔에 Start=TRUE이면 이 단순 에지 검출은 상승 에지로 판단합니다. 전원 재투입 때 버튼 해제 확인까지 필요하면 별도 시동 허가·재무장 정책을 설계해야 합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">6</div><h2>정지·Reset 우선, 새 에지로 시작하는 설계</h2></div><div class="section-body"><p>이번 가상 실습의 요구사항입니다. RunMemory·PrevStart는 호출 간 유지되는 내부 변수이며 처음 값은 FALSE입니다.</p><ol><li>Permit이 없거나 StopReq·Reset 중 하나라도 TRUE이면 RunMemory를 FALSE로 만듭니다.</li><li>그 외에는 새로운 StartEdge가 있으면 RunMemory를 TRUE로 만듭니다.</li><li>StartEdge가 없으면 기존 상태를 유지합니다.</li><li>출력 표시 RunCmd는 RunMemory와 현재 허가·정지 조건으로 최종 결정합니다.</li></ol><pre><code>Network 1: StartEdge = Start AND NOT PrevStart
+Network 2: PrevStart = Start
+
+Network 3: 정지·Reset 우선 운전 기억
+|--[Permit]--[/StopReq]--[/Reset]--+--[StartEdge]--+--(RunMemory)--|
+|                                 |               |
+|                                 +--[RunMemory]--+
+
+Network 4: 최종 가상 명령
+|--[RunMemory]--[Permit]--[/StopReq]--[/Reset]--(RunCmd)--|</code></pre><p>네트워크 순서가 중요합니다. 에지 계산 → 이전 입력 저장 → 운전 기억 → 최종 명령 순서로 한 호출에서 실행합니다.</p><div class="tip">Reset은 새 시작 명령이 아닙니다. Permit 복구·StopReq 해제·Reset 해제만으로 시작하지 않도록 시험합니다. 단, 앞서 설명한 첫 호출 에지 정책과 입력 펄스 누락 가능성은 별도 검토합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">7</div><h2>상호 인터록 — 두 요청이 동시에 참인 경우</h2></div><div class="section-body"><p>정·역 방향처럼 동시에 켜면 안 되는 두 명령은 단순히 반대 출력의 이전 값만 검사하기보다 충돌 정책을 명확히 해야 합니다. 아래 예시는 상태 없는 가상 표시 명령이며 양방향 요청이면 둘 다 OFF입니다.</p><pre><code>FwdCmd = Permit AND FwdReq AND NOT RevReq
+RevCmd = Permit AND RevReq AND NOT FwdReq
+Conflict = FwdReq AND RevReq</code></pre><div class="table-wrap"><table><thead><tr><th>Permit</th><th>FwdReq</th><th>RevReq</th><th>FwdCmd</th><th>RevCmd</th></tr></thead><tbody><tr><td>TRUE</td><td>FALSE</td><td>FALSE</td><td>FALSE</td><td>FALSE</td></tr><tr><td>TRUE</td><td>TRUE</td><td>FALSE</td><td>TRUE</td><td>FALSE</td></tr><tr><td>TRUE</td><td>FALSE</td><td>TRUE</td><td>FALSE</td><td>TRUE</td></tr><tr><td>TRUE</td><td>TRUE</td><td>TRUE</td><td>FALSE</td><td>FALSE</td></tr></tbody></table></div><div class="highlight">요청 충돌은 양방향 출력을 막는 것과 별개로 사용자에게 알려야 할 수 있습니다. 무시·정지·고장 래치 중 어떤 정책인지 정합니다.</div><div class="tip">이 논리는 실제 정역 모터 제어가 아닙니다. 정지 확인·기동/정지 피드백·방향 전환 지연·하드웨어 인터록·보호·안전 기능이 없습니다. 실제 접촉기·인버터 제어는 12주차의 안전 범위를 참고합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">8</div><h2>네트워크 실행 순서와 중복 코일</h2></div><div class="section-body"><pre><code>피해야 할 모호한 구조의 개념 예시
+Network 1: RunMemory := Start
+Network 2: RunMemory := Permit
+
+네트워크 1과 2가 모두 같은 호출에서 이 순서로 실행되면,
+최종 값은 두 번째 대입의 영향을 받습니다.
+Start AND Permit을 자동으로 결합하는 구조가 아닙니다.</code></pre><div class="table-wrap"><table><thead><tr><th>문제</th><th>개선</th></tr></thead><tbody><tr><td>같은 출력에 여러 일반 코일</td><td>최종 출력 대입 위치를 한 곳으로 정리</td></tr><tr><td>상태 쓰기 후 에지 계산</td><td>PrevStart 갱신 전에 에지 계산</td></tr><tr><td>출력 계산 후 운전 기억 해제</td><td>기억 처리 이후 최종 출력 결정</td></tr><tr><td>조건부 네트워크 건너뜀</td><td>호출 조건과 모든 출력 경로를 명시</td></tr><tr><td>순환 의존·이전 출력 참조</td><td>요청·상태·출력의 역할 분리</td></tr></tbody></table></div><p>모든 프로그램이 단순히 “마지막 코일만 보면 된다”는 뜻은 아닙니다. 실제 실행된 경로, 중간 읽기, 이벤트 호출과 직접 I/O 접근 등을 함께 봐야 합니다. 여기서는 순서대로 한 번 실행되는 단순 주기 호출을 전제로 합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">9</div><h2>가상 한 스캔 실습 — 레벨과 에지 비교</h2></div><div class="section-body"><p>입력 버튼은 다음 가상 스캔에 쓸 값을 변경합니다. “한 스캔 실행”을 눌러야 기억 상태가 갱신됩니다. 실제 PLC·자동 주기·시간·I/O에 연결하지 않는 논리 학습 도구입니다.</p><div class="lab"><label for="start-mode">시작 방식</label><select id="start-mode"><option value="edge">새 상승 에지로 시작 (권장 비교 모델)</option><option value="level">Start 레벨 자기유지 (차이 관찰용)</option></select><div class="controls"><button type="button" id="in-start" aria-pressed="false">Start: FALSE</button><button type="button" id="in-permit" aria-pressed="false">Permit: FALSE</button><button type="button" id="in-stop" aria-pressed="false">StopReq: FALSE</button><button type="button" id="in-reset" aria-pressed="false">Reset: FALSE</button></div><div class="controls"><button type="button" id="scan" class="execute">한 스캔 실행</button><button type="button" id="initialize">실습 전체 초기화</button></div><p id="pending" class="small">입력·초기 상태 확인 후 한 스캔을 실행하세요.</p><output id="scan-result" aria-live="polite" aria-atomic="true">스캔 0
+PrevStart=FALSE / StartEdge=FALSE
+RunMemory=FALSE / RunCmd=FALSE</output><ol id="history" class="history" aria-label="최근 가상 스캔 기록"></ol><noscript><p>버튼 실습은 JavaScript가 필요합니다. 아래 시험표로 예상 상태를 직접 계산할 수도 있습니다.</p></noscript><p class="small">출력은 마지막으로 실행한 가상 스캔의 결과입니다. 입력만 바꾸고 스캔하지 않으면 결과는 바뀌지 않습니다. 방식 변경 시 기억·에지·스캔 기록은 초기화되며 현재 입력값은 유지합니다. 전체 초기화는 입력도 모두 FALSE로 만듭니다.</p></div><div class="tip">실제 PLC는 지정된 실행 규칙으로 자동 반복합니다. 이 모형은 계산 순서를 천천히 보기 위한 수동 단일 스텝이며 실제 PLC의 안전 반응이나 응답 시간을 재현하지 않습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">10</div><h2>실습 A — 에지 시작·정지·재시작 시험</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>스캔</th><th>입력 조작</th><th>예상 RunMemory</th></tr></thead><tbody><tr><td>준비</td><td>전체 초기화, 에지 방식 선택</td><td>FALSE</td></tr><tr><td>1</td><td>Permit=TRUE, Start=FALSE로 실행</td><td>FALSE</td></tr><tr><td>2</td><td>Start=TRUE로 실행</td><td>TRUE, StartEdge=TRUE</td></tr><tr><td>3</td><td>Start=TRUE 유지 실행</td><td>TRUE, StartEdge=FALSE</td></tr><tr><td>4</td><td>Start=TRUE, StopReq=TRUE로 실행</td><td>FALSE</td></tr><tr><td>5</td><td>Start=TRUE, StopReq=FALSE로 실행</td><td>FALSE, 새 에지 없음</td></tr><tr><td>6</td><td>Start=FALSE로 실행</td><td>FALSE</td></tr><tr><td>7</td><td>Start=TRUE로 실행</td><td>TRUE</td></tr><tr><td>8</td><td>Start=TRUE, Permit=FALSE로 실행</td><td>FALSE</td></tr><tr><td>9</td><td>Start=TRUE, Permit=TRUE로 실행</td><td>FALSE, 자동 복구 안 함</td></tr><tr><td>10</td><td>Reset=TRUE, Start=FALSE로 실행</td><td>FALSE</td></tr></tbody></table></div><p>레벨 방식으로 바꾼 뒤 같은 순서를 반복해 보세요. 스캔 5와 9에서 Start가 계속 TRUE이면 다시 운전 기억이 켜질 수 있습니다. 이 차이가 버튼 “상태”와 새 “이벤트”의 차이입니다.</p><div class="highlight">가상 스캔 사이에서 Start를 FALSE→TRUE로 바꾸고 중간 FALSE 상태를 한 번도 실행하지 않으면 새 에지를 볼 수 없습니다. 입력을 관찰하는 시점이 중요하다는 점도 확인하세요.</div></div></section><section class="section"><div class="section-header"><div class="num">11</div><h2>실습 B — TIA Portal 내부 태그 구성</h2></div><div class="section-body"><p>실제 편집기를 사용할 수 있는 경우에만 선택 실습으로 진행합니다. S7-1200·S7-1500의 지원 환경에서 LAD 언어의 FB <code>FB_RunMemory</code>를 만듭니다.</p><div class="table-wrap"><table><thead><tr><th>구분</th><th>태그</th><th>자료형</th></tr></thead><tbody><tr><td>Input</td><td>Start, Permit, StopReq, Reset</td><td>각각 Bool</td></tr><tr><td>Output</td><td>RunCmd</td><td>Bool</td></tr><tr><td>Static</td><td>RunMemory, PrevStart</td><td>각각 Bool, 시작값 FALSE</td></tr><tr><td>Temp</td><td>StartEdge</td><td>Bool</td></tr></tbody></table></div><ol><li>섹션 6의 네 개 네트워크를 같은 순서로 구성합니다.</li><li>주기 프로그램에 FB를 추가하고 고유한 인스턴스 DB를 만듭니다.</li><li>입출력은 별도 전역 DB의 Bool 변수에 연결하고 실제 %I·%Q는 사용하지 않습니다.</li><li>FB를 매 스캔 한 번 호출합니다. Reset·StopReq 중에도 호출을 건너뛰지 않습니다.</li><li>저장·컴파일 후 지원되는 시뮬레이션 환경에서 시험표를 확인합니다.</li></ol><div class="tip">TIA Portal 메뉴·형식·라이선스·시뮬레이터 지원 조건은 설치 환경을 확인합니다. 이 HTML은 자동 가져오기 파일이나 검증된 PLC 프로젝트가 아닙니다.</div></div></section><section class="section"><div class="section-header"><div class="num">12</div><h2>문제 해결 — 상태가 왜 예상과 다른가?</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>증상</th><th>확인 사항</th></tr></thead><tbody><tr><td>시작이 안 됨</td><td>Permit·StopReq·Reset → 새 에지 → FB 호출</td></tr><tr><td>버튼을 놓아도 계속 ON</td><td>자기유지 요구라면 정상, 정지 조건 확인</td></tr><tr><td>정지 해제 시 재시작</td><td>레벨 방식인지, PrevStart 갱신 누락인지 확인</td></tr><tr><td>에지가 계속 FALSE</td><td>PrevStart를 먼저 덮어썼는지 확인</td></tr><tr><td>에지가 자주 발생</td><td>이전 상태 저장이 Temp인지·공유 메모리인지 확인</td></tr><tr><td>기억이 호출마다 초기화</td><td>Static·인스턴스·초기화 위치 확인</td></tr><tr><td>실행 순서에 따라 결과 바뀜</td><td>중복 코일·같은 인스턴스 중복 호출 확인</td></tr></tbody></table></div><p>같은 태그를 HMI·다른 OB·다른 네트워크가 동시에 쓰지 않는지도 확인합니다. 요청 입력, 내부 기억과 최종 출력을 분리하면 원인을 찾기 쉬워집니다.</p><div class="tip">임의로 강제 출력을 걸어 증상을 덮지 않습니다. 실제 장치가 아닌 내부 태그에서 현재 입력·이전 입력·에지·기억·출력을 함께 관찰합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">13</div><h2>확인 문제와 제출 과제</h2></div><div class="section-body"><details><summary>1. 자기유지에 RunMemory 접점을 병렬로 넣는 이유는?</summary><p>시작 입력이 사라져도 이전 운전 기억이 참인 동안 유지 조건을 만들기 위해서입니다.</p></details><details><summary>2. Start와 StopReq가 동시에 TRUE이면?</summary><p>이 교안의 정지 우선 로직에서는 RunMemory가 FALSE가 됩니다.</p></details><details><summary>3. 에지 계산보다 PrevStart 저장을 먼저 하면?</summary><p>현재 Start와 PrevStart가 같아져 상승 에지를 검출하지 못할 수 있습니다.</p></details><details><summary>4. StopReq 동안에도 PrevStart를 갱신해야 하나요?</summary><p>이 설계에서는 그렇습니다. 정지 중 발생한 버튼 상태를 기록해 해제 시 잘못된 새 에지로 해석하지 않게 합니다.</p></details><details><summary>5. 최초 호출에서 Start=TRUE이면 에지 시작이 불가능한가요?</summary><p>이 단순 모델은 PrevStart 초기값이 FALSE여서 첫 호출을 에지로 판단합니다. 반드시 해제 후 재누름을 요구하려면 별도 시동 재무장 정책이 필요합니다.</p></details><details><summary>6. 소프트웨어 상호 배제만으로 실제 정역 제어가 완성되나요?</summary><p>아닙니다. 전기·기계 인터록, 피드백·정지 확인·보호·안전 설계 등이 추가로 필요합니다.</p></details><div class="worksheet"><h3>제출 항목</h3><ol><li>정지 우선 자기유지 도식과 설명</li><li>레벨·에지 방식의 차이를 보이는 시험 기록</li><li>Set/Reset 동시 입력의 우선순위 진리표</li><li>중복 코일·초기화·첫 호출 위험에 대한 개선 의견</li><li>선택 실습을 했다면 인터페이스·컴파일·시뮬레이션 결과 및 미실행 항목</li></ol></div><h3>다음 주: 기능 블록 다이어그램(FBD) 실습</h3><p>같은 논리와 상태를 블록 연결로 표현하고 블록 입력·출력·상태·인스턴스를 함께 읽는 방법을 학습합니다.</p></div></section><div class="summary"><h3>5주차 핵심 정리</h3><ul><li>LD는 태그를 검사하고 결과를 대입하는 실행 논리입니다.</li><li>자기유지는 이전 상태를 사용하며 정지·Reset의 우선순위를 명시합니다.</li><li>새 시작 이벤트와 버튼이 계속 눌린 상태는 다릅니다.</li><li>에지 계산 후 PrevStart를 저장하고, 정지 중에도 갱신합니다.</li><li>첫 호출·전원 복귀의 재무장 정책은 별도 설계가 필요합니다.</li><li>상호 배제와 실제 안전·보호 회로는 다른 층위입니다.</li></ul></div><section class="section" style="margin-top:1.8rem"><div class="section-body"><h3>공식 참고 자료와 검증 범위</h3><p class="small">LD 비트 논리와 블록 구성은 아래 Siemens 공식 자료를 참고했습니다. 일부 문서는 이전 버전이므로 명령 이름·파라미터·CPU 지원은 설치 환경의 도움말을 확인합니다. 문자 도식·가상 논리·시험표는 본 교안용 구성입니다. 파일 구조·링크와 가상 상태 전이 모델은 생성 과정에서 점검했으나 TIA Portal 컴파일·실물 PLC 실행·브라우저 렌더링 및 클릭 자동 시험은 수행하지 않았습니다. 안전 기능·시동 재무장·피드백 감시가 완성된 프로그램이 아닙니다.</p><ul><li><a href="https://assets.new.siemens.com/siemens/assets/api/uuid:c3d20c6a-0393-4422-abf1-feddc20fa422/Easy-book-2015.pdf" target="_blank" rel="noopener noreferrer">Siemens — SIMATIC S7-1200 Easy Book, 비트 논리·코일·에지·기억 명령</a></li><li><a href="https://www.automation.siemens.com/sce-static/learning-training-documents/tia-portal/basics-programming-s7-1200/sce-031-100-fc-programming-s7-1200-r1709-kr.pdf" target="_blank" rel="noopener noreferrer">Siemens SCE — S7-1200 FC 프로그래밍 한국어, LAD 논리 표현</a></li><li><a href="https://www.automation.siemens.com/sce-static/learning-training-documents/tia-portal/basics-programming-s7-1200/sce-031-200-fb-programming-s7-1200-r1709-kr.pdf" target="_blank" rel="noopener noreferrer">Siemens SCE — S7-1200 FB 프로그래밍 한국어, 상태와 인스턴스</a></li><li><a href="https://www.siemens.com/en-us/content/sce-educational-institutions/documents/" target="_blank" rel="noopener noreferrer">Siemens — SCE 공식 학습 자료 목록</a></li></ul></div></section><nav aria-label="교안 이동" style="display:flex;flex-wrap:wrap;justify-content:center;gap:1.3rem;margin-top:1.5rem"><a href="plc04.html">이전: 4주차 교안</a><a href="plcstudy.html">전체 강의 목차로</a><a href="plc06.html">다음: 6주차 교안</a></nav></main><footer>PLC 15주 강의 교안 · 5주차 · 초보자용 · 교육 목적</footer><script>
+(() => {
+ 'use strict';
+ const names=['Start','Permit','StopReq','Reset'];
+ const ids=['in-start','in-permit','in-stop','in-reset'];
+ const buttons=ids.map(id=>document.getElementById(id));
+ const mode=document.getElementById('start-mode');
+ const out=document.getElementById('scan-result');
+ const pending=document.getElementById('pending');
+ const history=document.getElementById('history');
+ let input=[false,false,false,false], prev=false, run=false, edge=false, cmd=false, n=0;
+ const text=v=>v?'TRUE':'FALSE';
+ function show(){
+  buttons.forEach((button,i)=>{button.setAttribute('aria-pressed',String(input[i]));button.textContent=names[i]+': '+text(input[i]);});
+  out.textContent='스캔 '+n+'\nPrevStart='+text(prev)+' / StartEdge='+text(edge)+'\nRunMemory='+text(run)+' / RunCmd='+text(cmd);
+ }
+ function init(clearInputs){
+  if(clearInputs){input=[false,false,false,false];mode.value='edge';}
+  prev=false;run=false;edge=false;cmd=false;n=0;history.replaceChildren();
+  pending.textContent=clearInputs?'입력·기억·기록을 모두 초기화했습니다.':'방식 변경: 기억·기록을 초기화했습니다. 현재 입력은 유지됩니다.';
+  show();
+ }
+ buttons.forEach((button,i)=>button.addEventListener('click',()=>{input[i]=!input[i];show();pending.textContent='입력 변경 대기: 한 스캔 실행 후 결과가 갱신됩니다.';}));
+ document.getElementById('scan').addEventListener('click',()=>{
+  const [start,permit,stop,reset]=input;
+  edge=start&&!prev;
+  prev=start;
+  const request=mode.value==='edge'?edge:start;
+  run=permit&&!stop&&!reset&&(request||run);
+  cmd=run&&permit&&!stop&&!reset;
+  n++;
+  const li=document.createElement('li');
+  li.textContent=n+'회: Start='+text(start)+', Permit='+text(permit)+', Stop='+text(stop)+', Reset='+text(reset)+' → Edge='+text(edge)+', Run='+text(run);
+  history.prepend(li);while(history.children.length>20){history.lastElementChild.remove();}
+  pending.textContent='가상 스캔 실행 완료. 아래 출력은 방금 계산한 결과입니다.';
+  show();
+ });
+ mode.addEventListener('change',()=>init(false));
+ document.getElementById('initialize').addEventListener('click',()=>init(true));
+ show();
+})();
+</script></body></html>

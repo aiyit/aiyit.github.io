@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>8주차. SFC를 이용한 시퀀스 설계</title><style>
+:root {
+  --primary: #0b3d91;
+  --accent: #e6b15a;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #222;
+  --muted: #555;
+  --border: #e0e4ea;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+header {
+  background: linear-gradient(135deg, #0b3d91 0%, #1a5fb4 100%);
+  color: white;
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+}
+header .week-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #111;
+  font-weight: 700;
+  padding: 0.25rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+header p { opacity: 0.92; font-size: 1rem; }
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.8rem 1.2rem 3rem;
+}
+.section {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.8rem;
+  overflow: hidden;
+}
+.section-header {
+  background: #f0f4fa;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.section-header .num {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+.section-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+.section-body p { margin-bottom: 1rem; }
+.section-body ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+.section-body li { margin-bottom: 0.45rem; }
+.highlight {
+  background: #e8f4fd;
+  border-left: 5px solid #1a5fb4;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.tip {
+  background: #fff8e6;
+  border-left: 5px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.img-box {
+  margin: 1.4rem 0;
+  text-align: center;
+}
+.img-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+.img-caption {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+.goal-box {
+  background: linear-gradient(135deg, #e8f4fd, #f0f7ff);
+  border: 1px solid #b6d4f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.goal-box h3 {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+}
+th {
+  background: #f0f4fa;
+  color: var(--primary);
+  font-weight: 600;
+}
+tr:nth-child(even) { background: #fafbfc; }
+.summary {
+  background: #1a5fb4;
+  color: white;
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem;
+  margin-top: 2rem;
+}
+.summary h3 { margin-bottom: 0.8rem; font-size: 1.15rem; }
+.summary ul { padding-left: 1.3rem; }
+.summary li { margin-bottom: 0.4rem; }
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  font-size: 0.88rem;
+}
+
+pre{background:#12233d;color:#e5efff;padding:1rem;border-radius:9px;overflow-x:auto;line-height:1.65;font-size:.88rem;margin:1rem 0}code{font-family:Consolas,monospace}h3{color:var(--primary);font-size:1.05rem;margin:1.2rem 0 .5rem}ol{padding-left:1.4rem;margin:1rem 0}li{margin-bottom:.5rem}details{border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;margin:.8rem 0}summary{cursor:pointer;color:var(--primary);font-weight:600}.small{font-size:.88rem;color:var(--muted)}a{color:#1455a0;overflow-wrap:anywhere}.chart{padding:1.2rem;background:#f8faff;border:1px solid #dbe5f2;border-radius:10px;margin:1.2rem 0;text-align:center}.step{border:2px solid #0b3d91;background:white;border-radius:5px;padding:.7rem;max-width:420px;margin:auto;color:#0b3d91;font-weight:600}.initial{outline:2px solid #0b3d91;outline-offset:3px}.transition{padding:.8rem .4rem;color:#555;font-size:.9rem}.transition:before{content:'↓ ━ ';color:#0b3d91}.branches{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}.action{font-weight:400;color:#555;font-size:.9rem}.badge{display:inline-block;border:1px solid #b6d4f0;border-radius:5px;padding:.1rem .5rem;background:#e8f4fd}@media(max-width:600px){.container{padding:1.2rem .7rem}.section-body{padding:1.1rem}header h1{font-size:1.35rem}th,td{padding:.5rem}pre{font-size:.78rem}.branches{grid-template-columns:1fr}}@media print{body{background:white;font-size:11pt}.section{box-shadow:none;border:1px solid #ddd}.section-header{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3fa;color:#111}details>*{display:block}.chart{break-inside:avoid}}
+
+.lab{padding:1rem;border:1px solid #b6d4f0;border-radius:9px;background:#f7faff}.controls{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}.lab button{font:inherit;padding:.6rem .8rem;border:2px solid #8196b3;border-radius:7px;background:white;color:#15304f;cursor:pointer}.lab button[aria-pressed=true]{background:#dbeeff;border-color:#0b3d91}.lab button.execute{background:#0b3d91;color:white;border-color:#0b3d91}.lab button:focus-visible{outline:3px solid #e6b15a;outline-offset:3px}.lab output{display:block;white-space:pre-line;border:1px solid #dbe5f2;background:white;padding:1rem;border-radius:7px}.model-steps{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}.model-step{padding:.6rem .8rem;border:1px solid #8196b3;background:white;border-radius:7px;flex:1;min-width:100px}.model-step.active{border:3px solid #95630b;background:#fff1c9}.model-step small{display:block;font-weight:600}.history{max-height:240px;overflow:auto;font-size:.88rem}.history li{border-bottom:1px solid #e0e4ea;padding:.3rem 0}.link-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:1.3rem;margin-top:1.5rem}@media print{.controls,.history{display:none}}
+</style><meta content="PLC 8주차 교안: SFC 단계·전이·동작, 선택·병렬 분기, GRAPH·SCL 및 가상 한 스캔 시퀀스 실습" name="description"/></head><body><header><div class="week-badge">8주차 · Module 08</div><h1>SFC를 이용한 시퀀스 설계</h1><p>단계·전이·동작으로 공정 순서를 설계하고 검증한다</p></header><main class="container"><div class="goal-box"><h3>오늘의 학습 목표</h3><ul><li>SFC의 단계, 전이, 동작과 초기 단계를 설명할 수 있다.</li><li>직렬·선택·병렬 시퀀스의 차이를 이해한다.</li><li>인터록과 감시, 시간 초과 정책을 구분한다.</li><li>설계표를 바탕으로 시퀀스를 구현하고 정상·고장 시나리오를 시험한다.</li></ul><p class="small">선수학습: PLC 스캔, LD·FBD 기초, 7주차 SCL 조건문 / 기본 실습: 가상 이송·작업 장치 / GRAPH 지원 환경 또는 SCL 대체 실습</p></div><section class="section"><div class="section-header"><div class="num">1</div><h2>SFC란? — 순서를 단계와 조건으로 표현하기</h2></div><div class="section-body"><p>SFC(Sequential Function Chart, 순차 기능 차트)는 공정의 실행 순서를 단계(Step), 전이(Transition), 동작(Action)으로 표현하는 구조입니다. 무엇을 수행하는 상태인지와 언제 다음 상태로 넘어가는지를 분리하여 복잡한 순서를 읽기 쉽게 만듭니다.</p><p>7주차에 배운 CASE 기반 단계 제어는 SFC로 설계한 순서를 코드로 구현하는 한 가지 방법입니다. SFC 도식과 SCL 코드는 표현 방식이 다르며, 같은 제어 요구사항을 나타낼 수 있습니다.</p><div class="table-wrap"><table><thead><tr><th>표현</th><th>강점</th><th>이번 수업과의 연결</th></tr></thead><tbody><tr><td>LD·FBD</td><td>논리 조건과 입출력 관계를 시각화</td><td>전이 조건·동작 논리를 구성</td></tr><tr><td>SCL</td><td>계산·조건 분기·데이터 처리</td><td>SFC 설계의 CASE 구현 실습</td></tr><tr><td>SFC</td><td>단계와 순서·분기 구조를 시각화</td><td>전체 시퀀스를 먼저 설계</td></tr></tbody></table></div><div class="highlight">핵심 질문: 지금 어느 단계인가? → 그 단계에서 무엇을 하는가? → 어떤 조건에서 다음 단계로 가는가?</div></div></section><section class="section"><div class="section-header"><div class="num">2</div><h2>세 가지 기본 요소 — Step · Transition · Action</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>요소</th><th>역할</th><th>예시</th></tr></thead><tbody><tr><td>Step, 단계</td><td>활성/비활성 상태를 갖는 순서상의 단위</td><td>대기, 이송, 작업, 완료</td></tr><tr><td>Transition, 전이</td><td>다음 단계로 이동하기 위한 논리 조건</td><td>Start AND Home</td></tr><tr><td>Action, 동작</td><td>활성 단계에 연결된 명령·처리</td><td>MotorCmd := TRUE</td></tr><tr><td>Initial step, 초기 단계</td><td>차트 초기화 시 활성화되는 시작 단계</td><td>S0: 대기</td></tr></tbody></table></div><div aria-label="단계와 전이 순서도" class="chart"><div class="step initial">S0 · 대기<div class="action">시작할 준비가 된 상태</div></div><div class="transition">Start AND Ready</div><div class="step">S10 · 이송<div class="action">모터 운전 명령</div></div><div class="transition">PositionSensor</div><div class="step">S20 · 완료<div class="action">완료 표시</div></div></div><p>초기 단계는 보통 이중 테두리로 표시합니다. 단계와 전이를 번갈아 배치하고, 단계에는 동작을, 전이에는 TRUE/FALSE가 되는 조건식을 작성합니다.</p><div class="tip">초기 단계가 활성화되었다고 장치가 자동으로 안전한 원점으로 이동한 것은 아닙니다. 위치 확인, 원점 복귀, 출력의 안전 상태는 별도로 설계해야 합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">3</div><h2>전이가 성립하는 조건과 활성 단계</h2></div><div class="section-body"><p>단순 직렬 시퀀스에서는 현재 단계가 활성이고 그 뒤 전이 조건이 참이면 현재 단계를 비활성화하고 다음 단계를 활성화합니다. 여러 갈래를 합류하는 전이는 필요한 선행 단계의 활성 조건도 충족해야 합니다.</p><div class="table-wrap"><table><thead><tr><th>현재 활성 단계</th><th>전이 조건</th><th>결과</th></tr></thead><tbody><tr><td>S0</td><td>Start=FALSE</td><td>S0 유지</td></tr><tr><td>S0</td><td>Start=TRUE AND Ready=TRUE</td><td>S10으로 이동</td></tr><tr><td>S10</td><td>PositionSensor=FALSE</td><td>S10 유지</td></tr><tr><td>S10</td><td>PositionSensor=TRUE</td><td>S20으로 이동</td></tr></tbody></table></div><div class="highlight">전이는 “조건이 참이다”만으로 항상 실행되지 않습니다. 그 전이가 현재 활성 경로에서 실행 가능한지도 중요합니다.</div><p>같은 스캔에서 여러 전이를 연속 처리하는지, 동작을 언제 평가하는지는 구현 환경의 실행 규칙에 따라 달라질 수 있습니다. 이 교안의 SCL 예제는 CASE 한 번으로 한 스캔에 정상 단계 전이를 최대 한 번 처리합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">4</div><h2>동작의 지속과 저장 — N · S · R</h2></div><div class="section-body"><p>액션 한정자(Action qualifier)는 동작이 언제 시작되고 얼마나 유지되는지를 정합니다. 아래는 대표적인 기본 개념이며, 실제 편집기의 표기와 지원 항목은 확인해야 합니다.</p><div class="table-wrap"><table><thead><tr><th>한정자</th><th>개념</th><th>주의점</th></tr></thead><tbody><tr><td>N, 비저장 동작</td><td>단계가 활성인 동안 동작</td><td>단계 비활성화 후에는 비저장 동작 해제</td></tr><tr><td>S, 저장 설정</td><td>설정된 동작을 단계 종료 뒤에도 유지</td><td>어느 단계에서 해제할지 반드시 정의</td></tr><tr><td>R, 저장 해제</td><td>대상 저장 동작을 리셋</td><td>초기화·고장 복귀 정책과 함께 설계</td></tr></tbody></table></div><p>예를 들어 표시등을 “해당 단계 동안만” 켜려면 N형 개념이 간단합니다. 여러 단계에 걸쳐 유지해야 하는 상태는 S/R형 개념을 검토할 수 있지만 해제 경로가 빠지면 의도치 않게 유지될 수 있습니다.</p><div class="tip">단계 종료와 출력 OFF를 무조건 같은 의미로 생각하지 마세요. 저장 동작은 남을 수 있으며, 여러 위치에서 같은 출력에 쓰면 충돌도 생깁니다. 실제 출력은 한 곳에서 최종 결정하는 방식이 점검에 유리합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">5</div><h2>직렬 시퀀스 설계 — 이송·작업·완료</h2></div><div class="section-body"><p>교육용 가상 장치의 요구사항입니다. 이송 모터로 제품을 작업 위치까지 이동시키고, 가상의 작업 완료 입력을 확인한 다음 완료 상태를 유지합니다. 실제 위험 동작은 포함하지 않습니다.</p><ol><li>초기에는 대기하며 모든 운전 명령을 끕니다.</li><li>시작 상승 에지가 들어오고 실행 허가가 있으면 이송합니다.</li><li>제품 위치 센서가 감지되면 이송을 멈추고 작업 명령을 켭니다.</li><li>작업 완료의 새로운 상승 에지를 감지하면 완료 표시를 켭니다.</li><li>Reset으로 대기로 복귀하며, 자동 재시작하지 않습니다.</li></ol><div aria-label="단계와 전이 순서도" class="chart"><div class="step initial">S0 · 대기<div class="action">MotorCmd=0, WorkCmd=0</div></div><div class="transition">StartEdge AND Permit AND NOT AtPosition</div><div class="step">S10 · 이송<div class="action">MotorCmd=1</div></div><div class="transition">AtPosition</div><div class="step">S20 · 작업<div class="action">WorkCmd=1</div></div><div class="transition">WorkDoneEdge</div><div class="step">S30 · 완료<div class="action">Done=1</div></div><div class="transition">Reset → S0</div></div><p class="small">모든 단계에서 Reset을 허용하고, Permit 상실·입력 모순·시간 초과는 고장 상태 S900으로 보냅니다. 상세 우선순위는 다음 표와 코드에서 정의합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">6</div><h2>설계표 만들기 — 입력·출력·단계·전이</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>입력, Bool</th><th>의미</th></tr></thead><tbody><tr><td>Start</td><td>시작 버튼, 상승 에지 사용</td></tr><tr><td>Reset</td><td>초기화 버튼</td></tr><tr><td>Permit</td><td>일반 실행 허가 신호, 안전 인증 신호 아님</td></tr><tr><td>AtPosition</td><td>제품 작업 위치 감지</td></tr><tr><td>WorkDoneIn</td><td>가상 작업 완료 입력, 상승 에지 사용</td></tr></tbody></table></div><div class="table-wrap"><table><thead><tr><th>단계</th><th>정상 동작</th><th>정상 전이</th></tr></thead><tbody><tr><td>0 · 대기</td><td>모든 명령 OFF</td><td>StartEdge AND NOT AtPosition → 10</td></tr><tr><td>10 · 이송</td><td>MotorCmd ON</td><td>AtPosition → 20</td></tr><tr><td>20 · 작업</td><td>WorkCmd ON</td><td>WorkDoneEdge → 30</td></tr><tr><td>30 · 완료</td><td>Done ON</td><td>Reset으로 0 복귀</td></tr><tr><td>900 · 고장</td><td>모든 운전 명령 OFF, Fault ON</td><td>원인 제거 후 Reset으로 0 복귀</td></tr></tbody></table></div><h3>전이 우선순위</h3><ol><li>Reset: 대기 상태로 초기화합니다. Permit이 없으면 고장 상태를 유지합니다.</li><li>Permit 상실 또는 이송·작업 중 비정상 완료 입력: 고장으로 이동합니다.</li><li>단계별 타임아웃: 고장으로 이동합니다.</li><li>그 외 정상 전이를 판단합니다.</li></ol><div class="tip">이 예제는 Permit 상실 후 신호가 복구되어도 자동으로 재개하지 않습니다. 원인을 제거한 후 Reset, 새 Start 입력 순서가 필요합니다. 실제 장치의 정지·복귀 정책은 별도 위험성 평가와 공정 요구사항에 따라 정합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">7</div><h2>선택 분기와 병렬 분기</h2></div><div class="section-body"><h3>선택 분기: 조건에 따라 한 경로 선택</h3><p>제품 종류 A/B에 따라 다른 작업을 수행하는 경우입니다. 조건은 서로 배타적으로 만들고, 둘 다 참이거나 둘 다 거짓일 때의 정책도 정의합니다.</p><div class="chart"><div class="step">제품 분류</div><div class="branches"><div><div class="transition">TypeA AND NOT TypeB</div><div class="step">A 작업</div></div><div><div class="transition">TypeB AND NOT TypeA</div><div class="step">B 작업</div></div></div><div class="step">합류 후 완료</div></div><p>환경에 따라 우선순위 규칙이 있을 수 있으므로 그림의 좌우 위치만 믿지 말고 명시적인 조건으로 의도를 표현하세요.</p><h3>병렬 분기: 여러 경로를 함께 활성화</h3><p>두 개의 독립적인 준비 작업을 함께 시작하고 모두 완료된 후 다음 단계로 진행하는 구조입니다. 분기는 이중선으로 나타내는 경우가 일반적이며, 여기서는 텍스트로 관계를 표시합니다.</p><div class="chart"><div class="step">공통 시작</div><p>══ 병렬 분기 ══</p><div class="branches"><div class="step">A 준비 → A 완료 대기</div><div class="step">B 준비 → B 완료 대기</div></div><p>══ 동기 합류: A와 B 경로의 선행 단계 모두 활성 ══</p><div class="transition">A_Ready AND B_Ready</div><div class="step">공통 다음 작업</div></div><div class="highlight">선택 분기는 한 경로를 고르는 구조, 병렬 분기는 여러 경로가 활성화되는 구조입니다. 병렬 경로에서 같은 실린더·밸브를 동시에 점유하지 않도록 자원 충돌을 검토하세요.</div></div></section><section class="section"><div class="section-header"><div class="num">8</div><h2>인터록·감시·타임아웃의 차이</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>구분</th><th>질문</th><th>예시</th></tr></thead><tbody><tr><td>전이 조건</td><td>다음 단계로 넘어가도 되는가?</td><td>AtPosition=TRUE</td></tr><tr><td>인터록, Interlock</td><td>이 동작을 실행해도 되는가?</td><td>실행 허가가 있을 때만 모터 명령</td></tr><tr><td>감시, Supervision</td><td>현재 단계에 이상이 발생했는가?</td><td>허용 시간 초과 또는 입력 모순</td></tr></tbody></table></div><p>Siemens GRAPH에서 인터록은 연결된 동작의 실행 허가에 영향을 줍니다. 인터록 조건이 불만족이라는 이유만으로 정상 전이가 자동으로 차단된다고 가정하면 안 됩니다. 감시는 조건이 만족되면 고장으로 취급하며 단계 진행을 막는 기능입니다. 구체적인 확인·해제 동작은 설정을 확인해야 합니다.</p><div class="tip">GRAPH의 인터록은 “조건 TRUE → 허가” 개념, 감시는 “조건 TRUE → 고장” 개념이라는 차이에 주의하세요. 일반 시퀀스 기능과 안전 기능을 혼동하지 마세요.</div><p>다음 SCL 예제는 GRAPH의 내장 감시를 그대로 재현하지 않습니다. 교육용으로 타임아웃이 발생하면 별도의 고장 단계 900으로 전이하도록 설계합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">9</div><h2>TIA Portal에서 GRAPH로 구성하는 절차</h2></div><div class="section-body"><p>GRAPH는 Siemens에서 단계·전이 기반 시퀀스를 구성하는 도구입니다. 대상 CPU와 설치된 STEP 7 패키지·라이선스가 GRAPH를 지원하는지 먼저 확인합니다. 아래 실습은 GRAPH 지원 S7-1500 환경을 기준으로 하며, 모든 PLC에서 GRAPH를 쓸 수 있다고 가정하지 않습니다.</p><ol><li>실습 프로젝트에서 CPU와 입출력용 내부 DB 태그를 준비합니다.</li><li>GRAPH 언어의 FB를 추가하고 초기 단계 S0를 대기로 정합니다.</li><li>직렬 단계 S10·S20·S30과 각 전이를 추가합니다.</li><li>동작 표에 단계별 명령을 입력하고 비저장/저장 동작을 구분합니다.</li><li>전이 조건을 LAD/FBD 등 지원되는 방식으로 작성합니다.</li><li>인터록과 단계 시간 감시, 고장 확인 정책을 별도로 구성합니다.</li><li>GRAPH FB를 주기 프로그램에서 호출하고 인스턴스 DB와 필요한 제어 파라미터를 연결합니다.</li><li>컴파일 후 지원되는 시뮬레이션 환경에서 활성 단계·전이 조건·출력 명령을 함께 관찰합니다.</li></ol><div class="tip">메뉴·FB 파라미터·지원 기능은 버전에 따라 다릅니다. GRAPH를 사용할 수 없는 실습 환경에서는 다음 CASE 기반 FB로 동일한 직렬 순서의 설계 의도를 연습하세요. 이것은 GRAPH 네이티브 파일이 아닙니다.</div></div></section><section class="section"><div class="section-header"><div class="num">10</div><h2>SCL 대체 실습 — 인터페이스와 타이머 준비</h2></div><div class="section-body"><p>이 실습은 SFC 설계를 일반 SCL FB로 구현합니다. 아래 태그를 선언하고 FB를 매 스캔 호출합니다. 모든 입출력은 가상 DB 태그로 연결합니다.</p><div class="table-wrap"><table><thead><tr><th>구분</th><th>태그</th><th>자료형·시작값</th></tr></thead><tbody><tr><td>Input</td><td>Start, Reset, Permit, AtPosition, WorkDoneIn</td><td>각각 Bool</td></tr><tr><td>Output</td><td>MotorCmd, WorkCmd, Done, Fault</td><td>각각 Bool</td></tr><tr><td>Output</td><td>StepNo</td><td>Int</td></tr><tr><td>Static</td><td>State</td><td>Int, 시작값 0</td></tr><tr><td>Static</td><td>PrevStart, PrevWorkDone</td><td>각각 Bool, 시작값 FALSE</td></tr><tr><td>Static</td><td>MoveTimer, WorkTimer</td><td>IEC TON 멀티인스턴스</td></tr><tr><td>Temp</td><td>StartEdge, WorkDoneEdge</td><td>각각 Bool</td></tr></tbody></table></div><p>타이머 자료형 이름은 환경에 따라 다를 수 있습니다. SCL 편집기에서 TON 명령을 삽입하고 멀티인스턴스를 선택해 MoveTimer와 WorkTimer를 생성하는 방법을 권장합니다. 생성된 인터페이스와 호출 구문을 확인하세요.</p><div class="highlight">이송 제한 5초, 작업 제한 3초는 학습용 임의 값입니다. 실제 공정의 허용 시간 또는 안전 기준이 아닙니다.</div><p>아래 코드는 한 FB 본문에 넣습니다. 타이머를 매 스캔 호출하고, 상태 전이 뒤에 최종 출력을 계산합니다. 상태 변수 State는 기본값 0에서 시작하며, 리테인·재시작 정책은 별도로 검토합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">11</div><h2>SCL 대체 실습 — 단계 제어 전체 코드</h2></div><div class="section-body"><pre><code>// 1. 입력 상승 에지: 매 스캔 갱신
+#StartEdge := #Start AND NOT #PrevStart;
+#PrevStart := #Start;
+#WorkDoneEdge := #WorkDoneIn AND NOT #PrevWorkDone;
+#PrevWorkDone := #WorkDoneIn;
+
+// 2. 타이머: 모든 스캔에서 호출
+#MoveTimer.TON(IN := (#State = 10) AND #Permit AND NOT #Reset,
+               PT := T#5s);
+#WorkTimer.TON(IN := (#State = 20) AND #Permit AND NOT #Reset,
+               PT := T#3s);
+
+// 3. 초기화/고장 우선 판단
+IF #Reset THEN
+    IF #Permit THEN
+        #State := 0;
+    ELSE
+        #State := 900;
+    END_IF;
+ELSIF NOT #Permit THEN
+    #State := 900;
+ELSE
+    CASE #State OF
+        0: // 대기: 완료 입력이 해제된 상태에서만 시작
+            IF #StartEdge AND NOT #AtPosition AND NOT #WorkDoneIn THEN
+                #State := 10;
+            END_IF;
+        10: // 이송
+            IF #WorkDoneIn OR #MoveTimer.Q THEN
+                #State := 900;
+            ELSIF #AtPosition THEN
+                #State := 20;
+            END_IF;
+        20: // 작업
+            IF NOT #AtPosition OR #WorkTimer.Q THEN
+                #State := 900;
+            ELSIF #WorkDoneEdge THEN
+                #State := 30;
+            END_IF;
+        30: // 완료 상태 유지
+            #State := 30;
+        900: // 원인 제거 후 Reset 필요
+            #State := 900;
+        ELSE
+            #State := 900;
+    END_CASE;
+END_IF;
+
+// 4. 최종 출력: 상태 전이 이후 한 곳에서 결정
+#MotorCmd := (#State = 10) AND #Permit AND NOT #Reset;
+#WorkCmd := (#State = 20) AND #Permit AND NOT #Reset;
+#Done := (#State = 30);
+#Fault := (#State = 900);
+#StepNo := #State;</code></pre><h3>코드 해석</h3><ul><li>대기에서 시작할 때 위치 센서와 완료 입력이 모두 FALSE여야 합니다.</li><li>이송 중 작업 완료 신호가 들어오면 순서 이상으로 고장 처리합니다.</li><li>작업 중 위치 센서가 꺼지면 작업 위치를 벗어난 것으로 보고 고장 처리합니다.</li><li>타임아웃과 정상 완료가 같은 스캔에 성립하면 타임아웃을 우선합니다.</li><li>고장 상태는 Permit이 복구되어도 유지되며 Reset이 필요합니다.</li><li>Reset 중에는 타이머 입력도 FALSE가 되어 다음 운전을 준비합니다.</li></ul><div class="tip">전이 스캔에서 새 단계의 출력은 즉시 계산됩니다. 새 단계의 타이머 입력은 다음 FB 호출부터 TRUE가 되므로 타이머 시작 기준에 최대 한 호출 주기의 차이가 있습니다. 정밀한 시간 요구가 있다면 호출 주기와 평가 순서를 검토하세요.</div><p class="small">예제에는 고장 원인별 코드, HMI 조작 권한, 원점 복귀, 수동 운전 및 안전 인증 기능이 없습니다. 실제 설비에 적용하는 완성 프로그램이 아닙니다.</p></div></section><section class="section"><div class="section-header"><div class="num">12</div><h2>시뮬레이션 시험표 — 정상·고장·재시작</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>시험</th><th>조작</th><th>기대 결과</th></tr></thead><tbody><tr><td>초기화</td><td>Permit=TRUE, Reset=TRUE, 그 외 FALSE</td><td>StepNo=0, 모든 명령 OFF</td></tr><tr><td>이송 시작</td><td>Reset=FALSE 후 Start를 FALSE→TRUE</td><td>StepNo=10, MotorCmd ON</td></tr><tr><td>위치 도착</td><td>5초 이내 AtPosition=TRUE</td><td>StepNo=20, MotorCmd OFF, WorkCmd ON</td></tr><tr><td>작업 완료</td><td>작업 진입 후 3초 이내 WorkDoneIn을 FALSE→TRUE</td><td>StepNo=30, WorkCmd OFF, Done ON</td></tr><tr><td>완료 유지</td><td>Start를 다시 눌러도 Reset 안 함</td><td>StepNo=30 유지</td></tr><tr><td>재시작 준비</td><td>Reset 후 입력을 초기 상태로 복원</td><td>새 시작 상승 에지에서만 시작</td></tr><tr><td>이송 시간 초과</td><td>AtPosition=FALSE 유지</td><td>약 5초 경과 후 StepNo=900, Fault ON</td></tr><tr><td>작업 시간 초과</td><td>AtPosition=TRUE, WorkDoneIn=FALSE 유지</td><td>약 3초 경과 후 StepNo=900</td></tr><tr><td>허가 상실</td><td>운전 중 Permit=FALSE</td><td>StepNo=900, 운전 명령 OFF</td></tr><tr><td>허가만 복구</td><td>Permit=TRUE로만 변경</td><td>900 유지, 자동 재개 없음</td></tr><tr><td>위치 상실</td><td>작업 중 AtPosition=FALSE</td><td>StepNo=900</td></tr><tr><td>완료 입력 고착</td><td>대기에서 WorkDoneIn=TRUE 유지</td><td>시작 조건 불만족, 대기 유지</td></tr></tbody></table></div><div class="highlight">시험마다 현재 단계, 입력, 타이머 경과값, 출력 명령을 함께 기록하세요. 시간은 PLC 호출 주기와 감시 화면 갱신 주기에 따라 관찰 오차가 있습니다.</div><p>실제 I/O가 연결된 장치에서는 입력 강제나 출력 조작을 하지 마세요. 이 교안은 내부 태그와 지원되는 시뮬레이터를 사용하는 실습을 전제로 합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">13</div><h2>설계 실수와 개선 체크리스트</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>실수</th><th>문제</th><th>개선</th></tr></thead><tbody><tr><td>완료 입력이 이미 TRUE인데 즉시 전이</td><td>실제 작업 없이 완료로 오인</td><td>시작 조건·상승 에지·입력 해제 정책 정의</td></tr><tr><td>다음 단계 조건만 작성</td><td>고장 시 현재 단계에 무한 대기</td><td>시간 초과와 이상 전이 설계</td></tr><tr><td>저장 동작 해제 누락</td><td>단계 종료 후에도 명령 유지</td><td>S/R 쌍과 초기화 경로 점검</td></tr><tr><td>병렬 경로에서 같은 출력 사용</td><td>상충된 명령 발생</td><td>자원 소유권·최종 출력 중재</td></tr><tr><td>Reset이면 무조건 재가동</td><td>예기치 않은 동작</td><td>Reset과 Start를 분리</td></tr><tr><td>상태 변수만 원점으로 변경</td><td>실제 위치와 프로그램 상태 불일치</td><td>원점 확인·복구 절차 별도 설계</td></tr><tr><td>여러 IF로 연속 상태 변경</td><td>같은 스캔에 여러 단계 건너뜀</td><td>CASE 또는 명확한 다음 상태 계산</td></tr></tbody></table></div><ul><li>모든 단계에 이름과 종료 조건이 있는가?</li><li>고장·정지·Reset 시 각 명령의 상태가 정의되어 있는가?</li><li>입력 고착, 센서 모순, 전원 재투입을 검토했는가?</li><li>선택 분기 조건은 상호 배타적인가?</li><li>병렬 합류에서 모든 경로의 완료를 확인하는가?</li></ul></div></section><section class="section"><div class="section-header"><div class="num">14</div><h2>확인 문제와 확장 과제</h2></div><div class="section-body"><details><summary>1. 단계, 전이, 동작을 한 문장씩 설명하세요.</summary><p>단계는 현재 실행 상태, 전이는 다음 단계로 이동하기 위한 논리 조건, 동작은 활성 단계와 연결된 처리입니다.</p></details><details><summary>2. 병렬 분기에서 A 작업만 완료되면 합류할 수 있나요?</summary><p>모든 경로를 동기화하는 합류라면 B 경로도 필요한 선행 단계에 도달해야 합니다. 한쪽 완료만으로 진행하지 않습니다.</p></details><details><summary>3. GRAPH 인터록 불만족은 전이를 무조건 막나요?</summary><p>아닙니다. 인터록은 연결된 동작의 허가에 영향을 줍니다. 진행 차단 요구는 전이·감시 설계를 별도로 검토해야 합니다.</p></details><details><summary>4. Reset과 Start를 분리하는 이유는?</summary><p>고장 확인·초기화만으로 장치가 바로 재가동하지 않도록 하기 위해서입니다. 예제에서는 새로운 Start 상승 에지가 필요합니다.</p></details><details><summary>5. 예제의 900 상태는 GRAPH 감시와 완전히 같나요?</summary><p>아닙니다. 이 예제는 별도 고장 상태로 이동합니다. GRAPH 감시는 설정에 따라 현재 단계를 활성 상태로 유지하면서 진행을 차단할 수 있습니다.</p></details><h3>확장 과제</h3><ol><li>단계별로 정상 전이와 고장 전이를 다른 색으로 표시한 SFC를 그립니다.</li><li>고장 원인을 구분할 FaultCode 출력을 추가합니다. 허가 상실·이송 초과·작업 초과·위치 상실을 구분합니다.</li><li>제품 종류 A/B의 선택 분기를 추가하고 두 조건이 동시에 TRUE일 때 고장 처리합니다.</li><li>독립적인 A/B 준비 병렬 시퀀스를 설계합니다. SCL로 구현한다면 단일 State 변수 하나로 두 경로를 억지로 표현하지 말고 경로별 상태 또는 별도 FB를 검토합니다.</li></ol></div></section><section class="section" id="section15"><div class="section-header"><div class="num">15</div><h2>가상 단계 실습 — 활성 단계와 전이를 한 스캔씩</h2></div><div class="section-body"><p>직렬 시퀀스의 현재 상태와 전이 조건을 확인하는 구조 이해용 모형입니다. 센서를 조작한 뒤 “한 스캔 실행”을 누르면 전이를 평가합니다. 실제 PLC·GRAPH 실행 엔진·외부 I/O와 연결하지 않습니다.</p><div class="tip">이 모형은 앞의 SCL 전체 코드와 달리 시간 경과와 타임아웃을 계산하지 않습니다. 입력 순서 이상·위치 상실·Permit 상실·Reset만 모의합니다. 타이머를 포함한 전체 동작은 별도 TIA Portal 시험표에서 검증해야 합니다.</div><div class="lab"><div class="controls"><button aria-pressed="false" id="seq-start" type="button">Start: FALSE</button><button aria-pressed="false" id="seq-reset" type="button">Reset: FALSE</button><button aria-pressed="false" id="seq-permit" type="button">Permit: FALSE</button><button aria-pressed="false" id="seq-position" type="button">AtPosition: FALSE</button><button aria-pressed="false" id="seq-workdone" type="button">WorkDoneIn: FALSE</button></div><div class="controls"><button class="execute" id="seq-scan" type="button">한 스캔 실행</button><button id="seq-initialize" type="button">실습 전체 초기화</button></div><p class="small" id="seq-pending">입력 변경 후 스캔을 실행하면 결과가 갱신됩니다.</p><div aria-label="가상 단계 상태" class="model-steps"><div class="model-step active" id="stage-0">0 · 대기<small>활성</small></div><div class="model-step" id="stage-10">10 · 이송<small>비활성</small></div><div class="model-step" id="stage-20">20 · 작업<small>비활성</small></div><div class="model-step" id="stage-30">30 · 완료<small>비활성</small></div><div class="model-step" id="stage-900">900 · 고장<small>비활성</small></div></div><output aria-atomic="true" aria-live="polite" id="seq-output">스캔 0 / Step=0 · 대기
+MotorCmd=FALSE / WorkCmd=FALSE
+Done=FALSE / Fault=FALSE
+아직 전이 평가 전</output><ol aria-label="최근 가상 스캔 기록" class="history" id="seq-history"></ol><noscript><p>가상 실습에는 JavaScript가 필요합니다. 아래 시험표와 기존 단계 도식으로도 전이를 학습할 수 있습니다.</p></noscript><p class="small">색상만이 아니라 활성/비활성 글자로도 상태를 표시합니다. 입력만 바꾸면 결과는 아직 이전 스캔 값입니다. 한 번의 CASE 평가로 정상 단계 전이는 최대 한 번 수행합니다. 실제 GRAPH의 동작 평가 순서를 재현하는 모형은 아닙니다.</p></div><h3>모형의 우선순위</h3><ol><li>Reset이면 Permit에 따라 대기 또는 고장으로 이동합니다.</li><li>그 외 Permit이 FALSE이면 고장으로 이동합니다.</li><li>대기에서는 새 Start 에지와 AtPosition·WorkDoneIn 모두 FALSE를 요구합니다.</li><li>이송 중 WorkDoneIn=TRUE면 순서 이상, 아니면 AtPosition=TRUE에서 작업으로 이동합니다.</li><li>작업 중 위치 상실이면 고장, 아니면 WorkDoneIn의 새 상승 에지로 완료합니다.</li><li>완료·고장은 Reset 전까지 유지합니다.</li></ol><p>Start와 WorkDoneIn의 이전 값은 Reset·고장 중에도 매 스캔 갱신합니다. 최초 호출에 Start가 이미 TRUE이면 단순 상승 에지로 인식할 수 있습니다. 전원 복귀 시 반드시 버튼 해제를 확인해야 하는 요구는 별도 재무장 정책이 필요합니다.</p></div></section><section class="section" id="section16"><div class="section-header"><div class="num">16</div><h2>가상 모형 시험표와 확장 검증</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>순서</th><th>조작 후 스캔 실행</th><th>예상 결과</th></tr></thead><tbody><tr><td>준비</td><td>전체 초기화, Permit=TRUE, Reset=TRUE</td><td>Step=0, 모든 명령 OFF</td></tr><tr><td>시작</td><td>Reset=FALSE, Start=TRUE</td><td>Step=10, MotorCmd ON</td></tr><tr><td>이송</td><td>Start=FALSE, AtPosition=FALSE</td><td>10 유지</td></tr><tr><td>도착</td><td>AtPosition=TRUE</td><td>Step=20, MotorCmd OFF, WorkCmd ON</td></tr><tr><td>작업 완료</td><td>WorkDoneIn=TRUE</td><td>Step=30, Done ON, 작업 명령 OFF</td></tr><tr><td>완료 유지</td><td>WorkDoneIn=FALSE, Start를 다시 입력</td><td>30 유지</td></tr><tr><td>위치 상실 시험</td><td>새 사이클의 Step=20에서 AtPosition=FALSE</td><td>900, 운전 명령 OFF</td></tr><tr><td>허가 상실 시험</td><td>임의 단계에서 Permit=FALSE</td><td>Reset 우선 조건 외 고장 900</td></tr><tr><td>복구</td><td>Permit=TRUE, Reset=TRUE, 이후 입력 초기화</td><td>0, 새 Start 에지 필요</td></tr></tbody></table></div><h3>시험 결과를 구분해서 기록하기</h3><ul><li>브라우저 모형의 상태 전이 확인</li><li>TIA Portal 프로젝트의 자료형·타이머 선언·컴파일 확인</li><li>지원되는 시뮬레이터의 시간 초과·우선순위·재시작 시험</li><li>실제 설비의 안전·기계·전기 검증은 별도 승인 범위</li></ul><div class="highlight">브라우저에서 단계가 맞게 이동하는 것과 GRAPH·SCL 프로그램이 실제 CPU에서 같은 시간·동작으로 실행된다는 것은 다른 검증입니다.</div><h3>다음 주: TIA Portal 프로젝트 생성 및 하드웨어 구성</h3><p>작성한 제어 요구사항이 실행될 대상 CPU·모듈·네트워크를 프로젝트에서 선택하고, 실제 장치와 오프라인 구성을 맞추는 절차를 학습합니다.</p></div></section><div class="summary"><h3>8주차 핵심 정리</h3><ul><li>단계는 현재 상태, 전이는 이동 조건, 동작은 실행 명령입니다.</li><li>선택 분기는 경로 선택, 병렬 분기는 동시 활성과 동기 합류입니다.</li><li>인터록은 동작 허가, 감시는 단계의 이상 감지라는 차이가 있습니다.</li><li>정상 순서와 함께 고장·시간 초과·초기화·재시작을 설계합니다.</li><li>SFC 설계와 GRAPH 도구, SCL 대체 구현은 구분합니다.</li></ul></div><section class="section" style="margin-top:1.8rem"><div class="section-body"><h3>공식 문서와 적용 범위</h3><p class="small">SFC·GRAPH 개념은 Siemens 공식 자료를 참고했습니다. 가상 장치 요구사항·임의 시간값·SCL 코드·브라우저 모형은 교육용입니다. 브라우저 모형은 시간 초과를 구현하지 않으며 실제 GRAPH 실행을 재현하지 않습니다. 파일 구조·내부 링크·모형의 상태 전이는 생성 과정에서 점검했으나 실제 TIA Portal 컴파일·PLCSIM 실행·브라우저 렌더링 및 클릭 자동 시험은 수행하지 않았습니다. 도구·CPU·버전에 맞는 선언과 동작을 별도로 확인하세요.</p><ul><li><a href="https://www.automation.siemens.com/sce-static/learning-training-documents/tia-portal/advanced-programming-s7-1500/sce-052-100-graph-s7-1500-r1903-en.pdf" rel="noopener noreferrer" target="_blank">Siemens SCE — GRAPH Programming with S7-1500</a></li><li><a href="https://cache.industry.siemens.com/dl/files/822/109759822/att_963255/v3/109759822_GRAPH_TIAPortal_V15_V1.0_en.pdf" rel="noopener noreferrer" target="_blank">Siemens — Automation of Sequential Processes with GRAPH in TIA Portal</a></li><li><a href="https://cache.industry.siemens.com/dl/files/748/109476748/att_845621/v1/IEC_61131_compliance_en_US.pdf" rel="noopener noreferrer" target="_blank">Siemens — IEC 61131-3 Standards Compliance</a></li><li><a href="https://www.automation.siemens.com/sce-static/learning-training-documents/pcs7/v9-0/p01-08-sequential-function-chart-v9-tud-0719-en.pdf" rel="noopener noreferrer" target="_blank">Siemens SCE — 단계·전이의 일반 개념 (PCS 7 예시, GRAPH와 도구는 다름)</a></li></ul></div></section><nav aria-label="교안 이동" class="link-nav"><a href="plc07.html">이전: 7주차 교안</a><a href="plcstudy.html">전체 강의 목차로</a><a href="plc09.html">다음: 9주차 교안</a></nav></main><footer>PLC 15주 강의 교안 · 8주차 · 초보자용 · 교육 목적</footer><script>
+(() => {
+ 'use strict';
+ const keys=['start','reset','permit','position','workdone'];
+ const labels=['Start','Reset','Permit','AtPosition','WorkDoneIn'];
+ const buttons=keys.map(x=>document.getElementById('seq-'+x));
+ const names={0:'대기',10:'이송',20:'작업',30:'완료',900:'고장'};
+ const output=document.getElementById('seq-output');
+ const pending=document.getElementById('seq-pending');
+ const history=document.getElementById('seq-history');
+ let input=[false,false,false,false,false],state=0,prevStart=false,prevDone=false,n=0;
+ let reason='아직 전이 평가 전';
+ const text=v=>v?'TRUE':'FALSE';
+ function render(){
+  buttons.forEach((b,i)=>{b.setAttribute('aria-pressed',String(input[i]));b.textContent=labels[i]+': '+text(input[i]);});
+  [0,10,20,30,900].forEach(s=>{const el=document.getElementById('stage-'+s);el.classList.toggle('active',state===s);el.querySelector('small').textContent=state===s?'활성':'비활성';});
+  output.textContent='스캔 '+n+' / Step='+state+' · '+names[state]+'\nMotorCmd='+text(state===10)+' / WorkCmd='+text(state===20)+'\nDone='+text(state===30)+' / Fault='+text(state===900)+'\n'+reason;
+ }
+ buttons.forEach((b,i)=>b.addEventListener('click',()=>{input[i]=!input[i];pending.textContent='입력 변경 대기: 한 스캔을 실행해야 상태·출력이 갱신됩니다.';render();}));
+ document.getElementById('seq-scan').addEventListener('click',()=>{
+  const [start,reset,permit,pos,done]=input;
+  const startEdge=start&&!prevStart,doneEdge=done&&!prevDone;
+  prevStart=start;prevDone=done;
+  const before=state;
+  reason='조건 불충족 또는 상태 유지';
+  if(reset){state=permit?0:900;reason=permit?'Reset으로 대기':'Reset 중 Permit 없음: 고장';}
+  else if(!permit){state=900;reason='실행 허가 상실';}
+  else{
+   switch(state){
+    case 0:
+     if(startEdge&&!pos&&!done){state=10;reason='새 시작 에지, 위치·완료 입력 해제 확인';}
+     break;
+    case 10:
+     if(done){state=900;reason='이송 중 작업 완료 입력: 순서 이상';}
+     else if(pos){state=20;reason='위치 센서 확인';}
+     break;
+    case 20:
+     if(!pos){state=900;reason='작업 중 위치 상실';}
+     else if(doneEdge){state=30;reason='새 작업 완료 에지';}
+     break;
+    case 30:reason='완료 유지, Reset 필요';break;
+    case 900:reason='고장 유지, 원인 확인 후 Reset 필요';break;
+    default:state=900;reason='정의되지 않은 상태';
+   }
+  }
+  n++;
+  const li=document.createElement('li');li.textContent=n+'회: '+before+' → '+state+' / '+reason;
+  history.prepend(li);while(history.children.length>20){history.lastElementChild.remove();}
+  pending.textContent='한 스캔 평가 완료. 시간·타임아웃은 모의하지 않습니다.';render();
+ });
+ document.getElementById('seq-initialize').addEventListener('click',()=>{input=[false,false,false,false,false];state=0;prevStart=false;prevDone=false;n=0;reason='전체 입력·상태·기록 초기화';history.replaceChildren();pending.textContent='초기화 완료. Permit과 Reset으로 준비한 뒤 시작하세요.';render();});
+ render();
+})();
+</script></body></html>
