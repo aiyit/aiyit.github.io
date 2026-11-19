@@ -1,0 +1,249 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>13주차. 타이머·카운터·연산·비교 명령 고급</title><style>
+:root {
+  --primary: #0b3d91;
+  --accent: #e6b15a;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #222;
+  --muted: #555;
+  --border: #e0e4ea;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+header {
+  background: linear-gradient(135deg, #0b3d91 0%, #1a5fb4 100%);
+  color: white;
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+}
+header .week-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #111;
+  font-weight: 700;
+  padding: 0.25rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+header p { opacity: 0.92; font-size: 1rem; }
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.8rem 1.2rem 3rem;
+}
+.section {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.8rem;
+  overflow: hidden;
+}
+.section-header {
+  background: #f0f4fa;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.section-header .num {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+.section-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+.section-body p { margin-bottom: 1rem; }
+.section-body ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+.section-body li { margin-bottom: 0.45rem; }
+.highlight {
+  background: #e8f4fd;
+  border-left: 5px solid #1a5fb4;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.tip {
+  background: #fff8e6;
+  border-left: 5px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.img-box {
+  margin: 1.4rem 0;
+  text-align: center;
+}
+.img-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+.img-caption {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+.goal-box {
+  background: linear-gradient(135deg, #e8f4fd, #f0f7ff);
+  border: 1px solid #b6d4f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.goal-box h3 {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+}
+th {
+  background: #f0f4fa;
+  color: var(--primary);
+  font-weight: 600;
+}
+tr:nth-child(even) { background: #fafbfc; }
+.summary {
+  background: #1a5fb4;
+  color: white;
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem;
+  margin-top: 2rem;
+}
+.summary h3 { margin-bottom: 0.8rem; font-size: 1.15rem; }
+.summary ul { padding-left: 1.3rem; }
+.summary li { margin-bottom: 0.4rem; }
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  font-size: 0.88rem;
+}
+
+h3{color:var(--primary);font-size:1.05rem;margin:1.2rem 0 .5rem}ol{padding-left:1.5rem;margin:1rem 0}li{margin-bottom:.5rem}pre{background:#12233d;color:#e5efff;padding:1rem;border-radius:9px;overflow-x:auto;line-height:1.65;font-size:.85rem;margin:1rem 0}code{font-family:Consolas,monospace}.small{font-size:.88rem;color:var(--muted)}a{color:#1455a0;overflow-wrap:anywhere}details{padding:.8rem 1rem;border:1px solid var(--border);border-radius:8px;margin:.8rem 0}summary{cursor:pointer;color:var(--primary);font-weight:600}.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6rem;margin:1rem 0}.flow span{padding:.6rem .8rem;background:#e8f4fd;border:1px solid #b6d4f0;border-radius:7px}.worksheet{padding:1rem;border:1px dashed #8da9cf;border-radius:8px;margin:1rem 0}@media(max-width:600px){header h1{font-size:1.3rem}.container{padding:1.2rem .7rem}.section-body{padding:1.1rem}th,td{padding:.5rem}table{font-size:.86rem}pre{font-size:.76rem}}@media print{body{background:white;font-size:11pt}.section{border:1px solid #ddd;box-shadow:none}.section-header{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3fa;color:#111}details>*{display:block}}
+</style></head><body><header><div class="week-badge">13주차 · Module 13</div><h1>타이머·카운터·연산·비교 명령 고급</h1><p>시간·이벤트·수치의 경계 조건을 고려한 신뢰성 있는 로직을 설계한다</p></header><main class="container"><div class="goal-box"><h3>오늘의 학습 목표</h3><ul><li>IEC 타이머·카운터의 상태와 에지 동작을 구분한다.</li><li>필터와 재무장으로 유효한 제품 이벤트를 정의한다.</li><li>0 나눗셈·자료형·오버플로를 고려해 계산한다.</li><li>범위·허용오차·히스테리시스 비교를 구분한다.</li><li>종합 FB를 작성하고 정상·경계·오류 시나리오를 시험한다.</li></ul><p class="small">선수학습: SCL·FB·타이머·11~12주차 실습 / 대상: TIA Portal S7-1200·S7-1500 지원 환경 / 내부 DB 기반 가상 실습 / 실제 I/O·고속 계수·안전 기능 제외</p></div><section class="section"><div class="section-header"><div class="num">1</div><h2>이번 주의 핵심 — 명령보다 실행 조건</h2></div><div class="section-body"><p>타이머·카운터·연산·비교 명령은 단순해 보이지만 호출 주기, 신호 에지, 초기화, 자료형과 경계값에 따라 결과가 달라집니다. 이번 수업에서는 명령을 나열하는 대신 “어떤 값을 언제 계산하고 언제 유지할 것인가”를 기준으로 설계합니다.</p><div class="flow"><span>입력 유효성</span>→<span>시간·이벤트 처리</span>→<span>계산</span>→<span>비교·판정</span>→<span>상태·결과 표시</span></div><p>7주차 SCL 문법과 11·12주차의 타이머·상태 제어를 확장하여, 가상 제품 센서를 필터링하고 배치 수량과 처리율을 계산하는 FB를 작성합니다.</p><div class="tip">모든 예제는 내부 DB 태그를 사용하는 교육용입니다. 실제 출력·고속 계수 입력·안전 기능에 연결하지 않습니다. 타이머 인스턴스는 편집기에서 생성하고 CPU·TIA Portal 버전의 지원 조건을 확인합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">2</div><h2>타이머 비교 — TON · TOF · TP · TONR</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>명령</th><th>핵심 동작</th><th>사용 예·주의</th></tr></thead><tbody><tr><td>TON</td><td>IN이 TRUE로 PT 동안 유지되면 Q=TRUE</td><td>입력 안정 확인. IN=FALSE이면 일반적으로 Q·ET 초기화</td></tr><tr><td>TOF</td><td>IN이 FALSE가 된 후 PT 동안 Q 유지</td><td>일반적인 지연 소등. 안전 정지 지연에 임의 적용 금지</td></tr><tr><td>TP</td><td>IN 상승 에지로 PT 길이의 펄스 발생</td><td>일정 시간 표시. 펄스 중 새 입력을 무조건 재트리거로 기대하지 않음</td></tr><tr><td>TONR</td><td>조건에 따라 경과 시간을 누적하는 유지형 지연</td><td>별도 리셋·상태 초기화 요구 확인</td></tr></tbody></table></div><p>IEC 타이머의 주요 파라미터는 IN(조건), PT(설정 시간), Q(결과), ET(경과 시간)입니다. 명령별 추가 파라미터와 재시작 조건은 매뉴얼을 확인합니다. TONR의 시간 누적 의미와 전원 차단 후 Retain 유지 여부는 별개입니다.</p><div class="highlight">TON의 Q는 단순한 “시간이 한 번 지났다” 기록이 아닙니다. IN이 FALSE가 되면 완료 상태도 해제됩니다. 완료를 저장하려면 별도의 상태·래치 정책이 필요합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">3</div><h2>TON 시간표와 호출 규칙</h2></div><div class="section-body"><p>TON의 PT=T#2s를 가정합니다. 아래 시간은 개념적인 경과 시간이며 실제 관찰에는 호출 주기가 반영됩니다.</p><div class="table-wrap"><table><thead><tr><th>상황</th><th>IN</th><th>ET·Q</th></tr></thead><tbody><tr><td>초기 상태</td><td>FALSE</td><td>ET=0, Q=FALSE</td></tr><tr><td>입력이 켜진 직후</td><td>TRUE</td><td>ET 증가 시작, Q=FALSE</td></tr><tr><td>2초 이전</td><td>TRUE</td><td>ET&lt;PT, Q=FALSE</td></tr><tr><td>2초 이상 유지</td><td>TRUE</td><td>Q=TRUE</td></tr><tr><td>입력 해제</td><td>FALSE</td><td>Q=FALSE, ET 초기화</td></tr></tbody></table></div><pre><code>// HoldTimer: FB Static의 TON 멀티인스턴스
+#HoldTimer.TON(IN := #Condition AND NOT #Reset, PT := T#2s);
+#Stable := #HoldTimer.Q;
+#Elapsed := #HoldTimer.ET;</code></pre><div class="tip">타이머를 IF 조건 안에서 일부 스캔만 호출하는 대신 매 스캔 호출하고 IN으로 조건을 제어합니다. 같은 인스턴스를 서로 다른 용도로 여러 번 호출하지 않으며, 내부 타이머 구조를 임의로 덮어쓰지 않습니다.</div><p>주기 프로그램은 정확한 실시간 오실로스코프가 아닙니다. 짧은 펄스가 스캔 사이에 발생하면 소프트웨어가 놓칠 수 있습니다. 빠른 신호는 지원되는 하드웨어 입력·필터·고속 카운터 또는 이벤트 처리를 별도로 검토합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">4</div><h2>카운터 — 상태가 아니라 에지를 세기</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>명령</th><th>역할</th><th>주요 파라미터</th></tr></thead><tbody><tr><td>CTU</td><td>상승 에지마다 증가</td><td>CU, R, PV, Q, CV</td></tr><tr><td>CTD</td><td>상승 에지마다 감소</td><td>CD, LD, PV, Q, CV</td></tr><tr><td>CTUD</td><td>증가·감소를 함께 처리</td><td>CU, CD, R, LD, PV, QU/QD, CV</td></tr></tbody></table></div><p>CTU는 CU가 FALSE→TRUE로 바뀔 때 계수합니다. CU가 TRUE인 채 여러 스캔 유지된다고 매 스캔 증가하는 것은 아닙니다. 보통 CV가 PV 이상이면 Q가 TRUE가 되지만, Q는 목표값에서 CV를 자동으로 멈추는 명령이 아닙니다.</p><pre><code>// BatchCounter: DInt 계수형으로 만든 CTU 멀티인스턴스 예시
+// PV와 CV의 자료형도 선택한 카운터 형식에 맞춤
+#BatchCounter.CTU(CU := #QualifiedSensor,
+                  R := #Reset,
+                  PV := DINT#10,
+                  Q =&gt; #TargetReached,
+                  CV =&gt; #Count);</code></pre><div class="tip">구체적인 카운터 형식 이름·호출 구문은 편집기가 생성한 것을 사용합니다. 리셋 R, 로드 LD와 계수 입력이 동시에 들어올 때의 우선순위도 명령 설명에서 확인합니다. CTU 자체 에지 검출과 별도 R_TRIG를 불필요하게 중첩하지 않습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">5</div><h2>한 제품을 여러 번 세는 문제 — 필터와 재무장</h2></div><div class="section-body"><p>센서가 튀면 한 제품이 여러 상승 에지로 보일 수 있습니다. ON 지연만 넣으면 짧은 OFF 후 다시 ON되는 경우를 완전히 막지 못할 수 있으므로, 재계수하려면 OFF도 일정 시간 유지되도록 설계할 수 있습니다.</p><ol><li>센서가 FALSE로 100ms 유지되면 Armed=TRUE로 재무장합니다.</li><li>그 후 TRUE로 50ms 유지되면 제품 이벤트를 한 번 만듭니다.</li><li>계수 후 Armed=FALSE로 바꾸어 ON 유지 중 재계수를 막습니다.</li><li>다음 제품을 세려면 다시 FALSE 100ms가 필요합니다.</li></ol><div class="highlight">이 방식은 센서 펄스가 충분히 느린 가상 공정의 예입니다. 50ms·100ms는 임의의 교육 값이며 실제 센서의 최소 ON/OFF 시간에 맞춰야 합니다.</div><p>최소 OFF 시간이 실제 제품 간격보다 길면 정상 제품도 누락됩니다. 소프트웨어 필터는 신호 문제를 무조건 해결하는 기능이 아니라 유효 신호의 시간 조건을 명시하는 설계입니다.</p></div></section><section class="section"><div class="section-header"><div class="num">6</div><h2>산술 연산과 자료형 — 계산 전에 범위 확인</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>항목</th><th>위험</th><th>개선</th></tr></thead><tbody><tr><td>정수 곱셈</td><td>결과 저장형이 커도 중간 결과가 넘칠 수 있음</td><td>연산 전에 충분히 넓은 형식으로 변환</td></tr><tr><td>정수 나눗셈</td><td>실수 결과를 기대했지만 소수부 손실</td><td>나누기 전에 Real 등으로 변환</td></tr><tr><td>형 변환</td><td>잘림·반올림·범위 초과</td><td>함수별 규칙과 유효 범위 확인</td></tr><tr><td>0으로 나누기</td><td>정상 결과가 정의되지 않음</td><td>나눗셈 실행 전에 분모 검사</td></tr><tr><td>카운트 누적</td><td>자료형 상한 초과</td><td>포화·오류·리셋 정책 명시</td></tr></tbody></table></div><pre><code>// A, B : Int / Product : DInt
+#Product := INT_TO_DINT(#A) * INT_TO_DINT(#B);
+
+// Count : DInt / Seconds, Rate : Real / RateValid : Bool
+#Rate := 0.0;
+#RateValid := FALSE;
+IF #Seconds &gt; 0.0 THEN
+    #Rate := DINT_TO_REAL(#Count) / #Seconds;
+    #RateValid := TRUE;
+END_IF;</code></pre><div class="tip">이 예제는 유한한 정상 Real 입력을 전제로 합니다. NaN·무한대·센서 오류·통신 유효성 상실은 별도 검증해야 합니다. Real 변환은 임의 크기의 정수를 항상 정확하게 보존하지 않습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">7</div><h2>비교·범위 판정·허용오차</h2></div><div class="section-body"><pre><code>// 입력값과 한계값은 유한한 정상 Real이라고 가정
+#InRange := (#Value &gt;= #LowLimit) AND (#Value &lt;= #HighLimit);
+#NearTarget := ABS(#Value - #Target) &lt;= #Tolerance;</code></pre><div class="table-wrap"><table><thead><tr><th>검토 사항</th><th>설계 규칙</th></tr></thead><tbody><tr><td>범위 포함 여부</td><td>&gt;와 &gt;=, &lt;와 &lt;=를 요구사항대로 선택</td></tr><tr><td>설정 오류</td><td>LowLimit &gt; HighLimit이면 유효하지 않음</td></tr><tr><td>허용오차</td><td>Tolerance는 0 이상이어야 함</td></tr><tr><td>실수 비교</td><td>측정값에 정확한 = 비교 대신 적절한 오차 범위 검토</td></tr><tr><td>입력 품질</td><td>오류·단선·통신 무효 값은 정상 범위 판정에서 제외</td></tr></tbody></table></div><p>비교 연산은 물리적 단위를 모릅니다. 10.0이 Hz인지 rpm인지 °C인지 태그명과 인터페이스 문서에 적고 같은 단위끼리 비교합니다.</p><div class="tip">아래 종합 실습의 입력 값은 제한된 가상 범위로 검증합니다. 일반 프로그램에서 모든 Real 값에 이 단순 검사만 적용해도 충분하다고 가정하지 마세요.</div></div></section><section class="section"><div class="section-header"><div class="num">8</div><h2>히스테리시스 — 경계에서 상태가 떨리지 않게</h2></div><div class="section-body"><p>온도가 경계 근처에서 흔들릴 때 단일 비교만 사용하면 경보가 빠르게 켜졌다 꺼질 수 있습니다. 서로 다른 ON·OFF 경계를 사용하여 현재 상태를 유지하는 구간을 둡니다.</p><pre><code>// AlarmMemory : Bool (Static)
+// 유한한 Temp와 유효한 설정: OffThreshold &lt; OnThreshold
+IF #Reset THEN
+    #AlarmMemory := FALSE;
+ELSIF #Temp &gt;= #OnThreshold THEN
+    #AlarmMemory := TRUE;
+ELSIF #Temp &lt;= #OffThreshold THEN
+    #AlarmMemory := FALSE;
+END_IF;
+#Alarm := #AlarmMemory;</code></pre><div class="table-wrap"><table><thead><tr><th>온도 예시</th><th>ON=80.0 / OFF=75.0에서의 결과</th></tr></thead><tbody><tr><td>74.0</td><td>OFF</td></tr><tr><td>80.0</td><td>ON</td></tr><tr><td>78.0</td><td>직전 ON 유지</td></tr><tr><td>75.0</td><td>OFF</td></tr><tr><td>77.0</td><td>직전 OFF 유지</td></tr></tbody></table></div><div class="highlight">허용오차는 값이 목표 근처인지 판단하는 범위이고, 히스테리시스는 현재 상태에 따라 전환 경계를 다르게 하는 기억 동작입니다.</div><p>설정 오류·센서 무효·Reset 중 출력 정책을 별도로 정합니다. 위 코드는 Reset 동안 경보를 끄므로 안전 또는 실제 공정 경보에 그대로 적용하지 않습니다.</p></div></section><section class="section"><div class="section-header"><div class="num">9</div><h2>종합 실습 — 가상 제품 배치와 처리율</h2></div><div class="section-body"><p>제품 센서의 ON/OFF 안정 시간을 확인해 배치를 계수합니다. 목표 수량에 도달하면 완료를 저장하고 더 세지 않습니다. Enable은 일시정지로 사용하지 않습니다. 운전 중 Enable이 FALSE가 되면 해당 배치를 취소하고 Reset 전까지 다시 시작하지 않습니다.</p><div class="table-wrap"><table><thead><tr><th>구분</th><th>태그</th><th>자료형·규칙</th></tr></thead><tbody><tr><td>Input</td><td>Enable, Reset, Sensor</td><td>각각 Bool</td></tr><tr><td>Input</td><td>Target</td><td>DInt, 1~1000000 허용</td></tr><tr><td>Input</td><td>RunSeconds</td><td>Real, 0~86400 범위의 가상 경과 시간</td></tr><tr><td>Output</td><td>Count</td><td>DInt</td></tr><tr><td>Output</td><td>Done, Aborted, ConfigFault</td><td>각각 Bool</td></tr><tr><td>Output</td><td>RateValid</td><td>Bool</td></tr><tr><td>Output</td><td>RatePerMinute</td><td>Real</td></tr><tr><td>Static</td><td>CountMem, TargetLatched</td><td>각각 DInt, 0</td></tr><tr><td>Static</td><td>Armed, DoneMem, Active, AbortMem</td><td>각각 Bool, FALSE</td></tr><tr><td>Static</td><td>OnFilter, OffFilter</td><td>각각 TON 멀티인스턴스</td></tr><tr><td>Temp</td><td>TargetOK, TimeOK, WorkAllowed</td><td>각각 Bool</td></tr></tbody></table></div><p>FB <code>FB_BatchAdvanced</code>와 인스턴스 DB를 생성합니다. 전역 DB <code>LabAdvanced</code>에 Input·Output 태그를 만들어 주기 프로그램에서 연결합니다. RunSeconds는 외부에서 주는 모의 값이며 FB가 실제 운전 시간을 자동 측정하는 것은 아닙니다.</p><div class="tip">Target은 배치 시작 시 TargetLatched에 저장합니다. 운전 중 설정이 바뀌면 ConfigFault를 표시하고 배치를 취소합니다. Reset은 Enable=FALSE일 때만 받아들이도록 설계했습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">10</div><h2>종합 실습 전체 코드 — FB 본문</h2></div><div class="section-body"><pre><code>// 1. 가상 입력 검증: 유한한 정상 Real 입력을 전제로 함
+#TargetOK := (#Target &gt;= DINT#1) AND (#Target &lt;= DINT#1000000);
+#TimeOK := (#RunSeconds &gt;= 0.0) AND (#RunSeconds &lt;= 86400.0);
+#ConfigFault := NOT #TargetOK;
+IF #Active AND (#Target &lt;&gt; #TargetLatched) THEN
+    #ConfigFault := TRUE;
+END_IF;
+
+// 2. 정지한 상태에서만 Reset 허용
+IF #Reset AND NOT #Enable THEN
+    #CountMem := 0;
+    #TargetLatched := 0;
+    #Armed := FALSE;
+    #DoneMem := FALSE;
+    #Active := FALSE;
+    #AbortMem := FALSE;
+ELSE
+    IF #Active AND NOT #DoneMem AND
+       (NOT #Enable OR #ConfigFault) THEN
+        #AbortMem := TRUE;
+    END_IF;
+    IF #Enable AND NOT #Reset AND NOT #Active AND
+       NOT #DoneMem AND NOT #AbortMem AND NOT #ConfigFault THEN
+        #TargetLatched := #Target;
+        #Active := TRUE;
+    END_IF;
+END_IF;
+
+#WorkAllowed := #Active AND #Enable AND NOT #Reset
+                AND NOT #DoneMem AND NOT #AbortMem AND NOT #ConfigFault;
+
+// 3. ON/OFF 필터는 서로 다른 인스턴스로 매 스캔 호출
+#OnFilter.TON(IN := #WorkAllowed AND #Sensor, PT := T#50ms);
+#OffFilter.TON(IN := #WorkAllowed AND NOT #Sensor, PT := T#100ms);
+
+IF NOT #WorkAllowed THEN
+    #Armed := FALSE;
+ELSE
+    IF #OffFilter.Q THEN
+        #Armed := TRUE;
+    END_IF;
+    IF #OnFilter.Q AND #Armed THEN
+        #Armed := FALSE;
+        // Target은 최대 1000000이므로 DInt 범위 내에서 증가
+        IF #CountMem &lt; #TargetLatched THEN
+            #CountMem := #CountMem + 1;
+        END_IF;
+        IF #CountMem &gt;= #TargetLatched THEN
+            #DoneMem := TRUE;
+        END_IF;
+    END_IF;
+END_IF;
+
+// 4. 결과와 처리율: 유효하지 않으면 숫자와 유효성 함께 초기화
+#Count := #CountMem;
+#Done := #DoneMem;
+#Aborted := #AbortMem;
+#RatePerMinute := 0.0;
+#RateValid := FALSE;
+IF #Active AND NOT #Reset AND NOT #AbortMem AND NOT #ConfigFault
+   AND #TimeOK AND (#RunSeconds &gt; 0.0) THEN
+    #RatePerMinute := DINT_TO_REAL(#CountMem) * 60.0 / #RunSeconds;
+    #RateValid := TRUE;
+END_IF;</code></pre><h3>읽어야 할 동작 특성</h3><ul><li>운전 시작 시 Sensor가 이미 TRUE이면 세지 않습니다. 먼저 FALSE 100ms로 재무장해야 합니다.</li><li>센서를 TRUE로 계속 유지해도 한 번만 셉니다.</li><li>일반 계수 부분은 CTU 대신 직접 증가문을 사용합니다. 필터·Armed가 한 이벤트만 만들어 주며 목표에서 포화합니다.</li><li>완료 후 Count·Done은 유지됩니다. 새 배치는 Enable=FALSE에서 Reset한 뒤 시작합니다.</li><li>완료 전에 Enable을 끄면 Aborted가 저장되고 단순 재활성화로 이어 세지 않습니다.</li><li>RunSeconds는 외부 모의 값입니다. 완료 후에도 값을 바꾸면 처리율은 달라집니다. 완료 시점 값을 고정하는 기능은 확장 과제입니다.</li></ul><div class="tip">ConfigFault는 현재 설정 이상 표시이고 Aborted는 취소 기록입니다. 설정을 복구해 ConfigFault가 사라져도 Aborted는 Reset 전까지 유지됩니다. Reset 중 Sensor 상태와 관계없이 필터·Armed는 초기화됩니다.</div></div></section><section class="section"><div class="section-header"><div class="num">11</div><h2>종합 실습 시험표</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>시험</th><th>입력·조작</th><th>기대 결과</th></tr></thead><tbody><tr><td>초기화</td><td>Enable=FALSE, Reset=TRUE, Target=3, RunSeconds=0</td><td>Count=0, Done=FALSE, Aborted=FALSE</td></tr><tr><td>시작</td><td>Reset=FALSE, Enable=TRUE, Sensor=FALSE 100ms 이상</td><td>재무장 완료</td></tr><tr><td>첫 제품</td><td>Sensor=TRUE 50ms 이상</td><td>Count=1</td></tr><tr><td>ON 유지</td><td>Sensor=TRUE 1초 유지</td><td>Count=1 유지</td></tr><tr><td>짧은 OFF</td><td>FALSE 30ms 후 TRUE 50ms 이상</td><td>재무장 안 되어 Count=1</td></tr><tr><td>다음 제품</td><td>FALSE 100ms 이상 후 TRUE 50ms 이상</td><td>Count=2</td></tr><tr><td>목표 도달</td><td>다시 유효한 OFF/ON 한 번</td><td>Count=3, Done=TRUE</td></tr><tr><td>추가 제품</td><td>목표 후 센서 반복</td><td>Count=3 유지</td></tr><tr><td>처리율</td><td>Count=3, RunSeconds=30.0</td><td>Rate=6.0개/분, 유효</td></tr><tr><td>분모 0</td><td>RunSeconds=0.0</td><td>Rate=0.0, RateValid=FALSE</td></tr><tr><td>중도 취소</td><td>새 배치 운전 도중 Enable=FALSE</td><td>Aborted=TRUE, 단순 재시작 금지</td></tr><tr><td>설정 변경</td><td>진행 중 Target를 다른 값으로 변경</td><td>ConfigFault=TRUE, Aborted=TRUE</td></tr><tr><td>복구</td><td>Enable=FALSE에서 Reset, 새 시작</td><td>새 배치에서 0부터 시작</td></tr></tbody></table></div><p>짧은 OFF 시험 뒤에는 반드시 충분한 OFF를 주어 다음 유효 이벤트를 만듭니다. 감시 테이블로 30ms를 정확히 조작하기 어려우면 별도 가상 펄스 발생기나 시뮬레이션 시험 로직을 쓰고 실제 발생 시간을 기록합니다. 사람의 클릭 간격을 정밀 시간 시험으로 간주하지 않습니다.</p></div></section><section class="section"><div class="section-header"><div class="num">12</div><h2>경계값·오버플로·무효 값 시험</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>분류</th><th>시험 항목</th><th>정책 확인</th></tr></thead><tbody><tr><td>Target</td><td>0, 1, 1000000, 1000001</td><td>허용 범위·설정 오류</td></tr><tr><td>시간</td><td>0, 아주 작은 양수, 86400, 초과 값</td><td>0 나눗셈 방지·범위·지표 의미</td></tr><tr><td>필터</td><td>50ms 전후 ON, 100ms 전후 OFF</td><td>스캔·입력 필터·시험 신호 오차</td></tr><tr><td>카운트</td><td>목표-1, 목표, 추가 이벤트</td><td>포화·완료 유지</td></tr><tr><td>상태</td><td>완료·취소 후 Enable 재입력</td><td>자동 재시작 방지</td></tr><tr><td>Reset</td><td>Enable TRUE/FALSE 각각 입력</td><td>Enable FALSE일 때만 초기화</td></tr></tbody></table></div><div class="highlight">출력 숫자가 0이라는 사실만으로 정상 결과라 판단하지 마세요. 0개/분인 정상 운전과 분모 0으로 계산하지 못한 경우는 RateValid로 구분합니다.</div><p>Real 입력의 NaN·무한대, RunSeconds의 역행, 전원 재시작, 센서 고착 진단은 이 코드에서 완전하게 다루지 않습니다. 정상 유한 값이라는 실습 전제를 벗어나는 입력은 별도 검증과 오류 정책을 설계해야 합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">13</div><h2>실수 패턴과 디버깅</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>증상</th><th>가능한 원인</th><th>점검</th></tr></thead><tbody><tr><td>매 스캔 수량 증가</td><td>센서 상태를 그대로 IF로 증가</td><td>상승 에지 또는 재무장 이벤트 확인</td></tr><tr><td>정상 제품 누락</td><td>ON/OFF 필터보다 실제 펄스가 짧음</td><td>최소 펄스·주기·하드웨어 기능 검토</td></tr><tr><td>타이머 값이 남음</td><td>조건부 호출·공유 인스턴스</td><td>매 스캔 호출·인스턴스 분리</td></tr><tr><td>비율 소수부 손실</td><td>정수 연산 후 Real 변환</td><td>나누기 전에 변환</td></tr><tr><td>음수·예상 밖 결과</td><td>중간 계산 범위 초과</td><td>피연산자 자료형·최댓값 확인</td></tr><tr><td>경보 깜빡임</td><td>단일 문턱·노이즈</td><td>히스테리시스·필터 정책</td></tr><tr><td>잘못된 수치를 정상으로 표시</td><td>유효성 표시 누락</td><td>숫자와 Valid·오류 원인 함께 출력</td></tr></tbody></table></div><p>변수의 현재 값만 보지 말고 입력 변화, 타이머 IN/Q/ET, Armed, Active, AbortMem과 Count를 같은 시간축으로 관찰합니다. 지원되는 Trace 또는 시험 기록을 활용하되 지원 조건은 CPU별로 확인합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">14</div><h2>확인 문제와 확장 과제</h2></div><div class="section-body"><details><summary>1. TONR은 전원 차단 후에도 반드시 시간을 유지하나요?</summary><p>아닙니다. 시간 누적 동작과 전원 차단 후 데이터 유지 정책은 다릅니다. CPU·인스턴스·Retain 및 초기화 조건을 별도로 확인합니다.</p></details><details><summary>2. CTU의 CU가 1초 TRUE이면 몇 번 증가하나요?</summary><p>한 번의 FALSE→TRUE 에지라면 한 번입니다. TRUE 유지 시간을 스캔 수만큼 계수하지 않습니다.</p></details><details><summary>3. CTU의 Q가 TRUE이면 CV가 자동으로 멈추나요?</summary><p>목표 비교 결과와 계수 차단은 다릅니다. 목표에서 멈추려면 추가 계수 허가·포화 정책을 설계합니다.</p></details><details><summary>4. Int 곱셈 결과를 DInt에 저장하면 중간 오버플로가 항상 방지되나요?</summary><p>아닙니다. 연산 전에 피연산자를 충분한 범위의 자료형으로 변환하는 등 평가 형식을 확인해야 합니다.</p></details><details><summary>5. 히스테리시스 구간의 출력은 어떻게 정해지나요?</summary><p>ON/OFF 경계 사이에서는 직전 상태를 유지합니다. 따라서 상태 메모리가 필요합니다.</p></details><h3>확장 과제</h3><ol><li>RunSeconds를 외부 값 대신 명확한 시간 기준으로 측정합니다. 주기 OB 사용 또는 시간 차 계산 방식을 선정하고 오차·범위·재시작 정책을 설명합니다.</li><li>완료 순간 처리율과 시간을 별도 출력에 저장해 완료 후 입력 변화의 영향을 없앱니다.</li><li>센서 ON 고착·OFF 고착 감시를 추가하고 단순 무제품 대기와 고장을 구분합니다.</li><li>일반 CTU 버전과 Armed 기반 포화 계수 버전을 비교해 목표 이후 동작을 기록합니다.</li><li>히스테리시스 설정 유효성 및 입력 품질 검사를 포함한 별도 FB를 작성합니다.</li></ol><div class="worksheet"><h3>제출 항목</h3><p>CPU·펌웨어·TIA Portal 버전 / 인터페이스와 인스턴스 구성 / 컴파일 결과 / 정상·경계·오류 시험표 / 미실행 항목과 한계 / 프로젝트 보관본</p></div></div></section><div class="summary"><h3>13주차 핵심 정리</h3><ul><li>타이머·카운터는 인스턴스별 상태가 있고 호출·초기화 규칙이 중요합니다.</li><li>상태 유지 시간과 이벤트 횟수는 다른 값입니다.</li><li>필터는 정상 신호의 최소 ON/OFF 시간을 함께 고려해야 합니다.</li><li>자료형 변환은 연산 전에, 분모 검사는 나눗셈 전에 수행합니다.</li><li>숫자와 유효성 표시를 함께 제공하고 경계값을 시험합니다.</li><li>완료·취소·재시작·설정 변경 정책을 명시합니다.</li></ul></div><section class="section" style="margin-top:1.8rem"><div class="section-body"><h3>공식 참고 자료와 검증 범위</h3><p class="small">타이머·카운터와 프로그램 구성 설명은 아래 Siemens 공식 자료를 참고했습니다. 일부 자료는 이전 버전이므로 실제 CPU·펌웨어·TIA Portal의 명령 도움말을 우선합니다. 종합 코드·필터 시간·설정 범위·시험표는 교육용 구성입니다. 실제 TIA Portal 컴파일·PLCSIM 실행·하드웨어 시험은 수행하지 않았습니다. 비정상 Real 값 검출과 실제 시간 측정은 예제 범위에서 제외했습니다.</p><ul><li><a href="https://cache.industry.siemens.com/dl/files/875/39644875/att_76194/v1/s71200_getting_started_en-US_en-US.pdf" target="_blank" rel="noopener noreferrer">Siemens — S7-1200 Getting Started, TON·TOF 및 인스턴스</a></li><li><a href="https://cache.industry.siemens.com/dl/files/145/39710145/att_5796/v1/s71200_easy_book_ko-KR_ko-KR.pdf" target="_blank" rel="noopener noreferrer">Siemens — S7-1200 Easy Book 한국어, IEC 타이머·카운터</a></li><li><a href="https://www.automation.siemens.com/sce-static/learning-training-documents/tia-portal/basics-programming-s7-1200/sce-031-300-iec-times-and-counters-s7-1200-r1709-en.pdf" target="_blank" rel="noopener noreferrer">Siemens SCE — IEC Times and Counters S7-1200</a></li><li><a href="https://cache.industry.siemens.com/dl/files/040/90885040/att_970576/v1/81318674_Programming_guideline_DOC_v16_en.pdf" target="_blank" rel="noopener noreferrer">Siemens — Programming Guideline S7-1200/1500</a></li><li><a href="https://cache.industry.siemens.com/dl/files/648/109797648/att_1067421/v1/s71500_compare_table_en.pdf" target="_blank" rel="noopener noreferrer">Siemens — 명령 비교 목록</a></li></ul></div></section><a href="plcstudy.html" style="display:block;text-align:center;color:#0b3d91;margin-top:1.5rem">전체 강의 목차로</a></main><footer>PLC 15주 강의 교안 · 13주차 · 초보자용 · 교육 목적</footer></body></html>
