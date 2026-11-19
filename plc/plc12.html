@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>12주차. 모터 기동·정역·인버터 제어</title><style>
+:root {
+  --primary: #0b3d91;
+  --accent: #e6b15a;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #222;
+  --muted: #555;
+  --border: #e0e4ea;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+header {
+  background: linear-gradient(135deg, #0b3d91 0%, #1a5fb4 100%);
+  color: white;
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+}
+header .week-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #111;
+  font-weight: 700;
+  padding: 0.25rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+header p { opacity: 0.92; font-size: 1rem; }
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.8rem 1.2rem 3rem;
+}
+.section {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.8rem;
+  overflow: hidden;
+}
+.section-header {
+  background: #f0f4fa;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.section-header .num {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+.section-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+.section-body p { margin-bottom: 1rem; }
+.section-body ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+.section-body li { margin-bottom: 0.45rem; }
+.highlight {
+  background: #e8f4fd;
+  border-left: 5px solid #1a5fb4;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.tip {
+  background: #fff8e6;
+  border-left: 5px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.img-box {
+  margin: 1.4rem 0;
+  text-align: center;
+}
+.img-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+.img-caption {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+.goal-box {
+  background: linear-gradient(135deg, #e8f4fd, #f0f7ff);
+  border: 1px solid #b6d4f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.goal-box h3 {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+}
+th {
+  background: #f0f4fa;
+  color: var(--primary);
+  font-weight: 600;
+}
+tr:nth-child(even) { background: #fafbfc; }
+.summary {
+  background: #1a5fb4;
+  color: white;
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem;
+  margin-top: 2rem;
+}
+.summary h3 { margin-bottom: 0.8rem; font-size: 1.15rem; }
+.summary ul { padding-left: 1.3rem; }
+.summary li { margin-bottom: 0.4rem; }
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  font-size: 0.88rem;
+}
+
+h3{color:var(--primary);font-size:1.05rem;margin:1.2rem 0 .5rem}ol{padding-left:1.5rem;margin:1rem 0}li{margin-bottom:.5rem}pre{background:#12233d;color:#e5efff;padding:1rem;border-radius:9px;overflow-x:auto;line-height:1.65;font-size:.85rem;margin:1rem 0}code{font-family:Consolas,monospace}.small{font-size:.88rem;color:var(--muted)}a{color:#1455a0;overflow-wrap:anywhere}details{border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;margin:.8rem 0}summary{cursor:pointer;color:var(--primary);font-weight:600}.flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6rem;margin:1.2rem 0}.flow span{padding:.6rem .8rem;border:1px solid #b6d4f0;background:#e8f4fd;border-radius:7px}.worksheet{border:1px dashed #8da9cf;border-radius:8px;padding:1rem;margin:1rem 0}@media(max-width:600px){header h1{font-size:1.3rem}.container{padding:1.2rem .7rem}.section-body{padding:1.1rem}th,td{padding:.5rem}table{font-size:.86rem}pre{font-size:.76rem}}@media print{body{background:white;font-size:11pt}.section{border:1px solid #ddd;box-shadow:none}.section-header{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3fa;color:#111}details>*{display:block}}
+</style></head><body><header><div class="week-badge">12주차 · Module 12</div><h1>모터 기동·정역·인버터 제어</h1><p>명령과 피드백을 구분하고 인터록·정지 확인·속도 지령을 설계한다</p></header><main class="container"><div class="goal-box"><h3>오늘의 학습 목표</h3><ul><li>직입 기동과 인버터 운전의 차이를 설명한다.</li><li>정역 접촉기 인터록과 정지 확인의 역할을 구분한다.</li><li>내부 DB 기반 정역 시퀀스와 고장 처리를 구현한다.</li><li>인버터 명령·상태·속도 지령의 관계와 단위를 이해한다.</li><li>정상·방향 충돌·정지 실패 시나리오를 가상 입력으로 시험한다.</li></ul><p class="small">선수학습: I/O·SCL·타이머·11주차 단계 제어 / 대상: TIA Portal 지원 교육 환경 / 실습: 내부 태그만 사용 / 전력 결선·실물 시운전·안전 제어 제외</p></div><section class="section"><div class="section-header"><div class="num">1</div><h2>실습 범위와 안전 경계</h2></div><div class="section-body"><p>이번 주에는 모터의 기동·정지·회전 방향·속도 지령을 PLC에서 어떻게 구분하여 다루는지 배웁니다. 접촉기 기반 정역 운전과 인버터 운전은 장치 구성과 제어 방식이 다르므로 별도 사례로 학습합니다.</p><div class="highlight">실습은 내부 DB 태그만 사용합니다. 실제 모터·접촉기·인버터 출력에 연결하지 않습니다. 전력회로 결선·활선 측정·실물 시운전은 포함하지 않습니다.</div><ul><li>PLC 출력은 모터 전력을 직접 공급하는 단자가 아닙니다. 실제 구동 회로에는 적합한 개폐·보호·인터페이스 구성이 필요합니다.</li><li>소프트웨어 인터록은 하드웨어 인터록이나 안전 기능을 대신하지 않습니다.</li><li>Stop 버튼, PLC 출력 OFF, 인버터 운전 명령 OFF를 전기적 격리로 간주하지 않습니다.</li><li>실물 작업은 자격을 갖춘 담당자가 제조사 절차와 현장 에너지 차단·확인 절차에 따라 수행해야 합니다.</li></ul><p>명판·보호장치·정지 방식·역회전 허용 여부를 확인하지 않은 상태에서 예제 코드를 설비에 적용하지 마세요.</p></div></section><section class="section"><div class="section-header"><div class="num">2</div><h2>기동 방식의 차이 — 직입·소프트스타터·인버터</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>방식</th><th>개념</th><th>PLC가 주로 주고받는 정보</th></tr></thead><tbody><tr><td>직입 기동</td><td>접촉기로 전원을 연결하여 기동</td><td>운전 요청, 접촉기 피드백, 과부하 상태</td></tr><tr><td>소프트스타터</td><td>기동·정지 과정의 전압 등을 제어</td><td>기동 허가, 운전 상태, 고장 상태</td></tr><tr><td>인버터, VFD</td><td>주파수·전압 등을 제어해 속도 운전</td><td>운전·정지, 속도 지령, 준비·실속도·고장</td></tr></tbody></table></div><p>단순 ON/OFF 요구와 속도 제어 요구를 먼저 구분합니다. 기동 전류, 부하 특성, 가감속, 정지 요구, 허용 기동 횟수는 장치 선정 시 별도로 검토합니다. 특정 방식이 모든 부하에 적합한 것은 아닙니다.</p><div class="tip">이 교안의 정역 접촉기 논리와 인버터 논리를 같은 실제 출력에 함께 연결하지 않습니다. 두 실습은 서로 다른 가상 장치 사례입니다.</div></div></section><section class="section"><div class="section-header"><div class="num">3</div><h2>기동·정지의 기본 — 요청과 상태를 구분하기</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>종류</th><th>예시</th><th>의미</th></tr></thead><tbody><tr><td>명령</td><td>RunCmd</td><td>운전하라는 요청</td></tr><tr><td>피드백</td><td>ContactorOn 또는 DriveRunning</td><td>장치에서 확인된 상태</td></tr><tr><td>허가</td><td>Permit, OverloadOK</td><td>일반 운전 조건의 충족 여부</td></tr><tr><td>고장</td><td>Fault, FaultCode</td><td>이상과 원인 기록</td></tr></tbody></table></div><p>명령을 ON 했다는 사실은 접촉기가 붙었거나 축이 실제로 회전한다는 증거가 아닙니다. 피드백을 이용해 기동 실패, 정지 실패, 방향 충돌을 감시해야 합니다.</p><pre><code>// 자기유지 논리의 개념: RunMemory는 FB Static Bool
+IF NOT #Permit OR #StopReq THEN
+    #RunMemory := FALSE;
+ELSIF #StartEdge THEN
+    #RunMemory := TRUE;
+END_IF;
+#RunCmd := #RunMemory AND #Permit AND NOT #StopReq;</code></pre><div class="tip">이 짧은 예제에는 피드백·타임아웃·접촉기 고착 감시가 없습니다. 실제 제어용 완성 코드가 아니라 정지 우선 자기유지 개념입니다. StartEdge는 매 스캔 평가한 상승 에지여야 합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">4</div><h2>정역 접촉기 — 세 겹의 상호 배제</h2></div><div class="section-body"><p>3상 유도전동기의 일반적인 접촉기 정역 회로는 두 상의 순서를 바꾸는 구조를 사용합니다. 정회전·역회전 접촉기가 동시에 투입되면 위험한 상간 단락이 생길 수 있으므로 실제 장치는 검증된 정역 조합과 보호 구성이 필요합니다.</p><div class="table-wrap"><table><thead><tr><th>인터록</th><th>역할</th><th>한계</th></tr></thead><tbody><tr><td>소프트웨어</td><td>두 방향 명령의 동시 출력 방지</td><td>CPU·배선·접점 고장을 단독으로 막지 못함</td></tr><tr><td>전기적</td><td>반대편 접촉기 보조 접점을 이용한 코일 상호 차단</td><td>적합한 접점·배선·설계 필요</td></tr><tr><td>기계적</td><td>두 접촉기의 동시 동작을 기계적으로 억제</td><td>맞는 조합과 제조사 장착 규칙 필요</td></tr></tbody></table></div><p>Siemens SIRIUS 정역 접촉기 조합에는 전기적·기계적 인터록을 함께 갖춘 제품이 있습니다. 모든 임의 조합에 같은 기능이 있다고 가정하지 마세요.</p><div class="highlight">코드에서 FwdCmd AND RevCmd가 항상 FALSE여야 합니다. 그러나 이 불변조건을 만족해도 실제 주접점 고착이나 배선 오류까지 검증된 것은 아닙니다.</div></div></section><section class="section"><div class="section-header"><div class="num">5</div><h2>방향 전환 정책 — 정지 후 새 명령</h2></div><div class="section-body"><p>이번 가상 실습은 운전 중 반대 방향 버튼을 누르면 운전을 취소하고 정지 확인 단계로 이동합니다. 반대 방향 요청은 예약하지 않으며, 정지 확인이 끝난 뒤 새로운 버튼 상승 에지가 필요합니다.</p><div class="flow"><span>정회전 / 역회전</span>→<span>명령 OFF</span>→<span>접촉기 해제 + 정지 확인</span>→<span>확인 시간 유지</span>→<span>대기</span>→<span>새 방향 시작</span></div><ul><li>두 방향 버튼 동시 입력은 고장으로 처리합니다.</li><li>정지 확인에는 두 접촉기 피드백 OFF와 가상 ZeroSpeed=TRUE를 사용합니다.</li><li>확인 조건이 0.5초 연속 유지되면 대기로 갑니다.</li><li>정지 확인이 5초 안에 끝나지 않으면 고장으로 처리합니다.</li></ul><div class="tip">0.5초는 정지 확인 신호의 교육용 안정 시간이지 모터가 멈춘다는 보증 시간이 아닙니다. ZeroSpeed도 일반 가상 Bool이므로 안전 인증 정지 검출이 아닙니다. 실제 정지 검출·지연·제동은 부하와 제조사 사양에 맞춰 설계합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">6</div><h2>실습 A — 정역 제어 인터페이스</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>구분</th><th>태그</th><th>자료형·설명</th></tr></thead><tbody><tr><td>Input</td><td>StartFwd, StartRev, StopReq, Reset</td><td>각각 Bool</td></tr><tr><td>Input</td><td>Permit, OverloadOK</td><td>각각 Bool, 일반 운전 조건</td></tr><tr><td>Input</td><td>FwdFb, RevFb</td><td>각각 Bool, 가상 접촉기 피드백</td></tr><tr><td>Input</td><td>ZeroSpeed</td><td>Bool, 가상 정지 확인</td></tr><tr><td>Output</td><td>FwdCmd, RevCmd, Fault</td><td>각각 Bool</td></tr><tr><td>Output</td><td>StepNo, FaultCode</td><td>각각 Int</td></tr><tr><td>Static</td><td>State, ErrorCode</td><td>각각 Int, 초기값 0</td></tr><tr><td>Static</td><td>PrevFwd, PrevRev</td><td>각각 Bool, 초기값 FALSE</td></tr><tr><td>Static</td><td>StopStable, StopLimit</td><td>각각 IEC TON 멀티인스턴스</td></tr><tr><td>Temp</td><td>FwdEdge, RevEdge, StopConfirmed</td><td>각각 Bool</td></tr></tbody></table></div><p>SCL FB <code>FB_MotorReverse</code>를 만들고 위 인터페이스를 선언합니다. 편집기에서 TON을 삽입해 StopStable, StopLimit 멀티인스턴스를 생성합니다. LabMotor 전역 DB에 Input·Output과 같은 이름·자료형의 변수를 만들고 별도 인스턴스 DB로 매 스캔 호출합니다.</p><div class="tip">초기값 State=0은 시작 후에도 정지 검증을 거치게 하기 위한 값입니다. Permit·OverloadOK·ZeroSpeed를 TRUE, 접촉기 피드백은 FALSE로 준비한 뒤 Reset을 입력합니다. 실제 입출력 주소는 할당하지 않습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">7</div><h2>실습 A — 정역 SCL 예제</h2></div><div class="section-body"><pre><code>// 시작 에지는 모든 스캔에서 평가
+#FwdEdge := #StartFwd AND NOT #PrevFwd;
+#RevEdge := #StartRev AND NOT #PrevRev;
+#PrevFwd := #StartFwd;
+#PrevRev := #StartRev;
+
+#StopConfirmed := NOT #FwdFb AND NOT #RevFb AND #ZeroSpeed;
+#StopStable.TON(IN := (#State = 0) AND #StopConfirmed AND NOT #Reset,
+                PT := T#500ms);
+#StopLimit.TON(IN := (#State = 0) AND NOT #Reset, PT := T#5s);
+
+// 고장 래치: 최초 코드 유지
+IF NOT #Permit OR NOT #OverloadOK THEN
+    IF #State &lt;&gt; 900 THEN
+        #ErrorCode := 1;
+    END_IF;
+    #State := 900;
+ELSIF (#StartFwd AND #StartRev) OR (#FwdFb AND #RevFb) THEN
+    IF #State &lt;&gt; 900 THEN
+        #ErrorCode := 2;
+    END_IF;
+    #State := 900;
+ELSIF #Reset THEN
+    #State := 0; // Reset 후에도 정지 검증부터
+    #ErrorCode := 0;
+ELSIF #State = 900 THEN
+    #State := 900;
+ELSE
+    CASE #State OF
+        0: // 출력 OFF, 정지 확인
+            IF #StopLimit.Q THEN
+                #ErrorCode := 3;
+                #State := 900;
+            ELSIF #StopStable.Q THEN
+                #State := 10;
+            END_IF;
+        10: // 기동 가능한 대기
+            IF NOT #StopConfirmed THEN
+                #State := 0;
+            ELSIF NOT #StopReq THEN
+                IF #FwdEdge THEN
+                    #State := 20;
+                ELSIF #RevEdge THEN
+                    #State := 30;
+                END_IF;
+            END_IF;
+        20: // 정회전
+            IF #RevFb THEN
+                #ErrorCode := 4;
+                #State := 900;
+            ELSIF #StopReq OR #StartRev THEN
+                #State := 0;
+            END_IF;
+        30: // 역회전
+            IF #FwdFb THEN
+                #ErrorCode := 4;
+                #State := 900;
+            ELSIF #StopReq OR #StartFwd THEN
+                #State := 0;
+            END_IF;
+        ELSE
+            #ErrorCode := 99;
+            #State := 900;
+    END_CASE;
+END_IF;
+
+// 최종 명령: 동시 출력 방지 + 반대 피드백 인터록
+#FwdCmd := (#State = 20) AND #Permit AND #OverloadOK
+           AND NOT #StopReq AND NOT #Reset AND NOT #RevFb;
+#RevCmd := (#State = 30) AND #Permit AND #OverloadOK
+           AND NOT #StopReq AND NOT #Reset AND NOT #FwdFb;
+#Fault := (#State = 900);
+#StepNo := #State;
+#FaultCode := #ErrorCode;</code></pre><h3>단계와 코드</h3><div class="table-wrap"><table><thead><tr><th>값</th><th>의미</th></tr></thead><tbody><tr><td>State 0 / 10 / 20 / 30 / 900</td><td>정지 검증 / 대기 / 정회전 / 역회전 / 고장</td></tr><tr><td>FaultCode 1</td><td>실행 허가 또는 과부하 정상 조건 상실</td></tr><tr><td>FaultCode 2</td><td>양방향 버튼 또는 양방향 피드백 동시 입력</td></tr><tr><td>FaultCode 3</td><td>정지 검증 시간 초과</td></tr><tr><td>FaultCode 4</td><td>운전 방향과 반대 접촉기 피드백</td></tr><tr><td>FaultCode 99</td><td>정의되지 않은 상태</td></tr></tbody></table></div><div class="tip">이 예제는 기동 후 해당 접촉기 ON 피드백이 일정 시간 안에 들어오는지 감시하지 않습니다. 따라서 실제 접촉기 기동 실패를 완전하게 검출하지 못합니다. 피드백 모델·고착·속도 센서 고장은 별도 설계해야 하며, 실물 적용 코드가 아닙니다.</div></div></section><section class="section"><div class="section-header"><div class="num">8</div><h2>실습 A — 정상·충돌·정지 시험표</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>시험</th><th>입력·조작</th><th>기대 결과</th></tr></thead><tbody><tr><td>초기화</td><td>Permit·OverloadOK·ZeroSpeed TRUE, Fb FALSE, Reset 펄스</td><td>0에서 약 0.5초 확인 후 10</td></tr><tr><td>정회전</td><td>StartFwd 새 상승 에지</td><td>20, FwdCmd ON, RevCmd OFF</td></tr><tr><td>피드백 모의</td><td>FwdFb TRUE, ZeroSpeed FALSE</td><td>20 유지</td></tr><tr><td>반대 방향 요청</td><td>StartFwd FALSE, StartRev TRUE</td><td>0, 두 명령 OFF</td></tr><tr><td>감속 모의</td><td>FwdFb FALSE, ZeroSpeed FALSE 유지</td><td>0 유지, 역회전 자동 시작 안 함</td></tr><tr><td>정지 확인</td><td>ZeroSpeed TRUE, Fb 모두 FALSE로 0.5초</td><td>10, StartRev 유지로는 시작 안 함</td></tr><tr><td>새 역회전 시작</td><td>StartRev FALSE 후 TRUE</td><td>30, RevCmd ON</td></tr><tr><td>일반 정지</td><td>StopReq TRUE</td><td>0, 두 명령 OFF</td></tr><tr><td>버튼 충돌</td><td>StartFwd와 StartRev TRUE</td><td>900, 코드 2</td></tr><tr><td>피드백 충돌</td><td>FwdFb와 RevFb TRUE</td><td>900, 코드 2</td></tr><tr><td>정지 검증 실패</td><td>State 0에서 ZeroSpeed FALSE 5초 이상</td><td>900, 코드 3</td></tr><tr><td>과부하 모의</td><td>OverloadOK FALSE</td><td>900, 새 고장이면 코드 1</td></tr></tbody></table></div><p>Reset은 고장 원인을 제거한 후 사용합니다. Reset만으로 즉시 대기 10이나 운전 단계가 되지 않고, 정지 검증 0을 다시 거칩니다. 고장 조건이 남아 있으면 Reset보다 고장이 우선합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">9</div><h2>인버터 제어 — 운전 명령과 속도 지령</h2></div><div class="section-body"><p>인버터는 접촉기 정역 회로와 달리 드라이브 내부 제어로 주파수와 방향 등을 다룹니다. 전동기 특성·정격 입력과 운전 모드를 제조사 지침에 맞게 설정해야 합니다.</p><div class="table-wrap"><table><thead><tr><th>연결 방식</th><th>명령·지령</th><th>확인 사항</th></tr></thead><tbody><tr><td>디지털 I/O</td><td>운전/정지, 방향, 고정 속도 선택</td><td>단자 기능·활성 레벨·2선/3선 제어</td></tr><tr><td>아날로그 + 디지털</td><td>속도 지령과 운전 명령</td><td>0~10V/4~20mA 범위·단선 처리·스케일</td></tr><tr><td>PROFINET 등 통신</td><td>제어워드·속도 지령 / 상태워드·실속도</td><td>텔레그램·드라이브 상태 전이·통신 감시</td></tr></tbody></table></div><div class="flow"><span>PLC: 운전·속도 요청</span>→<span>인버터: 상태·가감속 제어</span>→<span>모터</span></div><p>Siemens의 SINAMICS G120X 속도 제어 예제는 SINA_SPEED와 표준 텔레그램 1을 사용하여 제어워드·속도 지령을 보내고 상태워드·실속도를 받습니다. 다른 모델·텔레그램·라이브러리에서 같은 비트 배열을 가정하면 안 됩니다.</p><div class="tip">운전 중인 인버터 출력 측의 상을 접촉기로 바꾸어 정역 운전하는 방식을 이 교안의 실습으로 사용하지 않습니다. 실제 출력 측 개폐와 허용 조건은 드라이브·모터 제조사 지침과 전문 설계를 따릅니다.</div></div></section><section class="section"><div class="section-header"><div class="num">10</div><h2>속도 스케일링 — 단위와 기준값부터</h2></div><div class="section-body"><p>이번 연습은 가상 속도 지령 0~50Hz를 0~100%로 환산합니다. 50Hz는 단순 교육용 기준이며 실제 모터·인버터의 상한이 아닙니다. 구동 주파수와 기계 회전수의 관계도 모터 극수·슬립·제어 방식에 따라 달라집니다.</p><pre><code>// Input: RequestedHz : Real
+// Output: LimitedHz, SpeedPercent : Real
+// 전제: 유한한 정상 Real 입력, 허용 범위 0~50Hz인 가상 장치
+#LimitedHz := #RequestedHz;
+IF #LimitedHz &lt; 0.0 THEN
+    #LimitedHz := 0.0;
+ELSIF #LimitedHz &gt; 50.0 THEN
+    #LimitedHz := 50.0;
+END_IF;
+#SpeedPercent := (#LimitedHz / 50.0) * 100.0;</code></pre><div class="table-wrap"><table><thead><tr><th>입력 Hz</th><th>제한 후 Hz</th><th>백분율</th></tr></thead><tbody><tr><td>-5.0</td><td>0.0</td><td>0.0%</td></tr><tr><td>25.0</td><td>25.0</td><td>50.0%</td></tr><tr><td>50.0</td><td>50.0</td><td>100.0%</td></tr><tr><td>60.0</td><td>50.0</td><td>100.0%</td></tr></tbody></table></div><p>만약 가상 아날로그 출력에서 “0~27648이 0~50Hz”라고 별도로 정의했다면 다음처럼 계산할 수 있습니다. 이 수치를 모든 아날로그 모듈이나 통신 텔레그램에 적용하지 마세요.</p><pre><code>// AnalogRaw : Int (Output), 위 가상 스케일에서만 사용
+#AnalogRaw := REAL_TO_INT((#LimitedHz / 50.0) * 27648.0);</code></pre><div class="tip">실제 통신 속도 지령은 Hz가 아니라 기준 속도에 정규화된 정수일 수 있습니다. 단위·부호·기준값·정격 속도·범위를 먼저 확인합니다. 위 코드에는 비정상 부동소수점 값(NaN 등) 검사가 없습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">11</div><h2>실습 B — 인버터 상태 전이 설계</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>가상 단계</th><th>명령·처리</th><th>다음 조건</th></tr></thead><tbody><tr><td>0 · 준비 대기</td><td>RunRequest=FALSE, 지령 0</td><td>DriveReady AND 새 Start → 10</td></tr><tr><td>10 · 운전</td><td>RunRequest=TRUE, 제한된 속도 지령</td><td>Stop 또는 반대 방향 요구 → 20</td></tr><tr><td>20 · 감속 요청</td><td>일반 정지 요청, 새 방향 운전 금지</td><td>정지 상태 확인 → 0</td></tr><tr><td>900 · 고장</td><td>운전 요청 해제, 고장 기록</td><td>원인 제거 후 승인된 확인·Reset</td></tr></tbody></table></div><p>이 표는 상위 시퀀스의 설계도이며 드라이브 상태기계를 대체하지 않습니다. RunRequest·StopRequest를 실제 제어워드로 바꾸는 처리는 해당 드라이브 매뉴얼이나 검증된 라이브러리가 담당해야 합니다.</p><ul><li>준비 완료와 운전 중 상태를 별도로 읽습니다.</li><li>통신 이상과 드라이브 고장을 다른 원인으로 기록합니다.</li><li>반대 방향 요구는 감속·정지 확인 후 새로운 시작으로 처리합니다.</li><li>실속도·상태워드가 정상이어도 안전 인증 정지 확인과는 구분합니다.</li><li>드라이브 고장 확인과 PLC 시퀀스 Reset은 필요에 따라 분리합니다.</li></ul><div class="highlight">수동으로 임의의 제어워드 상수를 쓰거나 상태워드의 한 비트만 보고 운전 가능 여부를 판단하지 않습니다. 먼저 선택한 텔레그램의 정의와 라이브러리 인터페이스를 읽습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">12</div><h2>정지 방식·램프·고장 복귀</h2></div><div class="section-body"><p>인버터의 일반 정지는 설정된 감속 램프를 사용하거나 별도의 정지 방식을 사용할 수 있습니다. 같은 “OFF” 표현이라도 의미가 다를 수 있으므로 해당 모델의 OFF1/OFF2/OFF3와 안전 기능 정의를 확인합니다.</p><div class="table-wrap"><table><thead><tr><th>항목</th><th>검토 질문</th></tr></thead><tbody><tr><td>감속 시간</td><td>관성·부하·제동 능력에서 허용 가능한가?</td></tr><tr><td>방향 전환</td><td>드라이브가 부호 반전·정지 후 전환 중 어떤 방식을 쓰는가?</td></tr><tr><td>영속도 판정</td><td>실속도 기준·임계값·안정 시간·신호 신뢰도는?</td></tr><tr><td>고장 복귀</td><td>확인만으로 재시작하지 않게 되었는가?</td></tr><tr><td>통신 단절</td><td>드라이브의 반응과 복구 후 재시작 정책은?</td></tr><tr><td>정전·재전원</td><td>자동 재시작 설정과 기계 위험은 검토했는가?</td></tr></tbody></table></div><div class="tip">STO 등 안전 기능과 일반 운전 명령 OFF를 혼동하지 않습니다. STO를 포함한 기능의 전기적 격리·잔류 에너지·부하 정지 조건은 별도 안전 매뉴얼로 확인하며, 본 교안은 해당 기능의 구현 절차를 제공하지 않습니다.</div><p>교육용 실습에서는 일반 정지 후 관찰한 상태만 기록하고 실제 감속 파라미터·안전 파라미터를 변경하지 않습니다.</p></div></section><section class="section"><div class="section-header"><div class="num">13</div><h2>진단과 시험 기록</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>증상</th><th>확인할 내용</th></tr></thead><tbody><tr><td>운전 명령은 있는데 움직임 없음</td><td>준비 상태·고장·인터록·실제 운전 상태·피드백</td></tr><tr><td>두 방향 입력 발생</td><td>버튼·상위 명령·통신 데이터 충돌</td></tr><tr><td>정지 대기에서 빠져나오지 못함</td><td>접촉기 피드백·ZeroSpeed·정지 확인 타이머</td></tr><tr><td>속도가 예상과 다름</td><td>Hz/rpm/% 단위·기준값·스케일·모터 정격</td></tr><tr><td>방향이 예상과 다름</td><td>방향 정의·지령 부호·드라이브 설정을 승인된 절차로 확인</td></tr><tr><td>고장 확인 후 자동 시작</td><td>Start 에지·자동 재시작·명령 유지 정책 확인</td></tr></tbody></table></div><div class="worksheet"><h3>실습 기록지</h3><p>CPU·펌웨어 / TIA Portal 버전: ____________________</p><p>실습 방식: 내부 DB / 시뮬레이터: ____________________</p><p>시험명 / 입력 조작: ____________________</p><p>기대 State·출력·FaultCode: ____________________</p><p>관찰 결과 / 판정 / 수정 내용: ____________________</p><p>미실행 항목과 이유: ____________________</p></div><div class="tip">실제 장치에서 접촉기 강제 ON, 배선 단락, 모터 구속, 운전 중 케이블 분리 등으로 고장을 만들지 않습니다. 시험은 가상 입력으로 수행합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">14</div><h2>확인 문제와 확장 과제</h2></div><div class="section-body"><details><summary>1. PLC에서 정역 명령만 상호 차단하면 충분한가요?</summary><p>아닙니다. 실제 접촉기 정역 구성에는 적합한 전기적·기계적 인터록, 보호장치와 피드백 감시 등이 필요합니다.</p></details><details><summary>2. 0.5초 기다리면 모터가 멈췄다고 볼 수 있나요?</summary><p>아닙니다. 이 예제는 별도의 가상 정지 확인과 접촉기 해제를 확인한 상태가 0.5초 유지되는 조건입니다. 실제 정지 보증이 아닙니다.</p></details><details><summary>3. 인버터의 운전 명령과 실제 운전 상태는 같은가요?</summary><p>아닙니다. 요청과 피드백은 다릅니다. 준비·고장·상태워드·실속도 등을 검토해야 합니다.</p></details><details><summary>4. 27648을 모든 속도 통신 데이터에 쓰면 되나요?</summary><p>아닙니다. 위 가상 아날로그 스케일에서만 사용하는 예시입니다. 실제 모듈 또는 텔레그램의 정의를 확인합니다.</p></details><details><summary>5. 반대 방향 버튼을 계속 누르면 자동 역회전하나요?</summary><p>이 예제에서는 아닙니다. 운전을 취소하고 정지 검증 후 대기로 가며, 새 상승 에지가 있어야 시작합니다.</p></details><h3>확장 과제</h3><ol><li>정역 실습에서 기동 명령 후 해당 피드백이 정해진 시간 내 들어오는지 감시하는 타이머를 추가 설계합니다.</li><li>접촉기 피드백 OFF 지연과 축 정지 지연을 구분해 각각 고장 코드를 부여합니다.</li><li>실습 B의 상태표를 구현하되 실제 제어워드 대신 가상 DriveReady·Running·ActualHz·Fault 입력을 사용합니다.</li><li>속도 설정값의 잘못된 단위·범위 초과·통신 유효성 상실에 대한 정책과 시험표를 작성합니다.</li></ol></div></section><div class="summary"><h3>12주차 핵심 정리</h3><ul><li>운전 요청과 실제 접촉기·드라이브 상태는 다릅니다.</li><li>정역 접촉기는 소프트웨어뿐 아니라 적합한 하드웨어 인터록이 필요합니다.</li><li>이번 예제는 정지 확인 후 새 시작 입력으로만 방향을 전환합니다.</li><li>인버터는 명령·속도 지령과 상태·실속도를 함께 다룹니다.</li><li>스케일과 단위는 모듈·텔레그램·드라이브 기준에 맞춰야 합니다.</li><li>일반 정지와 안전 기능, 전기적 격리는 서로 구분합니다.</li></ul></div><section class="section" style="margin-top:1.8rem"><div class="section-body"><h3>공식 참고 자료와 검증 범위</h3><p class="small">접촉기 인터록과 드라이브 통신 개념은 아래 Siemens 공식 자료를 참고했습니다. 자료의 모델·버전은 예시이며 실제 장치의 최신 매뉴얼을 우선합니다. 상태·코드·시간값·속도 범위는 교육용 가정입니다. 실제 TIA Portal 컴파일·PLCSIM 실행·장치 시험은 수행하지 않았습니다. 정역 예제에는 기동 피드백 시간 감시와 센서 고장 검출 등이 빠져 있으며 실물 적용 또는 안전 검증용 프로그램이 아닙니다.</p><ul><li><a href="https://cache.industry.siemens.com/dl/files/557/60306557/att_111612/v1/manual_contactors_3RT2_en-US.pdf?download=true" target="_blank" rel="noopener noreferrer">Siemens — SIRIUS 3RT2 접촉기 및 정역 조합 매뉴얼</a></li><li><a href="https://mall.industry.siemens.com/mall/en/WW/Catalog/Product/3RA2326-8XB30-1AL2" target="_blank" rel="noopener noreferrer">Siemens — 전기적·기계적 인터록이 있는 정역 접촉기 제품 예시</a></li><li><a href="https://cache.industry.siemens.com/dl/files/227/109772227/att_1001489/v2/109772227_SINAMICS_G120X_SpeedControl_TIAPortal_V1_0.pdf" target="_blank" rel="noopener noreferrer">Siemens — SINAMICS G120X Speed Control via SIMATIC in TIA Portal</a></li><li><a href="https://cache.industry.siemens.com/dl/files/561/103228561/att_81494/v1/FH1_1204_en.pdf" target="_blank" rel="noopener noreferrer">Siemens — SINAMICS S120 기능 매뉴얼, 방향과 램프의 모델별 정의 예시</a></li></ul></div></section><a href="plcstudy.html" style="display:block;text-align:center;color:#0b3d91;margin-top:1.5rem">전체 강의 목차로</a></main><footer>PLC 15주 강의 교안 · 12주차 · 초보자용 · 교육 목적</footer></body></html>

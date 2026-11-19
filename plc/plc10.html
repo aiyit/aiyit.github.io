@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>10주차. S7-1200 / S7-1500 CPU 기능과 차이</title><style>
+:root {
+  --primary: #0b3d91;
+  --accent: #e6b15a;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #222;
+  --muted: #555;
+  --border: #e0e4ea;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Noto Sans KR', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+header {
+  background: linear-gradient(135deg, #0b3d91 0%, #1a5fb4 100%);
+  color: white;
+  padding: 2.2rem 1.5rem;
+  text-align: center;
+}
+header .week-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #111;
+  font-weight: 700;
+  padding: 0.25rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+header h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+header p { opacity: 0.92; font-size: 1rem; }
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.8rem 1.2rem 3rem;
+}
+.section {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 1.8rem;
+  overflow: hidden;
+}
+.section-header {
+  background: #f0f4fa;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.section-header .num {
+  background: var(--primary);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+.section-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+.section-body p { margin-bottom: 1rem; }
+.section-body ul { padding-left: 1.4rem; margin-bottom: 1rem; }
+.section-body li { margin-bottom: 0.45rem; }
+.highlight {
+  background: #e8f4fd;
+  border-left: 5px solid #1a5fb4;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.tip {
+  background: #fff8e6;
+  border-left: 5px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+.img-box {
+  margin: 1.4rem 0;
+  text-align: center;
+}
+.img-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+.img-caption {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+.goal-box {
+  background: linear-gradient(135deg, #e8f4fd, #f0f7ff);
+  border: 1px solid #b6d4f0;
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.goal-box h3 {
+  color: var(--primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+.table-wrap { overflow-x: auto; margin: 1.2rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+}
+th {
+  background: #f0f4fa;
+  color: var(--primary);
+  font-weight: 600;
+}
+tr:nth-child(even) { background: #fafbfc; }
+.summary {
+  background: #1a5fb4;
+  color: white;
+  border-radius: 12px;
+  padding: 1.4rem 1.5rem;
+  margin-top: 2rem;
+}
+.summary h3 { margin-bottom: 0.8rem; font-size: 1.15rem; }
+.summary ul { padding-left: 1.3rem; }
+.summary li { margin-bottom: 0.4rem; }
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  font-size: 0.88rem;
+}
+
+h3{color:var(--primary);font-size:1.05rem;margin:1.2rem 0 .5rem}ol{padding-left:1.5rem;margin:1rem 0}li{margin-bottom:.5rem}.small{font-size:.88rem;color:var(--muted)}a{color:#1455a0;overflow-wrap:anywhere}pre{background:#12233d;color:#e5efff;padding:1rem;border-radius:9px;overflow-x:auto;line-height:1.65;font-size:.88rem;margin:1rem 0}code{font-family:Consolas,monospace}details{border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;margin:.8rem 0}summary{cursor:pointer;color:var(--primary);font-weight:600}.flow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.6rem;margin:1rem 0}.flow span{background:#e8f4fd;border:1px solid #b6d4f0;padding:.6rem .8rem;border-radius:7px}.worksheet{padding:1rem;border:1px dashed #8da9cf;border-radius:8px;margin:1rem 0}@media(max-width:600px){header h1{font-size:1.3rem}.container{padding:1.2rem .7rem}.section-body{padding:1.1rem}th,td{padding:.5rem}table{font-size:.86rem}pre{font-size:.78rem}}@media print{body{background:white;font-size:11pt}.section{box-shadow:none;border:1px solid #ddd}.section-header{break-after:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#111;background:#eef3fa}details>*{display:block}}
+</style></head><body><header><div class="week-badge">10주차 · Module 10</div><h1>S7-1200 / S7-1500 CPU 기능과 차이</h1><p>제품군의 특징을 이해하고 요구사항에 맞는 CPU를 비교·선정한다</p></header><main class="container"><div class="goal-box"><h3>오늘의 학습 목표</h3><ul><li>CPU 제품군의 특징과 개별 모델의 사양을 구분한다.</li><li>기존 S7-1200과 S7-1200 G2의 차이를 인지한다.</li><li>성능·메모리·I/O·통신·기술 기능을 같은 기준으로 비교한다.</li><li>공통 로직과 진단 정보를 활용해 두 CPU를 관찰한다.</li><li>선정·교체 시 확인할 근거와 검증 계획을 작성한다.</li></ul><p class="small">선수학습: PLC 하드웨어, SCL 기초, 9주차 TIA Portal 하드웨어 구성 / 실습 범위: 오프라인 비교 및 승인된 교육용 환경 / 안전 시운전·생산 설비 교체 제외</p></div><section class="section"><div class="section-header"><div class="num">1</div><h2>비교의 출발점 — 제품군과 실제 CPU를 구분하기</h2></div><div class="section-body"><p>S7-1200은 컴팩트한 기계 제어를, S7-1500은 더 높은 성능과 확장성이 필요한 자동화를 검토할 때 자주 비교하는 Siemens SIMATIC PLC 제품군입니다. 그러나 “작은 장비는 무조건 1200, 큰 장비는 무조건 1500”이라는 규칙으로 선택할 수는 없습니다.</p><p>같은 제품군 안에서도 CPU 형식, 주문번호, 하드웨어 세대, 펌웨어에 따라 성능·메모리·통신·기술 기능이 달라집니다. 따라서 제품군의 일반적인 특징을 이해한 뒤 실제 모델끼리 비교해야 합니다.</p><div class="highlight">비교 단위: 제품군 → 세대 → 정확한 CPU·주문번호 → 펌웨어 → TIA Portal 지원 조건</div><div class="tip">S7-1200 G2는 기존 S7-1200과 구분해야 하는 후속 세대입니다. 이 교안은 두 세대를 구분하며 “S7-1200 전체가 항상 같은 성능·모듈 구조”라고 가정하지 않습니다. 모델별 수치는 실습자가 해당 데이터시트에서 확인하도록 구성했습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">2</div><h2>CPU의 공통 역할과 PLC 스캔</h2></div><div class="section-body"><p>두 제품군 모두 입력을 받아 사용자 프로그램을 실행하고 결과를 출력하며, 통신·진단·시간 및 이벤트 처리를 수행합니다. 아래는 입문용 개념도입니다. 실제로는 주기·이벤트 OB와 통신 처리가 함께 동작할 수 있습니다.</p><div class="flow"><span>입력 정보</span>→<span>사용자 프로그램</span>→<span>출력 명령</span>→<span>다음 주기</span></div><div class="table-wrap"><table><thead><tr><th>기능</th><th>확인할 의미</th></tr></thead><tbody><tr><td>논리 연산</td><td>접점 논리·조건·시퀀스 실행</td></tr><tr><td>데이터 처리</td><td>정수·실수 계산, 배열, 변환</td></tr><tr><td>I/O 처리</td><td>내장·확장·분산 입출력과 데이터 교환</td></tr><tr><td>통신</td><td>HMI, 다른 PLC, 상위 시스템, 드라이브 연결</td></tr><tr><td>진단</td><td>장치·모듈·통신 상태 확인</td></tr><tr><td>기술 기능</td><td>카운터·위치결정·PID 등 모델별 기능</td></tr></tbody></table></div><p>특정 명령의 처리 시간이 짧다고 설비 전체 응답이 같은 비율로 빨라지지는 않습니다. 입력 필터, I/O 갱신, OB 실행, 통신 주기, 구동 장치 응답을 함께 봐야 합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">3</div><h2>핵심 비교표 — 일반적 경향과 확인 사항</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>비교 항목</th><th>S7-1200 계열</th><th>S7-1500 계열</th></tr></thead><tbody><tr><td>주요 검토 영역</td><td>컴팩트한 기계·기본 자동화</td><td>고성능·확장·복잡한 기계 및 공정</td></tr><tr><td>구성 경향</td><td>내장 I/O를 활용한 소형 구성</td><td>모듈형 구성 중심, 내장 I/O가 있는 C형도 존재</td></tr><tr><td>성능·메모리</td><td>모델·세대별 차이 큼, G2 별도 확인</td><td>넓은 성능 범위, 실제 CPU끼리 비교</td></tr><tr><td>프로그램 언어</td><td>LAD·FBD·SCL 중심, 지원 조합 확인</td><td>LAD·FBD·SCL 및 GRAPH·STL 등 지원 확인</td></tr><tr><td>모션</td><td>고속 I/O·축 제어 등 세대·모델별 확인</td><td>일반 CPU 기술 기능 및 T형의 고급 모션 검토</td></tr><tr><td>진단</td><td>TIA Portal 및 지원되는 장치 기능</td><td>통합 시스템 진단, 다양한 진단 표시 경로</td></tr><tr><td>안전 제어</td><td>적합한 F형 및 안전 구성 필요</td><td>적합한 F형 및 안전 구성 필요</td></tr><tr><td>선정 핵심</td><td>공간·예산·필수 기능 충족 여부</td><td>응답·통신·확장·기술 요구 충족 여부</td></tr></tbody></table></div><div class="tip">이 표는 성능 순위나 전 모델 공통 사양표가 아닙니다. “1500은 언제나 모든 조건에서 더 빠르다”, “1200은 모션이나 안전 기능이 없다”처럼 단정하지 마세요. 포트 수·메모리·축 수·통신 제한은 정확한 CPU 데이터시트로 확인합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">4</div><h2>기존 S7-1200과 S7-1200 G2</h2></div><div class="section-body"><p>Siemens는 G2에서 처리 성능·메모리·통신과 모션 기능의 향상, 진단 접근성 개선을 설명합니다. 다만 기능 지원 범위는 CPU, 펌웨어, 엔지니어링 소프트웨어에 따라 확인해야 합니다.</p><div class="table-wrap"><table><thead><tr><th>비교 관점</th><th>검토 사항</th></tr></thead><tbody><tr><td>하드웨어</td><td>G2는 기존 S7-1200 모듈과 하드웨어 호환되지 않음</td></tr><tr><td>기존 프로그램</td><td>변환 가능한 경우가 있지만 수정·검증 필요</td></tr><tr><td>모션 기능</td><td>기존 세대의 기능표를 G2에 그대로 적용하지 않음</td></tr><tr><td>진단·연결</td><td>NFC, 웹 서버·API 등의 실제 지원·보호 설정 확인</td></tr><tr><td>교체 설계</td><td>모듈·배선·공간·전원·소프트웨어·시험을 함께 검토</td></tr></tbody></table></div><div class="highlight">프로그램 이전 가능성과 하드웨어 교체 호환성은 다릅니다. “프로그램이 변환된다”는 말은 기존 모듈과 배선이 그대로 맞는다는 뜻이 아닙니다.</div><p>이 수업의 실습 기록에는 CPU 제품명에 G2 여부를 반드시 적습니다. 수치 비교는 기존 세대와 G2를 섞지 않고 데이터시트의 문서 버전도 기록합니다.</p></div></section><section class="section"><div class="section-header"><div class="num">5</div><h2>S7-1500 CPU 형식 읽기 — C · F · T</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>표기·분류</th><th>대표적 의미</th><th>학습 포인트</th></tr></thead><tbody><tr><td>일반 CPU</td><td>표준 자동화 작업용</td><td>기본 논리·통신·기술 기능 확인</td></tr><tr><td>C, Compact</td><td>내장 I/O가 포함된 컴팩트 CPU</td><td>1500은 내장 I/O가 없다는 오해 방지</td></tr><tr><td>F, Fail-safe</td><td>표준 및 안전 프로그램용 구성</td><td>안전 소프트웨어·F-I/O·검증 필요</td></tr><tr><td>T, Technology</td><td>확장된 모션 기술 기능용</td><td>축 관계·동기·키네마틱스 요구 검토</td></tr><tr><td>TF 등 결합 표기</td><td>기술·안전 기능이 결합된 형식</td><td>실제 제품의 기능과 주문번호 확인</td></tr></tbody></table></div><p>모델명의 숫자와 접미사는 형식을 이해하는 단서이지 전체 사양표를 대신하지 않습니다. 통신 인터페이스 수와 기능, 메모리, 축 자원은 실제 모델 자료를 읽습니다.</p><div class="tip">F-CPU라는 이유만으로 일반 프로그램에 작성한 정지 논리가 안전 기능이 되는 것은 아닙니다. 안전 요구사항에 적합한 하드웨어·소프트웨어·설계·검증이 모두 필요합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">6</div><h2>처리 성능을 비교하는 올바른 방법</h2></div><div class="section-body"><h3>명령 시간과 실제 사이클 시간은 다릅니다</h3><p>데이터시트의 비트 연산 시간은 제한된 조건의 지표입니다. 실제 프로그램에는 산술 연산, 블록 호출, 데이터 접근, 통신, 인터럽트와 진단 처리가 섞입니다. 서로 다른 연산 지표를 직접 비교하지 마세요.</p><div class="table-wrap"><table><thead><tr><th>항목</th><th>기록할 내용</th></tr></thead><tbody><tr><td>데이터시트 지표</td><td>비트/워드/정수/실수 등 같은 종류의 처리 시간</td></tr><tr><td>프로그램 조건</td><td>동일 로직, 데이터 크기, 호출 주기</td></tr><tr><td>실행 환경</td><td>실제 CPU 모델·펌웨어, 통신 부하, I/O 구성</td></tr><tr><td>측정 결과</td><td>현재·최소·최대 사이클 등 제공 지표</td></tr><tr><td>판정 기준</td><td>요구 응답 시간 충족과 부하 변동의 여유</td></tr></tbody></table></div><div class="highlight">“CPU A가 몇 배 빠르다”는 결론에는 동일한 비교 기준이 필요합니다. 카탈로그의 가장 빠른 한 수치를 제품군 전체 성능으로 일반화하지 않습니다.</div><div class="tip">교육용 비교를 위해 생산 PLC에 긴 반복문을 추가하거나 최대 사이클 시간을 늘리지 마세요. 승인된 독립 실습 장치에서만 작은 부하로 측정합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">7</div><h2>메모리 — 프로그램·데이터·리테인을 나누기</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>구분</th><th>역할</th><th>검토 질문</th></tr></thead><tbody><tr><td>프로그램 작업 메모리</td><td>실행 프로그램 저장에 사용하는 자원</td><td>컴파일된 프로그램과 라이브러리가 들어가는가?</td></tr><tr><td>데이터 작업 메모리</td><td>실행 중 DB·변수 등에 사용하는 자원</td><td>배열·레시피·통신 버퍼가 충분한가?</td></tr><tr><td>로드 메모리</td><td>프로젝트 적재·보관과 관련된 자원</td><td>CPU와 메모리 카드의 요구사항은 무엇인가?</td></tr><tr><td>리테인 영역</td><td>정해진 조건에서 값을 유지하는 자원</td><td>어떤 값을 유지하고 어떤 값은 초기화할 것인가?</td></tr></tbody></table></div><p>메모리 구분과 제공 방식은 CPU별로 확인합니다. 프로그램용과 데이터용 메모리가 분리된 경우 총합만 보고 적합성을 판단하면 한쪽 자원이 부족할 수 있습니다.</p><div class="tip">리테인은 백업 기능 전체를 대신하지 않습니다. 유지할 값의 범위, 초기화·메모리 리셋·다운로드 동작을 매뉴얼에서 확인하세요. 출력 명령이나 운전 상태를 리테인으로 유지하면 재시작 위험을 따로 검토해야 합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">8</div><h2>I/O와 통신 — 포트 수만 보지 않기</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>항목</th><th>확인 사항</th></tr></thead><tbody><tr><td>내장 I/O</td><td>DI/DQ/AI/AQ 수, 출력 방식, 입력 필터</td></tr><tr><td>확장 모듈</td><td>지원 모듈·장착 수·전원 예산·채널 기능</td></tr><tr><td>분산 I/O</td><td>PROFINET 장치 수·데이터량·갱신 요구</td></tr><tr><td>통신 인터페이스</td><td>포트 수와 독립 인터페이스 수, 지원 역할</td></tr><tr><td>HMI·PLC 통신</td><td>동시 연결 수, 데이터량, 갱신 주기</td></tr><tr><td>상위 연계</td><td>OPC UA 등 기능의 CPU·펌웨어·라이선스 조건</td></tr></tbody></table></div><p>2포트 내장 스위치가 있는 PROFINET 인터페이스 한 개는 독립 네트워크 인터페이스 두 개와 같지 않습니다. 포트 개수와 논리 인터페이스 개수를 구분해야 합니다.</p><p>통신 기능 이름이 같아도 클라이언트/서버 역할, 최대 연결 수, 지원 데이터 형식 및 부하 한계가 다를 수 있습니다. 필수 프로토콜은 실제 모델의 지원 표로 검토합니다.</p><div class="tip">웹 서버나 원격 연결을 지원한다고 외부 인터넷에 직접 공개해도 된다는 뜻은 아닙니다. 필요한 기능만 승인된 접근 제어와 분리된 네트워크 정책에 따라 사용합니다.</div></div></section><section class="section"><div class="section-header"><div class="num">9</div><h2>모션·PID·안전 — 기능 이름보다 요구사항</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>요구</th><th>먼저 확인할 질문</th></tr></thead><tbody><tr><td>컨베이어 정속 운전</td><td>단순 ON/OFF인가, 인버터 속도 지령인가?</td></tr><tr><td>위치결정</td><td>PTO 또는 PROFINET 드라이브인가, 정확도·주기는?</td></tr><tr><td>다축 동기</td><td>독립축인가, 기어·캠·키네마틱스가 필요한가?</td></tr><tr><td>온도·압력 PID</td><td>루프 수, 샘플링 주기, 센서와 출력 특성은?</td></tr><tr><td>안전</td><td>필요 안전 기능과 목표 수준, 검증 책임은?</td></tr></tbody></table></div><p>S7-1200 계열에도 모션 기능이 있으며 특히 G2의 기능은 기존 세대와 구분해야 합니다. S7-1500도 일반 CPU와 T-CPU의 기술 범위가 같지 않습니다. 요구하는 기술 객체, 축 자원과 드라이브 조합을 먼저 정합니다.</p><div class="highlight">기술 기능은 “있다/없다”로만 비교하지 않습니다. 기능 종류·수량·주기·라이선스·지원 버전까지 맞아야 사용할 수 있습니다.</div><p>안전 기능은 일반 시퀀스 로직의 추가 옵션 정도로 취급하지 않습니다. 이번 교안에서는 개념과 선정 체크만 다루며 안전 프로그램 구현 및 승인 절차는 별도 교육 범위입니다.</p></div></section><section class="section"><div class="section-header"><div class="num">10</div><h2>진단과 유지보수 — 고장 위치를 찾는 경로</h2></div><div class="section-body"><p>S7-1500의 통합 시스템 진단은 TIA Portal, HMI, 웹 서버, 해당 CPU의 디스플레이 등을 통해 상태 정보를 확인하는 체계를 제공합니다. 표시 경로와 사용 조건은 실제 장치에서 확인합니다. 기존 S7-1200과 G2 역시 세대·모델에 맞는 진단 기능을 검토합니다.</p><div class="table-wrap"><table><thead><tr><th>진단 경로</th><th>확인 대상</th></tr></thead><tbody><tr><td>CPU·모듈 LED</td><td>전원·RUN/STOP·오류의 기본 상태</td></tr><tr><td>Online & Diagnostics</td><td>장치 정보·진단 버퍼·동작 상태</td></tr><tr><td>Device view 진단</td><td>모듈·채널·장치 구성의 이상</td></tr><tr><td>HMI·웹 진단</td><td>허용된 환경의 상태 표시 및 유지보수</td></tr><tr><td>Trace 등 기록 기능</td><td>지원되는 CPU의 시간 변화·이벤트 분석</td></tr></tbody></table></div><div class="tip">STOP 상태에서도 진단 정보를 볼 수 있는 기능과 출력이 안전한 상태라는 판단은 별개입니다. 진단 화면을 확인하기 위해 무단 STOP/RUN 전환·리셋·구성 변경을 수행하지 않습니다.</div><p>진단 실습은 기존 상태를 읽는 방식으로 시작합니다. 실제 장치에서 모듈을 뽑거나 통신 케이블을 끊는 고장 유발 시험은 별도 승인과 안전 절차 없이는 하지 않습니다.</p></div></section><section class="section"><div class="section-header"><div class="num">11</div><h2>CPU 선정 절차와 예시 시나리오</h2></div><div class="section-body"><div class="flow"><span>요구사항</span>→<span>필수 조건 통과</span>→<span>정확한 모델 비교</span>→<span>시험·여유 확인</span>→<span>비용·유지보수</span></div><div class="table-wrap"><table><thead><tr><th>가상 요구사항</th><th>후보 검토 방향</th><th>최종 확인</th></tr></thead><tbody><tr><td>소수 I/O와 단순 독립 장치</td><td>S7-1200 계열부터 검토 가능</td><td>세대·전원·I/O·통신·프로그램 용량</td></tr><tr><td>GRAPH로 복잡한 단계 제어가 필수</td><td>GRAPH 지원 S7-1500 환경 검토</td><td>STEP 7 패키지·CPU·지원 버전</td></tr><tr><td>여러 장치와 높은 통신 부하</td><td>통신 자원과 성능이 충분한 CPU 검토</td><td>연결 수·갱신·데이터량·부하 시험</td></tr><tr><td>고급 동기 모션</td><td>요구에 맞는 기술 CPU 검토</td><td>T/TF 등 기술 기능·축 자원·드라이브</td></tr><tr><td>기존 1200에서 G2 교체</td><td>장치 구성 재설계 및 이전 검토</td><td>하드웨어 비호환·프로그램 변환·재검증</td></tr></tbody></table></div><p>이는 선택의 시작점이지 특정 모델 구매 권고가 아닙니다. 필수 기능을 충족하지 못하는 후보는 점수 평가 전에 제외하고, 통과한 후보끼리 설치 공간·비용·예비품·팀의 유지보수 역량을 비교합니다.</p><div class="tip">가장 비싼 CPU를 고르면 설계 검증을 생략할 수 있는 것도, 기존 CPU가 동작한다고 새 장비에도 충분한 것도 아닙니다. 요구 응답과 확장 계획을 문서로 남기세요.</div></div></section><section class="section"><div class="section-header"><div class="num">12</div><h2>비교 실습 1 — 데이터시트 대조표 작성</h2></div><div class="section-body"><ol><li>실습실에서 사용하는 S7-1200 계열 CPU 한 대와 S7-1500 CPU 한 대를 정합니다.</li><li>명판과 TIA Portal 장치 정보에서 정확한 주문번호·펌웨어를 확인합니다.</li><li>동일 기준의 공식 데이터시트를 찾아 문서 버전을 기록합니다.</li><li>아래 항목을 채우고 확인되지 않은 항목은 “미확인”으로 남깁니다.</li><li>두 CPU에 같은 가상 요구사항을 적용하여 적합 여부와 근거를 작성합니다.</li></ol><div class="table-wrap"><table><thead><tr><th>항목</th><th>후보 A: S7-1200 / G2 명시</th><th>후보 B: S7-1500</th></tr></thead><tbody><tr><td>제품명·주문번호</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>펌웨어·문서 버전</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>TIA Portal 지원 조건</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>프로그램/데이터 작업 메모리</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>동일 종류 명령의 처리 시간</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>내장 I/O·지원 확장</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>독립 인터페이스·포트 수</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>필수 통신 기능·연결 자원</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>GRAPH·모션·안전 요구</td><td>기록: __________</td><td>기록: __________</td></tr><tr><td>총 구성·보관 및 유지보수 조건</td><td>기록: __________</td><td>기록: __________</td></tr></tbody></table></div><div class="highlight">서로 다른 모델·세대·문서 버전의 수치를 섞지 마세요. 수치 옆에 단위와 조건을 적습니다. 라이선스 조건이 확인되지 않으면 지원 확정으로 표시하지 않습니다.</div></div></section><section class="section"><div class="section-header"><div class="num">13</div><h2>비교 실습 2 — 동일 로직과 진단 확인</h2></div><div class="section-body"><p>지원되는 교육용 환경에서만 진행합니다. 전역 DB <code>LabCPU</code>에 Enable : Bool, Values : Array[0..4] of Int, Total : DInt, Average : Real, Valid : Bool을 선언합니다. SCL FC의 Temp에 i : Int를 선언하고 매 스캔 호출합니다.</p><pre><code>// 실제 출력과 연결하지 않는 공통 로직
+&quot;LabCPU&quot;.Total := 0;
+&quot;LabCPU&quot;.Average := 0.0;
+&quot;LabCPU&quot;.Valid := FALSE;
+
+IF &quot;LabCPU&quot;.Enable THEN
+    FOR #i := 0 TO 4 DO
+        &quot;LabCPU&quot;.Total := &quot;LabCPU&quot;.Total
+            + INT_TO_DINT(&quot;LabCPU&quot;.Values[#i]);
+    END_FOR;
+    &quot;LabCPU&quot;.Average := DINT_TO_REAL(&quot;LabCPU&quot;.Total) / 5.0;
+    &quot;LabCPU&quot;.Valid := TRUE;
+END_IF;</code></pre><div class="table-wrap"><table><thead><tr><th>입력</th><th>예상 결과</th></tr></thead><tbody><tr><td>Enable=FALSE</td><td>Total=0, Average=0.0, Valid=FALSE</td></tr><tr><td>Enable=TRUE, Values=[10,20,30,40,50]</td><td>Total=150, Average=30.0, Valid=TRUE</td></tr><tr><td>Enable=TRUE, Values=[-5,-10,0,10,5]</td><td>Total=0, Average=0.0, Valid=TRUE</td></tr></tbody></table></div><ol><li>별도 프로젝트 또는 승인된 장치 구성으로 두 CPU용 코드를 컴파일합니다.</li><li>동일 입력에서 결과가 같은지 확인합니다.</li><li>제공되는 진단 화면에서 CPU 정보·진단 버퍼·사이클 정보를 읽습니다.</li><li>CPU·펌웨어·통신 조건과 함께 관찰값을 기록합니다.</li></ol><div class="tip">이 짧은 예제로 두 CPU의 성능 배수를 산출하지 않습니다. 실습 목적은 로직 이식 시 인터페이스·컴파일·결과·진단 경로를 확인하는 것입니다. 시뮬레이터 실행 시간을 실제 CPU 성능으로 간주하지 마세요.</div></div></section><section class="section"><div class="section-header"><div class="num">14</div><h2>전환·교체 시 확인할 사항</h2></div><div class="section-body"><div class="table-wrap"><table><thead><tr><th>영역</th><th>검토할 차이</th></tr></thead><tbody><tr><td>장치 구성</td><td>CPU·모듈·랙·전원·메모리 카드 요구</td></tr><tr><td>I/O</td><td>주소·채널 범위·배선·출력 방식·프로세스 이미지</td></tr><tr><td>프로그램</td><td>지원 명령·언어·라이브러리·기술 객체</td></tr><tr><td>데이터</td><td>자료형·DB 접근 방식·리테인·초기화</td></tr><tr><td>통신</td><td>장치 이름·IP·연결·상위 시스템 인터페이스</td></tr><tr><td>동작 타이밍</td><td>스캔·주기 OB·입력 필터·타이머</td></tr><tr><td>보호</td><td>접근 권한·암호·인증서·통신 보호</td></tr><tr><td>검증</td><td>정상·고장·정지·재시작·복원 시험</td></tr></tbody></table></div><p>프로그램이 컴파일된다는 것은 기능이 완전히 같다는 뜻이 아닙니다. I/O 타이밍과 재시작 동작, 상위 통신까지 시험해야 합니다. G2로의 이전 역시 하드웨어 비호환을 전제로 별도 검토합니다.</p><div class="tip">기존 설비는 원본 프로젝트와 복구 절차를 확보하고 승인된 중단 시간에만 변경합니다. 이 수업의 비교 실습을 생산 PLC 교체 절차로 사용하지 마세요.</div></div></section><section class="section"><div class="section-header"><div class="num">15</div><h2>확인 문제와 제출 과제</h2></div><div class="section-body"><details><summary>1. S7-1500에는 내장 I/O가 전혀 없나요?</summary><p>아닙니다. 내장 I/O가 있는 Compact(C) CPU도 있습니다. 정확한 모델의 채널 구성을 확인합니다.</p></details><details><summary>2. 기존 S7-1200 모듈을 G2에 그대로 사용해도 되나요?</summary><p>아닙니다. G2는 기존 S7-1200 하드웨어와 호환되지 않습니다. 기존 프로그램의 변환 가능성과 모듈 호환성을 구분해야 합니다.</p></details><details><summary>3. 2포트이면 독립 인터페이스가 두 개인가요?</summary><p>반드시 그렇지 않습니다. 하나의 PROFINET 인터페이스에 2포트 스위치가 포함된 구성일 수 있습니다.</p></details><details><summary>4. 비트 연산 시간이 절반이면 설비 응답도 절반인가요?</summary><p>아닙니다. 프로그램 구성, I/O 갱신, 통신, 구동 장치 응답 등이 함께 영향을 줍니다.</p></details><details><summary>5. F-CPU에 일반 SCL 정지 코드를 넣으면 안전 기능인가요?</summary><p>아닙니다. 적합한 안전 설계·프로그램·I/O·도구와 검증이 필요합니다.</p></details><details><summary>6. 두 제품군 중 어떤 것이 더 좋은가요?</summary><p>요구 기능·응답·메모리·통신·공간·유지보수 조건을 충족하는 실제 CPU가 적합합니다. 제품군 이름만으로 우열을 확정할 수 없습니다.</p></details><div class="worksheet"><h3>제출 과제</h3><ol><li>CPU 두 대의 주문번호·세대·펌웨어가 있는 비교표</li><li>데이터시트의 항목별 근거와 문서 버전</li><li>공통 로직 시험 결과 또는 실행하지 못한 항목의 이유</li><li>가상 장비에 적합한 후보와 선정 근거 세 가지</li><li>향후 확장·전환 시 위험 요소 두 가지</li></ol></div></div></section><div class="summary"><h3>10주차 핵심 정리</h3><ul><li>S7-1200은 컴팩트 구성, S7-1500은 폭넓은 성능·확장 요구를 중심으로 검토합니다.</li><li>실제 적합성은 정확한 모델·세대·주문번호·펌웨어로 판단합니다.</li><li>G2는 기존 S7-1200과 하드웨어 호환되지 않습니다.</li><li>C·F·T 등 형식의 기능과 소프트웨어 조건을 확인합니다.</li><li>명령 처리 시간과 전체 설비 응답 시간은 다릅니다.</li><li>필수 조건 → 데이터시트 비교 → 검증 → 비용·유지보수 순서로 선정합니다.</li></ul></div><section class="section" style="margin-top:1.8rem"><div class="section-body"><h3>공식 참고 자료와 적용 범위</h3><p class="small">제품군 비교와 G2 구분은 아래 Siemens 공식 자료에 근거합니다. 제품 포트폴리오와 지원 범위는 변경될 수 있으므로 최종 설계에는 해당 주문번호의 최신 매뉴얼과 호환성 정보를 확인하세요. 예제·가상 시나리오는 교육용이며 실제 TIA Portal 컴파일, PLCSIM 실행, 실물 CPU 측정은 수행하지 않았습니다. 처리 시간·메모리 등의 고정 숫자를 제품군 전체 사양으로 제시하지 않았습니다.</p><ul><li><a href="https://www.siemens.com/en-gb/products/simatic/controller-configurator/" target="_blank" rel="noopener noreferrer">Siemens — SIMATIC Controller Selection Guide</a></li><li><a href="https://www.siemens.com/en-us/products/simatic/s7-1200-g2/" target="_blank" rel="noopener noreferrer">Siemens — SIMATIC S7-1200 G2 및 세대 간 차이</a></li><li><a href="https://tiaselectiontool.siemens.com/Api/Catalog/ExportInformation?catalogItemId=S7_1500&amp;lang=en" target="_blank" rel="noopener noreferrer">Siemens — S7-1500 제품 구성 및 기능</a></li><li><a href="https://cache.industry.siemens.com/dl/files/209/109972209/att_1289286/v1/s71500_cpu1511_1_pn_dtc_manual_en-US_en-US.pdf" target="_blank" rel="noopener noreferrer">Siemens — S7-1500 CPU 1511-1 PN 장치 매뉴얼, 특정 모델 예시</a></li><li><a href="https://support.industry.siemens.com/dl/files/926/59192926/att_895966/v3/s71500_diagnosis_function_manual_en-US_en-US.pdf" target="_blank" rel="noopener noreferrer">Siemens — S7-1500 시스템 진단 기능 매뉴얼</a></li></ul></div></section><a href="plcstudy.html" style="display:block;text-align:center;color:#0b3d91;margin-top:1.5rem">전체 강의 목차로</a></main><footer>PLC 15주 강의 교안 · 10주차 · 초보자용 · 교육 목적</footer></body></html>
