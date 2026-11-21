@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="자바스크립트 BOM의 기본인 window 객체와 navigator 객체를 직접 값을 확인하며 배우는 입문 문서">
+<title>window · navigator 객체 기초</title>
+<style>
+:root{
+  --ink:#14202b; --muted:#53636f; --bg:#eef2f6; --card:#fff; --line:#d3dce5;
+  --teal:#0f766e; --teal-soft:#d9f0ec; --amber:#b45309; --amber-soft:#fdf0dc; --code:#12212e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Malgun Gothic',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;font-size:16px}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.wrap{max-width:880px;margin:0 auto;padding:0 1.1rem 3rem}
+
+/* 상단: 실시간 브라우저 창 */
+.hero{padding:2.2rem 0 1.4rem}
+.hero h1{font-size:1.9rem;line-height:1.3;margin-bottom:.5rem}
+.hero p{color:var(--muted);max-width:60ch}
+.frame{margin-top:1.4rem;background:var(--card);border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.frame-bar{background:var(--ink);color:#fff;padding:.45rem .9rem;font-size:.85rem;display:flex;gap:.5rem;align-items:center}
+.frame-bar i{width:10px;height:10px;border-radius:50%;background:#7b8a96;display:inline-block}
+.frame-bar span{margin-left:.5rem;font-family:Consolas,monospace;overflow-wrap:anywhere}
+.live{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line)}
+.live div{background:var(--card);padding:.8rem 1rem}
+.live small{display:block;color:var(--muted);font-family:Consolas,monospace;font-size:.78rem}
+.live b{font-size:1.35rem;color:var(--teal);font-variant-numeric:tabular-nums}
+.hint{font-size:.88rem;color:var(--muted);padding:.6rem 1rem;border-top:1px solid var(--line)}
+
+/* 본문 */
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.5rem 1.5rem 1.6rem;margin-top:1.4rem}
+h2{font-size:1.35rem;margin-bottom:.8rem;color:var(--ink)}
+h3{font-size:1.05rem;margin:1.4rem 0 .5rem;color:var(--teal)}
+p{margin-bottom:.9rem}
+ul,ol{padding-left:1.4rem;margin-bottom:.9rem}
+li{margin-bottom:.35rem}
+code{font-family:Consolas,'D2Coding',monospace;background:#e9eff4;padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+pre{background:var(--code);color:#e6f1f7;padding:1rem;border-radius:8px;overflow-x:auto;font-size:.88rem;line-height:1.65;margin:.8rem 0 1rem}
+pre code{background:none;padding:0;color:inherit}
+.note{background:var(--amber-soft);border-left:5px solid var(--amber);padding:.8rem 1rem;border-radius:0 8px 8px 0;margin:1rem 0}
+.key{background:var(--teal-soft);border-left:5px solid var(--teal);padding:.8rem 1rem;border-radius:0 8px 8px 0;margin:1rem 0}
+.tbl{overflow-x:auto;margin:.8rem 0 1rem}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{border:1px solid var(--line);padding:.55rem .75rem;text-align:left;vertical-align:top}
+th{background:#f1f5f8}
+td.val{font-family:Consolas,monospace;color:var(--teal);overflow-wrap:anywhere}
+
+/* 객체 트리 */
+.tree{font-family:Consolas,monospace;font-size:.92rem;line-height:1.9;background:#f6f9fb;border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;white-space:pre}
+.tree em{font-style:normal;color:var(--teal);font-weight:700}
+
+/* 실습 */
+.lab{background:#f6f9fb;border:1px solid var(--line);border-radius:8px;padding:1rem;margin:1rem 0}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem}
+button{font:inherit;font-size:.92rem;background:var(--card);color:var(--ink);border:2px solid var(--teal);border-radius:7px;padding:.45rem .85rem;cursor:pointer}
+button:hover{background:var(--teal-soft)}
+.out{font-family:Consolas,monospace;font-size:.9rem;background:var(--code);color:#9ff0df;padding:.7rem .9rem;border-radius:6px;min-height:2.6rem;overflow-wrap:anywhere}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#9aa7b1;margin-right:.35rem}
+.dot.on{background:#16a34a}.dot.off{background:#dc2626}
+
+details{border:1px solid var(--line);border-radius:8px;padding:.7rem 1rem;margin:.6rem 0}
+summary{cursor:pointer;font-weight:600}
+details p{margin:.6rem 0 0}
+footer{text-align:center;color:var(--muted);font-size:.88rem;padding:1.6rem 0 0}
+@media(max-width:600px){.hero h1{font-size:1.5rem}section{padding:1.1rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>window와 navigator,<br>브라우저가 알려 주는 정보</h1>
+  <p>자바스크립트는 웹 페이지(문서)뿐 아니라 브라우저 자체도 객체로 다룰 수 있다. 아래 창에 나타나는 값은 지금 이 브라우저의 실제 값이다. 창 크기를 바꾸거나 스크롤해 보자.</p>
+  <div class="frame" aria-label="현재 브라우저의 실시간 window 값">
+    <div class="frame-bar"><i></i><i></i><i></i><span id="barUrl">window.location.href</span></div>
+    <div class="live">
+      <div><small>window.innerWidth</small><b id="lvIW">-</b></div>
+      <div><small>window.innerHeight</small><b id="lvIH">-</b></div>
+      <div><small>window.scrollY</small><b id="lvSY">-</b></div>
+      <div><small>screen.width × height</small><b id="lvSC">-</b></div>
+    </div>
+    <p class="hint">값은 resize, scroll 이벤트가 일어날 때마다 다시 읽어 온다.</p>
+  </div>
+</header>
+
+<section id="bom">
+  <h2>1. 브라우저 객체 모델(BOM)</h2>
+  <p>웹 페이지의 내용은 <code>document</code>(DOM)로 다루고, 브라우저 창과 환경은 <b>BOM(Browser Object Model)</b>으로 다룬다. BOM의 맨 위에 있는 객체가 <code>window</code>이다.</p>
+  <div class="tree" role="img" aria-label="window 아래에 document, navigator, location, history, screen이 있는 구조">window
+ ├─ <em>document</em>    웹 페이지 내용 (DOM)
+ ├─ <em>navigator</em>   브라우저·기기 정보
+ ├─ <em>location</em>    현재 주소(URL)
+ ├─ <em>history</em>     방문 기록 이동
+ └─ <em>screen</em>      모니터 화면 정보</div>
+  <div class="key">이 문서에서는 가장 위의 <code>window</code>와, 브라우저 정보를 알려 주는 <code>navigator</code>를 중심으로 배운다.</div>
+</section>
+
+<section id="window">
+  <h2>2. window 객체</h2>
+  <p><code>window</code>는 브라우저 탭 하나를 나타내는 <b>최상위(전역) 객체</b>이다. 자바스크립트가 제공하는 거의 모든 기능이 window의 속성이나 메서드이다.</p>
+
+  <h3>window는 생략할 수 있다</h3>
+  <pre><code>window.alert("안녕");   // 원래 형태
+alert("안녕");          // window 생략 (같은 동작)
+
+var score = 90;         // 전역 변수는 window의 속성이 된다
+console.log(window.score);  // 90</code></pre>
+  <div class="note">같은 이유로 <code>document</code>도 사실은 <code>window.document</code>이다. <code>let</code>, <code>const</code>로 만든 전역 변수는 window 속성이 되지 않으니 구분하자.</div>
+
+  <h3>자주 쓰는 속성</h3>
+  <div class="tbl"><table>
+    <tr><th>속성</th><th>의미</th><th>지금 값</th></tr>
+    <tr><td><code>innerWidth</code></td><td>페이지가 보이는 영역의 너비(px)</td><td class="val" id="tIW"></td></tr>
+    <tr><td><code>innerHeight</code></td><td>페이지가 보이는 영역의 높이(px)</td><td class="val" id="tIH"></td></tr>
+    <tr><td><code>outerWidth</code></td><td>브라우저 창 전체 너비(테두리 포함)</td><td class="val" id="tOW"></td></tr>
+    <tr><td><code>scrollY</code></td><td>세로로 스크롤한 거리</td><td class="val" id="tSY"></td></tr>
+    <tr><td><code>devicePixelRatio</code></td><td>화면 선명도 배율(고해상도면 2 이상)</td><td class="val" id="tDP"></td></tr>
+  </table></div>
+
+  <h3>자주 쓰는 메서드</h3>
+  <div class="tbl"><table>
+    <tr><th>메서드</th><th>하는 일</th></tr>
+    <tr><td><code>alert(글)</code></td><td>확인 버튼이 있는 알림창</td></tr>
+    <tr><td><code>confirm(글)</code></td><td>확인/취소를 묻고 true/false 반환</td></tr>
+    <tr><td><code>prompt(글, 기본값)</code></td><td>입력을 받고 문자열 반환(취소하면 null)</td></tr>
+    <tr><td><code>setTimeout(함수, ms)</code></td><td>지정한 시간 뒤에 한 번 실행</td></tr>
+    <tr><td><code>setInterval(함수, ms)</code></td><td>지정한 간격으로 반복 실행</td></tr>
+    <tr><td><code>open(주소, 이름, 옵션)</code> / <code>close()</code></td><td>새 창 열기 / 창 닫기</td></tr>
+    <tr><td><code>scrollTo(x, y)</code></td><td>지정한 위치로 스크롤</td></tr>
+  </table></div>
+
+  <h3>직접 해 보기</h3>
+  <div class="lab">
+    <div class="btns">
+      <button type="button" id="bAlert">alert</button>
+      <button type="button" id="bConfirm">confirm</button>
+      <button type="button" id="bPrompt">prompt</button>
+      <button type="button" id="bTimeout">setTimeout 2초</button>
+      <button type="button" id="bInterval">setInterval 시작/정지</button>
+      <button type="button" id="bOpen">새 창 열기</button>
+      <button type="button" id="bClose">연 창 닫기</button>
+      <button type="button" id="bTop">맨 위로 scrollTo</button>
+    </div>
+    <div class="out" id="winOut" aria-live="polite">버튼을 눌러 결과를 확인하자.</div>
+  </div>
+  <pre><code>if (confirm("계속할까요?")) {
+  console.log("확인을 눌렀다");   // 확인 → true
+}
+let name = prompt("이름은?", "홍길동");  // 취소하면 null
+setTimeout(function () { alert("2초 지났다"); }, 2000);</code></pre>
+  <div class="note">브라우저는 사용자가 누르지 않은 팝업 창을 차단한다. <code>window.open()</code>은 버튼 클릭처럼 사용자의 동작 안에서 호출해야 열린다.</div>
+</section>
+
+<section id="navigator">
+  <h2>3. navigator 객체</h2>
+  <p><code>navigator</code>는 이 페이지를 보고 있는 <b>브라우저와 기기에 대한 정보</b>를 담고 있다. 접속 환경에 맞춰 화면이나 기능을 바꿀 때 쓴다.</p>
+
+  <h3>주요 속성 (지금 이 브라우저의 값)</h3>
+  <div class="tbl"><table>
+    <tr><th>속성</th><th>의미</th><th>지금 값</th></tr>
+    <tr><td><code>userAgent</code></td><td>브라우저·운영체제를 나타내는 긴 문자열</td><td class="val" id="nUA"></td></tr>
+    <tr><td><code>language</code></td><td>브라우저의 기본 언어</td><td class="val" id="nLang"></td></tr>
+    <tr><td><code>platform</code></td><td>운영체제 종류(참고용)</td><td class="val" id="nPlat"></td></tr>
+    <tr><td><code>onLine</code></td><td>인터넷 연결 여부</td><td class="val" id="nOn"></td></tr>
+    <tr><td><code>cookieEnabled</code></td><td>쿠키 사용 가능 여부</td><td class="val" id="nCookie"></td></tr>
+    <tr><td><code>hardwareConcurrency</code></td><td>CPU 논리 코어 수</td><td class="val" id="nCpu"></td></tr>
+    <tr><td><code>maxTouchPoints</code></td><td>동시에 인식하는 터치 수(0이면 터치 없음)</td><td class="val" id="nTouch"></td></tr>
+  </table></div>
+  <p>연결 상태는 이벤트로도 알 수 있다. 네트워크를 껐다 켜면 아래 표시가 바뀐다.</p>
+  <div class="lab"><div class="out" id="netOut"><span class="dot" id="netDot"></span><span id="netTxt"></span></div></div>
+  <pre><code>window.addEventListener("online",  () =&gt; console.log("연결됨"));
+window.addEventListener("offline", () =&gt; console.log("연결 끊김"));</code></pre>
+
+  <h3>위치 정보: navigator.geolocation</h3>
+  <p>위치는 개인정보이므로 사용자가 <b>허용</b>해야만 얻을 수 있다. 결과는 성공/실패 함수로 나뉘어 돌아온다.</p>
+  <div class="lab">
+    <div class="btns"><button type="button" id="bGeo">내 위치 요청</button></div>
+    <div class="out" id="geoOut" aria-live="polite">버튼을 누르면 브라우저가 허용 여부를 묻는다.</div>
+  </div>
+  <pre><code>navigator.geolocation.getCurrentPosition(
+  function (pos) { console.log(pos.coords.latitude, pos.coords.longitude); },
+  function (err) { console.log("실패:", err.message); }
+);</code></pre>
+
+  <div class="note"><code>userAgent</code> 문자열로 브라우저를 구분하는 방식은 값이 쉽게 바뀌고 정확하지 않다. 가능하면 "이 기능이 있는가?"를 검사하는 방식(<code>if ("geolocation" in navigator)</code>)을 먼저 쓴다.</div>
+</section>
+
+<section id="more">
+  <h2>4. 함께 알아 두면 좋은 객체</h2>
+  <div class="tbl"><table>
+    <tr><th>객체</th><th>대표 사용</th></tr>
+    <tr><td><code>location</code></td><td><code>location.href</code> 현재 주소 읽기, 값을 바꾸면 다른 페이지로 이동, <code>location.reload()</code> 새로고침</td></tr>
+    <tr><td><code>history</code></td><td><code>history.back()</code> 뒤로, <code>history.forward()</code> 앞으로</td></tr>
+    <tr><td><code>screen</code></td><td><code>screen.width</code>, <code>screen.height</code> 모니터 해상도</td></tr>
+  </table></div>
+</section>
+
+<section id="quiz">
+  <h2>5. 확인 문제</h2>
+  <details><summary>1. <code>alert("hi")</code>와 <code>window.alert("hi")</code>의 차이는?</summary><p>차이가 없다. window는 전역 객체라서 생략할 수 있다.</p></details>
+  <details><summary>2. 브라우저 창 안에서 페이지가 보이는 영역의 너비를 구하는 속성은?</summary><p><code>window.innerWidth</code></p></details>
+  <details><summary>3. <code>confirm()</code>에서 취소를 누르면 반환되는 값은?</summary><p><code>false</code>이다. (<code>prompt()</code>에서 취소하면 <code>null</code>)</p></details>
+  <details><summary>4. 사용자의 위치를 얻을 때 반드시 필요한 것은?</summary><p>사용자의 허용이다. 거부하면 실패 함수가 실행되므로 실패 처리도 함께 작성해야 한다.</p></details>
+  <details><summary>5. <code>navigator.userAgent</code>만 믿고 기능을 나누면 안 되는 이유는?</summary><p>문자열이 브라우저마다 다르고 바뀔 수 있어 정확하지 않다. 기능 존재 여부를 직접 검사하는 편이 안전하다.</p></details>
+</section>
+
+<footer>자바스크립트 BOM 입문 · window · navigator</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var set = function (id, v) { $(id).textContent = v; };
+
+  /* 실시간 window 값 */
+  function readWindow() {
+    set('lvIW', innerWidth); set('lvIH', innerHeight);
+    set('lvSY', Math.round(scrollY));
+    set('lvSC', screen.width + ' × ' + screen.height);
+    set('tIW', innerWidth + 'px'); set('tIH', innerHeight + 'px');
+    set('tOW', outerWidth + 'px'); set('tSY', Math.round(scrollY) + 'px');
+    set('tDP', devicePixelRatio);
+  }
+  addEventListener('resize', readWindow);
+  addEventListener('scroll', readWindow, { passive: true });
+  readWindow();
+  set('barUrl', location.protocol === 'file:' ? 'file:// (내 컴퓨터의 파일)' : location.href);
+
+  /* window 메서드 실습 */
+  var out = $('winOut'), timer = null, tick = 0, child = null;
+  function say(t) { out.textContent = t; }
+
+  $('bAlert').onclick = function () { alert('alert 창이다. 확인을 누르면 닫힌다.'); say('alert 실행 후 반환값: undefined'); };
+  $('bConfirm').onclick = function () { var r = confirm('계속할까요?'); say('confirm 반환값: ' + r); };
+  $('bPrompt').onclick = function () { var r = prompt('이름을 입력하자.', '홍길동'); say('prompt 반환값: ' + (r === null ? 'null (취소)' : '"' + r + '"')); };
+  $('bTimeout').onclick = function () {
+    say('2초 기다리는 중...');
+    setTimeout(function () { say('setTimeout: 2초 뒤에 한 번 실행됐다.'); }, 2000);
+  };
+  $('bInterval').onclick = function () {
+    if (timer) { clearInterval(timer); timer = null; say('setInterval 정지 (clearInterval). 마지막 횟수: ' + tick); return; }
+    tick = 0;
+    timer = setInterval(function () { tick++; say('setInterval: 1초마다 실행 중 → ' + tick + '회'); }, 1000);
+    say('setInterval 시작');
+  };
+  $('bOpen').onclick = function () {
+    child = window.open('about:blank', 'demoWin', 'width=360,height=220');
+    say(child ? 'window.open: 새 창을 열었다.' : '팝업이 차단됐다. 주소창의 차단 표시를 확인하자.');
+    if (child) child.document.write('<p style="font-family:sans-serif;padding:1rem">window.open()으로 연 창이다.</p>');
+  };
+  $('bClose').onclick = function () {
+    if (child && !child.closed) { child.close(); say('child.close(): 창을 닫았다.'); }
+    else say('닫을 창이 없다.');
+  };
+  $('bTop').onclick = function () { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+  /* navigator 값 */
+  set('nUA', navigator.userAgent);
+  set('nLang', navigator.language);
+  set('nPlat', navigator.platform || '(제공 안 함)');
+  set('nCookie', navigator.cookieEnabled);
+  set('nCpu', navigator.hardwareConcurrency || '(알 수 없음)');
+  set('nTouch', navigator.maxTouchPoints);
+  function net() {
+    var on = navigator.onLine;
+    set('nOn', on);
+    set('netTxt', on ? '온라인 (navigator.onLine = true)' : '오프라인 (navigator.onLine = false)');
+    $('netDot').className = 'dot ' + (on ? 'on' : 'off');
+  }
+  addEventListener('online', net); addEventListener('offline', net); net();
+
+  /* 위치 정보 */
+  $('bGeo').onclick = function () {
+    var g = $('geoOut');
+    if (!('geolocation' in navigator)) { g.textContent = '이 브라우저는 geolocation을 지원하지 않는다.'; return; }
+    g.textContent = '위치를 확인하는 중... 허용 여부를 선택하자.';
+    navigator.geolocation.getCurrentPosition(
+      function (p) { g.textContent = '위도 ' + p.coords.latitude.toFixed(4) + ', 경도 ' + p.coords.longitude.toFixed(4) + ' (정확도 약 ' + Math.round(p.coords.accuracy) + 'm)'; },
+      function (e) { g.textContent = '실패: ' + (e.code === 1 ? '사용자가 위치 사용을 거부했다.' : e.message); }
+    );
+  };
+})();
+</script>
+</body>
+</html>
