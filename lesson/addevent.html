@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="자바스크립트 addEventListener()의 기본 문법과 사용법을 직접 실습하며 배우는 입문 문서">
+<title>addEventListener() 기초</title>
+<style>
+:root{
+  --ink:#1b1f2a; --muted:#576070; --bg:#f1f3f8; --card:#fff; --line:#d8dde8;
+  --blue:#2457c5; --blue-soft:#e3ebfb; --rose:#b4234f; --rose-soft:#fce7ee; --code:#171c2b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR','Malgun Gothic',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75;font-size:16px}
+:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+.wrap{max-width:860px;margin:0 auto;padding:0 1.1rem 3rem}
+.hero{padding:2.2rem 0 1rem}
+.hero h1{font-size:1.9rem;line-height:1.3;margin-bottom:.5rem}
+.hero p{color:var(--muted);max-width:62ch}
+.sig{margin-top:1.2rem;background:var(--code);color:#e8ecfa;border-radius:10px;padding:1.1rem 1.3rem;font-family:Consolas,'D2Coding',monospace;font-size:1.02rem;overflow-x:auto;line-height:1.9}
+.sig b{color:#8fb4ff}.sig i{font-style:normal;color:#ffb3c8}.sig u{text-decoration:none;color:#9fe3c0}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1.5rem 1.5rem 1.6rem;margin-top:1.3rem}
+h2{font-size:1.3rem;margin-bottom:.8rem}
+h3{font-size:1.02rem;margin:1.3rem 0 .45rem;color:var(--blue)}
+p{margin-bottom:.9rem}
+ul,ol{padding-left:1.4rem;margin-bottom:.9rem}
+li{margin-bottom:.35rem}
+code{font-family:Consolas,'D2Coding',monospace;background:#e8ecf6;padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+pre{background:var(--code);color:#e8ecfa;padding:1rem;border-radius:8px;overflow-x:auto;font-size:.88rem;line-height:1.65;margin:.8rem 0 1rem}
+pre code{background:none;padding:0;color:inherit}
+.note{background:var(--rose-soft);border-left:5px solid var(--rose);padding:.8rem 1rem;border-radius:0 8px 8px 0;margin:1rem 0}
+.key{background:var(--blue-soft);border-left:5px solid var(--blue);padding:.8rem 1rem;border-radius:0 8px 8px 0;margin:1rem 0}
+.tbl{overflow-x:auto;margin:.8rem 0 1rem}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{border:1px solid var(--line);padding:.55rem .75rem;text-align:left;vertical-align:top}
+th{background:#f3f5fa}
+.lab{background:#f6f8fd;border:1px solid var(--line);border-radius:8px;padding:1rem;margin:1rem 0}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.7rem}
+button{font:inherit;font-size:.92rem;background:var(--card);color:var(--ink);border:2px solid var(--blue);border-radius:7px;padding:.45rem .85rem;cursor:pointer}
+button:hover{background:var(--blue-soft)}
+.out{font-family:Consolas,monospace;font-size:.9rem;background:var(--code);color:#a9f0cf;padding:.7rem .9rem;border-radius:6px;min-height:2.6rem;overflow-wrap:anywhere;white-space:pre-wrap}
+.pad{height:110px;border:2px dashed var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--card);margin-bottom:.7rem;user-select:none}
+input[type=text]{font:inherit;padding:.45rem .6rem;border:2px solid var(--blue);border-radius:7px;width:100%;margin-bottom:.7rem}
+.b1{padding:1rem;background:#dbe5fa;border-radius:8px}
+.b2{padding:1rem;background:#bcd0f5;border-radius:8px}
+.b3{padding:.8rem;background:#8fb0ee;border-radius:8px;text-align:center;cursor:pointer;font-weight:600}
+.cap{font-size:.82rem;color:var(--muted);margin-bottom:.4rem}
+details{border:1px solid var(--line);border-radius:8px;padding:.7rem 1rem;margin:.6rem 0}
+summary{cursor:pointer;font-weight:600}
+details p{margin:.6rem 0 0}
+footer{text-align:center;color:var(--muted);font-size:.88rem;padding:1.6rem 0 0}
+@media(max-width:600px){.hero h1{font-size:1.5rem}section{padding:1.1rem}.sig{font-size:.85rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>addEventListener(),<br>이벤트를 연결하는 표준 방법</h1>
+  <p>클릭, 키 입력, 마우스 이동처럼 사용자가 하는 동작을 이벤트라고 한다. addEventListener()는 "이 요소에서 이 이벤트가 일어나면 이 함수를 실행해 줘"라고 등록하는 메서드이다.</p>
+  <div class="sig" aria-label="addEventListener 기본 형태">요소<b>.addEventListener(</b><i>"이벤트 종류"</i>, <u>실행할 함수</u>, 옵션<b>)</b>
+
+btn<b>.addEventListener(</b><i>"click"</i>, <u>function () { ... }</u><b>)</b></div>
+</header>
+
+<section>
+  <h2>1. 이벤트를 연결하는 세 가지 방법</h2>
+  <pre><code>&lt;!-- ① HTML 속성 --&gt;
+&lt;button onclick="hello()"&gt;클릭&lt;/button&gt;
+
+// ② DOM 속성
+btn.onclick = function () { ... };
+
+// ③ addEventListener
+btn.addEventListener("click", function () { ... });</code></pre>
+  <div class="tbl"><table>
+    <tr><th>방법</th><th>같은 이벤트에 여러 개 등록</th><th>평가</th></tr>
+    <tr><td>① HTML 속성</td><td>불가능 (하나만)</td><td>HTML과 코드가 섞여 관리가 어렵다</td></tr>
+    <tr><td>② DOM 속성</td><td>불가능 (나중 것이 앞의 것을 덮어씀)</td><td>간단하지만 한 개만 쓸 때 적합</td></tr>
+    <tr><td>③ addEventListener</td><td><b>가능 (모두 실행됨)</b></td><td>권장하는 표준 방식</td></tr>
+  </table></div>
+  <div class="key">핵심 차이는 "덮어쓰기"와 "누적"이다. 아래 실습에서 직접 확인해 보자.</div>
+
+  <h3>실습 1. 덮어쓰기 vs 누적</h3>
+  <div class="lab">
+    <div class="btns">
+      <button type="button" id="t1a">onclick 버튼 (핸들러 2개 대입)</button>
+      <button type="button" id="t1b">addEventListener 버튼 (핸들러 2개 등록)</button>
+    </div>
+    <div class="out" id="o1" aria-live="polite">두 버튼을 차례로 눌러 보자.</div>
+  </div>
+  <pre><code>a.onclick = function () { log("A 실행"); };
+a.onclick = function () { log("B 실행"); };   // A를 덮어쓴다 → B만 실행
+
+b.addEventListener("click", function () { log("A 실행"); });
+b.addEventListener("click", function () { log("B 실행"); }); // A, B 모두 실행</code></pre>
+</section>
+
+<section>
+  <h2>2. 이벤트 객체(event)</h2>
+  <p>함수에는 이벤트에 대한 정보가 담긴 <b>이벤트 객체</b>가 자동으로 전달된다. 보통 매개변수 이름을 <code>e</code> 또는 <code>event</code>로 쓴다.</p>
+  <div class="tbl"><table>
+    <tr><th>속성</th><th>의미</th></tr>
+    <tr><td><code>e.type</code></td><td>이벤트 종류 ("click", "keydown" 등)</td></tr>
+    <tr><td><code>e.target</code></td><td>이벤트가 실제로 일어난 요소</td></tr>
+    <tr><td><code>e.currentTarget</code></td><td>리스너를 등록한 요소</td></tr>
+    <tr><td><code>e.clientX, e.clientY</code></td><td>마우스 좌표(마우스 이벤트)</td></tr>
+    <tr><td><code>e.key</code></td><td>누른 키 이름(키보드 이벤트)</td></tr>
+    <tr><td><code>e.preventDefault()</code></td><td>브라우저의 기본 동작을 막는다</td></tr>
+  </table></div>
+
+  <h3>실습 2. 마우스 좌표와 키 입력</h3>
+  <div class="lab">
+    <div class="pad" id="pad">이 상자 위에서 마우스를 움직이거나 클릭해 보자</div>
+    <input type="text" id="kin" placeholder="여기에 글자를 입력해 보자" aria-label="키 입력 실습">
+    <div class="out" id="o2" aria-live="off">이벤트 정보가 여기에 표시된다.</div>
+  </div>
+  <pre><code>pad.addEventListener("mousemove", function (e) {
+  console.log(e.type, e.clientX, e.clientY);
+});
+input.addEventListener("keydown", function (e) {
+  console.log("누른 키:", e.key);
+});</code></pre>
+</section>
+
+<section>
+  <h2>3. 리스너 제거: removeEventListener()</h2>
+  <p>등록한 리스너를 없애려면 <code>removeEventListener()</code>에 <b>같은 이벤트 종류와 같은 함수</b>를 넘긴다. 그래서 제거할 함수는 이름을 붙여 따로 만들어 둔다.</p>
+  <pre><code>function say() { console.log("눌렀다"); }
+
+btn.addEventListener("click", say);
+btn.removeEventListener("click", say);   // 제거 성공
+
+btn.addEventListener("click", function () { ... });
+btn.removeEventListener("click", function () { ... }); // 제거 실패! 다른 함수이다</code></pre>
+  <div class="note">이름 없는 함수는 매번 새로 만들어지는 서로 다른 함수라서 제거할 수 없다.</div>
+
+  <h3>실습 3. 등록·제거와 once 옵션</h3>
+  <div class="lab">
+    <div class="btns">
+      <button type="button" id="t3target">대상 버튼</button>
+      <button type="button" id="t3add">리스너 등록</button>
+      <button type="button" id="t3rem">리스너 제거</button>
+      <button type="button" id="t3once">once 옵션으로 등록</button>
+    </div>
+    <div class="out" id="o3" aria-live="polite">먼저 "대상 버튼"을 눌러 아무 일도 없는 것을 확인하자.</div>
+  </div>
+  <pre><code>btn.addEventListener("click", say, { once: true });  // 한 번 실행 후 자동 제거</code></pre>
+</section>
+
+<section>
+  <h2>4. 이벤트 버블링</h2>
+  <p>안쪽 요소에서 일어난 이벤트는 바깥쪽 부모 요소로 <b>올라가며 전달</b>된다. 이를 버블링이라 한다. 아래 안쪽 파란 상자를 눌러 보자.</p>
+  <div class="lab">
+    <div class="b1" id="bb1"><div class="cap">바깥 (div 1)</div>
+      <div class="b2" id="bb2"><div class="cap">가운데 (div 2)</div>
+        <div class="b3" id="bb3" tabindex="0" role="button">안쪽 (여기를 클릭)</div>
+      </div>
+    </div>
+    <div class="btns" style="margin-top:.7rem">
+      <button type="button" id="bStop" aria-pressed="false">stopPropagation: 꺼짐</button>
+    </div>
+    <div class="out" id="o4" aria-live="polite">안쪽 상자를 클릭해 보자.</div>
+  </div>
+  <pre><code>inner.addEventListener("click", function (e) {
+  e.stopPropagation();   // 부모로 전달되지 않게 막는다
+});</code></pre>
+  <div class="key">버블링 덕분에 부모 하나에만 리스너를 달아 많은 자식의 클릭을 처리할 수 있다. (이벤트 위임)</div>
+</section>
+
+<section>
+  <h2>5. 자주 쓰는 이벤트</h2>
+  <div class="tbl"><table>
+    <tr><th>종류</th><th>이벤트</th><th>발생 시점</th></tr>
+    <tr><td>마우스</td><td><code>click</code>, <code>dblclick</code>, <code>mouseover</code>, <code>mouseout</code>, <code>mousemove</code></td><td>클릭, 더블클릭, 올림, 벗어남, 이동</td></tr>
+    <tr><td>키보드</td><td><code>keydown</code>, <code>keyup</code></td><td>키를 누름, 뗌</td></tr>
+    <tr><td>입력 양식</td><td><code>input</code>, <code>change</code>, <code>submit</code>, <code>focus</code>, <code>blur</code></td><td>입력 중, 값 확정, 제출, 포커스 얻음/잃음</td></tr>
+    <tr><td>문서·창</td><td><code>DOMContentLoaded</code>, <code>load</code>, <code>resize</code>, <code>scroll</code></td><td>문서 준비, 로딩 완료, 크기 변경, 스크롤</td></tr>
+  </table></div>
+  <div class="note">이벤트 종류 이름에는 <code>on</code>을 붙이지 않는다. <code>addEventListener("click", ...)</code>이 맞고 <code>"onclick"</code>은 틀리다.</div>
+</section>
+
+<section>
+  <h2>6. 확인 문제</h2>
+  <details><summary>1. 같은 버튼에 click 함수를 두 개 등록하면 둘 다 실행되는 방식은?</summary><p><code>addEventListener()</code>이다. <code>onclick</code> 속성은 마지막에 대입한 함수만 남는다.</p></details>
+  <details><summary>2. <code>addEventListener("onclick", f)</code>가 동작하지 않는 이유는?</summary><p>이벤트 종류에는 <code>on</code>을 붙이지 않는다. <code>"click"</code>이라고 써야 한다.</p></details>
+  <details><summary>3. 어떤 키를 눌렀는지 알려면 어떤 속성을 쓰는가?</summary><p><code>keydown</code> 이벤트의 <code>e.key</code></p></details>
+  <details><summary>4. removeEventListener()가 동작하려면 무엇이 같아야 하는가?</summary><p>이벤트 종류와 함수가 같아야 한다. 그래서 제거할 함수는 이름 있는 함수로 만든다.</p></details>
+  <details><summary>5. 안쪽 요소 클릭이 바깥 요소 리스너까지 실행되는 현상과 막는 방법은?</summary><p>버블링이라 하고, <code>e.stopPropagation()</code>으로 막는다.</p></details>
+</section>
+
+<footer>자바스크립트 이벤트 입문 · addEventListener()</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* 실습 1: 덮어쓰기 vs 누적 */
+  var o1 = $('o1');
+  function log1(t) { o1.textContent += '\n' + t; }
+  o1.textContent = '두 버튼을 차례로 눌러 보자.';
+  $('t1a').onclick = function () { log1('[onclick] A 실행'); };
+  $('t1a').onclick = function () { log1('[onclick] B 실행  (A는 덮어써져 실행되지 않는다)'); };
+  $('t1b').addEventListener('click', function () { log1('[addEventListener] A 실행'); });
+  $('t1b').addEventListener('click', function () { log1('[addEventListener] B 실행  (A와 B 모두 실행)'); });
+
+  /* 실습 2: 이벤트 객체 */
+  var o2 = $('o2');
+  $('pad').addEventListener('mousemove', function (e) {
+    o2.textContent = 'type: ' + e.type + '\nclientX: ' + e.clientX + ', clientY: ' + e.clientY + '\ntarget: ' + e.target.id;
+  });
+  $('pad').addEventListener('click', function (e) {
+    o2.textContent = 'type: ' + e.type + '\nclientX: ' + e.clientX + ', clientY: ' + e.clientY + '\ntarget: ' + e.target.id;
+  });
+  $('kin').addEventListener('keydown', function (e) {
+    o2.textContent = 'type: ' + e.type + '\ne.key: "' + e.key + '"';
+  });
+
+  /* 실습 3: 등록·제거·once */
+  var o3 = $('o3'), n3 = 0;
+  function say() { n3++; o3.textContent = 'say() 실행 ' + n3 + '회'; }
+  $('t3add').addEventListener('click', function () {
+    $('t3target').addEventListener('click', say);
+    o3.textContent = 'addEventListener("click", say) 등록. 대상 버튼을 눌러 보자.';
+  });
+  $('t3rem').addEventListener('click', function () {
+    $('t3target').removeEventListener('click', say);
+    o3.textContent = 'removeEventListener("click", say) 제거. 대상 버튼을 눌러도 반응이 없다.';
+  });
+  $('t3once').addEventListener('click', function () {
+    $('t3target').addEventListener('click', function () { o3.textContent = 'once 옵션: 이번 한 번만 실행되고 자동으로 제거됐다.'; }, { once: true });
+    o3.textContent = 'once: true 로 등록. 대상 버튼을 눌러 보자.';
+  });
+
+  /* 실습 4: 버블링 */
+  var o4 = $('o4'), stop = false;
+  function bub(name) { return function (e) { o4.textContent += '\n' + name + ' 리스너 실행 (target: ' + e.target.id + ', currentTarget: ' + e.currentTarget.id + ')'; }; }
+  $('bb1').addEventListener('click', bub('바깥 div1'));
+  $('bb2').addEventListener('click', bub('가운데 div2'));
+  $('bb3').addEventListener('click', function (e) {
+    o4.textContent = '클릭 순서:';
+    bub('안쪽')(e);
+    if (stop) { e.stopPropagation(); o4.textContent += '\nstopPropagation() → 여기서 멈춤'; }
+  });
+  $('bStop').addEventListener('click', function () {
+    stop = !stop;
+    this.setAttribute('aria-pressed', String(stop));
+    this.textContent = 'stopPropagation: ' + (stop ? '켜짐' : '꺼짐');
+  });
+})();
+</script>
+</body>
+</html>
