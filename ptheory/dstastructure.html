@@ -35,7 +35,6 @@ code{background:var(--tint);padding:1px 6px;border-radius:3px;font-size:.92em}
 table{border-collapse:collapse;width:100%;min-width:520px;font-size:15px}
 th,td{border:1px solid var(--line);padding:6px 10px;text-align:center}
 th{background:var(--tint)}
-/* svg */
 svg text{fill:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",sans-serif;font-size:14px}
 svg .s{fill:var(--sub);font-size:12px}
 svg .bx{fill:var(--box);stroke:var(--ink);stroke-width:1.6}
@@ -44,7 +43,6 @@ svg .ac{fill:var(--tint);stroke:var(--acc);stroke-width:1.8}
 svg .ln{stroke:var(--ink);stroke-width:1.6;fill:none}
 svg .ar{stroke:var(--acc);stroke-width:2;fill:none}
 svg .ax{stroke:var(--sub);stroke-width:1.2;fill:none}
-svg .hl+text,svg .ac+text{font-weight:500}
 .easy{background:var(--tint);border-left:4px solid var(--acc);padding:12px 16px;border-radius:4px;margin:16px 0;font-size:15px}
 .easy b{color:var(--acc);font-weight:800}
 .easy p{max-width:none}
@@ -59,7 +57,7 @@ ol{margin:0 0 12px;padding-left:22px}
 <p>정보처리산업기사 필기에 자주 나오는 자료구조와 알고리즘을 그림과 함께 정리한 문서이다. 처음 배우는 사람도 따라올 수 있도록 일상 비유와 단계별 예시를 함께 넣었다. 비유로 감을 잡고, 그림으로 확인한 뒤, 시험 포인트로 마무리한다.</p>
 </header>
 <nav aria-label="목차">
-<a href="#s0">시작 전에</a><a href="#s1">배열·연결리스트</a><a href="#s2">스택</a><a href="#s3">큐</a><a href="#s4">트리</a><a href="#s5">그래프</a><a href="#s6">정렬</a><a href="#s7">탐색</a><a href="#s8">복잡도</a>
+<a href="#s0">시작 전에</a><a href="#s1">배열·연결리스트</a><a href="#s2">스택</a><a href="#s3">큐</a><a href="#s4">트리</a><a href="#s5">그래프</a><a href="#s6">정렬</a><a href="#s7">탐색</a><a href="#s8">복잡도</a><a href="#s9">시험 점검</a>
 </nav>
 <main>
 
@@ -106,6 +104,13 @@ ol{margin:0 0 12px;padding-left:22px}
 </svg>
 <figcaption>그림 1. 배열은 칸이 붙어 있고, 연결리스트는 노드가 화살표(포인터)로 이어진다.</figcaption>
 </figure>
+<div class="tw"><table>
+<tr><th>구분</th><th>배열</th><th>연결리스트</th></tr>
+<tr><td>메모리</td><td>연속된 공간</td><td>노드가 흩어져 포인터로 연결</td></tr>
+<tr><td>접근</td><td>인덱스로 O(1)</td><td>처음부터 따라가 O(n)</td></tr>
+<tr><td>삽입·삭제</td><td>뒤의 원소 이동, O(n)</td><td>포인터 변경, O(1)</td></tr>
+<tr><td>적합한 경우</td><td>읽기가 많고 크기가 고정</td><td>삽입·삭제가 많고 크기 변동</td></tr>
+</table></div>
 <ul>
 <li>배열: 조회 O(1), 삽입·삭제 O(n)</li>
 <li>연결리스트: 조회 O(n), 삽입·삭제 O(1) (위치를 알고 있을 때)</li>
@@ -247,6 +252,11 @@ print(stack.pop())  # pop -> B</pre>
 <figcaption>그림 5. 1번에서 시작할 때 DFS와 BFS의 방문 순서(번호가 작은 정점을 먼저 방문하는 경우).</figcaption>
 </figure>
 <ul><li>DFS는 2번에서 4번으로 깊이 들어갔다가, 막히면 돌아와 3번을 방문한다.</li><li>BFS는 1번과 가까운 2, 3번을 먼저 방문하고, 그다음 4번, 5번 순으로 간다.</li><li>표현 방법: 인접 행렬(정점이 적고 간선이 많을 때), 인접 리스트(간선이 적을 때)</li></ul>
+<div class="tw"><table>
+<tr><th>표현 방법</th><th>구조</th><th>장점</th><th>단점</th></tr>
+<tr><td>인접 행렬</td><td>n×n 2차원 배열</td><td>두 정점 연결 여부를 O(1)에 확인</td><td>간선이 적으면 메모리 낭비</td></tr>
+<tr><td>인접 리스트</td><td>정점별 연결된 이웃 목록</td><td>간선이 적을 때 메모리 효율적</td><td>연결 여부 확인이 상대적으로 느림</td></tr>
+</table></div>
 <div class="easy"><p><b>쉽게 이해하기</b> 그래프는 지하철 노선도이다. 역이 정점이고 역과 역을 잇는 선이 간선이다. 트리는 그래프의 한 종류로, 순환(돌고 도는 길)이 없는 그래프이다.</p>
 <p>DFS는 미로에서 한 길을 막힐 때까지 쭉 가다가 되돌아오는 방식이다. BFS는 호수에 돌을 던졌을 때 물결이 가까운 곳부터 바깥으로 퍼지는 방식이다. 최단 경로(거쳐 가는 간선 수)를 찾을 때는 BFS가 적합하다.</p></div>
 <h3>그래프를 컴퓨터에 저장하는 법</h3>
@@ -290,13 +300,13 @@ print(stack.pop())  # pop -> B</pre>
 <li>힙 정렬: 힙 트리를 만들어 최댓값(또는 최솟값)을 차례로 꺼낸다.</li>
 </ul>
 <div class="tw"><table>
-<tr><th>알고리즘</th><th>평균</th><th>최악</th><th>특징</th></tr>
-<tr><td>버블</td><td>O(n²)</td><td>O(n²)</td><td>안정, 구현 쉬움</td></tr>
-<tr><td>선택</td><td>O(n²)</td><td>O(n²)</td><td>교환 횟수 적음</td></tr>
-<tr><td>삽입</td><td>O(n²)</td><td>O(n²)</td><td>거의 정렬되면 O(n)</td></tr>
-<tr><td>퀵</td><td>O(n log n)</td><td>O(n²)</td><td>평균 가장 빠름</td></tr>
-<tr><td>병합</td><td>O(n log n)</td><td>O(n log n)</td><td>추가 메모리 필요</td></tr>
-<tr><td>힙</td><td>O(n log n)</td><td>O(n log n)</td><td>제자리 정렬</td></tr>
+<tr><th>알고리즘</th><th>평균</th><th>최악</th><th>안정성</th><th>특징</th></tr>
+<tr><td>버블</td><td>O(n²)</td><td>O(n²)</td><td>안정</td><td>구현 쉬움</td></tr>
+<tr><td>선택</td><td>O(n²)</td><td>O(n²)</td><td>불안정</td><td>교환 횟수 적음</td></tr>
+<tr><td>삽입</td><td>O(n²)</td><td>O(n²)</td><td>안정</td><td>거의 정렬되면 O(n)</td></tr>
+<tr><td>퀵</td><td>O(n log n)</td><td>O(n²)</td><td>불안정</td><td>평균 가장 빠름</td></tr>
+<tr><td>병합</td><td>O(n log n)</td><td>O(n log n)</td><td>안정</td><td>추가 메모리 필요</td></tr>
+<tr><td>힙</td><td>O(n log n)</td><td>O(n log n)</td><td>불안정</td><td>제자리 정렬</td></tr>
 </table></div>
 <div class="easy"><p><b>쉽게 이해하기</b> 카드 게임에서 손에 든 카드를 정리하는 방법으로 생각하면 쉽다. 선택 정렬은 남은 카드 중 가장 작은 카드를 골라 앞에 놓는 방법이다. 삽입 정렬은 새로 받은 카드를 이미 정리된 카드 사이의 알맞은 자리에 끼우는 방법이다.</p></div>
 <h3>예: 퀵 정렬 [5, 2, 8, 1, 9]</h3>
@@ -371,6 +381,41 @@ for x in arr:
         print(x, y)</pre>
 <p>n이 100일 때 실행 횟수는 O(n)이 약 100번, O(n²)은 약 10,000번이다. 반복문이 겹칠수록 횟수가 크게 늘어난다는 점만 기억하면 된다.</p>
 <div class="pt"><b>시험 포인트</b> 이중 반복문은 보통 O(n²), 반으로 줄여 가는 구조는 O(log n)이다. 최선·평균·최악의 경우를 구분해서 묻는 문제가 자주 나온다.</div>
+</section>
+
+<section id="s9">
+<h2>9. 시험 직전 점검</h2>
+<h3>반드시 기억할 비교</h3>
+<div class="tw"><table>
+<tr><th>주제</th><th>핵심</th><th>자주 나오는 답</th></tr>
+<tr><td>스택</td><td>LIFO, top에서 삽입·삭제</td><td>재귀, 괄호 검사, Undo</td></tr>
+<tr><td>큐</td><td>FIFO, front에서 삭제·rear에서 삽입</td><td>대기열, BFS</td></tr>
+<tr><td>배열</td><td>연속 메모리, 인덱스 접근</td><td>조회가 많을 때</td></tr>
+<tr><td>연결리스트</td><td>포인터 연결</td><td>삽입·삭제가 많을 때</td></tr>
+<tr><td>이진 탐색</td><td>정렬 필수, 범위 절반 축소</td><td>O(log n)</td></tr>
+<tr><td>DFS</td><td>깊이 우선</td><td>스택 또는 재귀</td></tr>
+<tr><td>BFS</td><td>너비 우선</td><td>큐</td></tr>
+<tr><td>병합 정렬</td><td>분할 후 병합</td><td>항상 O(n log n), 안정</td></tr>
+<tr><td>퀵 정렬</td><td>피벗 기준 분할</td><td>평균 O(n log n), 최악 O(n²)</td></tr>
+</table></div>
+<h3>자주 틀리는 포인트</h3>
+<ul>
+<li>이진 탐색은 정렬되지 않은 배열에 바로 적용할 수 없다.</li>
+<li>BFS가 최단 경로를 찾는 것은 모든 간선의 가중치가 같을 때이다.</li>
+<li>이진 트리와 이진 탐색 트리는 다르다. 이진 탐색 트리는 값의 크기 규칙을 추가로 만족한다.</li>
+<li>연결리스트의 삽입·삭제가 O(1)이라는 말은 보통 삽입·삭제할 위치를 이미 알고 있을 때이다.</li>
+<li>퀵 정렬은 평균은 빠르지만 최악의 경우 O(n²)이 될 수 있다.</li>
+</ul>
+<h3>확인 문제</h3>
+<ol>
+<li>스택에 A, B, C를 차례로 push한 뒤 pop을 두 번 하면 남는 값은? <b>A</b></li>
+<li>큐에 A, B, C를 차례로 enqueue한 뒤 dequeue를 하면 꺼내지는 값은? <b>A</b></li>
+<li>정렬된 배열에서 값을 찾을 때 가장 효율적인 방법은? <b>이진 탐색</b></li>
+<li>DFS 구현에 주로 사용하는 자료구조는? <b>스택 또는 재귀</b></li>
+<li>최악의 경우에도 O(n log n)이고 안정적인 정렬은? <b>병합 정렬</b></li>
+<li>이진 탐색 트리를 중위 순회하면 값이 어떤 순서로 출력되는가? <b>오름차순</b></li>
+</ol>
+<div class="pt"><b>마지막 점검</b> 스택=LIFO, 큐=FIFO, 이진 탐색=정렬 필수, DFS=스택, BFS=큐, 병합 정렬=안정·O(n log n)을 먼저 외운 뒤 그림으로 순회와 정렬 과정을 다시 확인한다.</div>
 </section>
 
 </main>
