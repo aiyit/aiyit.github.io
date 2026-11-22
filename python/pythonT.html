@@ -18,7 +18,7 @@ footer{text-align:center;color:var(--muted);padding:24px}
 <header><div class="hero"><div class="eyebrow">INFORMATION PROCESSING INDUSTRIAL ENGINEER</div><h1>파이썬 핵심 이론과 실습</h1><p class="lead">정보처리산업기사 학습을 위한 핵심 개념 · 도식 · 실행 코드</p></div></header>
 <main>
 <section class="toc"><h2>📘 학습 목차</h2><ol>
-<li><a href="#s1">파이썬과 알고리즘</a></li><li><a href="#s2">변수와 자료형</a></li><li><a href="#s3">연산자</a></li><li><a href="#s4">조건문과 반복문</a></li><li><a href="#s5">문자열·리스트·튜플</a></li><li><a href="#s6">세트와 딕셔너리</a></li><li><a href="#s7">함수</a></li><li><a href="#s8">클래스와 객체</a></li><li><a href="#s9">파일 입출력</a></li><li><a href="#s10">예외 처리</a></li><li><a href="#s11">모듈과 라이브러리</a></li><li><a href="#s12">자료구조와 알고리즘</a></li><li><a href="#s13">종합 실습</a></li><li><a href="#s14">확인 문제</a></li></ol></section>
+<li><a href="#s1">파이썬과 알고리즘</a></li><li><a href="#s2">변수와 자료형</a></li><li><a href="#s3">연산자</a></li><li><a href="#s4">조건문과 반복문</a></li><li><a href="#s5">문자열·리스트·튜플</a></li><li><a href="#s6">세트와 딕셔너리</a></li><li><a href="#s7">함수</a></li><li><a href="#s8">클래스와 객체</a></li><li><a href="#s9">파일 입출력</a></li><li><a href="#s10">예외 처리</a></li><li><a href="#s11">모듈과 라이브러리</a></li><li><a href="#s12">자료구조와 알고리즘</a></li><li><a href="#s13">종합 실습</a></li><li><a href="#s14">확인 문제</a></li><li><a href="#s15">시험 보완 정리</a></li></ol></section>
 
 <section class="card" id="s1"><h2>1. 파이썬과 알고리즘</h2>
 <p><b>파이썬(Python)</b>은 문법이 간결하고 읽기 쉬운 프로그래밍 언어다. 데이터 분석, 웹 개발, 자동화, 인공지능 등에 활용한다.</p>
@@ -48,6 +48,7 @@ print(a / b)    # 3.4 나눈 결과
 print(a // b)   # 3 몫
 print(a % b)    # 2 나머지
 print(2 ** 3)   # 8 거듭제곱</pre>
+<div class="note"><b>연산자 우선순위</b><br>거듭제곱 <code>**</code> → 곱셈·나눗셈·몫·나머지 <code>* / // %</code> → 덧셈·뺄셈 <code>+ -</code> → 비교 연산자 → <code>not</code> → <code>and</code> → <code>or</code> 순으로 적용된다. 괄호 <code>()</code>는 가장 먼저 계산된다.</div>
 <div class="note">시험 핵심: //는 몫, %는 나머지다. 17을 5로 나누면 몫은 3, 나머지는 2다.</div></section>
 
 <section class="card" id="s4"><h2>4. 조건문과 반복문</h2><h3>4-1. 조건문 if</h3><p>조건이 참인지 거짓인지 판단해 실행할 내용을 선택한다.</p>
@@ -78,6 +79,16 @@ print(text[0])     # P
 print(text[2])     # T
 print(text[-1])    # N
 print(text[1:4])   # YTH</pre>
+<h3>문자열 슬라이싱과 메서드</h3>
+<pre>text = "Python Programming"
+
+print(text[7:])          # Programming
+print(text[:6])          # Python
+print(text.lower())      # python programming
+print(text.upper())      # PYTHON PROGRAMMING
+print(text.count("n"))   # 2
+print(text.replace("Python", "파이썬"))</pre>
+<table><tr><th>메서드</th><th>기능</th></tr><tr><td>upper()</td><td>모두 대문자로 변환</td></tr><tr><td>lower()</td><td>모두 소문자로 변환</td></tr><tr><td>strip()</td><td>문자열 양쪽 공백 제거</td></tr><tr><td>split()</td><td>공백 또는 지정 문자를 기준으로 나눔</td></tr><tr><td>replace(a, b)</td><td>a를 b로 바꿈</td></tr><tr><td>find(x)</td><td>x가 처음 나타난 위치 반환, 없으면 -1</td></tr><tr><td>count(x)</td><td>x가 나타난 횟수 반환</td></tr></table>
 <h3>5-2. 리스트(List)</h3><p>리스트는 여러 값을 순서대로 저장하며 항목을 추가·수정·삭제할 수 있다.</p>
 <pre>scores = [80, 90, 75]
 scores.append(100)   # 끝에 추가
@@ -87,6 +98,16 @@ print(scores)
 print(len(scores))   # 항목 개수
 print(sum(scores))   # 합계</pre>
 <table><tr><th>메서드</th><th>기능</th></tr><tr><td>append(x)</td><td>끝에 x 추가</td></tr><tr><td>insert(i, x)</td><td>i 위치에 x 삽입</td></tr><tr><td>remove(x)</td><td>값 x 삭제</td></tr><tr><td>pop()</td><td>마지막 항목을 꺼내고 삭제</td></tr><tr><td>sort()</td><td>오름차순 정렬</td></tr><tr><td>reverse()</td><td>순서 뒤집기</td></tr></table>
+<h3>sort()와 sorted()의 차이</h3>
+<pre>numbers = [3, 1, 2]
+
+numbers.sort()          # 원본 리스트 자체를 정렬
+print(numbers)          # [1, 2, 3]
+
+numbers = [3, 1, 2]
+result = sorted(numbers) # 정렬된 새 리스트를 반환
+print(numbers)          # [3, 1, 2]
+print(result)           # [1, 2, 3]</pre>
 <h3>5-3. 튜플(Tuple)</h3><p>튜플은 순서가 있지만 생성 후 항목을 변경할 수 없다.</p><pre>point = (10, 20)
 print(point[0])
 # point[0] = 30  # 오류: 튜플 항목은 변경 불가</pre></section>
@@ -94,6 +115,13 @@ print(point[0])
 <section class="card" id="s6"><h2>6. 세트(Set)와 딕셔너리(Dictionary)</h2><h3>6-1. 세트</h3><p>세트는 중복된 값을 하나만 남기는 자료형이다. 항목의 순서를 기준으로 사용하지 않는다.</p><pre>numbers = {1, 2, 2, 3, 3, 3}
 print(numbers)       # {1, 2, 3}과 같은 집합
 print(2 in numbers)  # True</pre>
+<h3>세트 연산</h3>
+<pre>a = {1, 2, 3}
+b = {2, 3, 4}
+
+print(a | b)  # 합집합 {1, 2, 3, 4}
+print(a & b)  # 교집합 {2, 3}
+print(a - b)  # 차집합 {1}</pre>
 <h3>6-2. 딕셔너리</h3><p>딕셔너리는 키(Key)와 값(Value)을 한 쌍으로 저장한다.</p>
 <div class="diagram"><span class="node">키: name</span><b class="arrow">→</b><span class="node">값: 홍길동</span></div>
 <pre>student = {"name": "홍길동", "score": 95}
@@ -101,7 +129,8 @@ print(student["name"])
 print(student["score"])
 student["grade"] = "A"   # 새 항목 추가
 print(student.keys())    # 키 목록
-print(student.values())  # 값 목록</pre></section>
+print(student.values())  # 값 목록</pre>
+<table><tr><th>메서드</th><th>기능</th></tr><tr><td>keys()</td><td>모든 키 반환</td></tr><tr><td>values()</td><td>모든 값 반환</td></tr><tr><td>items()</td><td>키·값 쌍 반환</td></tr><tr><td>get(key)</td><td>키의 값을 반환, 없으면 None</td></tr><tr><td>pop(key)</td><td>키의 값을 꺼내고 항목 삭제</td></tr></table></section>
 
 <section class="card" id="s7"><h2>7. 함수(Function)</h2><p>함수는 자주 사용하는 코드를 하나의 이름으로 묶은 것이다. 입력값을 받을 수 있고 <code>return</code>으로 결과를 돌려줄 수 있다.</p>
 <div class="diagram"><span class="node">입력값 3, 5</span><b class="arrow">→</b><span class="node">add() 처리<br>3 + 5</span><b class="arrow">→</b><span class="node">반환 결과 8</span></div>
@@ -184,7 +213,8 @@ else:
     print("계산 결과:", result)
 finally:
     print("프로그램을 종료한다.")</pre>
-<table><tr><th>구문</th><th>역할</th></tr><tr><td>try</td><td>오류 가능성이 있는 코드 실행</td></tr><tr><td>except</td><td>발생한 예외 처리</td></tr><tr><td>else</td><td>예외가 발생하지 않았을 때 실행</td></tr><tr><td>finally</td><td>예외 여부와 관계없이 실행</td></tr><tr><td>raise</td><td>예외를 직접 발생</td></tr></table></section>
+<table><tr><th>구문</th><th>역할</th></tr><tr><td>try</td><td>오류 가능성이 있는 코드 실행</td></tr><tr><td>except</td><td>발생한 예외 처리</td></tr><tr><td>else</td><td>예외가 발생하지 않았을 때 실행</td></tr><tr><td>finally</td><td>예외 여부와 관계없이 실행</td></tr><tr><td>raise</td><td>예외를 직접 발생</td></tr></table>
+<table><tr><th>대표 예외</th><th>발생 상황</th></tr><tr><td>ValueError</td><td>변환할 수 없는 값을 변환하려 할 때</td></tr><tr><td>ZeroDivisionError</td><td>0으로 나눌 때</td></tr><tr><td>IndexError</td><td>리스트 범위를 벗어난 인덱스 사용</td></tr><tr><td>KeyError</td><td>딕셔너리에 없는 키 사용</td></tr><tr><td>FileNotFoundError</td><td>존재하지 않는 파일을 열려 할 때</td></tr><tr><td>TypeErro</td><td>자료형이 맞지 않는 연산을 할 때</td></tr></table></section>
 
 <section class="card" id="s11"><h2>11. 모듈과 라이브러리</h2><p>모듈(Module)은 파이썬 코드가 들어 있는 파일이다. 라이브러리(Library)는 특정 기능을 편리하게 사용하도록 제공하는 코드의 모음이다.</p>
 <table><tr><th>모듈</th><th>주요 기능</th><th>예시</th></tr><tr><td>math</td><td>수학 계산</td><td>sqrt(), ceil(), floor()</td></tr><tr><td>random</td><td>난수 생성</td><td>randint(), choice(), shuffle()</td></tr><tr><td>datetime</td><td>날짜와 시간</td><td>date.today(), datetime.now()</td></tr><tr><td>os</td><td>운영체제 기능</td><td>getcwd(), listdir()</td></tr><tr><td>csv</td><td>CSV 파일 처리</td><td>reader(), writer()</td></tr><tr><td>statistics</td><td>기초 통계</td><td>mean(), median()</td></tr></table>
@@ -195,6 +225,7 @@ from statistics import mean
 print(math.sqrt(25))          # 5.0
 print(random.randint(1, 6))   # 1부터 6 사이 정수
 print(mean([80, 90, 100]))    # 90</pre>
+<table><tr><th>import 방식</th><th>사용 방법</th></tr><tr><td>import math</td><td>math.sqrt(4)</td></tr><tr><td>from math import sqrt</td><td>sqrt(4)</td></tr><tr><td>import math as m</td><td>m.sqrt(4)</td></tr></table>
 <p><code>import</code>는 다른 모듈의 기능을 현재 프로그램에서 사용할 수 있도록 불러오는 명령이다.</p></section>
 
 <section class="card" id="s12"><h2>12. 자료구조와 알고리즘</h2><p>자료구조(Data Structure)는 데이터를 효율적으로 저장하고 관리하는 방법이다. 알고리즘은 그 데이터를 이용해 문제를 해결하는 절차다.</p>
@@ -259,5 +290,72 @@ print("최고 점수:", top_student["name"], top_student["score"])</pre>
 <div class="quiz"><b>문제 6. 오류가 발생했을 때 예외를 처리하는 구문은?</b><p>① if　② for　③ except　④ return</p><button onclick="toggle(6)">정답 확인</button><p class="answer" id="a6">정답: ③ except — try에서 발생한 예외를 처리한다.</p></div>
 <div class="quiz"><b>문제 7. 딕셔너리는 어떤 형태로 데이터를 저장하는가?</b><p>① 인덱스와 값　② 키와 값　③ 앞과 뒤　④ 행과 열만 사용</p><button onclick="toggle(7)">정답 확인</button><p class="answer" id="a7">정답: ② 키와 값 — 키를 이용해 값을 찾는다.</p></div>
 </section>
+
+<section class="card" id="s15"><h2>15. 시험 보완 정리</h2>
+<h3>15-1. f-string 문자열 포맷팅</h3>
+<p>문자열 안에 변수를 넣을 때는 f-string이 가장 편리하다. 문자열 앞에 <code>f</code>를 붙이고 중괄호 안에 변수를 넣는다.</p>
+<pre>name = "민수"
+score = 92
+
+print(f"{name}의 점수는 {score}점이다.")
+print(f"평균은 {85.666:.1f}점이다.")  # 85.7</pre>
+<table><tr><th>방식</th><th>예시</th><th>결과</th></tr>
+<tr><td>f-string</td><td>f"점수: {score}"</td><td>점수: 92</td></tr>
+<tr><td>format()</td><td>"점수: {}".format(score)</td><td>점수: 92</td></tr>
+<tr><td>% 형식</td><td>"점수: %d" % score</td><td>점수: 92</td></tr></table>
+
+<h3>15-2. 리스트 컴프리헨션</h3>
+<p>리스트 컴프리헨션은 반복문과 조건문을 짧게 표현해 새 리스트를 만드는 방법이다.</p>
+<pre>numbers = [1, 2, 3, 4, 5]
+
+doubles = [n * 2 for n in numbers]
+evens = [n for n in numbers if n % 2 == 0]
+
+print(doubles)  # [2, 4, 6, 8, 10]
+print(evens)    # [2, 4]</pre>
+<div class="note"><b>읽는 순서</b><br><code>[표현식 for 항목 in 자료 if 조건]</code>이다. 예를 들어 <code>[n * 2 for n in numbers if n % 2 == 0]</code>은 “짝수만 골라 2배로 만든 리스트”라는 뜻이다.</div>
+
+<h3>15-3. 가변 자료형과 불변 자료형</h3>
+<table><tr><th>구분</th><th>자료형</th><th>변경 가능 여부</th></tr>
+<tr><td>가변(mutable)</td><td>list, dict, set</td><td>가능</td></tr>
+<tr><td>불변(immutable)</td><td>int, float, str, tuple</td><td>불가능</td></tr></table>
+<pre>a = [1, 2, 3]
+b = a
+b.append(4)
+
+print(a)  # [1, 2, 3, 4]
+print(b)  # [1, 2, 3, 4]</pre>
+<p>리스트는 같은 객체를 가리킬 수 있으므로, 완전히 별도의 복사본을 만들려면 <code>list(a)</code>, 슬라이싱 <code>a[:]</code>, 또는 <code>copy.deepcopy()</code>를 고려한다.</p>
+
+<h3>15-4. 자주 나오는 내장 함수</h3>
+<table><tr><th>함수</th><th>기능</th><th>예시</th></tr>
+<tr><td>len()</td><td>길이 또는 항목 수</td><td>len([1, 2, 3]) → 3</td></tr>
+<tr><td>sum()</td><td>합계</td><td>sum([1, 2, 3]) → 6</td></tr>
+<tr><td>max()</td><td>최댓값</td><td>max([3, 7, 1]) → 7</td></tr>
+<tr><td>min()</td><td>최솟값</td><td>min([3, 7, 1]) → 1</td></tr>
+<tr><td>sorted()</td><td>정렬된 새 리스트 반환</td><td>sorted([3, 1, 2]) → [1, 2, 3]</td></tr>
+<tr><td>enumerate()</td><td>인덱스와 값을 함께 반환</td><td>enumerate(["a", "b"])</td></tr>
+<tr><td>zip()</td><td>여러 자료를 묶어 반환</td><td>zip([1, 2], ["a", "b"])</td></tr></table>
+
+<h3>15-5. 시험 직전 체크</h3>
+<table><tr><th>주제</th><th>핵심</th></tr>
+<tr><td>문자열 인덱스</td><td>0부터 시작, 음수 인덱스는 뒤에서부터</td></tr>
+<tr><td>슬라이싱</td><td><code>a[시작:끝]</code>에서 끝 인덱스는 포함하지 않음</td></tr>
+<tr><td>sort() / sorted()</td><td>sort()는 원본 변경, sorted()는 새 리스트 반환</td></tr>
+<tr><td>리스트·튜플</td><td>리스트는 변경 가능, 튜플은 변경 불가</td></tr>
+<tr><td>딕셔너리</td><td>키는 중복 불가, 키로 값 조회</td></tr>
+<tr><td>세트</td><td>중복 제거, 순서 보장하지 않음</td></tr>
+<tr><td>try~except</td><td>오류 발생 시 except, 정상 종료 후 finally 실행</td></tr>
+<tr><td>with open()</td><td>파일을 자동으로 닫음</td></tr>
+<tr><td>import</td><td><code>import 모듈</code>, <code>from 모듈 import 함수</code></td></tr></table>
+
+<h3>15-6. 추가 확인 문제</h3>
+<div class="quiz"><b>문제 8. "PYTHON"[1:4]의 결과는?</b><p>① PYT　② YTH　③ THO　④ HON</p><button onclick="toggle(8)">정답 확인</button><p class="answer" id="a8">정답: ② YTH — 인덱스 1부터 4 미만까지 가져온다.</p></div>
+<div class="quiz"><b>문제 9. 리스트를 정렬된 새 리스트로 만드는 함수는?</b><p>① sort()　② sorted()　③ reverse()　④ append()</p><button onclick="toggle(9)">정답 확인</button><p class="answer" id="a9">정답: ② sorted() — 원본을 변경하지 않고 정렬된 새 리스트를 반환한다.</p></div>
+<div class="quiz"><b>문제 10. [n * 2 for n in [1, 2, 3]]의 결과는?</b><p>① [1, 2, 3]　② [2, 4, 6]　③ [1, 4, 9]　④ 오류</p><button onclick="toggle(10)">정답 확인</button><p class="answer" id="a10">정답: ② [2, 4, 6] — 각 항목을 2배로 만든 새 리스트다.</p></div>
+<div class="quiz"><b>문제 11. 존재하지 않는 딕셔너리 키를 사용할 때 발생하는 예외는?</b><p>① ValueError　② KeyError　③ IndexError　④ TypeError</p><button onclick="toggle(11)">정답 확인</button><p class="answer" id="a11">정답: ② KeyError — 딕셔너리에 없는 키를 조회할 때 발생한다.</p></div>
+<div class="quiz"><b>문제 12. from math import sqrt를 사용한 뒤 제곱근을 구하는 코드는?</b><p>① math.sqrt(4)　② sqrt(4)　③ import.sqrt(4)　④ sqrt.math(4)</p><button onclick="toggle(12)">정답 확인</button><p class="answer" id="a12">정답: ② sqrt(4) — from import 방식에서는 함수 이름을 바로 사용한다.</p></div>
+</section>
+
 <footer>정보처리산업기사 파이썬 학습 자료 · 개념을 읽고 코드를 직접 실행한다.</footer>
 </main><script>function toggle(n){const e=document.getElementById("a"+n);e.style.display=e.style.display==="block"?"none":"block"}</script></body></html>
