@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>접지·누전차단기(ELB) 감전회로 배선 실습</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:#0a1120;color:#e8f0ff;overflow:hidden}
+#app{position:fixed;inset:0}
+canvas{display:block}
+.panel{position:absolute;background:rgba(7,15,28,.85);border:1px solid #2b4a75;border-radius:14px;padding:14px 16px;backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+#hud{top:14px;left:14px;width:360px;max-height:calc(100vh - 28px);overflow:auto}
+h1{margin:0 0 6px;font-size:19px;line-height:1.3}
+p{margin:6px 0;font-size:12.5px;line-height:1.55;color:#b9c9e2}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;margin:2px 4px 2px 0}
+.ok{background:#123d2a;color:#7ef0b0;border:1px solid #1f7a52}
+.bad{background:#4a1520;color:#ff8b9b;border:1px solid #a03348}
+.warn{background:#4a3a12;color:#ffd479;border:1px solid #a3801f}
+.off{background:#26324a;color:#9fb2cf;border:1px solid #3f5478}
+button{width:100%;margin:5px 0;padding:9px 10px;border:0;border-radius:9px;background:#1f6feb;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
+button:hover{filter:brightness(1.12)}
+button.green{background:#17954c}
+button.amber{background:#b97b12}
+button.ghost{background:#22314b}
+.step{border-left:3px solid #2f6fd0;padding-left:9px;margin:9px 0;font-size:12px;color:#d8e5f7}
+.step.active{border-color:#ffd166;background:rgba(255,209,102,.09)}
+#toast{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);min-width:min(660px,94vw);padding:12px 16px;border-radius:12px;font-size:14px;font-weight:700;text-align:center;opacity:0;transition:.25s;pointer-events:none}
+#toast.show{opacity:1}
+#toast.safe{background:#0f3d2b;border:1px solid #22a06b;color:#b8ffd8}
+#toast.danger{background:#4d1420;border:1px solid #e0576b;color:#ffd2d8}
+#toast.info{background:#173252;border:1px solid #4a86d8;color:#d7e8ff}
+#vrBtn{position:absolute;right:16px;bottom:16px;width:auto;padding:12px 18px;background:#7c3aed}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:#0a1120;z-index:20;font-size:15px;color:#9fb2cf}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="hud" class="panel">
+<h1>⚡ 접지·누전차단기 감전회로 배선 실습</h1>
+<p>전원, ELB, 부하, 접지극 단자를 클릭하여 올바른 배선을 완성하세요. 누전 발생 시 접지 경로와 ELB 동작을 확인합니다.</p>
+
+<div>
+<span id="bPower" class="badge off">전원 OFF</span>
+<span id="bLeak" class="badge off">누전 없음</span>
+<span id="bGround" class="badge off">접지 미연결</span>
+<span id="bElb" class="badge ok">ELB 정상</span>
+</div>
+
+<div style="margin-top:10px">
+<button id="powerBtn">전원 ON</button>
+<button id="leakBtn" class="amber">누전 발생</button>
+<button id="checkBtn" class="green">배선 검사</button>
+<button id="resetBtn" class="ghost">배선 초기화</button>
+</div>
+
+<div class="step" id="s1">1. 전원 <b>L → ELB 전원측 L</b>, <b>N → ELB 전원측 N</b> 연결</div>
+<div class="step" id="s2">2. ELB 부하측 <b>L → 부하 L</b>, <b>N → 부하 N</b> 연결</div>
+<div class="step" id="s3">3. 부하 <b>PE → 접지극</b> 연결로 접지계통 완성</div>
+<div class="step" id="s4">4. <b>누전 발생</b> 후 접지 유무에 따른 ELB 차단 여부 확인</div>
+
+<p style="margin-top:10px"><b>배선 원칙</b><br>· 전원 L·N은 ELB 전원측에 연결합니다.<br>· ELB 부하측 L·N은 부하에 연결합니다.<br>· 보호접지(PE)는 부하 외함과 접지극에 연결합니다.<br>· 누전이 발생하면 접지 경로를 통해 누설전류가 흐르고, ELB는 전류 불균형을 감지해 차단합니다.</p>
+<p style="font-size:11px;color:#8ea3c2">조작: 단자 클릭 2회로 배선 연결·해제 / 드래그로 시점 회전 / 휠로 확대·축소</p>
+</div>
+
+<div id="toast" class="panel"></div>
+<button id="vrBtn" class="panel">VR 모드 시작</button>
+<div id="loading">3D 배선 실습 공간을 준비하고 있습니다…</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {VRButton} from 'three/addons/webxr/VRButton.js';
+
+const app=document.getElementById('app'), loading=document.getElementById('loading'), toast=document.getElementById('toast');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight); renderer.xr.enabled=true;
+app.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0a1120);
+scene.fog=new THREE.Fog(0x0a1120,14,40);
+const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,100);
+camera.position.set(0,3.4,10.5);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,1.25,0); controls.enableDamping=true;
+controls.minDistance=4; controls.maxDistance=18; controls.maxPolarAngle=Math.PI*.53;
+
+scene.add(new THREE.HemisphereLight(0x9fc4ff,0x121a28,1.05));
+const key=new THREE.DirectionalLight(0xffffff,1.35); key.position.set(6,9,7); scene.add(key);
+const fill=new THREE.DirectionalLight(0x88aaff,.5); fill.position.set(-7,4,-5); scene.add(fill);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(44,44),new THREE.MeshStandardMaterial({color:0x16233a,roughness:.92}));
+floor.rotation.x=-Math.PI/2; scene.add(floor);
+const grid=new THREE.GridHelper(44,44,0x2b4a75,0x1c2b42); grid.position.y=.002; scene.add(grid);
+
+function box(w,h,d,color,x,y,z,name){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,roughness:.55,metalness:.12}));m.position.set(x,y,z);m.userData.name=name||'';scene.add(m);return m;}
+function label(text,x,y,z,color='#dce7ff',size=.32){const c=document.createElement('canvas');c.width=640;c.height=160;const g=c.getContext('2d');g.fillStyle='rgba(7,13,24,.88)';g.fillRect(0,0,640,160);g.strokeStyle=color;g.lineWidth=7;g.strokeRect(7,7,626,146);g.fillStyle=color;g.font='bold 60px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(text,320,82);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));s.scale.set(size*4,size,1);s.position.set(x,y,z);scene.add(s);return s;}
+
+const source=box(2.6,2.5,.55,0x24344e,-4.2,1.25,-1.6,'전원반');
+label('전원반',-4.2,2.75,-1.6,'#8ab4ff');
+const elb=box(2.2,2.4,.55,0x1d3a63,0,1.2,-1.6,'누전차단기');
+label('누전차단기 (ELB)',0,2.65,-1.6,'#9fd0ff');
+const elbBody=box(1.6,1.2,.18,0x2f6fd0,0,1.45,-1.3,'ELB 본체');
+const lever=box(.28,.62,.1,0x39d98a,-.55,1.45,-1.18,'ELB 스위치');
+const load=box(2.6,2.2,.55,0x39485f,4.2,1.1,-1.6,'부하 기기');
+label('부하 기기',4.2,2.45,-1.6,'#ffd166');
+const rod=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,1.7,20),new THREE.MeshStandardMaterial({color:0x9a7b3f,metalness:.75,roughness:.35}));
+rod.position.set(4.2,.85,1.9); scene.add(rod);
+label('접지극',4.2,1.95,1.9,'#8ef0b3',.3);
+
+const terminals={};
+function terminal(id,x,y,z,color,name){const t=new THREE.Mesh(new THREE.SphereGeometry(.14,20,16),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.22}));t.position.set(x,y,z);t.userData={id,name,links:[]};scene.add(t);terminals[id]=t;return t;}
+
+terminal('srcL',-3.5,1.95,-1.3,0xd97742,'전원 L');
+terminal('srcN',-3.5,1.45,-1.3,0x4d8ef7,'전원 N');
+terminal('elbInL',-.85,1.95,-1.3,0xd97742,'ELB 전원측 L');
+terminal('elbInN',-.85,1.45,-1.3,0x4d8ef7,'ELB 전원측 N');
+terminal('elbOutL',.85,1.95,-1.3,0xd97742,'ELB 부하측 L');
+terminal('elbOutN',.85,1.45,-1.3,0x4d8ef7,'ELB 부하측 N');
+terminal('loadL',3.5,1.75,-1.3,0xd97742,'부하 L');
+terminal('loadN',3.5,1.25,-1.3,0x4d8ef7,'부하 N');
+terminal('loadPE',3.5,.75,-1.3,0x35d07a,'부하 PE');
+terminal('earth',4.2,1.75,1.9,0x35d07a,'접지극');
+
+const wires=[];
+function makeWire(a,b,color){
+  const A=terminals[a].position.clone(), B=terminals[b].position.clone();
+  const mid=A.clone().add(B).multiplyScalar(.5); mid.y+=.65;
+  const curve=new THREE.CatmullRomCurve3([A,mid,B]);
+  const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,48,.05,10,false),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.16,roughness:.5}));
+  scene.add(mesh); wires.push({a,b,mesh,color});
+  terminals[a].userData.links.push(b); terminals[b].userData.links.push(a);
+}
+function removeWire(a,b){
+  const i=wires.findIndex(w=>(w.a===a&&w.b===b)||(w.a===b&&w.b===a));
+  if(i<0)return false; scene.remove(wires[i].mesh); wires.splice(i,1);
+  for(const t of [a,b]){const arr=terminals[t].userData.links;const idx=arr.indexOf(arr.find(x=>x===a||x===b));if(idx>=0)arr.splice(idx,1);}
+  return true;
+}
+function linked(a,b){return wires.some(w=>(w.a===a&&w.b===b)||(w.a===b&&w.b===a));}
+
+const validPairs=[['srcL','elbInL'],['srcN','elbInN'],['elbOutL','loadL'],['elbOutN','loadN'],['loadPE','earth']];
+const state={power:false,leak:false,elbTripped:false,selected:null};
+const ray=new THREE.Raycaster(), pointer=new THREE.Vector2();
+
+renderer.domElement.addEventListener('pointerdown',e=>{
+  const r=renderer.domElement.getBoundingClientRect();
+  pointer.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(pointer,camera);
+  const hits=ray.intersectObjects(Object.values(terminals),false);
+  if(!hits.length)return;
+  const id=hits[0].object.userData.id;
+  if(!state.selected){state.selected=id;hits[0].object.material.emissiveIntensity=1;setTimeout(()=>hits[0].object.material.emissiveIntensity=.22,250);show('연결할 상대 단자를 선택하세요.','info');return;}
+  if(state.selected===id){state.selected=null;show('선택을 취소했습니다.','info');return;}
+  const pair=validPairs.find(p=>(p[0]===state.selected&&p[1]===id)||(p[0]===id&&p[1]===state.selected));
+  if(!pair){show('❌ 올바르지 않은 연결입니다. 표준 배선도를 확인하세요.','danger');state.selected=null;return;}
+  if(linked(state.selected,id)){removeWire(state.selected,id);show('배선을 해제했습니다.','info');}
+  else{makeWire(state.selected,id,terminals[id].userData.id.includes('L')?0xd97742:(id==='earth'||state.selected==='loadPE'?0x35d07a:0x4d8ef7));show(`✅ ${hits[0].object.userData.name} 연결 완료`,'safe');}
+  state.selected=null; refresh();
+});
+
+const tripLight=new THREE.PointLight(0xffa726,0,8,2); tripLight.position.set(0,1.7,-.9); scene.add(tripLight);
+const leakLight=new THREE.PointLight(0xff3b30,0,8,2); leakLight.position.set(4.2,1.3,-.9); scene.add(leakLight);
+
+function refresh(){
+  const ground=linked('loadPE','earth');
+  const complete=validPairs.every(p=>linked(p[0],p[1]));
+  document.getElementById('bGround').textContent=ground?'접지 연결됨':'접지 미연결';
+  document.getElementById('bGround').className='badge '+(ground?'ok':'bad');
+  document.getElementById('bPower').textContent='전원 '+(state.power?'ON':'OFF');
+  document.getElementById('bPower').className='badge '+(state.power?'ok':'off');
+  document.getElementById('bLeak').textContent=state.leak?'누전 발생':'누전 없음';
+  document.getElementById('bLeak').className='badge '+(state.leak?'warn':'off');
+  document.getElementById('bElb').textContent=state.elbTripped?'ELB 차단 동작':'ELB 정상';
+  document.getElementById('bElb').className='badge '+(state.elbTripped?'warn':'ok');
+  lever.material.color.set(state.elbTripped?0xff5555:0x39d98a);
+  lever.rotation.z=state.elbTripped?.65:0;
+  document.getElementById('powerBtn').textContent=state.power?'전원 OFF':'전원 ON';
+  document.getElementById('leakBtn').textContent=state.leak?'누전 해제':'누전 발생';
+
+  if(complete&&state.power&&state.leak&&ground&&!state.elbTripped){
+    state.elbTripped=true; tripLight.intensity=3.5; leakLight.intensity=2.2;
+    show('⚠️ 접지 경로로 누설전류가 흘러 ELB가 즉시 차단했습니다.','safe');
+  } else if(complete&&state.power&&state.leak&&!ground){
+    leakLight.intensity=2.5;
+    show('🚨 접지가 없어 누설전류의 정상적인 차단 경로가 없습니다. ELB는 외함 접촉 등 별도 전류 경로가 생겨야 동작할 수 있습니다.','danger');
+  }
+  document.getElementById('s1').classList.toggle('active',linked('srcL','elbInL')&&linked('srcN','elbInN'));
+  document.getElementById('s2').classList.toggle('active',linked('elbOutL','loadL')&&linked('elbOutN','loadN'));
+  document.getElementById('s3').classList.toggle('active',ground);
+  document.getElementById('s4').classList.toggle('active',state.leak);
+}
+
+document.getElementById('powerBtn').onclick=()=>{state.power=!state.power;if(!state.power){state.leak=false;state.elbTripped=false;}show(state.power?'전원이 공급되었습니다.':'전원이 차단되었습니다.','info');refresh();};
+document.getElementById('leakBtn').onclick=()=>{if(!state.power){show('먼저 전원을 ON 하세요.','info');return;}state.leak=!state.leak;state.elbTripped=false;show(state.leak?'부하 기기에 누전이 발생했습니다. 접지 상태를 확인하세요.':'누전을 해제했습니다.','info');refresh();};
+document.getElementById('checkBtn').onclick=()=>{
+  const done=validPairs.filter(p=>linked(p[0],p[1])).length;
+  if(done===validPairs.length)show('✅ 배선 검사 통과! 전원·ELB·부하·접지 회로가 올바르게 구성되었습니다.','safe');
+  else show(`배선 검사: ${done}/5 연결 완료. 누락된 배선을 확인하세요.`,'danger');
+};
+document.getElementById('resetBtn').onclick=()=>{state.power=state.leak=state.elbTripped=false;state.selected=null;while(wires.length)removeWire(wires[0].a,wires[0].b);tripLight.intensity=0;leakLight.intensity=0;show('배선을 초기화했습니다. 전원 배선부터 다시 연결하세요.','info');refresh();};
+
+document.getElementById('vrBtn').appendChild(VRButton.createButton(renderer));
+document.getElementById('vrBtn').addEventListener('click',()=>{document.getElementById('vrBtn').style.display='none';});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+
+const clock=new THREE.Clock();
+renderer.setAnimationLoop(()=>{
+  const t=clock.getElapsedTime();
+  if(state.elbTripped)tripLight.intensity=1.7+Math.sin(t*10)*.8; else tripLight.intensity*=.92;
+  if(state.leak&&!state.elbTripped)leakLight.intensity=1.6+Math.sin(t*8)*.7; else if(!state.leak)leakLight.intensity*=.9;
+  controls.update(); renderer.render(scene,camera);
+});
+
+show('전원 L·N을 ELB 전원측에 연결하세요.','info');
+refresh(); loading.remove();
+</script>
+</body>
+</html>
