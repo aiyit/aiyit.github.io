@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>플리커·부저 경보 회로 3D 결선 실습</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#1c2b3a;--hd:#1d4e89;--ac:#2f6fcb;--ok:#1f8a4c;--er:#c62828;--bd:#c9d6e6}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#121a24;--card:#1b2633;--ink:#e6edf5;--hd:#14335a;--bd:#34475c}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{font-family:"Noto Sans KR","Malgun Gothic",sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+header{background:var(--hd);color:#fff;padding:10px 18px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}header span{font-size:13px;opacity:.85}
+main{flex:1;display:flex;min-height:0;gap:10px;padding:10px}
+aside{width:330px;flex:none;display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;gap:4px}.tabs button{flex:1;padding:8px 4px;border:1px solid var(--bd);border-bottom:0;background:var(--card);color:var(--ink);border-radius:8px 8px 0 0;cursor:pointer;font:inherit;font-size:13px}
+.tabs button.on{background:var(--ac);color:#fff}
+.pane{display:none;background:var(--card);border:1px solid var(--bd);padding:12px;overflow:auto;flex:1;font-size:13.5px;line-height:1.6}
+.pane.on{display:block}.pane h3{margin:10px 0 4px;font-size:14px;color:var(--ac)}.pane h3:first-child{margin-top:0}
+.pane table{border-collapse:collapse;width:100%}.pane td,.pane th{border:1px solid var(--bd);padding:3px 6px;font-size:12.5px}
+.warn{background:#fdecec;color:#7a1c1c;border:1px solid #e9aaaa;padding:8px;border-radius:6px;margin-top:10px}
+@media (prefers-color-scheme:dark){.warn{background:#3a2024;color:#f3c4c4}}
+#stage{flex:1;position:relative;min-width:0;border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+#stage canvas{display:block;width:100%;height:100%}
+#ctrl{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px}
+#ctrl button{padding:8px 12px;border:1px solid var(--bd);background:var(--card);color:var(--ink);border-radius:8px;cursor:pointer;font:inherit;font-size:13px;text-align:left}
+#ctrl .on{background:#1f9d55;color:#fff}#ctrl .off{background:#59636e;color:#fff}#ctrl .er{border-color:var(--er);color:var(--er)}
+#msg{position:absolute;left:8px;right:150px;bottom:8px;padding:9px 12px;border-radius:8px;background:#e3eefc;color:#12345c;border:1px solid #9bbbe6;font-size:14px}
+#msg.ok{background:#e1f5e8;color:#145a31;border-color:#8fcfa8}#msg.er{background:#fdecec;color:#7a1c1c;border-color:#e9aaaa}
+#hint{position:absolute;left:8px;top:8px;background:rgba(255,255,255,.9);color:#12345c;padding:6px 10px;border-radius:8px;font-size:12.5px;border:1px solid #9bbbe6}
+@media (max-width:820px){main{flex-direction:column}aside{width:auto;height:38%}}
+</style></head><body>
+<header><h1>플리커·부저 경보 회로</h1><span>타이머 2개로 램프 점멸과 부저 경보 회로를 구성합니다. (교육용 DC 24V 시뮬레이션)</span></header>
+<main>
+<aside>
+<div class="tabs"><button class="on" data-t="p1">이론 학습</button><button data-t="p2">회로도</button><button data-t="p3">실습하기</button></div>
+<div class="pane on" id="p1">
+<h3>개요</h3>타이머 2개(T1, T2)가 서로 번갈아 동작하면서 램프를 점멸시키고, 램프가 켜질 때 부저를 울리는 경보 회로입니다.
+<h3>타이머 단자</h3>
+<table><tr><th>단자</th><th>의미</th></tr><tr><td>A1, A2</td><td>코일(전원) 단자</td></tr><tr><td>15</td><td>접점 공통(COM)</td></tr><tr><td>16</td><td><b>b접점</b> (평상시 15와 연결)</td></tr><tr><td>18</td><td><b>a접점</b> (설정시간 후 15와 연결)</td></tr></table>
+<h3>동작 원리</h3>① +24V → T2의 b접점 → T1 코일 여자<br>② 3초 후 T1 a접점 ON → 램프·부저 ON, T2 코일 여자<br>③ 3초 후 T2 b접점이 열려 T1 소자 → 램프·부저 OFF, T2도 소자<br>④ ①로 돌아가 반복 = 플리커
+<h3>학습 포인트</h3>✔ 타이머 2개 ✔ a/b 접점 ✔ 경보 출력
+<div class="warn"><b>체험 오류</b><br>● 타이머 접점 a/b 혼동<br>● 부저가 멈추지 않는 결선</div>
+<p style="font-size:12px;opacity:.8">※ 학습용 시뮬레이션입니다. 실제 전기 작업은 관련 규정과 전문가 검토가 필요합니다.</p>
+</div>
+<div class="pane" id="p2">
+<svg viewBox="0 0 300 250" width="100%" font-size="11" fill="none" stroke="currentColor" stroke-width="1.6">
+<line x1="10" y1="20" x2="290" y2="20"/><line x1="10" y1="230" x2="290" y2="230"/>
+<text x="12" y="14" stroke="none" fill="currentColor">+24V</text><text x="12" y="244" stroke="none" fill="currentColor">0V</text>
+<line x1="40" y1="20" x2="40" y2="55"/><line x1="40" y1="55" x2="33" y2="78"/><line x1="40" y1="78" x2="40" y2="120"/><text x="48" y="72" stroke="none" fill="currentColor">T2-b(15·16)</text>
+<rect x="24" y="120" width="32" height="30"/><text x="28" y="140" stroke="none" fill="currentColor">T1</text><line x1="40" y1="150" x2="40" y2="230"/>
+<line x1="110" y1="20" x2="110" y2="55"/><line x1="110" y1="55" x2="103" y2="78"/><line x1="110" y1="78" x2="110" y2="120"/><text x="118" y="72" stroke="none" fill="currentColor">T1-a(15·18)</text>
+<rect x="94" y="120" width="32" height="30"/><text x="98" y="140" stroke="none" fill="currentColor">T2</text><line x1="110" y1="150" x2="110" y2="230"/>
+<line x1="190" y1="20" x2="190" y2="55"/><line x1="190" y1="55" x2="183" y2="78"/><line x1="190" y1="78" x2="190" y2="140"/><text x="150" y="100" stroke="none" fill="currentColor">T1-a</text>
+<circle cx="190" cy="160" r="14"/><text x="183" y="164" stroke="none" fill="currentColor">램프</text><line x1="190" y1="174" x2="190" y2="230"/>
+<line x1="255" y1="20" x2="255" y2="55"/><line x1="255" y1="55" x2="248" y2="78"/><line x1="255" y1="78" x2="255" y2="140"/><text x="215" y="100" stroke="none" fill="currentColor">T1-a</text>
+<rect x="241" y="146" width="28" height="26"/><text x="245" y="163" stroke="none" fill="currentColor">부저</text><line x1="255" y1="172" x2="255" y2="230"/>
+</svg>
+<p>설정시간은 각 3초입니다. 접점 기호의 사선이 열린 모양이면 b접점(평상시 닫힘)으로 읽습니다.</p>
+</div>
+<div class="pane" id="p3">
+<h3>배선 방법</h3>1. 3D 화면에서 <b>단자(구)</b>를 클릭 → 연결할 다른 단자를 클릭하면 전선이 생깁니다.<br>2. 전선을 클릭하면 삭제됩니다. 마우스 드래그로 시점 회전, 휠로 확대합니다.<br>3. 배선 후 <b>전원 ON</b>을 누르고 약 10초간 관찰하면 결과가 판정됩니다.
+<h3>필요한 연결(10개)</h3>
++24V→T2·15 / T2·16→T1·A1 / T1·A2→0V / +24V→T1·15 / T1·18→T2·A1 / T1·18→램프(+) / 램프(−)→0V / T2·A2→0V / T1·18→부저(+) / 부저(−)→0V
+<p>막히면 <b>정답 배선</b>으로 확인하고, <b>오류 체험</b> 버튼으로 잘못된 결선의 결과를 비교하세요.</p>
+</div>
+</aside>
+<section id="stage">
+<div id="hint">단자 클릭 → 단자 클릭 = 배선 · 전선 클릭 = 삭제<br><b style="color:#e53935">● +24V</b> <b style="color:#1e66d0">● 0V</b> <b style="color:#2eb872">● 신호선(색별 구분)</b></div>
+<div id="ctrl">
+<button class="on" id="bOn">⏻ 전원 ON</button><button class="off" id="bOff">⏻ 전원 OFF</button>
+<button id="bOk">✔ 정답 배선</button><button class="er" id="bE1">오류① a/b 혼동</button><button class="er" id="bE2">오류② 부저 상시</button>
+<button id="bSnd">🔊 부저 소리 ON</button><button id="bClr">↺ 초기화</button>
+</div>
+<div id="msg">회로도를 참고해 배선을 완성하고 전원 ON을 눌러 확인하세요.</div>
+</section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ---------- tabs ----------
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button,.pane').forEach(e=>e.classList.remove('on'));
+  b.classList.add('on');document.getElementById(b.dataset.t).classList.add('on');});
+const $=id=>document.getElementById(id);
+function msg(t,c){const m=$('msg');m.textContent=t;m.className=c||''}
+
+// ---------- scene ----------
+const stage=$('stage');
+const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));stage.insertBefore(R.domElement,stage.firstChild);
+R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=.85;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+const S=new THREE.Scene();S.background=new THREE.Color(0xbfd9ee);
+const C=new THREE.PerspectiveCamera(45,1,.1,100);C.position.set(0,13,11);
+const O=new THREE.OrbitControls(C,R.domElement);O.target.set(0,0,.8);O.maxPolarAngle=1.45;O.update();
+S.add(new THREE.HemisphereLight(0xffffff,0x778899,.35));
+// 반사용 환경맵(스튜디오 조명 박스) — 금속 재질의 하이라이트를 만든다
+{const pm=new THREE.PMREMGenerator(R),es=new THREE.Scene();
+ es.add(new THREE.Mesh(new THREE.BoxGeometry(30,14,30),new THREE.MeshBasicMaterial({color:0x6f7f90,side:THREE.BackSide})));
+ [[0,6.5,0,12,0xffffff],[-9,4,6,5,0xfff2dd],[9,4,-6,5,0xddeeff]].forEach(l=>{const m=new THREE.Mesh(new THREE.BoxGeometry(l[3],.3,l[3]*.6),new THREE.MeshBasicMaterial({color:l[4]}));m.material.color.multiplyScalar(8);m.position.set(l[0],l[1],l[2]);es.add(m)});
+ S.environment=pm.fromScene(es,.04).texture;}
+const DL=new THREE.DirectionalLight(0xffffff,.9);DL.position.set(5,12,6);DL.castShadow=true;DL.shadow.mapSize.set(2048,2048);
+Object.assign(DL.shadow.camera,{left:-12,right:12,top:12,bottom:-12,near:1,far:40});DL.shadow.bias=-.0004;S.add(DL);
+const std=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6},o||{}));
+const mt=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.95,roughness:.28,envMapIntensity:1.2},o||{})); // 금속
+const plas=(c,o)=>new THREE.MeshPhysicalMaterial(Object.assign({color:c,metalness:0,roughness:.38,clearcoat:.6,clearcoatRoughness:.25},o||{})); // 플라스틱
+function box(w,h,d,c,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),plas(c));m.position.set(x,y,z);S.add(m);return m}
+function screw(x,y,z,r){const s=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.12,20),mt(0xc9ced4,{roughness:.3}));s.position.set(x,y+.06,z);S.add(s);
+ const k=new THREE.Mesh(new THREE.BoxGeometry(r*1.5,.03,r*.28),std(0x15181b));k.position.set(x,y+.125,z);k.rotation.y=Math.random()*3;S.add(k)}
+function label(t,p,s,col){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');
+  x.font='bold 38px sans-serif';x.fillStyle=col||'#12263a';x.textAlign='center';x.textBaseline='middle';x.fillText(t,128,34);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:Object.assign(new THREE.CanvasTexture(c),{encoding:THREE.sRGBEncoding}),toneMapped:false,depthTest:false,transparent:true}));
+  sp.position.copy(p);sp.scale.set(2*s,.5*s,1);sp.renderOrder=5;S.add(sp)}
+{const p=box(17,.4,10.5,0x9aa3ad,0,-.2,.8);p.material=plas(0x1f7a5c,{roughness:.55,clearcoat:.35});
+ [[-8,-4.2],[8,-4.2],[-8,5.6],[8,5.6]].forEach(a=>screw(a[0],0,a[1],.28))}
+// terminals
+const TM={},TP={};
+function term(id,x,y,z,col,lab){const m=new THREE.Mesh(new THREE.CylinderGeometry(.27,.27,.3,24),mt(0xd2d6db,{roughness:.3}));
+  m.position.set(x,y,z);m.userData.id=id;S.add(m);TM[id]=m;TP[id]=m.position;
+  {const sl=new THREE.Mesh(new THREE.BoxGeometry(.42,.04,.07),std(0x15181b));sl.position.y=.16;sl.rotation.y=.5;m.add(sl);
+   const cl=new THREE.Mesh(new THREE.CylinderGeometry(.36,.38,.18,24),plas(col,{roughness:.5}));cl.position.set(x,y-.22,z);S.add(cl)}
+  label(lab,new THREE.Vector3(x,y+.1,z+.55),.6)}
+// DC source
+{const h=box(2.4,1.8,2.6,0x44505e,-6.4,.9,-1.8);h.material=mt(0x2a5db0,{roughness:.35,metalness:.55});
+ for(let i=0;i<7;i++)box(1.6,.03,.07,0x050607,-6.4,1.81,-2.7+i*.28);
+ box(2.1,.05,.5,0x1b1e22,-6.4,1.1,-.46)}label('DC 24V',new THREE.Vector3(-6.4,2.3,-1.8),1.1,'#222');
+term('P',-7,.3,-.1,0xd62828,'+24V');term('N',-5.8,.3,-.1,0x1f5fd6,'0V');
+// timers
+const TD={};
+function timer(n,x){
+  const tb=box(3.4,1.8,2.2,0xe4e4de,x,.9,-1.4);tb.material=plas(n==1?0x3f9be0:0xf0b429,{roughness:.42,clearcoat:.5});
+  box(3.4,.3,.5,0x2c3036,x,.15,.1);
+  const rl=box(3.9,.1,.55,0xb7bcc3,x,.05,-.3);rl.material=mt(0xb7bcc3,{roughness:.35}); // DIN 레일
+  box(2.1,.06,1.2,0x14181c,x,1.78,-1.9);
+  label('타이머 T'+n,new THREE.Vector3(x,2.4,-.9),1,'#1d4e89');
+  const k=new THREE.Mesh(new THREE.CylinderGeometry(.4,.42,.3,32),plas(0x1a1c1f,{roughness:.5}));k.position.set(x,1.95,-.6);S.add(k);
+  const kc=new THREE.Mesh(new THREE.CylinderGeometry(.27,.27,.04,32),mt(0xc9ced4,{roughness:.22}));kc.position.y=.17;k.add(kc);
+  const ki=new THREE.Mesh(new THREE.BoxGeometry(.06,.02,.3),std(0xffffff));ki.position.set(0,.16,-.25);k.add(ki);
+  const cv=document.createElement('canvas');cv.width=256;cv.height=128;const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
+  const pl=new THREE.Mesh(new THREE.PlaneGeometry(1.8,.9),new THREE.MeshBasicMaterial({map:tx,toneMapped:false}));pl.rotation.x=-Math.PI/2;pl.position.set(x,1.83,-1.9);S.add(pl);
+  const gl=new THREE.Mesh(new THREE.PlaneGeometry(1.9,.95),new THREE.MeshPhysicalMaterial({color:0xffffff,transparent:true,opacity:.12,roughness:.02,clearcoat:1,depthWrite:false}));gl.rotation.x=-Math.PI/2;gl.position.set(x,1.87,-1.9);S.add(gl);
+  const led=new THREE.Mesh(new THREE.SphereGeometry(.12,12,8),std(0x335533));led.position.set(x+1.3,1.85,-1.1);S.add(led);
+  TD[n]={cv,tx,led,last:''};
+  ['A1','A2','15','16','18'].forEach((id,i)=>term('T'+n+'.'+id,x+(i-2)*.68,.5,.1,i<2?0x9a9a9a:(id=='16'?0xc9a227:id=='18'?0x2e9e5b:0x888888),id));
+}
+timer(1,-2);timer(2,3);
+label('15=COM · 16=b접점 · 18=a접점',new THREE.Vector3(.5,3,-.2),.9,'#555');
+// lamp
+box(1.8,.3,1.8,0xe67e22,-2,.15,3.2);
+const sk=new THREE.Mesh(new THREE.CylinderGeometry(.42,.48,.5,32),mt(0xb9a06a,{roughness:.3}));sk.position.set(-2,.55,3.2);S.add(sk);
+for(let i=0;i<3;i++){const rg=new THREE.Mesh(new THREE.TorusGeometry(.45,.035,8,32),mt(0x9c8550,{roughness:.35}));rg.rotation.x=Math.PI/2;rg.position.set(-2,.4+i*.13,3.2);S.add(rg)}
+const fil=new THREE.Mesh(new THREE.TorusGeometry(.18,.02,6,20),mt(0xdddddd));fil.position.set(-2,1.1,3.2);S.add(fil);
+const bulb=new THREE.Mesh(new THREE.SphereGeometry(.6,32,20),new THREE.MeshPhysicalMaterial({color:0xd8dcd8,roughness:.05,transparent:true,opacity:.6,clearcoat:1,emissive:0x000000}));bulb.position.set(-2,1.15,3.2);S.add(bulb);
+const lampL=new THREE.PointLight(0xffd54f,0,8);lampL.position.set(-2,1.6,3.2);S.add(lampL);
+label('램프',new THREE.Vector3(-2,2.2,3.2),.8);
+term('L+',-2.7,.4,4.4,0xd62828,'+');term('L-',-1.3,.4,4.4,0x1f5fd6,'−');
+// buzzer
+const bz=new THREE.Mesh(new THREE.CylinderGeometry(1,1.1,.9,40),plas(0xd23b3b,{roughness:.4}));bz.position.set(4.5,.45,3.2);S.add(bz);
+const rim=new THREE.Mesh(new THREE.TorusGeometry(.8,.05,8,40),mt(0xcfd3d8,{roughness:.25}));rim.rotation.x=Math.PI/2;rim.position.y=.46;bz.add(rim);
+for(let r=0;r<3;r++)for(let i=0;i<6*(r+1);i++){const h=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.02,8),new THREE.MeshBasicMaterial({color:0}));const a=i/(6*(r+1))*6.283,rr=.2+r*.22;h.position.set(Math.cos(a)*rr,.46,Math.sin(a)*rr);bz.add(h)}
+const fl=new THREE.Mesh(new THREE.CylinderGeometry(1.3,1.3,.1,40),mt(0xd4a73a,{roughness:.35}));fl.position.set(4.5,.05,3.2);S.add(fl);
+label('부저',new THREE.Vector3(4.5,1.7,3.2),.8);
+term('B+',3.8,.4,4.6,0xd62828,'+');term('B-',5.2,.4,4.6,0x1f5fd6,'−');
+
+// ---------- wiring ----------
+const wires=[];let sel=null;const pal=[0xe53935,0x1e66d0,0xf09a1a,0x2e9e5b,0x8e44ad,0x00a3a3];
+function addWire(a,b){
+  if(a===b||wires.some(w=>(w.a===a&&w.b===b)||(w.a===b&&w.b===a)))return;
+  const pa=TP[a],pb=TP[b],h=1.2+(wires.length%5)*.3+pa.distanceTo(pb)*.06;
+  const cu=new THREE.CatmullRomCurve3([pa.clone(),pa.clone().add(new THREE.Vector3(0,.7,0)),
+    new THREE.Vector3((pa.x+pb.x)/2,h,(pa.z+pb.z)/2),pb.clone().add(new THREE.Vector3(0,.7,0)),pb.clone()]);
+  const m=new THREE.Mesh(new THREE.TubeGeometry(cu,28,.07,8),plas(pal[wires.length%pal.length],{roughness:.45,clearcoat:.3}));
+  m.castShadow=true;[pa,pb].forEach(p=>{const f=new THREE.Mesh(new THREE.CylinderGeometry(.11,.11,.35,14),mt(0xd6d9dd,{roughness:.3}));f.position.set(p.x,p.y+.3,p.z);m.add(f)}); // 금속 페룰
+  S.add(m);wires.push({a,b,mesh:m});recolor();
+}
+// 배선 색상: 같은 망끼리 같은 색 (+24V 빨강 / 0V 파랑 / 신호선은 색별)
+function recolor(){const par={};const f=x=>{if(!(x in par))par[x]=x;return par[x]===x?x:(par[x]=f(par[x]))};
+ wires.forEach(w=>{const ra=f(w.a),rb=f(w.b);par[ra]=rb});const P=f('P'),N=f('N');
+ const sig=[0x2eb872,0xf09a1a,0xf2d21a,0x9b59b6,0x00bcd4],m={};let k=0;
+ wires.forEach(w=>{const r=f(w.a);let c;if(P===N&&r===P)c=0xff2fd0;else if(r===P)c=0xe53935;else if(r===N)c=0x1e66d0;else{if(!(r in m))m[r]=sig[k++%sig.length];c=m[r]}w.mesh.material.color.setHex(c)})}
+function clearWires(){wires.forEach(w=>S.remove(w.mesh));wires.length=0;pick(null)}
+function setWires(l){clearWires();l.forEach(p=>addWire(p[0],p[1]));resetSim()}
+const OK=[['P','T2.15'],['T2.16','T1.A1'],['T1.A2','N'],['P','T1.15'],['T1.18','T2.A1'],['T1.18','L+'],['L-','N'],['T2.A2','N'],['T1.18','B+'],['B-','N']];
+const E1=OK.map(p=>p[0]==='T1.18'&&p[1]==='T2.A1'?['T1.16','T2.A1']:p);
+const E2=OK.map(p=>p[0]==='T1.18'&&p[1]==='B+'?['P','B+']:p);
+function pick(id){if(sel)TM[sel].material.emissive.setHex(0);sel=id;if(id)TM[id].material.emissive.setHex(0xffaa00)}
+const rc=new THREE.Raycaster(),mv=new THREE.Vector2();let dn=null;
+R.domElement.addEventListener('pointerdown',e=>dn=[e.clientX,e.clientY]);
+R.domElement.addEventListener('pointerup',e=>{
+  if(!dn||Math.hypot(e.clientX-dn[0],e.clientY-dn[1])>5)return;
+  const r=R.domElement.getBoundingClientRect();mv.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);rc.setFromCamera(mv,C);
+  const th=rc.intersectObjects(Object.values(TM))[0];
+  if(th){const id=th.object.userData.id;if(!sel)pick(id);else if(sel===id)pick(null);else{addWire(sel,id);pick(null);resetSim()}return}
+  const wh=rc.intersectObjects(wires.map(w=>w.mesh),false)[0];
+  if(wh){const i=wires.findIndex(w=>w.mesh===wh.object);S.remove(wh.object);wires.splice(i,1);recolor();resetSim()}
+});
+
+// ---------- simulation (net connectivity) ----------
+const PRESET=3;
+let st;function resetSim(){st={on:false,t1:{e:0,c:false},t2:{e:0,c:false},lamp:false,buz:false,time:0,ltog:0,btog:0,mis:0,done:false};
+  beep(false);if(wires!==undefined)msg('배선이 변경되었습니다. 전원 ON을 눌러 확인하세요.')}
+function solve(){
+  const par={};const f=x=>{if(!(x in par))par[x]=x;return par[x]===x?x:(par[x]=f(par[x]))};
+  const u=(a,b)=>{par[f(a)]=f(b)};
+  wires.forEach(w=>u(w.a,w.b));
+  [1,2].forEach(i=>u('T'+i+'.15','T'+i+'.'+(st['t'+i].c?18:16)));
+  const P=f('P'),N=f('N');
+  return{short:P===N,fed:(a,b)=>f(a)===P&&f(b)===N};
+}
+function step(dt){
+  if(!st.on)return;
+  let g=solve();if(g.short){trip();return}
+  [1,2].forEach(i=>{const t=st['t'+i];if(g.fed('T'+i+'.A1','T'+i+'.A2')){t.e+=dt;if(t.e>=PRESET)t.c=true}else{t.e=0;t.c=false}});
+  g=solve();if(g.short){trip();return}
+  const l=g.fed('L+','L-'),b=g.fed('B+','B-');
+  if(l!==st.lamp)st.ltog++;if(b!==st.buz)st.btog++;
+  st.lamp=l;st.buz=b;if(l!==b)st.mis+=dt;
+  st.time+=dt;
+  if(!st.done){if(st.time<10.5)msg('동작 관찰 중… '+st.time.toFixed(1)+'초');else{st.done=true;judge()}}
+}
+function trip(){st.on=false;st.lamp=st.buz=false;st.t1={e:0,c:false};st.t2={e:0,c:false};beep(false);
+  msg('⚠ 단락(+24V와 0V가 직접 연결)! 차단기가 트립되었습니다. 전선을 확인하세요.','er')}
+function judge(){
+  if(st.ltog>=3&&st.btog>=3&&st.mis<.6)return msg('✔ 정상적으로 동작합니다. 램프가 점멸하고 부저가 울립니다.','ok');
+  if(st.ltog<1)return msg('✖ 램프가 켜지지 않습니다. 타이머 접점 a(18)/b(16) 선택과 코일(A1·A2) 결선을 확인하세요. (a/b 혼동)','er');
+  if(st.ltog<3)return msg('✖ 램프가 점멸하지 않고 한 상태에 머뭅니다. T1→T2 a접점(18), T2 b접점(16) 되먹임 결선을 확인하세요.','er');
+  if(st.btog===0)return msg('✖ 부저가 울리지 않습니다. 부저 (+)를 T1의 a접점(18)에 연결했는지 확인하세요.','er');
+  if(st.btog<=1&&st.buz)return msg('✖ 부저가 멈추지 않습니다. 부저(+)가 접점을 거치지 않고 +24V에 직접 연결되어 있습니다.','er');
+  msg('✖ 부저가 램프와 반대로 울립니다. 부저에 b접점(16)을 사용하지 않았는지 확인하세요. (a/b 혼동)','er');
+}
+// audio
+let AC,osc,gn,muted=false;function beep(on){on=on&&!muted;try{if(!AC&&on){AC=new (window.AudioContext||window.webkitAudioContext)();osc=AC.createOscillator();gn=AC.createGain();gn.gain.value=0;osc.type='square';osc.frequency.value=880;osc.connect(gn);gn.connect(AC.destination);osc.start()}
+  if(gn){gn.gain.setTargetAtTime(on?.18:0,AC.currentTime,.01);if(on)osc.frequency.value=(performance.now()%500<250)?1100:800}}catch(e){}}
+resetSim();msg('회로도를 참고해 배선을 완성하고 전원 ON을 눌러 확인하세요.');
+$('bOn').onclick=()=>{const w=wires.slice();if(!w.length)return msg('먼저 배선을 연결하세요.','er');
+  const keep=wires;resetSim();st.on=true;beep(true);if(AC&&AC.state==='suspended')AC.resume();beep(false);msg('전원 ON — 동작 관찰 중…')};
+$('bOff').onclick=()=>{const was=st.on;resetSim();if(was)msg('전원 OFF')};
+$('bSnd').onclick=()=>{muted=!muted;$('bSnd').textContent=muted?'🔇 부저 소리 OFF':'🔊 부저 소리 ON';if(!muted){beep(true);beep(false)}};
+$('bClr').onclick=()=>{clearWires();resetSim();msg('초기화되었습니다. 배선을 처음부터 연결해 보세요.')};
+$('bOk').onclick=()=>{setWires(OK);msg('정답 배선이 연결되었습니다. 전원 ON을 눌러 보세요.')};
+$('bE1').onclick=()=>{setWires(E1);msg('오류①: T1의 a접점(18) 대신 b접점(16)을 T2 코일에 연결했습니다. 전원 ON으로 결과를 확인하세요.','er')};
+$('bE2').onclick=()=>{setWires(E2);msg('오류②: 부저(+)를 +24V에 직접 연결했습니다. 전원 ON으로 결과를 확인하세요.','er')};
+
+// ---------- render ----------
+function drawT(n){const t=TD[n],s=st['t'+n];const rem=st.on?(s.c?0:Math.max(0,PRESET-s.e)):PRESET;
+  const key=rem.toFixed(1)+(s.c?'c':'');if(key===t.last)return;t.last=key;
+  const x=t.cv.getContext('2d');x.fillStyle='#220808';x.fillRect(0,0,256,128);x.fillStyle='#ff3b30';x.font='bold 70px monospace';x.textAlign='center';x.textBaseline='middle';
+  x.fillText(rem.toFixed(1)+'s',128,66);t.tx.needsUpdate=true;t.led.material.color.setHex(s.c?0x33ff66:0x335533);}
+function size(){const w=stage.clientWidth,h=stage.clientHeight;R.setSize(w,h);C.aspect=w/h;C.updateProjectionMatrix()}
+new ResizeObserver(size).observe(stage);size();
+S.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+const clk=new THREE.Clock();
+(function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.1);step(dt);
+  bulb.material.color.setHex(st.lamp?0xffe082:0xd8dcd8);bulb.material.emissive.setHex(st.lamp?0xffb300:0);lampL.intensity=st.lamp?1.6:0;
+  bz.scale.setScalar(st.buz?1+.04*Math.sin(performance.now()/25):1);beep(st.buz);
+  drawT(1);drawT(2);O.update();R.render(S,C)})();
+</script>
+</body></html>
