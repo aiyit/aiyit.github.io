@@ -1,248 +1,228 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NumPy 시각화 강의안</title>
 <style>
 :root{--bg:#f6f8fb;--card:#fff;--ink:#1c2433;--sub:#5b6577;--line:#dbe1ea;--main:#1d4e89;--acc:#e08a00;--code:#14213a;--codefg:#e6edf7;--ok:#e8f3ea}
-@media(prefers-color-scheme:dark){:root{--bg:#10151f;--card:#18202e;--ink:#e6ebf3;--sub:#9aa6ba;--line:#2a3447;--main:#6fa8ee;--acc:#f0a830;--ok:#1b2d22}}
+@media(prefers-color-scheme:dark){:root{--bg:#10151f;--card:#18202e;--ink:#e6ebf3;--sub:#9aa6ba;--line:#2a3447;--main:#6fa8ee;--acc:#f0a830;--code:#0b101a;--codefg:#e6edf7;--ok:#1b2d22}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Noto Sans KR","Malgun Gothic",sans-serif}
 header{background:var(--main);color:#fff;padding:40px 20px 28px}
 header div,main,nav div{max-width:960px;margin:0 auto}
-header h1{margin:0 0 8px;font-size:2rem;letter-spacing:-.02em}
-header p{margin:0;opacity:.9}
+header h1{margin:0 0 8px;font-size:2rem;letter-spacing:-.02em}header p{margin:0;opacity:.9}
 nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
 nav div{display:flex;gap:4px;overflow-x:auto;padding:8px 20px}
 nav a{white-space:nowrap;padding:6px 14px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:.92rem}
 nav a:hover,nav a:focus-visible{background:var(--bg);outline:2px solid var(--main)}
-main{padding:12px 20px 60px}
-section{margin-top:36px;scroll-margin-top:60px}
+main{padding:12px 20px 60px}section{margin-top:36px;scroll-margin-top:60px}
 h2{font-size:1.5rem;margin:0 0 6px;padding-left:12px;border-left:5px solid var(--acc)}
-h3{font-size:1.15rem;margin:26px 0 8px;color:var(--main)}
+h3{font-size:1.15rem;margin:26px 0 8px;color:var(--main)}a{color:var(--main)}
 .goal{background:var(--ok);padding:10px 14px;border-radius:6px;margin:10px 0}
-.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:12px 0}
-pre{background:var(--code);color:var(--codefg);padding:14px 16px;border-radius:8px;overflow-x:auto;font:14px/1.6 Consolas,"D2Coding",monospace;margin:10px 0;white-space:pre}
+.box,.note{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:12px 0}
+pre{background:var(--code);color:var(--codefg);padding:14px 16px;border-radius:8px;overflow-x:auto;font:14px/1.6 Consolas,"D2Coding",monospace;margin:10px 0}
+pre.out{background:var(--card);color:var(--ink);border:1px dashed var(--line);margin-top:-4px}
 code{background:var(--bg);padding:1px 5px;border-radius:4px;font-family:Consolas,monospace;font-size:.92em}
-pre code{background:none;padding:0}
-.wrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;background:var(--card);font-size:.93rem}
+pre code{background:none;padding:0}.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.93rem;margin:8px 0}
 th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
 th{background:var(--main);color:#fff;white-space:nowrap}
 .q{border-left:4px solid var(--acc);padding:4px 14px;margin:10px 0;background:var(--card)}
+details{margin:6px 0}summary{cursor:pointer;color:var(--main);font-weight:bold}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.flow .box{margin:0;border-top:4px solid var(--main)}
-label{display:block;font-weight:600;margin:8px 0 4px}
-select,button{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)}
-select{width:100%}
-button{background:var(--main);color:#fff;border:0;cursor:pointer;margin-top:12px}
-button:focus-visible,select:focus-visible{outline:2px solid var(--acc)}
-#msg{margin:12px 0;padding:10px 14px;border-radius:6px;background:var(--ok)}
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin:12px 0}
+.flow>span{align-self:center;font-size:1.4rem;color:var(--acc)}
+.st{flex:1;min-width:140px;border:2px solid var(--main);border-radius:10px;padding:10px;background:var(--card);text-align:center}
+.st b{display:block;color:var(--main)}.st small{display:block;color:var(--sub)}
+.fig{margin:10px 0;text-align:center}.fig figcaption{color:var(--sub);font-size:.9rem;margin-top:4px}
+.sv{width:100%;max-width:440px;height:auto;background:var(--card);border:1px solid var(--line);border-radius:8px}
+.tx{fill:var(--ink);font-size:11px;font-family:sans-serif}.tt{fill:var(--ink);font-size:13px;font-weight:bold;font-family:sans-serif}
+.ax{stroke:var(--sub);stroke-width:1.2}.gr{stroke:var(--line);stroke-width:1}
+.bar{fill:var(--main)}.hb{fill:var(--main);stroke:var(--card);stroke-width:1}
+.av{stroke:var(--acc);stroke-width:2;stroke-dasharray:6 4}
+.pl{fill:none;stroke:var(--main);stroke-width:2}.dt{fill:var(--main)}.dt2{fill:var(--main);fill-opacity:.65}
+.acc{fill:var(--acc)}.cn{fill:#d9480f}.cnt{fill:#fff;font-size:11px;font-weight:bold;font-family:sans-serif}
+select,button{font:inherit;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+button{background:var(--main);color:#fff;cursor:pointer}
 @media print{nav{display:none}}
-</style>
-</head>
-<body>
-<header><div>
-<h1>NumPy 시각화 강의안</h1>
-<p>숫자 배열을 그래프로 바꿔 데이터의 패턴을 읽는 방법 · NumPy + Matplotlib 중심</p>
-</div></header>
-<nav><div>
-<a href="#goal">학습 목표</a><a href="#rel">NumPy와 시각화</a><a href="#tools">시각화 도구</a><a href="#graphs">대표 그래프 5가지</a><a href="#p1">실습 1</a><a href="#p2">실습 2</a><a href="#pick">그래프 선택 실습</a><a href="#wrap">정리</a>
-</div></nav>
+</style></head><body>
+<header><div><h1>NumPy 시각화 강의안</h1><p>숫자 배열을 그래프로 바꿔 데이터의 패턴을 읽는 방법 · 그림으로 쉽게 배우는 NumPy + Matplotlib</p></div></header>
+<nav><div><a href="#goal">학습 목표</a><a href="#rel">NumPy와 시각화</a><a href="#tools">시각화 도구</a><a href="#graphs">대표 그래프 5가지</a><a href="#ready">코드 읽는 법</a><a href="#p1">실습 1</a><a href="#p2">실습 2</a><a href="#pick">그래프 선택 실습</a><a href="#wrap">정리</a></div></nav>
 <main>
-
-<section id="goal">
-<h2>학습 목표</h2>
-<div class="goal">
-<ul>
-<li>NumPy와 시각화 도구가 각각 맡는 역할을 설명할 수 있다.</li>
+<section id="goal"><h2>학습 목표</h2>
+<ul><li>NumPy와 시각화 도구가 각각 맡는 역할을 설명할 수 있다.</li>
 <li>데이터의 종류에 맞는 그래프(선, 막대, 히스토그램, 산점도, 히트맵)를 고를 수 있다.</li>
-<li>NumPy로 계산한 결과를 Matplotlib 그래프로 직접 출력할 수 있다.</li>
-</ul></div>
-<div class="box"><strong>실습 환경:</strong> Google Colab 또는 Jupyter Notebook. 로컬 PC에서는 아래 명령으로 설치합니다.
+<li>NumPy로 계산한 결과를 Matplotlib 그래프로 직접 출력할 수 있다.</li></ul>
+<p><strong>실습 환경:</strong> Google Colab 또는 Jupyter Notebook. 로컬 PC에서는 아래 명령으로 설치합니다.</p>
 <pre><code>pip install numpy matplotlib seaborn plotly</code></pre>
-Colab에는 NumPy, Matplotlib, Seaborn, Plotly가 대부분 설치되어 있습니다.</div>
-</section>
+<p>Colab에는 NumPy, Matplotlib, Seaborn, Plotly가 대부분 설치되어 있습니다.</p>
+<div class="goal">💡 <strong>그래프를 왜 그릴까요?</strong> 숫자 100개가 줄줄이 적힌 표는 읽기 어렵지만, 그래프로 바꾸면 "누가 높은지, 어디에 몰려 있는지, 점점 오르는지"가 한눈에 보입니다.</div></section>
 
-<section id="rel">
-<h2>1. NumPy와 시각화 도구의 관계</h2>
-<p>NumPy는 수치 계산과 배열 처리가 주된 역할이고, 그래프를 직접 그리는 기능은 약합니다. 그래서 계산한 데이터를 시각화 라이브러리에 넘겨주는 구조로 사용합니다.</p>
-<div class="flow">
-<div class="box"><strong>1단계. 데이터 생성·수집</strong><br>학생 점수, 센서 온도, 매출 데이터</div>
-<div class="box"><strong>2단계. NumPy 처리</strong><br>평균, 합계, 최댓값, 조건 검색, 배열 연산</div>
-<div class="box"><strong>3단계. 시각화 도구</strong><br>Matplotlib, Seaborn, Plotly</div>
-<div class="box"><strong>4단계. 결과 해석</strong><br>추세, 분포, 차이, 이상값 확인</div>
+<section id="rel"><h2>1. NumPy와 시각화 도구의 관계</h2>
+<p>NumPy는 수치 계산과 배열 처리가 주된 역할이고, 그래프를 직접 그리는 기능은 약합니다. 그래서 <b>NumPy가 계산한 데이터를 시각화 라이브러리에 넘겨주는 구조</b>로 사용합니다.</p>
+<div class="flow"><div class="st"><b>1단계</b>데이터 생성·수집<small>학생 점수, 센서 온도, 매출</small></div><span>➜</span><div class="st"><b>2단계</b>NumPy 처리<small>평균, 합계, 최댓값, 조건 검색</small></div><span>➜</span><div class="st"><b>3단계</b>시각화 도구<small>Matplotlib, Seaborn, Plotly</small></div><span>➜</span><div class="st"><b>4단계</b>결과 해석<small>추세, 분포, 차이, 이상값</small></div></div>
+<h3>쉬운 비유: 요리사와 화가</h3>
+<div class="flow"><div class="st"><b>🧮 NumPy</b>계산 담당<small>재료를 손질하고 계산한다</small></div><span>➜</span><div class="st"><b>📊 숫자 데이터</b>전달<small>평균 81.0, 점수 배열 …</small></div><span>➜</span><div class="st"><b>🎨 Matplotlib</b>그림 담당<small>받은 숫자로 그래프를 그린다</small></div></div>
+<p>예) 학생 점수 100개가 있을 때 NumPy로 평균과 최고점을 계산하고, Matplotlib으로 점수 분포를 그래프로 표현합니다.</p></section>
+
+<section id="tools"><h2>2. NumPy 연계 시각화 도구</h2>
+<div class="wrap"><table><tr><th>도구</th><th>특징</th><th>쉬운 설명</th><th>활용</th></tr>
+<tr><td>Matplotlib (초보자 추천)</td><td>NumPy 배열을 선·막대·히스토그램 등으로 표현하는 대표 라이브러리</td><td>기본 그림 도구. 가장 먼저 배운다</td><td>학생 성적, 시간별 온도, 매출 변화, 센서 데이터</td></tr>
+<tr><td>Seaborn</td><td>Matplotlib 기반. 분포, 상관관계, 히트맵을 간결하게 표현</td><td>적은 코드로 예쁜 통계 그래프</td><td>과목별 성적 비교, 변수 간 관계, 데이터 분포 분석</td></tr>
+<tr><td>Plotly</td><td>마우스 올리기, 확대·축소, 범례 선택 등 상호작용 지원</td><td>웹에서 마우스로 만지는 그래프</td><td>웹 기반 분석, 인터랙티브 대시보드, 실시간 모니터링</td></tr></table></div>
+<div class="goal"><strong>학습 순서 권장:</strong> NumPy + Matplotlib으로 기본 원리 → 통계 분석이 필요하면 Seaborn → 인터랙티브 웹 시각화가 필요하면 Plotly</div>
+<p>공식 사이트: <a href="https://matplotlib.org">matplotlib.org</a> · <a href="https://seaborn.pydata.org">seaborn.pydata.org</a> · <a href="https://plotly.com/python">plotly.com/python</a></p></section>
+
+<section id="graphs"><h2>3. 대표적인 그래프 5가지</h2>
+<p>같은 숫자 배열도 어떤 그래프를 쓰느냐에 따라 전달하는 정보가 달라집니다. 아래 그림은 이 강의에서 직접 그리게 될 결과입니다.</p>
+<div class="gal">
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Student Score Visualization</text><line class="gr" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="42.0" y="244.0" text-anchor="end">0</text><line class="gr" x1="48.0" y1="142.0" x2="406.0" y2="142.0"/><text class="tx" x="42.0" y="146.0" text-anchor="end">50</text><line class="gr" x1="48.0" y1="44.0" x2="406.0" y2="44.0"/><text class="tx" x="42.0" y="48.0" text-anchor="end">100</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Student Number</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Score</text><rect class="bar" x="62.3" y="102.8" width="43.0" height="137.2"/><text class="tx" x="83.8" y="98.8" text-anchor="middle">70</text><text class="tx" x="83.8" y="254.0" text-anchor="middle">1</text><rect class="bar" x="133.9" y="73.4" width="43.0" height="166.6"/><text class="tx" x="155.4" y="69.4" text-anchor="middle">85</text><text class="tx" x="155.4" y="254.0" text-anchor="middle">2</text><rect class="bar" x="205.5" y="63.6" width="43.0" height="176.4"/><text class="tx" x="227.0" y="59.6" text-anchor="middle">90</text><text class="tx" x="227.0" y="254.0" text-anchor="middle">3</text><rect class="bar" x="277.1" y="112.6" width="43.0" height="127.4"/><text class="tx" x="298.6" y="108.6" text-anchor="middle">65</text><text class="tx" x="298.6" y="254.0" text-anchor="middle">4</text><rect class="bar" x="348.7" y="53.8" width="43.0" height="186.2"/><text class="tx" x="370.2" y="49.8" text-anchor="middle">95</text><text class="tx" x="370.2" y="254.0" text-anchor="middle">5</text><line class="av" x1="48.0" y1="81.2" x2="406.0" y2="81.2"/><text class="tx acc" x="404.0" y="77.2" text-anchor="end">81.0</text><rect class="bar" x="270" y="28" width="9" height="9"/><text class="tx" x="283.0" y="37.0" text-anchor="start">Score</text><line class="av" x1="325.0" y1="32.0" x2="343.0" y2="32.0"/><text class="tx" x="347.0" y="37.0" text-anchor="start">Average</text></svg><figcaption><b>막대그래프</b> — 항목끼리 <b>크기 비교</b> (학생별 점수)</figcaption></figure>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Hourly Temperature</text><line class="gr" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="42.0" y="244.0" text-anchor="end">0</text><line class="gr" x1="48.0" y1="174.7" x2="406.0" y2="174.7"/><text class="tx" x="42.0" y="178.7" text-anchor="end">10</text><line class="gr" x1="48.0" y1="109.3" x2="406.0" y2="109.3"/><text class="tx" x="42.0" y="113.3" text-anchor="end">20</text><line class="gr" x1="48.0" y1="44.0" x2="406.0" y2="44.0"/><text class="tx" x="42.0" y="48.0" text-anchor="end">30</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Hour</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Temperature</text><polyline class="pl" points="48.0,179.0 63.6,187.3 79.1,192.5 94.7,194.3 110.3,192.5 125.8,187.3 141.4,179.0 157.0,168.1 172.5,155.5 188.1,142.0 203.7,128.5 219.2,115.9 234.8,105.0 250.3,96.7 265.9,91.5 281.5,89.7 297.0,91.5 312.6,96.7 328.2,105.0 343.7,115.9 359.3,128.5 374.9,142.0 390.4,155.5 406.0,168.1"/><circle class="dt" cx="48.0" cy="179.0" r="2.8"/><circle class="dt" cx="63.6" cy="187.3" r="2.8"/><circle class="dt" cx="79.1" cy="192.5" r="2.8"/><circle class="dt" cx="94.7" cy="194.3" r="2.8"/><circle class="dt" cx="110.3" cy="192.5" r="2.8"/><circle class="dt" cx="125.8" cy="187.3" r="2.8"/><circle class="dt" cx="141.4" cy="179.0" r="2.8"/><circle class="dt" cx="157.0" cy="168.1" r="2.8"/><circle class="dt" cx="172.5" cy="155.5" r="2.8"/><circle class="dt" cx="188.1" cy="142.0" r="2.8"/><circle class="dt" cx="203.7" cy="128.5" r="2.8"/><circle class="dt" cx="219.2" cy="115.9" r="2.8"/><circle class="dt" cx="234.8" cy="105.0" r="2.8"/><circle class="dt" cx="250.3" cy="96.7" r="2.8"/><circle class="dt" cx="265.9" cy="91.5" r="2.8"/><circle class="dt" cx="281.5" cy="89.7" r="2.8"/><circle class="dt" cx="297.0" cy="91.5" r="2.8"/><circle class="dt" cx="312.6" cy="96.7" r="2.8"/><circle class="dt" cx="328.2" cy="105.0" r="2.8"/><circle class="dt" cx="343.7" cy="115.9" r="2.8"/><circle class="dt" cx="359.3" cy="128.5" r="2.8"/><circle class="dt" cx="374.9" cy="142.0" r="2.8"/><circle class="dt" cx="390.4" cy="155.5" r="2.8"/><circle class="dt" cx="406.0" cy="168.1" r="2.8"/><text class="tx" x="48.0" y="254.0" text-anchor="middle">0</text><text class="tx" x="141.4" y="254.0" text-anchor="middle">6</text><text class="tx" x="234.8" y="254.0" text-anchor="middle">12</text><text class="tx" x="328.2" y="254.0" text-anchor="middle">18</text><text class="tx" x="406.0" y="254.0" text-anchor="middle">23</text><text class="tx acc" x="281.5" y="81.7" text-anchor="middle">최고(15시)</text><text class="tx acc" x="94.7" y="210.3" text-anchor="middle">최저(3시)</text></svg><figcaption><b>선 그래프</b> — 시간에 따른 <b>변화</b> (시간별 온도)</figcaption></figure>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Score Distribution</text><line class="gr" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="42.0" y="244.0" text-anchor="end">0</text><line class="gr" x1="48.0" y1="193.3" x2="406.0" y2="193.3"/><text class="tx" x="42.0" y="197.3" text-anchor="end">5</text><line class="gr" x1="48.0" y1="146.7" x2="406.0" y2="146.7"/><text class="tx" x="42.0" y="150.7" text-anchor="end">10</text><line class="gr" x1="48.0" y1="100.0" x2="406.0" y2="100.0"/><text class="tx" x="42.0" y="104.0" text-anchor="end">15</text><line class="gr" x1="48.0" y1="53.3" x2="406.0" y2="53.3"/><text class="tx" x="42.0" y="57.3" text-anchor="end">20</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Score</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Students</text><rect class="hb" x="48.0" y="202.7" width="35.8" height="37.3"/><rect class="hb" x="83.8" y="184.0" width="35.8" height="56.0"/><rect class="hb" x="119.6" y="90.7" width="35.8" height="149.3"/><rect class="hb" x="155.4" y="62.7" width="35.8" height="177.3"/><rect class="hb" x="191.2" y="81.3" width="35.8" height="158.7"/><rect class="hb" x="227.0" y="109.3" width="35.8" height="130.7"/><rect class="hb" x="262.8" y="156.0" width="35.8" height="84.0"/><rect class="hb" x="298.6" y="184.0" width="35.8" height="56.0"/><rect class="hb" x="334.4" y="193.3" width="35.8" height="46.7"/><rect class="hb" x="370.2" y="202.7" width="35.8" height="37.3"/><text class="tx" x="71.3" y="254.0" text-anchor="middle">50</text><text class="tx" x="143.9" y="254.0" text-anchor="middle">60</text><text class="tx" x="216.5" y="254.0" text-anchor="middle">70</text><text class="tx" x="289.0" y="254.0" text-anchor="middle">80</text><text class="tx" x="361.6" y="254.0" text-anchor="middle">90</text><line class="av" x1="210.4" y1="44.0" x2="210.4" y2="240.0"/><text class="tx acc" x="214.4" y="54.0" text-anchor="start">Mean</text></svg><figcaption><b>히스토그램</b> — 값이 <b>어디에 몰려 있나</b> (점수 분포)</figcaption></figure>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Study Hours vs Score</text><line class="gr" x1="48.0" y1="213.9" x2="406.0" y2="213.9"/><text class="tx" x="42.0" y="217.9" text-anchor="end">40</text><line class="gr" x1="48.0" y1="161.6" x2="406.0" y2="161.6"/><text class="tx" x="42.0" y="165.6" text-anchor="end">60</text><line class="gr" x1="48.0" y1="109.3" x2="406.0" y2="109.3"/><text class="tx" x="42.0" y="113.3" text-anchor="end">80</text><line class="gr" x1="48.0" y1="57.1" x2="406.0" y2="57.1"/><text class="tx" x="42.0" y="61.1" text-anchor="end">100</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Study Hours</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Score</text><circle class="dt2" cx="96.1" cy="202.0" r="4"/><circle class="dt2" cx="351.4" cy="86.7" r="4"/><circle class="dt2" cx="321.4" cy="95.4" r="4"/><circle class="dt2" cx="139.3" cy="197.6" r="4"/><circle class="dt2" cx="225.4" cy="166.5" r="4"/><circle class="dt2" cx="208.9" cy="155.7" r="4"/><circle class="dt2" cx="281.3" cy="119.2" r="4"/><circle class="dt2" cx="330.4" cy="108.7" r="4"/><circle class="dt2" cx="81.6" cy="197.6" r="4"/><circle class="dt2" cx="58.1" cy="223.1" r="4"/><circle class="dt2" cx="347.2" cy="97.0" r="4"/><circle class="dt2" cx="202.9" cy="142.7" r="4"/><circle class="dt2" cx="320.9" cy="120.0" r="4"/><circle class="dt2" cx="48.8" cy="232.3" r="4"/><circle class="dt2" cx="207.4" cy="165.6" r="4"/><circle class="dt2" cx="306.3" cy="109.6" r="4"/><circle class="dt2" cx="129.9" cy="206.6" r="4"/><circle class="dt2" cx="386.4" cy="91.6" r="4"/><circle class="dt2" cx="370.7" cy="109.0" r="4"/><circle class="dt2" cx="59.0" cy="211.6" r="4"/><circle class="dt2" cx="57.1" cy="213.7" r="4"/><circle class="dt2" cx="241.8" cy="142.9" r="4"/><circle class="dt2" cx="384.2" cy="71.5" r="4"/><circle class="dt2" cx="184.5" cy="158.6" r="4"/><circle class="dt2" cx="125.5" cy="168.1" r="4"/><circle class="dt2" cx="199.1" cy="160.6" r="4"/><circle class="dt2" cx="58.4" cy="216.3" r="4"/><circle class="dt2" cx="127.4" cy="179.9" r="4"/><circle class="dt2" cx="204.8" cy="193.7" r="4"/><circle class="dt2" cx="225.5" cy="149.6" r="4"/><circle class="dt2" cx="131.4" cy="181.3" r="4"/><circle class="dt2" cx="130.7" cy="199.8" r="4"/><circle class="dt2" cx="126.3" cy="179.2" r="4"/><circle class="dt2" cx="212.5" cy="161.1" r="4"/><circle class="dt2" cx="151.7" cy="208.1" r="4"/><circle class="dt2" cx="55.7" cy="213.8" r="4"/><circle class="dt2" cx="347.9" cy="117.2" r="4"/><circle class="dt2" cx="247.2" cy="148.0" r="4"/><circle class="dt2" cx="277.9" cy="131.9" r="4"/><circle class="dt2" cx="114.6" cy="173.2" r="4"/><circle class="dt2" cx="403.3" cy="82.8" r="4"/><circle class="dt2" cx="355.9" cy="101.9" r="4"/><circle class="dt2" cx="91.3" cy="193.0" r="4"/><circle class="dt2" cx="167.1" cy="194.1" r="4"/><circle class="dt2" cx="306.3" cy="103.4" r="4"/><circle class="dt2" cx="302.6" cy="135.0" r="4"/><circle class="dt2" cx="383.2" cy="85.8" r="4"/><circle class="dt2" cx="199.1" cy="173.4" r="4"/><circle class="dt2" cx="345.2" cy="118.2" r="4"/><circle class="dt2" cx="288.0" cy="131.5" r="4"/><text class="tx" x="48.0" y="254.0" text-anchor="middle">0</text><text class="tx" x="227.0" y="254.0" text-anchor="middle">5</text><text class="tx" x="406.0" y="254.0" text-anchor="middle">10</text><text class="tx acc" x="83.8" y="62.293333333333344">↗ 오른쪽 위로 향함 = 함께 증가</text></svg><figcaption><b>산점도</b> — 두 값의 <b>관계</b> (공부 시간과 점수)</figcaption></figure>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Scores by Student and Subject</text><text class="tx" x="42.0" y="67.6" text-anchor="end">S1</text><rect class="bar" fill-opacity="0.56" x="48.0" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="67.6" text-anchor="middle">80</text><rect class="bar" fill-opacity="0.74" x="137.5" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="67.6" text-anchor="middle">90</text><rect class="bar" fill-opacity="0.39" x="227.0" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="67.6" text-anchor="middle">70</text><rect class="bar" fill-opacity="0.65" x="316.5" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="67.6" text-anchor="middle">85</text><text class="tx" x="42.0" y="106.8" text-anchor="end">S2</text><rect class="bar" fill-opacity="0.65" x="48.0" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="106.8" text-anchor="middle">85</text><rect class="bar" fill-opacity="0.83" x="137.5" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="106.8" text-anchor="middle">95</text><rect class="bar" fill-opacity="0.71" x="227.0" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="106.8" text-anchor="middle">88</text><rect class="bar" fill-opacity="0.53" x="316.5" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="106.8" text-anchor="middle">78</text><text class="tx" x="42.0" y="146.0" text-anchor="end">S3</text><rect class="bar" fill-opacity="0.48" x="48.0" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="146.0" text-anchor="middle">75</text><rect class="bar" fill-opacity="0.56" x="137.5" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="146.0" text-anchor="middle">80</text><rect class="bar" fill-opacity="0.74" x="227.0" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="146.0" text-anchor="middle">90</text><rect class="bar" fill-opacity="0.78" x="316.5" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="146.0" text-anchor="middle">92</text><text class="tx" x="42.0" y="185.2" text-anchor="end">S4</text><rect class="bar" fill-opacity="0.21" x="48.0" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="185.2" text-anchor="middle">60</text><rect class="bar" fill-opacity="0.39" x="137.5" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="185.2" text-anchor="middle">70</text><rect class="bar" fill-opacity="0.30" x="227.0" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="185.2" text-anchor="middle">65</text><rect class="bar" fill-opacity="0.56" x="316.5" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="185.2" text-anchor="middle">80</text><text class="tx" x="42.0" y="224.4" text-anchor="end">S5</text><rect class="bar" fill-opacity="0.83" x="48.0" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="224.4" text-anchor="middle">95</text><rect class="bar" fill-opacity="0.65" x="137.5" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="224.4" text-anchor="middle">85</text><rect class="bar" fill-opacity="0.74" x="227.0" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="224.4" text-anchor="middle">90</text><rect class="bar" fill-opacity="0.71" x="316.5" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="224.4" text-anchor="middle">88</text><text class="tx" x="92.8" y="256.0" text-anchor="middle">Kor</text><text class="tx" x="182.2" y="256.0" text-anchor="middle">Eng</text><text class="tx" x="271.8" y="256.0" text-anchor="middle">Math</text><text class="tx" x="361.2" y="256.0" text-anchor="middle">Sci</text><text class="tx acc" x="210.0" y="274.0" text-anchor="middle">진할수록 높은 점수</text></svg><figcaption><b>히트맵</b> — 표의 숫자를 <b>색</b>으로 (학생별·과목별 점수)</figcaption></figure>
 </div>
-<div class="box">예) 학생 점수 100개가 있을 때 NumPy로 평균과 최고점을 계산하고, Matplotlib으로 점수 분포를 그래프로 표현합니다.</div>
-</section>
-
-<section id="tools">
-<h2>2. NumPy 연계 시각화 도구</h2>
-<div class="wrap"><table>
-<tr><th>도구</th><th>특징</th><th>활용</th></tr>
-<tr><td>Matplotlib (초보자 추천)</td><td>NumPy 배열을 선 그래프, 막대그래프, 히스토그램 등으로 표현하는 대표 라이브러리</td><td>학생 성적, 시간별 온도, 매출 변화, 센서 데이터</td></tr>
-<tr><td>Seaborn</td><td>Matplotlib 기반. 분포, 상관관계, 히트맵을 간결하게 표현</td><td>과목별 성적 비교, 변수 간 관계, 데이터 분포 분석</td></tr>
-<tr><td>Plotly</td><td>마우스 올리기, 확대·축소, 범례 선택 등 상호작용 지원</td><td>웹 기반 분석, 인터랙티브 대시보드, 실시간 모니터링</td></tr>
-</table></div>
-<div class="box"><strong>학습 순서 권장:</strong> NumPy + Matplotlib으로 기본 원리 → 통계 분석이 필요하면 Seaborn → 인터랙티브 웹 시각화가 필요하면 Plotly</div>
-<p>공식 사이트: <a href="https://matplotlib.org" target="_blank" rel="noopener">matplotlib.org</a> · <a href="https://seaborn.pydata.org" target="_blank" rel="noopener">seaborn.pydata.org</a> · <a href="https://plotly.com/python" target="_blank" rel="noopener">plotly.com/python</a></p>
-</section>
-
-<section id="graphs">
-<h2>3. 대표적인 그래프 5가지</h2>
-<p>같은 숫자 배열도 어떤 그래프를 쓰느냐에 따라 전달하는 정보가 달라집니다.</p>
-<div class="wrap"><table>
-<tr><th>그래프</th><th>용도</th><th>예시</th><th>NumPy 기능</th><th>그리기 함수</th></tr>
+<div class="wrap"><table><tr><th>그래프</th><th>용도</th><th>예시</th><th>NumPy 기능</th><th>그리기 함수</th></tr>
 <tr><td>선 그래프 (Line)</td><td>시간에 따른 변화</td><td>시간별 온도 변화</td><td>np.arange(), 배열 연산</td><td>plt.plot()</td></tr>
 <tr><td>막대그래프 (Bar)</td><td>항목 간 크기 비교</td><td>학생별 시험 점수</td><td>np.array(), np.max()</td><td>plt.bar()</td></tr>
 <tr><td>히스토그램 (Histogram)</td><td>값이 어느 구간에 얼마나 분포하는지</td><td>한 학급의 성적 분포</td><td>np.mean(), np.std()</td><td>plt.hist()</td></tr>
 <tr><td>산점도 (Scatter)</td><td>두 변수 사이의 관계</td><td>공부 시간과 시험 점수</td><td>배열 간 연산, 조건 검색</td><td>plt.scatter()</td></tr>
-<tr><td>히트맵 (Heatmap)</td><td>숫자 크기를 색으로 표현</td><td>학생별·과목별 점수 비교</td><td>2차원 배열, reshape()</td><td>sns.heatmap()</td></tr>
-</table></div>
-<div class="q">질문: "학생 5명의 점수 비교"와 "한 학급 100명의 점수 분포"에는 각각 어떤 그래프가 맞을까요?</div>
-</section>
+<tr><td>히트맵 (Heatmap)</td><td>숫자 크기를 색으로 표현</td><td>학생별·과목별 점수 비교</td><td>2차원 배열, reshape()</td><td>sns.heatmap()</td></tr></table></div>
+<div class="q">질문: "학생 5명의 점수 비교"와 "한 학급 100명의 점수 분포"에는 각각 어떤 그래프가 맞을까요?
+<details><summary>정답 보기</summary>5명 비교 → <b>막대그래프</b>(항목별 크기 비교), 100명 분포 → <b>히스토그램</b>(구간별 개수). 데이터가 적고 이름이 있으면 막대, 데이터가 많고 "몰림"을 보고 싶으면 히스토그램입니다.</details></div></section>
 
-<section id="p1">
-<h2>4. 실습 1 — 학생 점수 막대그래프와 평균선</h2>
-<p><strong>목표:</strong> 배열 생성 → 평균 계산 → 막대그래프 → 평균선 표시까지 한 흐름으로 실행합니다.</p>
-<pre><code>import numpy as np
-import matplotlib.pyplot as plt
+<section id="ready"><h2>4. 실습 전에: 그래프 코드 읽는 법</h2>
+<p>Matplotlib 코드는 대부분 아래 <b>4단계</b>로 되어 있습니다. 코드가 길어 보여도 이 순서만 기억하면 쉽게 읽을 수 있습니다.</p>
+<div class="flow"><div class="st"><b>① 데이터 준비</b>np.array(...)<small>그릴 숫자를 만든다</small></div><span>➜</span><div class="st"><b>② 그리기</b>plt.bar() / plt.plot()<small>그래프 종류를 고른다</small></div><span>➜</span><div class="st"><b>③ 꾸미기</b>plt.xlabel() · title() · legend()<small>제목과 이름을 붙인다</small></div><span>➜</span><div class="st"><b>④ 보여주기</b>plt.show()<small>화면에 출력한다</small></div></div>
+<div class="wrap"><table><tr><th>처음 보는 표현</th><th>쉬운 설명</th></tr>
+<tr><td>import numpy as np</td><td>NumPy 도구를 불러와 np라는 짧은 이름으로 쓴다</td></tr>
+<tr><td>import matplotlib.pyplot as plt</td><td>그래프 도구를 불러와 plt라는 짧은 이름으로 쓴다 (plt = 그림판)</td></tr>
+<tr><td># 글자</td><td>주석. 컴퓨터는 무시하고 사람이 읽는 설명이다</td></tr>
+<tr><td>label="Score"</td><td>이름표 붙이기. 범례(legend)에 이 이름이 나온다</td></tr>
+<tr><td>linestyle="--"</td><td>선 모양 지정. "--"는 점선</td></tr>
+<tr><td>plt.xlabel("A"); plt.ylabel("B")</td><td>세미콜론(;)은 한 줄에 명령 두 개를 쓸 때 사용</td></tr></table></div>
+<div class="note">💡 라벨을 영어로 쓴 이유: 한글을 쓰면 Colab 등에서 글자가 □□로 깨지는 경우가 있어 한글 폰트 설정을 따로 해야 하기 때문입니다.</div></section>
+
+<section id="p1"><h2>5. 실습 1 — 학생 점수 막대그래프와 평균선</h2>
+<div class="goal"><strong>목표:</strong> 배열 생성 → 평균 계산 → 막대그래프 → 평균선 표시까지 한 흐름으로 실행합니다.</div>
+<pre><code>import numpy as np                 # 숫자 계산 도구 NumPy를 np라는 짧은 이름으로 불러온다
+import matplotlib.pyplot as plt    # 그래프 도구 Matplotlib(pyplot)을 plt라는 이름으로 불러온다
 
 # 1. 학생 점수 배열 생성
-scores = np.array([70, 85, 90, 65, 95])
+scores = np.array([70, 85, 90, 65, 95])   # 학생 5명의 점수를 NumPy 배열로 만든다
 
 # 2. NumPy로 평균 계산
-average = np.mean(scores)
+average = np.mean(scores)                 # 점수 5개의 평균을 구한다 → 81.0
 
 # 3. 막대그래프 작성
-students = np.arange(1, 6)
-plt.bar(students, scores, label="Score")
-plt.axhline(average, linestyle="--", label="Average")
+students = np.arange(1, 6)                # 학생 번호 [1 2 3 4 5] (x축에 쓸 값)
+plt.bar(students, scores, label=&quot;Score&quot;)  # x축=학생 번호, 막대 높이=점수, 범례 이름=&quot;Score&quot;
+plt.axhline(average, linestyle=&quot;--&quot;, label=&quot;Average&quot;)  # 평균 높이에 가로 점선(--)을 긋는다
 
 # 4. 그래프 꾸미기
-plt.xlabel("Student Number")
-plt.ylabel("Score")
-plt.title("Student Score Visualization")
-plt.xticks(students)
-plt.legend()
-plt.grid(axis="y", alpha=0.3)
+plt.xlabel(&quot;Student Number&quot;)              # x축 제목
+plt.ylabel(&quot;Score&quot;)                       # y축 제목
+plt.title(&quot;Student Score Visualization&quot;)  # 그래프 전체 제목
+plt.xticks(students)                      # x축 눈금을 1~5 정수로만 표시
+plt.legend()                              # 범례(Score, Average 설명 상자) 표시
+plt.grid(axis=&quot;y&quot;, alpha=0.3)             # 가로 눈금선을 연하게(투명도 0.3) 표시
 
 # 5. 그래프 출력
-plt.show()
-print("평균 점수:", average)</code></pre>
-<div class="wrap"><table>
-<tr><th>코드</th><th>역할</th></tr>
-<tr><td>np.array()</td><td>점수 데이터를 배열로 생성</td></tr>
-<tr><td>np.mean()</td><td>평균 계산 (결과: 81.0)</td></tr>
-<tr><td>plt.bar()</td><td>학생별 점수를 막대로 표시</td></tr>
-<tr><td>plt.axhline()</td><td>평균을 나타내는 수평 점선</td></tr>
-<tr><td>plt.show()</td><td>그래프 화면 출력</td></tr>
-</table></div>
-<div class="q">학생 질문: ① 점수를 하나 추가하면 어떤 줄을 고쳐야 할까요? ② 평균 미만인 막대만 다른 색으로 칠하려면?(힌트: <code>scores &lt; average</code>)</div>
-</section>
+plt.show()                                # 완성된 그래프를 화면에 보여 준다
+print(&quot;평균 점수:&quot;, average)              # 계산한 평균을 글자로도 확인한다</code></pre>
+<h3>실행 결과 (그림 속 번호는 코드와 연결됩니다)</h3>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Student Score Visualization</text><line class="gr" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="42.0" y="244.0" text-anchor="end">0</text><line class="gr" x1="48.0" y1="142.0" x2="406.0" y2="142.0"/><text class="tx" x="42.0" y="146.0" text-anchor="end">50</text><line class="gr" x1="48.0" y1="44.0" x2="406.0" y2="44.0"/><text class="tx" x="42.0" y="48.0" text-anchor="end">100</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Student Number</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Score</text><rect class="bar" x="62.3" y="102.8" width="43.0" height="137.2"/><text class="tx" x="83.8" y="98.8" text-anchor="middle">70</text><text class="tx" x="83.8" y="254.0" text-anchor="middle">1</text><rect class="bar" x="133.9" y="73.4" width="43.0" height="166.6"/><text class="tx" x="155.4" y="69.4" text-anchor="middle">85</text><text class="tx" x="155.4" y="254.0" text-anchor="middle">2</text><rect class="bar" x="205.5" y="63.6" width="43.0" height="176.4"/><text class="tx" x="227.0" y="59.6" text-anchor="middle">90</text><text class="tx" x="227.0" y="254.0" text-anchor="middle">3</text><rect class="bar" x="277.1" y="112.6" width="43.0" height="127.4"/><text class="tx" x="298.6" y="108.6" text-anchor="middle">65</text><text class="tx" x="298.6" y="254.0" text-anchor="middle">4</text><rect class="bar" x="348.7" y="53.8" width="43.0" height="186.2"/><text class="tx" x="370.2" y="49.8" text-anchor="middle">95</text><text class="tx" x="370.2" y="254.0" text-anchor="middle">5</text><line class="av" x1="48.0" y1="81.2" x2="406.0" y2="81.2"/><text class="tx acc" x="404.0" y="77.2" text-anchor="end">81.0</text><rect class="bar" x="270" y="28" width="9" height="9"/><text class="tx" x="283.0" y="37.0" text-anchor="start">Score</text><line class="av" x1="325.0" y1="32.0" x2="343.0" y2="32.0"/><text class="tx" x="347.0" y="37.0" text-anchor="start">Average</text><circle class="cn" cx="318.0" cy="14.0" r="9"/><text class="cnt" x="318.0" y="18.0" text-anchor="middle">1</text><circle class="cn" cx="12.0" cy="80.0" r="9"/><text class="cnt" x="12.0" y="84.0" text-anchor="middle">2</text><circle class="cn" cx="289.0" cy="270.0" r="9"/><text class="cnt" x="289.0" y="274.0" text-anchor="middle">3</text><circle class="cn" cx="298.6" cy="128.6" r="9"/><text class="cnt" x="298.6" y="132.6" text-anchor="middle">4</text><circle class="cn" cx="58.0" cy="69.2" r="9"/><text class="cnt" x="58.0" y="73.2" text-anchor="middle">5</text><circle class="cn" cx="256.0" cy="32.0" r="9"/><text class="cnt" x="256.0" y="36.0" text-anchor="middle">6</text><circle class="cn" cx="119.6" cy="142.0" r="9"/><text class="cnt" x="119.6" y="146.0" text-anchor="middle">7</text></svg><figcaption>실행하면 이런 그래프가 나옵니다</figcaption></figure>
+<div class="wrap"><table><tr><th>번호</th><th>코드</th><th>그림에서의 역할</th></tr>
+<tr><td>①</td><td>plt.title()</td><td>그래프 맨 위 제목</td></tr><tr><td>②</td><td>plt.ylabel()</td><td>세로축 이름(점수)</td></tr>
+<tr><td>③</td><td>plt.xlabel()</td><td>가로축 이름(학생 번호)</td></tr><tr><td>④</td><td>plt.bar()</td><td>학생별 점수를 막대로 표시</td></tr>
+<tr><td>⑤</td><td>plt.axhline()</td><td>평균(81.0)을 나타내는 가로 점선</td></tr><tr><td>⑥</td><td>plt.legend()</td><td>막대=Score, 점선=Average 설명 상자</td></tr>
+<tr><td>⑦</td><td>plt.grid()</td><td>읽기 쉽게 깔아 둔 연한 눈금선</td></tr></table></div>
+<pre class="out">평균 점수: 81.0</pre>
+<div class="wrap"><table><tr><th>코드</th><th>역할</th></tr>
+<tr><td>np.array()</td><td>점수 데이터를 배열로 생성</td></tr><tr><td>np.mean()</td><td>평균 계산 (결과: 81.0)</td></tr>
+<tr><td>plt.bar()</td><td>학생별 점수를 막대로 표시</td></tr><tr><td>plt.axhline()</td><td>평균을 나타내는 수평 점선</td></tr><tr><td>plt.show()</td><td>그래프 화면 출력</td></tr></table></div>
+<div class="q">학생 질문: ① 점수를 하나 추가하면 어떤 줄을 고쳐야 할까요? ② 평균 미만인 막대만 다른 색으로 칠하려면?(힌트: <code>scores &lt; average</code>)
+<details><summary>정답 보기</summary>① <code>scores</code> 배열에 값을 추가하고, 학생 번호도 늘려야 하므로 <code>np.arange(1, 6)</code>을 <code>np.arange(1, 7)</code>로 바꿉니다(끝값 미포함).<pre><code># 평균 미만 막대만 다른 색으로 칠하기
+colors = np.where(scores &lt; average, &quot;tomato&quot;, &quot;steelblue&quot;)   # 조건이 참이면 tomato, 거짓이면 steelblue
+plt.bar(students, scores, color=colors)                      # color에 막대별 색 목록을 넘긴다</code></pre></details></div></section>
 
-<section id="p2">
-<h2>5. 실습 2 — 그래프 종류별 따라 하기</h2>
-<p><strong>목표:</strong> 같은 방식으로 선 그래프, 히스토그램, 산점도, 히트맵을 직접 그려 봅니다. 한글 폰트 문제를 피하기 위해 라벨은 영어로 작성했습니다.</p>
+<section id="p2"><h2>6. 실습 2 — 그래프 종류별 따라 하기</h2>
+<div class="goal"><strong>목표:</strong> 같은 방식으로 선 그래프, 히스토그램, 산점도, 히트맵을 직접 그려 봅니다. 한글 폰트 문제를 피하기 위해 라벨은 영어로 작성했습니다.</div>
 <h3>① 선 그래프 — 시간별 온도</h3>
 <pre><code>import numpy as np
 import matplotlib.pyplot as plt
 
-hours = np.arange(0, 24)
-temp = 15 + 8 * np.sin((hours - 9) * np.pi / 12)   # 배열 연산으로 온도 생성
-plt.plot(hours, temp, marker="o")
-plt.xlabel("Hour"); plt.ylabel("Temperature")
-plt.title("Hourly Temperature")
-plt.show()</code></pre>
+hours = np.arange(0, 24)                          # 0시~23시: [0 1 2 ... 23]
+temp = 15 + 8 * np.sin((hours - 9) * np.pi / 12)  # 사인 곡선으로 하루 온도를 만든다(평균 15도, ±8도, 15시경 최고)
+plt.plot(hours, temp, marker=&quot;o&quot;)                 # 선 그래프를 그리고 각 점에 동그라미(o)를 표시한다
+plt.xlabel(&quot;Hour&quot;); plt.ylabel(&quot;Temperature&quot;)     # 축 제목(;로 한 줄에 명령 두 개)
+plt.title(&quot;Hourly Temperature&quot;)                   # 그래프 제목
+plt.show()                                        # 화면에 출력</code></pre>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Hourly Temperature</text><line class="gr" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="42.0" y="244.0" text-anchor="end">0</text><line class="gr" x1="48.0" y1="174.7" x2="406.0" y2="174.7"/><text class="tx" x="42.0" y="178.7" text-anchor="end">10</text><line class="gr" x1="48.0" y1="109.3" x2="406.0" y2="109.3"/><text class="tx" x="42.0" y="113.3" text-anchor="end">20</text><line class="gr" x1="48.0" y1="44.0" x2="406.0" y2="44.0"/><text class="tx" x="42.0" y="48.0" text-anchor="end">30</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Hour</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Temperature</text><polyline class="pl" points="48.0,179.0 63.6,187.3 79.1,192.5 94.7,194.3 110.3,192.5 125.8,187.3 141.4,179.0 157.0,168.1 172.5,155.5 188.1,142.0 203.7,128.5 219.2,115.9 234.8,105.0 250.3,96.7 265.9,91.5 281.5,89.7 297.0,91.5 312.6,96.7 328.2,105.0 343.7,115.9 359.3,128.5 374.9,142.0 390.4,155.5 406.0,168.1"/><circle class="dt" cx="48.0" cy="179.0" r="2.8"/><circle class="dt" cx="63.6" cy="187.3" r="2.8"/><circle class="dt" cx="79.1" cy="192.5" r="2.8"/><circle class="dt" cx="94.7" cy="194.3" r="2.8"/><circle class="dt" cx="110.3" cy="192.5" r="2.8"/><circle class="dt" cx="125.8" cy="187.3" r="2.8"/><circle class="dt" cx="141.4" cy="179.0" r="2.8"/><circle class="dt" cx="157.0" cy="168.1" r="2.8"/><circle class="dt" cx="172.5" cy="155.5" r="2.8"/><circle class="dt" cx="188.1" cy="142.0" r="2.8"/><circle class="dt" cx="203.7" cy="128.5" r="2.8"/><circle class="dt" cx="219.2" cy="115.9" r="2.8"/><circle class="dt" cx="234.8" cy="105.0" r="2.8"/><circle class="dt" cx="250.3" cy="96.7" r="2.8"/><circle class="dt" cx="265.9" cy="91.5" r="2.8"/><circle class="dt" cx="281.5" cy="89.7" r="2.8"/><circle class="dt" cx="297.0" cy="91.5" r="2.8"/><circle class="dt" cx="312.6" cy="96.7" r="2.8"/><circle class="dt" cx="328.2" cy="105.0" r="2.8"/><circle class="dt" cx="343.7" cy="115.9" r="2.8"/><circle class="dt" cx="359.3" cy="128.5" r="2.8"/><circle class="dt" cx="374.9" cy="142.0" r="2.8"/><circle class="dt" cx="390.4" cy="155.5" r="2.8"/><circle class="dt" cx="406.0" cy="168.1" r="2.8"/><text class="tx" x="48.0" y="254.0" text-anchor="middle">0</text><text class="tx" x="141.4" y="254.0" text-anchor="middle">6</text><text class="tx" x="234.8" y="254.0" text-anchor="middle">12</text><text class="tx" x="328.2" y="254.0" text-anchor="middle">18</text><text class="tx" x="406.0" y="254.0" text-anchor="middle">23</text><text class="tx acc" x="281.5" y="81.7" text-anchor="middle">최고(15시)</text><text class="tx acc" x="94.7" y="210.3" text-anchor="middle">최저(3시)</text></svg><figcaption>하루 중 온도가 오르내리는 모습. 15시쯤 가장 높고 새벽 3시쯤 가장 낮습니다.</figcaption></figure>
 <h3>② 히스토그램 — 점수 분포</h3>
-<pre><code>np.random.seed(0)
-scores = np.random.normal(70, 10, 100).clip(0, 100)   # 평균 70, 표준편차 10
-plt.hist(scores, bins=10, edgecolor="black")
-plt.axvline(scores.mean(), linestyle="--", label="Mean")
-plt.xlabel("Score"); plt.ylabel("Students")
-plt.legend(); plt.show()
-print("평균:", scores.mean().round(1), "표준편차:", scores.std().round(1))</code></pre>
-<h3>③ 산점도 — 공부 시간과 점수</h3>
-<pre><code>np.random.seed(1)
-hours = np.random.uniform(0, 10, 50)
-score = 40 + 5 * hours + np.random.normal(0, 5, 50)
-plt.scatter(hours, score)
-plt.xlabel("Study Hours"); plt.ylabel("Score")
-plt.title("Study Hours vs Score")
-plt.show()
-print("상관계수:", np.corrcoef(hours, score)[0, 1].round(2))</code></pre>
-<h3>④ 히트맵 — 학생별·과목별 점수</h3>
-<pre><code>import seaborn as sns
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
 
-scores = np.array([[80, 90, 70, 85],
-                   [85, 95, 88, 78],
+np.random.seed(0)                                         # 난수 시작값 고정 → 실행할 때마다 같은 그래프
+scores = np.random.normal(70, 10, 100).clip(0, 100)       # 평균 70, 표준편차 10인 점수 100개 생성, 0~100 밖은 잘라낸다
+plt.hist(scores, bins=10, edgecolor=&quot;black&quot;)              # 점수를 10개 구간(bins)으로 나눠 개수를 막대로 표시, 테두리 검정
+plt.axvline(scores.mean(), linestyle=&quot;--&quot;, label=&quot;Mean&quot;)  # 평균 위치에 세로 점선을 긋는다
+plt.xlabel(&quot;Score&quot;); plt.ylabel(&quot;Students&quot;)               # 축 제목
+plt.legend(); plt.show()                                  # 범례 표시 후 출력
+print(&quot;평균:&quot;, scores.mean().round(1), &quot;표준편차:&quot;, scores.std().round(1))  # 평균과 퍼진 정도 확인</code></pre>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Score Distribution</text><line class="gr" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="42.0" y="244.0" text-anchor="end">0</text><line class="gr" x1="48.0" y1="193.3" x2="406.0" y2="193.3"/><text class="tx" x="42.0" y="197.3" text-anchor="end">5</text><line class="gr" x1="48.0" y1="146.7" x2="406.0" y2="146.7"/><text class="tx" x="42.0" y="150.7" text-anchor="end">10</text><line class="gr" x1="48.0" y1="100.0" x2="406.0" y2="100.0"/><text class="tx" x="42.0" y="104.0" text-anchor="end">15</text><line class="gr" x1="48.0" y1="53.3" x2="406.0" y2="53.3"/><text class="tx" x="42.0" y="57.3" text-anchor="end">20</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Score</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Students</text><rect class="hb" x="48.0" y="202.7" width="35.8" height="37.3"/><rect class="hb" x="83.8" y="184.0" width="35.8" height="56.0"/><rect class="hb" x="119.6" y="90.7" width="35.8" height="149.3"/><rect class="hb" x="155.4" y="62.7" width="35.8" height="177.3"/><rect class="hb" x="191.2" y="81.3" width="35.8" height="158.7"/><rect class="hb" x="227.0" y="109.3" width="35.8" height="130.7"/><rect class="hb" x="262.8" y="156.0" width="35.8" height="84.0"/><rect class="hb" x="298.6" y="184.0" width="35.8" height="56.0"/><rect class="hb" x="334.4" y="193.3" width="35.8" height="46.7"/><rect class="hb" x="370.2" y="202.7" width="35.8" height="37.3"/><text class="tx" x="71.3" y="254.0" text-anchor="middle">50</text><text class="tx" x="143.9" y="254.0" text-anchor="middle">60</text><text class="tx" x="216.5" y="254.0" text-anchor="middle">70</text><text class="tx" x="289.0" y="254.0" text-anchor="middle">80</text><text class="tx" x="361.6" y="254.0" text-anchor="middle">90</text><line class="av" x1="210.4" y1="44.0" x2="210.4" y2="240.0"/><text class="tx acc" x="214.4" y="54.0" text-anchor="start">Mean</text></svg><figcaption>점수가 평균(점선) 근처에 가장 많이 몰려 있는 종 모양 분포입니다. (그림은 설명용 예시이며 실제 값은 조금 다를 수 있습니다)</figcaption></figure>
+<h3>③ 산점도 — 공부 시간과 점수</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(1)                                       # 난수 고정
+hours = np.random.uniform(0, 10, 50)                    # 공부 시간 50개: 0~10 사이 무작위 값
+score = 40 + 5 * hours + np.random.normal(0, 5, 50)     # 점수 = 기본 40점 + 1시간당 5점 + 오차(들쭉날쭉함)
+plt.scatter(hours, score)                               # x=공부 시간, y=점수 위치에 점을 하나씩 찍는다
+plt.xlabel(&quot;Study Hours&quot;); plt.ylabel(&quot;Score&quot;)          # 축 제목
+plt.title(&quot;Study Hours vs Score&quot;)                       # 그래프 제목
+plt.show()                                              # 화면에 출력
+print(&quot;상관계수:&quot;, np.corrcoef(hours, score)[0, 1].round(2))  # 두 값의 관계 강도(-1~1). 1에 가까울수록 같이 증가</code></pre>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Study Hours vs Score</text><line class="gr" x1="48.0" y1="213.9" x2="406.0" y2="213.9"/><text class="tx" x="42.0" y="217.9" text-anchor="end">40</text><line class="gr" x1="48.0" y1="161.6" x2="406.0" y2="161.6"/><text class="tx" x="42.0" y="165.6" text-anchor="end">60</text><line class="gr" x1="48.0" y1="109.3" x2="406.0" y2="109.3"/><text class="tx" x="42.0" y="113.3" text-anchor="end">80</text><line class="gr" x1="48.0" y1="57.1" x2="406.0" y2="57.1"/><text class="tx" x="42.0" y="61.1" text-anchor="end">100</text><line class="ax" x1="48.0" y1="44.0" x2="48.0" y2="240.0"/><line class="ax" x1="48.0" y1="240.0" x2="406.0" y2="240.0"/><text class="tx" x="227.0" y="274.0" text-anchor="middle">Study Hours</text><text class="tx" transform="translate(12 142.0) rotate(-90)" text-anchor="middle">Score</text><circle class="dt2" cx="96.1" cy="202.0" r="4"/><circle class="dt2" cx="351.4" cy="86.7" r="4"/><circle class="dt2" cx="321.4" cy="95.4" r="4"/><circle class="dt2" cx="139.3" cy="197.6" r="4"/><circle class="dt2" cx="225.4" cy="166.5" r="4"/><circle class="dt2" cx="208.9" cy="155.7" r="4"/><circle class="dt2" cx="281.3" cy="119.2" r="4"/><circle class="dt2" cx="330.4" cy="108.7" r="4"/><circle class="dt2" cx="81.6" cy="197.6" r="4"/><circle class="dt2" cx="58.1" cy="223.1" r="4"/><circle class="dt2" cx="347.2" cy="97.0" r="4"/><circle class="dt2" cx="202.9" cy="142.7" r="4"/><circle class="dt2" cx="320.9" cy="120.0" r="4"/><circle class="dt2" cx="48.8" cy="232.3" r="4"/><circle class="dt2" cx="207.4" cy="165.6" r="4"/><circle class="dt2" cx="306.3" cy="109.6" r="4"/><circle class="dt2" cx="129.9" cy="206.6" r="4"/><circle class="dt2" cx="386.4" cy="91.6" r="4"/><circle class="dt2" cx="370.7" cy="109.0" r="4"/><circle class="dt2" cx="59.0" cy="211.6" r="4"/><circle class="dt2" cx="57.1" cy="213.7" r="4"/><circle class="dt2" cx="241.8" cy="142.9" r="4"/><circle class="dt2" cx="384.2" cy="71.5" r="4"/><circle class="dt2" cx="184.5" cy="158.6" r="4"/><circle class="dt2" cx="125.5" cy="168.1" r="4"/><circle class="dt2" cx="199.1" cy="160.6" r="4"/><circle class="dt2" cx="58.4" cy="216.3" r="4"/><circle class="dt2" cx="127.4" cy="179.9" r="4"/><circle class="dt2" cx="204.8" cy="193.7" r="4"/><circle class="dt2" cx="225.5" cy="149.6" r="4"/><circle class="dt2" cx="131.4" cy="181.3" r="4"/><circle class="dt2" cx="130.7" cy="199.8" r="4"/><circle class="dt2" cx="126.3" cy="179.2" r="4"/><circle class="dt2" cx="212.5" cy="161.1" r="4"/><circle class="dt2" cx="151.7" cy="208.1" r="4"/><circle class="dt2" cx="55.7" cy="213.8" r="4"/><circle class="dt2" cx="347.9" cy="117.2" r="4"/><circle class="dt2" cx="247.2" cy="148.0" r="4"/><circle class="dt2" cx="277.9" cy="131.9" r="4"/><circle class="dt2" cx="114.6" cy="173.2" r="4"/><circle class="dt2" cx="403.3" cy="82.8" r="4"/><circle class="dt2" cx="355.9" cy="101.9" r="4"/><circle class="dt2" cx="91.3" cy="193.0" r="4"/><circle class="dt2" cx="167.1" cy="194.1" r="4"/><circle class="dt2" cx="306.3" cy="103.4" r="4"/><circle class="dt2" cx="302.6" cy="135.0" r="4"/><circle class="dt2" cx="383.2" cy="85.8" r="4"/><circle class="dt2" cx="199.1" cy="173.4" r="4"/><circle class="dt2" cx="345.2" cy="118.2" r="4"/><circle class="dt2" cx="288.0" cy="131.5" r="4"/><text class="tx" x="48.0" y="254.0" text-anchor="middle">0</text><text class="tx" x="227.0" y="254.0" text-anchor="middle">5</text><text class="tx" x="406.0" y="254.0" text-anchor="middle">10</text><text class="tx acc" x="83.8" y="62.293333333333344">↗ 오른쪽 위로 향함 = 함께 증가</text></svg><figcaption>점들이 오른쪽 위로 향합니다. 공부 시간이 길수록 점수가 높은 경향이 있다는 뜻입니다.</figcaption></figure>
+<h3>④ 히트맵 — 학생별·과목별 점수</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns                                   # Matplotlib 기반의 통계 그래프 도구
+
+scores = np.array([[80, 90, 70, 85],                    # 행 = 학생(S1~S5)
+                   [85, 95, 88, 78],                    # 열 = 과목(국어·영어·수학·과학)
                    [75, 80, 90, 92],
                    [60, 70, 65, 80],
                    [95, 85, 90, 88]])
-sns.heatmap(scores, annot=True, cmap="Blues",
-            xticklabels=["Kor", "Eng", "Math", "Sci"],
-            yticklabels=["S1", "S2", "S3", "S4", "S5"])
-plt.show()</code></pre>
-<div class="q">학생 질문: ③에서 점들이 오른쪽 위로 향하는 이유는 무엇일까요? 상관계수가 1에 가까우면 어떤 의미일까요?</div>
-<p>※ ②, ③은 난수를 사용하므로 <code>seed</code>를 고정해야 매번 같은 그래프가 나옵니다.</p>
-</section>
+sns.heatmap(scores, annot=True, cmap=&quot;Blues&quot;,           # annot=True: 칸 안에 숫자 표시, cmap: 색상표(파랑 계열)
+            xticklabels=[&quot;Kor&quot;, &quot;Eng&quot;, &quot;Math&quot;, &quot;Sci&quot;],  # 가로 눈금 이름(과목)
+            yticklabels=[&quot;S1&quot;, &quot;S2&quot;, &quot;S3&quot;, &quot;S4&quot;, &quot;S5&quot;]) # 세로 눈금 이름(학생)
+plt.show()                                              # 화면에 출력</code></pre>
+<figure class="fig"><svg class="sv" viewBox="0 0 420 280" role="img" xmlns="http://www.w3.org/2000/svg"><text class="tt" x="210.0" y="18.0" text-anchor="middle">Scores by Student and Subject</text><text class="tx" x="42.0" y="67.6" text-anchor="end">S1</text><rect class="bar" fill-opacity="0.56" x="48.0" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="67.6" text-anchor="middle">80</text><rect class="bar" fill-opacity="0.74" x="137.5" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="67.6" text-anchor="middle">90</text><rect class="bar" fill-opacity="0.39" x="227.0" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="67.6" text-anchor="middle">70</text><rect class="bar" fill-opacity="0.65" x="316.5" y="44.0" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="67.6" text-anchor="middle">85</text><text class="tx" x="42.0" y="106.8" text-anchor="end">S2</text><rect class="bar" fill-opacity="0.65" x="48.0" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="106.8" text-anchor="middle">85</text><rect class="bar" fill-opacity="0.83" x="137.5" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="106.8" text-anchor="middle">95</text><rect class="bar" fill-opacity="0.71" x="227.0" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="106.8" text-anchor="middle">88</text><rect class="bar" fill-opacity="0.53" x="316.5" y="83.2" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="106.8" text-anchor="middle">78</text><text class="tx" x="42.0" y="146.0" text-anchor="end">S3</text><rect class="bar" fill-opacity="0.48" x="48.0" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="146.0" text-anchor="middle">75</text><rect class="bar" fill-opacity="0.56" x="137.5" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="146.0" text-anchor="middle">80</text><rect class="bar" fill-opacity="0.74" x="227.0" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="146.0" text-anchor="middle">90</text><rect class="bar" fill-opacity="0.78" x="316.5" y="122.4" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="146.0" text-anchor="middle">92</text><text class="tx" x="42.0" y="185.2" text-anchor="end">S4</text><rect class="bar" fill-opacity="0.21" x="48.0" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="185.2" text-anchor="middle">60</text><rect class="bar" fill-opacity="0.39" x="137.5" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="185.2" text-anchor="middle">70</text><rect class="bar" fill-opacity="0.30" x="227.0" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="185.2" text-anchor="middle">65</text><rect class="bar" fill-opacity="0.56" x="316.5" y="161.6" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="185.2" text-anchor="middle">80</text><text class="tx" x="42.0" y="224.4" text-anchor="end">S5</text><rect class="bar" fill-opacity="0.83" x="48.0" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="92.8" y="224.4" text-anchor="middle">95</text><rect class="bar" fill-opacity="0.65" x="137.5" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="182.2" y="224.4" text-anchor="middle">85</text><rect class="bar" fill-opacity="0.74" x="227.0" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="271.8" y="224.4" text-anchor="middle">90</text><rect class="bar" fill-opacity="0.71" x="316.5" y="200.8" width="89.5" height="39.2" stroke="var(--card)"/><text class="tx" x="361.2" y="224.4" text-anchor="middle">88</text><text class="tx" x="92.8" y="256.0" text-anchor="middle">Kor</text><text class="tx" x="182.2" y="256.0" text-anchor="middle">Eng</text><text class="tx" x="271.8" y="256.0" text-anchor="middle">Math</text><text class="tx" x="361.2" y="256.0" text-anchor="middle">Sci</text><text class="tx acc" x="210.0" y="274.0" text-anchor="middle">진할수록 높은 점수</text></svg><figcaption>진한 칸일수록 높은 점수입니다. 어느 학생·과목이 강하고 약한지 한눈에 보입니다.</figcaption></figure>
+<div class="q">학생 질문: ③에서 점들이 오른쪽 위로 향하는 이유는 무엇일까요? 상관계수가 1에 가까우면 어떤 의미일까요?
+<details><summary>정답 보기</summary>점수를 <code>40 + 5 * hours + 오차</code>로 만들었기 때문에 공부 시간이 늘수록 점수도 늘어납니다. 상관계수가 1에 가까우면 "한쪽이 커질 때 다른 쪽도 거의 일정하게 커진다"는 뜻이고, 0 근처면 관계가 거의 없다는 뜻입니다.</details></div>
+<div class="note">※ ②, ③은 난수를 사용하므로 <code>seed</code>를 고정해야 매번 같은 그래프가 나옵니다.</div></section>
 
-<section id="pick">
-<h2>6. 확장 실습 — 시각화 도구 선택하기</h2>
+<section id="pick"><h2>7. 확장 실습 — 시각화 도구 선택하기</h2>
 <p>데이터 종류와 그래프 종류를 고르면 적합 여부와 실습 코드를 확인할 수 있습니다.</p>
-<div class="box">
-<label for="dt">① 데이터 종류</label>
-<select id="dt">
-<option value="score">학생별 시험 점수</option>
-<option value="temp">시간별 온도 변화</option>
-<option value="rel">공부 시간과 시험 점수의 관계</option>
-<option value="dist">전체 학생의 점수 분포</option>
-</select>
-<label for="gt">② 그래프 종류</label>
-<select id="gt">
-<option value="bar">막대그래프</option>
-<option value="line">선 그래프</option>
-<option value="scatter">산점도</option>
-<option value="hist">히스토그램</option>
-</select>
-<button id="go" type="button">추천 확인</button>
-<div id="msg" role="status" aria-live="polite">선택 후 [추천 확인]을 누르세요.</div>
-<strong>추천 실습 코드</strong>
-<pre id="code"><code>(선택 후 표시됩니다)</code></pre>
-</div>
-</section>
+<div class="box"><p><label><b>① 데이터 종류</b> <select id="dt"><option value="bar">학생별 시험 점수</option><option value="line">시간별 온도 변화</option><option value="scatter">공부 시간과 시험 점수의 관계</option><option value="hist">전체 학생의 점수 분포</option></select></label></p>
+<p><label><b>② 그래프 종류</b> <select id="gt"><option value="bar">막대그래프</option><option value="line">선 그래프</option><option value="scatter">산점도</option><option value="hist">히스토그램</option></select></label></p>
+<p><button id="chk" type="button">추천 확인</button></p>
+<p id="msg">선택 후 [추천 확인]을 누르세요.</p>
+<p><b>추천 실습 코드</b></p><pre><code id="cd">(선택 후 표시됩니다)</code></pre></div></section>
 
-<section id="wrap">
-<h2>정리</h2>
-<div class="grid">
-<div class="box"><strong>역할 분담</strong><br>NumPy는 계산, Matplotlib 등은 그리기를 맡습니다.</div>
+<section id="wrap"><h2>정리</h2>
+<div class="grid"><div class="box"><strong>역할 분담</strong><br>NumPy는 계산, Matplotlib 등은 그리기를 맡습니다.</div>
 <div class="box"><strong>그래프 선택 기준</strong><br>비교 = 막대, 변화 = 선, 분포 = 히스토그램, 관계 = 산점도, 표 전체 = 히트맵</div>
-<div class="box"><strong>다음 단계</strong><br>Seaborn으로 통계 시각화, Plotly로 인터랙티브 그래프</div>
-</div>
-</section>
-
+<div class="box"><strong>다음 단계</strong><br>Seaborn으로 통계 시각화, Plotly로 인터랙티브 그래프</div></div></section>
 </main>
 <script>
-(function(){
-var names={bar:"막대그래프",line:"선 그래프",scatter:"산점도",hist:"히스토그램"};
-var data={
-score:{best:"bar",label:"학생별 시험 점수",code:"scores = np.array([70, 85, 90, 65, 95])\nplt.bar(np.arange(1, 6), scores)\nplt.show()"},
-temp:{best:"line",label:"시간별 온도 변화",code:"hours = np.arange(0, 24)\ntemp = 15 + 8 * np.sin((hours - 9) * np.pi / 12)\nplt.plot(hours, temp, marker=\"o\")\nplt.show()"},
-rel:{best:"scatter",label:"공부 시간과 시험 점수의 관계",code:"hours = np.array([1, 2, 3, 4, 5, 6, 7, 8])\nscore = np.array([45, 52, 58, 63, 70, 74, 82, 88])\nplt.scatter(hours, score)\nplt.show()"},
-dist:{best:"hist",label:"전체 학생의 점수 분포",code:"np.random.seed(0)\nscores = np.random.normal(70, 10, 100)\nplt.hist(scores, bins=10, edgecolor=\"black\")\nplt.show()"}
+const CODE={"bar": "import numpy as np\nimport matplotlib.pyplot as plt\n\nscores = np.array([70, 85, 90, 65, 95])    # 학생별 점수 배열\nstudents = np.arange(1, 6)                 # 학생 번호 1~5\nplt.bar(students, scores)                  # 항목별 크기를 막대로 비교\nplt.xlabel(\"Student\"); plt.ylabel(\"Score\") # 축 제목\nplt.show()                                 # 출력", "line": "import numpy as np\nimport matplotlib.pyplot as plt\n\nhours = np.arange(0, 24)                          # 0시~23시: [0 1 2 ... 23]\ntemp = 15 + 8 * np.sin((hours - 9) * np.pi / 12)  # 사인 곡선으로 하루 온도를 만든다(평균 15도, ±8도, 15시경 최고)\nplt.plot(hours, temp, marker=\"o\")                 # 선 그래프를 그리고 각 점에 동그라미(o)를 표시한다\nplt.xlabel(\"Hour\"); plt.ylabel(\"Temperature\")     # 축 제목(;로 한 줄에 명령 두 개)\nplt.title(\"Hourly Temperature\")                   # 그래프 제목\nplt.show()                                        # 화면에 출력", "scatter": "import numpy as np\nimport matplotlib.pyplot as plt\n\nnp.random.seed(1)                                       # 난수 고정\nhours = np.random.uniform(0, 10, 50)                    # 공부 시간 50개: 0~10 사이 무작위 값\nscore = 40 + 5 * hours + np.random.normal(0, 5, 50)     # 점수 = 기본 40점 + 1시간당 5점 + 오차(들쭉날쭉함)\nplt.scatter(hours, score)                               # x=공부 시간, y=점수 위치에 점을 하나씩 찍는다\nplt.xlabel(\"Study Hours\"); plt.ylabel(\"Score\")          # 축 제목\nplt.title(\"Study Hours vs Score\")                       # 그래프 제목\nplt.show()                                              # 화면에 출력\nprint(\"상관계수:\", np.corrcoef(hours, score)[0, 1].round(2))  # 두 값의 관계 강도(-1~1). 1에 가까울수록 같이 증가", "hist": "import numpy as np\nimport matplotlib.pyplot as plt\n\nnp.random.seed(0)                                         # 난수 시작값 고정 → 실행할 때마다 같은 그래프\nscores = np.random.normal(70, 10, 100).clip(0, 100)       # 평균 70, 표준편차 10인 점수 100개 생성, 0~100 밖은 잘라낸다\nplt.hist(scores, bins=10, edgecolor=\"black\")              # 점수를 10개 구간(bins)으로 나눠 개수를 막대로 표시, 테두리 검정\nplt.axvline(scores.mean(), linestyle=\"--\", label=\"Mean\")  # 평균 위치에 세로 점선을 긋는다\nplt.xlabel(\"Score\"); plt.ylabel(\"Students\")               # 축 제목\nplt.legend(); plt.show()                                  # 범례 표시 후 출력\nprint(\"평균:\", scores.mean().round(1), \"표준편차:\", scores.std().round(1))  # 평균과 퍼진 정도 확인"};
+const NM={bar:"막대그래프",line:"선 그래프",scatter:"산점도",hist:"히스토그램"};
+const WHY={bar:"항목(학생)끼리 크기를 비교하는 데이터입니다.",line:"시간 순서에 따른 변화를 보는 데이터입니다.",scatter:"두 변수 사이의 관계를 보는 데이터입니다.",hist:"값이 어느 구간에 몰려 있는지 보는 데이터입니다."};
+document.getElementById('chk').onclick=()=>{
+ const d=document.getElementById('dt').value,g=document.getElementById('gt').value,m=document.getElementById('msg');
+ m.textContent=d===g?"✅ 적합합니다. "+WHY[d]:"⚠️ 이 데이터에는 "+NM[d]+"가 더 적합합니다. "+WHY[d]+" (선택한 "+NM[g]+"는 이 데이터의 목적과 맞지 않습니다.)";
+ document.getElementById('cd').textContent=CODE[d];
 };
-document.getElementById("go").addEventListener("click",function(){
-var d=data[document.getElementById("dt").value];
-var g=document.getElementById("gt").value;
-var m=document.getElementById("msg");
-m.textContent=(g===d.best)
-?"좋은 선택입니다. "+d.label+"에는 "+names[g]+"가 적합합니다."
-:"'"+d.label+"'에는 "+names[d.best]+"가 더 적합합니다. 선택한 "+names[g]+"와 어떻게 다른지 비교해 보세요.";
-document.getElementById("code").textContent="import numpy as np\nimport matplotlib.pyplot as plt\n\n"+d.code;
-});
-})();
 </script>
-</body>
-</html>
+</body></html>
