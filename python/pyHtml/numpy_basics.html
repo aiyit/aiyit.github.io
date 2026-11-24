@@ -1,349 +1,204 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NumPy 기초 개념 정리</title>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NumPy 쉽게 배우기</title>
 <style>
-:root{--bg:#f6f8fb;--card:#fff;--ink:#1c2433;--sub:#5b6577;--line:#dbe1ea;--main:#1d4e89;--acc:#e08a00;--code:#14213a;--codefg:#e6edf7;--ok:#e8f3ea}
-@media(prefers-color-scheme:dark){:root{--bg:#10151f;--card:#18202e;--ink:#e6ebf3;--sub:#9aa6ba;--line:#2a3447;--main:#6fa8ee;--acc:#f0a830;--code:#0b101a;--codefg:#e6edf7;--ok:#1b2d22}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "Noto Sans KR","Malgun Gothic",sans-serif}
-header{background:var(--main);color:#fff;padding:40px 20px 28px}
-header div,main,nav div{max-width:960px;margin:0 auto}
-header h1{margin:0 0 8px;font-size:2rem;letter-spacing:-.02em}
-header p{margin:0;opacity:.9}
-nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
-nav div{display:flex;gap:4px;overflow-x:auto;padding:8px 20px}
-nav a{white-space:nowrap;padding:6px 14px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:.92rem}
-nav a:hover,nav a:focus-visible{background:var(--bg);outline:2px solid var(--main)}
-main{padding:12px 20px 60px}
-section{margin-top:36px;scroll-margin-top:60px}
-h2{font-size:1.5rem;margin:0 0 6px;padding-left:12px;border-left:5px solid var(--acc)}
-h3{font-size:1.15rem;margin:26px 0 8px;color:var(--main)}
-.goal{background:var(--ok);padding:10px 14px;border-radius:6px;margin:10px 0}
-.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin:12px 0}
-pre{background:var(--code);color:var(--codefg);padding:14px 16px;border-radius:8px;overflow-x:auto;font:14px/1.6 Consolas,"D2Coding",monospace;margin:10px 0}
-pre.out{background:var(--card);color:var(--ink);border:1px dashed var(--line);margin-top:-4px}
-code{background:var(--bg);padding:1px 5px;border-radius:4px;font-family:Consolas,monospace;font-size:.92em}
-pre code{background:none;padding:0}
-.wrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;background:var(--card);font-size:.93rem}
-th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
-th{background:var(--main);color:#fff;white-space:nowrap}
-td:first-child{white-space:nowrap}
-.q{border-left:4px solid var(--acc);padding:4px 14px;margin:10px 0;background:var(--card)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-@media print{nav{display:none}}
-</style>
-</head>
-<body>
-<header><div>
-<h1>NumPy 기초 개념 정리</h1>
-<p>파이썬 수치 계산 기초에서 응용까지 · 개념 설명 + 실습 2개씩</p>
-</div></header>
-<nav><div>
-<a href="#setup">설치·핵심 개념</a><a href="#w1">배열 생성</a><a href="#w2">인덱싱·연산</a><a href="#w3">통계·axis</a><a href="#w4">응용</a><a href="#methods">메소드 정리표</a>
-</div></nav>
+:root{--bg:#f7f8fa;--c:#fff;--t:#1f2937;--m:#6b7280;--p:#2563eb;--b:#e5e7eb;--h:#fde68a;--k:#0f172a;--kt:#e2e8f0}
+@media(prefers-color-scheme:dark){:root{--bg:#0f172a;--c:#1e293b;--t:#e5e7eb;--m:#94a3b8;--p:#60a5fa;--b:#334155;--h:#854d0e;--k:#020617}}
+*{box-sizing:border-box}body{margin:0;font:16px/1.75 "Malgun Gothic",system-ui,sans-serif;background:var(--bg);color:var(--t)}
+header{background:var(--p);color:#fff;padding:32px 20px;text-align:center}header h1{margin:0 0 6px}header p{margin:0;opacity:.9}
+nav{position:sticky;top:0;background:var(--c);border-bottom:1px solid var(--b);padding:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;z-index:5}
+nav a{color:var(--p);text-decoration:none;padding:4px 10px;border-radius:14px;font-size:14px}nav a:hover{background:var(--b)}
+main{max-width:920px;margin:auto;padding:16px}section{background:var(--c);border:1px solid var(--b);border-radius:12px;padding:20px;margin:16px 0}
+h2{margin-top:0;color:var(--p)}h3{margin:20px 0 6px}.note{background:var(--bg);border-left:4px solid var(--p);padding:8px 12px;border-radius:6px;margin:10px 0}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}.fig{text-align:center;margin:10px 0}.fig small{display:block;color:var(--m);margin-top:4px}
+.g{display:inline-grid;gap:3px}.g div{min-width:42px;padding:6px 8px;border:2px solid var(--p);border-radius:6px;text-align:center;font-family:monospace}
+.g .i{border:none;color:var(--m);font-size:12px;padding:0}.g .h{background:var(--h)}.g .r{border-color:#ef4444}
+.ax{display:inline-block;position:relative;padding:0 0 26px 0}.ax b{position:absolute;color:#ef4444;font-size:13px}
+.card{border:1px solid var(--b);border-radius:10px;padding:12px 14px;margin:12px 0}.card h4{margin:0 0 4px;font-family:monospace;color:var(--p);font-size:16px}
+.card ul{margin:4px 0 8px;padding-left:20px;font-size:14px}.card code.k{background:var(--bg);padding:1px 5px;border-radius:4px}
+pre{background:var(--k);color:var(--kt);padding:10px 12px;border-radius:8px;overflow-x:auto;margin:6px 0;font-size:14px;line-height:1.5;position:relative}
+pre.o{background:#064e3b;color:#d1fae5}pre.o::before{content:"결과";display:block;font-size:11px;opacity:.7}
+footer{text-align:center;color:var(--m);padding:20px;font-size:13px}
+</style></head><body>
+<header><h1>NumPy 쉽게 배우기</h1><p>그림으로 이해하고 · 메소드별 매개변수를 알고 · 예제로 따라 해보기</p></header>
+<nav><a href="#s1">NumPy란?</a><a href="#s2">배열 그림</a><a href="#s3">axis</a><a href="#s4">슬라이싱</a><a href="#s5">브로드캐스팅</a><a href="#s6">메소드 사전</a><a href="#s7">종합 실습</a></nav>
 <main>
 
-<section id="plan">
-<h2>학습 내용 구성</h2>
-<div class="wrap"><table>
-<tr><th>단계</th><th>주제</th><th>학습 목표</th><th>실습</th></tr>
-<tr><td>1</td><td>NumPy 기초와 배열 생성</td><td>1·2차원 배열을 직접 생성한다</td><td>학생 점수 배열 / 2차원 점수표</td></tr>
-<tr><td>2</td><td>인덱싱·슬라이싱과 배열 연산</td><td>원하는 데이터를 꺼내고 한 번에 계산한다</td><td>점수 보정·합격자 선별 / 2차원 슬라이싱</td></tr>
-<tr><td>3</td><td>통계, axis, 모양 변경, 브로드캐스팅</td><td>행·열 단위로 통계를 낸다</td><td>학생별·과목별 평균 / 보너스 점수·순위</td></tr>
-<tr><td>4</td><td>난수, 선형대수, 파일 입출력, 종합 응용</td><td>작은 데이터 분석 프로젝트를 완성한다</td><td>주사위 시뮬레이션 / 성적 분석 프로젝트</td></tr>
-</table></div>
-</section>
+<section id="s1"><h2>1. NumPy란?</h2>
+<p>NumPy는 <b>숫자를 한꺼번에 계산</b>해 주는 파이썬 도구입니다. 엑셀에서 열 전체를 드래그해서 계산하는 것과 비슷합니다.</p>
+<div class="row">
+<div style="flex:1;min-width:240px"><b>❌ 파이썬 리스트</b><pre>a = [80, 90, 75]
+a + 5   # 오류!
+# 반복문으로 하나씩 더해야 함</pre></div>
+<div style="flex:1;min-width:240px"><b>✅ NumPy 배열</b><pre>import numpy as np
+a = np.array([80, 90, 75])
+print(a + 5)  # 한 번에 계산</pre><pre class="o">[85 95 80]</pre></div></div>
+<div class="note">💡 <code class="k">import numpy as np</code> 는 "NumPy를 불러와서 np라는 짧은 이름으로 쓰겠다"는 뜻입니다. 모든 예제 맨 위에 필요합니다.</div></section>
 
-<section id="setup">
-<h2>NumPy 설치 방법</h2>
-<div class="grid">
-<div class="box"><strong>방법 1. pip (가장 일반적)</strong>
-<pre><code>pip install numpy</code></pre>
-Windows에서 pip가 안 되면 <code>py -m pip install numpy</code>, macOS/Linux는 <code>pip3 install numpy</code>를 사용합니다.</div>
-<div class="box"><strong>방법 2. Anaconda</strong>
-<pre><code>conda install numpy</code></pre>
-Anaconda에는 NumPy가 기본 포함되어 있는 경우가 많습니다.</div>
-<div class="box"><strong>방법 3. 설치 없이 (Google Colab)</strong>
-colab.research.google.com에 접속하면 NumPy가 이미 설치되어 있어 바로 실습할 수 있습니다. 초보 수강생에게 권장합니다.</div>
-</div>
-<h3>설치 확인</h3>
-<pre><code>import numpy as np
-print(np.__version__)</code></pre>
-<p>버전 번호가 출력되면 설치 성공입니다. <code>ModuleNotFoundError</code>가 나오면 설치한 파이썬과 실행 중인 파이썬이 서로 다른 것입니다. IDE의 인터프리터를 확인하세요.</p>
-</section>
+<section id="s2"><h2>2. 배열은 어떻게 생겼을까?</h2>
+<h3>1차원 배열 = 숫자가 한 줄로 늘어선 상자</h3>
+<div class="fig"><div class="g" data-m='[[80,90,75,85,95]]' data-i="1"></div><small>위의 작은 숫자가 <b>인덱스(번호표)</b>. 반드시 0부터 시작! a[0]=80, a[-1]=95(맨 끝)</small></div>
+<h3>2차원 배열 = 행(가로)과 열(세로)로 된 표</h3>
+<div class="fig"><div class="g" data-m='[[80,90,70],[85,95,88]]' data-hl="1,2"></div><small>2행 3열 → <b>shape = (2, 3)</b>. 노란 칸은 m[1, 2] = 88 (1번 행, 2번 열)</small></div>
+<h3>배열 정보 보기</h3>
+<table style="width:100%;border-collapse:collapse;font-size:14px">
+<tr><th align=left>속성</th><th align=left>뜻</th><th align=left>(2,3) 배열일 때</th></tr>
+<tr><td><code>m.shape</code></td><td>모양(행, 열)</td><td>(2, 3)</td></tr>
+<tr><td><code>m.ndim</code></td><td>차원 수</td><td>2</td></tr>
+<tr><td><code>m.size</code></td><td>전체 원소 개수</td><td>6</td></tr>
+<tr><td><code>m.dtype</code></td><td>원소 자료형</td><td>int64 (환경에 따라 int32)</td></tr></table></section>
 
-<section id="core">
-<h2>NumPy 핵심 개념</h2>
-<div class="grid">
-<div class="box"><strong>ndarray</strong><br>NumPy의 배열 객체. 같은 자료형의 값이 모여 있어 리스트보다 빠르고 메모리를 적게 씁니다.</div>
-<div class="box"><strong>shape · ndim · dtype</strong><br>배열의 모양(행, 열), 차원 수, 원소 자료형. 배열을 만나면 가장 먼저 확인합니다.</div>
-<div class="box"><strong>벡터화 연산</strong><br>반복문 없이 배열 전체에 계산을 적용합니다. <code>scores + 5</code>는 모든 원소에 5를 더합니다.</div>
-<div class="box"><strong>인덱싱·슬라이싱</strong><br>위치(0부터 시작)로 원소를 꺼냅니다. <code>a[1]</code>, <code>a[1:4]</code>, <code>m[행, 열]</code></div>
-<div class="box"><strong>불리언 마스크</strong><br>조건(<code>a &gt;= 85</code>)으로 True/False 배열을 만들어 원하는 값만 선택합니다.</div>
-<div class="box"><strong>axis</strong><br>계산 방향. <code>axis=0</code>은 열 방향(위에서 아래), <code>axis=1</code>은 행 방향(왼쪽에서 오른쪽)입니다.</div>
-<div class="box"><strong>브로드캐스팅</strong><br>모양이 다른 배열끼리도 규칙에 맞으면 자동으로 늘려서 계산합니다.</div>
-<div class="box"><strong>리스트와의 차이</strong><br>리스트에 <code>+ 5</code>는 오류, 리스트끼리 <code>+</code>는 이어 붙이기입니다. 배열은 원소별 계산입니다.</div>
-</div>
-</section>
-
-<section id="w1">
-<h2>1. NumPy 기초와 배열 생성</h2>
-<div class="goal"><strong>학습 목표:</strong> NumPy가 무엇인지 이해하고 1차원·2차원 배열을 직접 생성할 수 있다.</div>
-<h3>핵심 개념 설명</h3>
-<div class="box"><strong>개념 ① NumPy란?</strong><br>NumPy(Numerical Python)는 파이썬에서 숫자 데이터를 효율적으로 계산하고 분석하기 위한 라이브러리입니다. 학생 5명의 점수를 리스트 <code>[80, 90, 75, 85, 95]</code>로 저장할 수도 있지만, NumPy 배열로 만들면 배열 전체에 대한 계산과 통계 처리가 편리합니다.</div>
-<div class="box"><strong>개념 ② 배열(Array)이란?</strong><br><strong>1차원 배열:</strong> 숫자가 한 줄로 나열된 구조. 각 위치를 인덱스(index)라 하며 0부터 시작합니다.
-<div class="wrap"><table><tr><td>값</td><td>80</td><td>90</td><td>75</td><td>85</td><td>95</td></tr><tr><td>인덱스</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td></tr></table></div>
-<strong>2차원 배열:</strong> 행과 열로 구성된 표 구조. 아래는 2행 3열이며 shape은 <code>(2, 3)</code>입니다.
-<div class="wrap"><table><tr><td>80</td><td>90</td><td>75</td></tr><tr><td>85</td><td>95</td><td>88</td></tr></table></div></div>
-<h3>필수 코드 이해</h3>
-<pre><code>import numpy as np
-scores = np.array([80, 90, 75, 85, 95])
-print(scores)
-print(scores.shape)
-print(scores.ndim)
-print(scores.dtype)</code></pre>
-<pre class="out">[80 90 75 85 95]
-(5,)
-1
-int64</pre>
-<p>dtype은 실행 환경에 따라 int32 등으로 표시될 수 있습니다.</p>
-<div class="wrap"><table>
-<tr><th>코드</th><th>쉬운 설명</th></tr>
-<tr><td>import numpy as np</td><td>NumPy를 불러오고 np라는 짧은 이름을 사용</td></tr>
-<tr><td>np.array()</td><td>리스트 등의 데이터를 NumPy 배열로 변환</td></tr>
-<tr><td>shape</td><td>배열의 모양과 크기 확인</td></tr>
-<tr><td>ndim</td><td>배열의 차원 확인</td></tr>
-<tr><td>dtype</td><td>배열 원소의 자료형 확인</td></tr>
-</table></div>
-<h3>배열 생성 방법</h3>
-<pre><code>import numpy as np
-a = np.array([10, 20, 30])
-b = np.arange(1, 6)
-c = np.zeros(3)
-d = np.ones(3)
-print(a)  # [10 20 30]
-print(b)  # [1 2 3 4 5]
-print(c)  # [0. 0. 0.]
-print(d)  # [1. 1. 1.]</code></pre>
-<p><code>np.arange(1, 6)</code>은 1부터 5까지 생성하며 끝값 6은 포함하지 않습니다. <code>np.zeros(3)</code>은 0이 3개, <code>np.ones(3)</code>은 1이 3개인 배열을 만듭니다.</p>
-<h3>실습 1 — 학생 점수 배열 만들기</h3>
-<p><strong>목표:</strong> 학생들의 점수를 배열로 만들고 전체 평균을 구합니다.</p>
-<pre><code>import numpy as np
-scores = np.array([80, 90, 75, 85, 95])
-print("학생 점수:", scores)
-print("학생 수:", len(scores))
-print("평균 점수:", np.mean(scores))
-print("최고 점수:", np.max(scores))
-print("최저 점수:", np.min(scores))</code></pre>
-<pre class="out">학생 점수: [80 90 75 85 95]
-학생 수: 5
-평균 점수: 85.0
-최고 점수: 95
-최저 점수: 75</pre>
-<div class="q">학생 질문: ① 점수 100을 추가하려면 어떻게 수정해야 할까요? ② <code>np.mean()</code>은 어떤 역할을 할까요?</div>
-<h3>실습 2 — 2차원 배열로 학생 점수표 만들기</h3>
-<p><strong>목표:</strong> 행과 열의 구조를 이해하고 특정 학생의 데이터를 조회합니다.</p>
-<pre><code>import numpy as np
-scores = np.array([
-    [80, 90, 70],
-    [85, 95, 88],
-    [75, 80, 90]
-])
-print(scores)
-print("배열 크기:", scores.shape)
-print("첫 번째 학생:", scores[0])
-print("두 번째 학생의 첫 번째 점수:", scores[1, 0])</code></pre>
-<pre class="out">[[80 90 70]
- [85 95 88]
- [75 80 90]]
-배열 크기: (3, 3)
-첫 번째 학생: [80 90 70]
-두 번째 학생의 첫 번째 점수: 85</pre>
-</section>
-
-<section id="w2">
-<h2>2. 인덱싱·슬라이싱과 배열 연산</h2>
-<div class="goal"><strong>학습 목표:</strong> 배열에서 원하는 값을 꺼내고, 반복문 없이 배열 전체를 한 번에 계산할 수 있다.</div>
-<h3>핵심 개념 설명</h3>
-<div class="box"><strong>개념 ① 인덱싱과 슬라이싱</strong><br><code>a[0]</code>은 첫 값, <code>a[-1]</code>은 마지막 값, <code>a[1:4]</code>는 1번부터 3번까지(끝 인덱스 미포함)입니다. 2차원은 <code>m[행, 열]</code>, <code>m[:, 0]</code>(모든 행의 0열), <code>m[1:, 1:]</code>처럼 씁니다.</div>
-<div class="box"><strong>개념 ② 벡터화 연산과 불리언 마스크</strong><br><code>scores + 5</code>, <code>scores * 2</code>는 모든 원소에 적용됩니다. <code>scores &gt;= 85</code>는 True/False 배열을 만들고, 이를 <code>scores[scores &gt;= 85]</code>처럼 넣으면 조건에 맞는 값만 뽑힙니다.</div>
-<h3>필수 코드 이해</h3>
-<pre><code>import numpy as np
-scores = np.array([80, 90, 75, 85, 95])
-print(scores[0], scores[-1], scores[1:4])
-print(scores + 5)
-print(scores &gt;= 85)
-print(scores[scores &gt;= 85])</code></pre>
-<pre class="out">80 95 [90 75 85]
-[85 95 80 90 100]
-[False  True False  True  True]
-[90 85 95]</pre>
-<h3>실습 1 — 점수 보정과 합격자 선별</h3>
-<p><strong>목표:</strong> 조건으로 데이터를 걸러내고 개수를 센다.</p>
-<pre><code>import numpy as np
-scores = np.array([55, 72, 48, 90, 63, 81])
-print("보정 점수:", scores + 5)
-passed = scores[scores &gt;= 60]
-print("합격 점수:", passed)
-print("합격자 수:", len(passed))</code></pre>
-<pre class="out">보정 점수: [60 77 53 95 68 86]
-합격 점수: [72 90 63 81]
-합격자 수: 4</pre>
-<div class="q">학생 질문: ① 합격 기준을 70점으로 바꾸려면? ② 불합격자만 뽑으려면 조건을 어떻게 바꿀까요?</div>
-<h3>실습 2 — 2차원 배열 슬라이싱</h3>
-<p><strong>목표:</strong> 과목(열)별, 부분 영역별로 데이터를 잘라낸다.</p>
-<pre><code>import numpy as np
-scores = np.array([[80, 90, 70],
-                   [85, 95, 88],
-                   [75, 80, 90]])
-print("첫 번째 과목 전체:", scores[:, 0])
-print("2~3번째 학생의 2~3과목:")
-print(scores[1:, 1:])
-print("첫 과목 평균:", scores[:, 0].mean())</code></pre>
-<pre class="out">첫 번째 과목 전체: [80 85 75]
-2~3번째 학생의 2~3과목:
-[[95 88]
- [80 90]]
-첫 과목 평균: 80.0</pre>
-</section>
-
-<section id="w3">
-<h2>3. 통계, axis, 모양 변경, 브로드캐스팅</h2>
-<div class="goal"><strong>학습 목표:</strong> 행·열 방향으로 통계를 계산하고, 배열의 모양을 바꾸며, 서로 다른 모양의 배열을 계산할 수 있다.</div>
-<h3>핵심 개념 설명</h3>
-<div class="box"><strong>개념 ① axis(계산 방향)</strong><br>2차원 배열에서 <code>axis=0</code>은 같은 열끼리(세로 방향), <code>axis=1</code>은 같은 행끼리(가로 방향) 계산합니다. 학생(행)별 평균은 <code>axis=1</code>, 과목(열)별 평균은 <code>axis=0</code>입니다.</div>
-<div class="box"><strong>개념 ② reshape와 브로드캐스팅</strong><br><code>reshape</code>는 원소 수를 유지한 채 모양만 바꿉니다. 브로드캐스팅은 작은 배열을 자동으로 늘려 큰 배열과 계산하는 규칙입니다. 예: (3,3) 배열 + (3,) 배열은 각 행에 같은 값을 더합니다.</div>
-<h3>필수 코드 이해</h3>
-<pre><code>import numpy as np
-m = np.arange(1, 13).reshape(3, 4)
-print(m)
-print(m.sum())
+<section id="s3"><h2>3. axis(계산 방향) 그림으로 이해하기</h2>
+<p>가장 헷갈리는 부분입니다. <b>axis=0은 "세로로 합친다(열별 결과)", axis=1은 "가로로 합친다(행별 결과)"</b>로 기억하세요.</p>
+<div class="row" style="justify-content:space-around">
+<div class="fig"><b>axis=0 ↓ (열끼리)</b><br><div class="g" data-m='[[1,2,3],[4,5,6],[5,7,9]]' data-hl="2,0;2,1;2,2"></div><small>1+4=5, 2+5=7, 3+6=9 → <code>[5 7 9]</code></small></div>
+<div class="fig"><b>axis=1 → (행끼리)</b><br><div class="g" data-m='[[1,2,3,6],[4,5,6,15]]' data-hl="0,3;1,3"></div><small>1+2+3=6, 4+5+6=15 → <code>[6 15]</code></small></div></div>
+<pre>m = np.array([[1,2,3],[4,5,6]])
 print(m.sum(axis=0))
-print(m.sum(axis=1))
-print(m.mean(axis=0))</code></pre>
-<pre class="out">[[ 1  2  3  4]
- [ 5  6  7  8]
- [ 9 10 11 12]]
-78
-[15 18 21 24]
-[10 26 42]
-[5. 6. 7. 8.]</pre>
-<h3>실습 1 — 학생별·과목별 평균 구하기</h3>
-<p><strong>목표:</strong> axis를 구분해서 사용한다.</p>
-<pre><code>import numpy as np
-scores = np.array([[80, 90, 70],
-                   [85, 95, 88],
-                   [75, 80, 90]])
-print("학생별 평균:", np.round(scores.mean(axis=1), 1))
-print("과목별 평균:", np.round(scores.mean(axis=0), 1))
-print("전체 평균:", round(scores.mean(), 1))</code></pre>
-<pre class="out">학생별 평균: [80.  89.3 81.7]
-과목별 평균: [80.  88.3 82.7]
-전체 평균: 83.7</pre>
-<div class="q">학생 질문: <code>axis=0</code>과 <code>axis=1</code>을 바꾸면 결과가 어떻게 달라질까요?</div>
-<h3>실습 2 — 보너스 점수와 순위 구하기</h3>
-<p><strong>목표:</strong> 브로드캐스팅과 정렬을 사용한다.</p>
-<pre><code>import numpy as np
-scores = np.array([[80, 90, 70],
-                   [85, 95, 88],
-                   [75, 80, 90]])
-bonus = np.array([0, 5, 10])      # 과목별 가산점
-print(scores + bonus)
-avg = scores.mean(axis=1)
-rank = np.argsort(avg)[::-1]      # 평균 높은 순 학생 번호
-print("평균 높은 순서:", rank)</code></pre>
-<pre class="out">[[ 80  95  80]
- [ 85 100  98]
- [ 75  85 100]]
-평균 높은 순서: [1 2 0]</pre>
-</section>
+print(m.sum(axis=1))</pre><pre class="o">[5 7 9]
+[ 6 15]</pre>
+<div class="note">💡 학생(행)별 평균 → <code class="k">axis=1</code>, 과목(열)별 평균 → <code class="k">axis=0</code></div></section>
 
-<section id="w4">
-<h2>4. 난수, 선형대수, 파일 입출력, 종합 응용</h2>
-<div class="goal"><strong>학습 목표:</strong> 난수 생성, 행렬 곱, 파일 저장·불러오기를 익히고 작은 데이터 분석 프로젝트를 완성한다.</div>
-<h3>핵심 개념 설명</h3>
-<div class="box"><strong>개념 ① 난수와 시뮬레이션</strong><br><code>np.random.randint(1, 7, size=1000)</code>은 주사위 1000번 던지기와 같습니다. <code>np.random.seed(42)</code>로 시드를 고정하면 매번 같은 결과가 나와 수업과 검증에 편리합니다(시드 없이는 실행마다 결과가 다름).</div>
-<div class="box"><strong>개념 ② 행렬 곱과 파일 입출력</strong><br><code>scores @ weights</code>(또는 <code>np.dot</code>)는 과목별 가중치를 적용한 총점을 한 번에 계산합니다. <code>np.savetxt</code>/<code>np.loadtxt</code>는 배열을 CSV로 저장하고 불러옵니다.</div>
-<h3>필수 코드 이해</h3>
-<pre><code>import numpy as np
+<section id="s4"><h2>4. 슬라이싱: 표에서 원하는 부분 오려내기</h2>
+<p><code>a[시작:끝]</code> 에서 <b>끝 번호는 포함하지 않습니다.</b> 2차원은 <code>m[행범위, 열범위]</code> 입니다.</p>
+<div class="row" style="justify-content:space-around">
+<div class="fig"><div class="g" data-m='[[80,90,70],[85,95,88],[75,80,90]]' data-hl="1,1;1,2;2,1;2,2"></div><small><code>m[1:, 1:]</code> → 1행부터 끝, 1열부터 끝</small></div>
+<div class="fig"><div class="g" data-m='[[80,90,70],[85,95,88],[75,80,90]]' data-hl="0,0;1,0;2,0"></div><small><code>m[:, 0]</code> → 모든 행의 0번 열</small></div></div>
+<pre>a = np.array([80, 90, 75, 85, 95])
+print(a[1:4])        # 1,2,3번
+print(a[a >= 85])    # 조건에 맞는 값만 (불리언 마스크)</pre><pre class="o">[90 75 85]
+[90 85 95]</pre></section>
+
+<section id="s5"><h2>5. 브로드캐스팅: 작은 배열이 자동으로 늘어난다</h2>
+<div class="row" style="justify-content:space-around;align-items:center">
+<div class="fig"><div class="g" data-m='[[80,90,70],[85,95,88]]'></div></div><b>+</b>
+<div class="fig"><div class="g" data-m='[[0,5,10]]' data-hl="0,0;0,1;0,2"></div><small>→ 각 행에 똑같이 복사됨</small></div><b>=</b>
+<div class="fig"><div class="g" data-m='[[80,95,80],[85,100,98]]'></div></div></div>
+<pre>scores = np.array([[80,90,70],[85,95,88]])
+bonus = np.array([0, 5, 10])   # 과목별 가산점
+print(scores + bonus)</pre><pre class="o">[[ 80  95  80]
+ [ 85 100  98]]</pre></section>
+
+<section id="s6"><h2>6. 메소드 사전 (매개변수 + 예제)</h2>
+<p>각 카드: <b>이름(매개변수)</b> → 매개변수 뜻 → 예제 코드 → 결과. 값이 <code>=</code>로 적힌 매개변수는 생략 가능한 기본값입니다.</p>
+<div id="lib"></div></section>
+<section id="s7"><h2>7. 종합 실습 프로그램</h2>
+<p>위 메소드 카드의 예제를 <b>하나의 프로그램</b>으로 묶었습니다. 전체를 Jupyter / Colab에 붙여 넣어 실행하고, 각 카드의 결과와 비교해 보세요. 숫자나 매개변수를 바꿔 가며 결과가 어떻게 달라지는지 확인하면 실력이 빠르게 늡니다.</p>
+<pre>import numpy as np
+
+print(&quot;===== ① 배열 만들기 =====&quot;)
+print(np.array([1, 2, 3], dtype=float))
+print(np.arange(0, 10, 3))
+print(np.linspace(0, 1, 5))
+print(np.zeros((2, 3)))
+print(np.full((2, 2), 7))
+print(np.eye(3))
+
+print(&quot;===== ② 모양 바꾸기·합치기 =====&quot;)
+a = np.arange(6)
+print(a.reshape(2, 3))
+print(a.reshape(3, -1))
+m = np.array([[1, 2, 3], [4, 5, 6]])
+print(m.flatten())
+print(m.T)
+x = np.array([1, 2, 3])
+y = np.array([4, 5, 6])
+print(np.vstack((x, y)))
+print(np.hstack((x, y)))
+print(np.concatenate((x, y)))
+
+print(&quot;===== ③ 통계 =====&quot;)
+print(m.sum(), m.mean(axis=0), m.mean(axis=1))
+print(m.max(), m.min(axis=1))
+print(np.median([3, 1, 2, 10]), np.std([2, 4, 4, 4, 5, 5, 7, 9]))
+print(np.array([3, 9, 2]).argmax())
+print(np.cumsum([1, 2, 3, 4]))
+
+print(&quot;===== ④ 수학 계산 =====&quot;)
+print(np.sqrt([1, 4, 9]), np.abs([-3, 2]))
+print(np.round([1.234, 5.678], 1))
+print(np.clip([-5, 50, 120], 0, 100))
+
+print(&quot;===== ⑤ 조건·정렬 =====&quot;)
+s = np.array([55, 70, 90])
+print(np.where(s &gt;= 60, &quot;합격&quot;, &quot;불합격&quot;))
+print(np.sort([3, 1, 2]))
+print(np.argsort([30, 10, 20]))
+print(np.unique([1, 2, 2, 3, 3, 3], return_counts=True))
+print((s &gt; 90).any(), (s &gt; 90).all())
+
+print(&quot;===== ⑥ 난수 =====&quot;)
 np.random.seed(42)
-dice = np.random.randint(1, 7, size=1000)
-print(dice[:5])               # 처음 5번 결과
-print(np.bincount(dice)[1:])  # 1~6 각각 나온 횟수 (합계 1000)</code></pre>
-<h3>실습 1 — 주사위 1000번 시뮬레이션</h3>
-<p><strong>목표:</strong> 난수와 통계로 확률을 확인한다.</p>
-<pre><code>import numpy as np
-np.random.seed(42)
-dice = np.random.randint(1, 7, size=1000)
-counts = np.bincount(dice)[1:]
-for face, n in zip(range(1, 7), counts):
-    print(face, "의 눈:", n, "번", f"({n/10:.1f}%)")
-print("평균 눈:", dice.mean())</code></pre>
-<p>이론 확률은 약 16.7%, 평균은 3.5입니다. 결과가 이와 비슷한지 비교해 봅니다.</p>
-<div class="q">학생 질문: 던지는 횟수를 100번, 100000번으로 바꾸면 비율이 이론값에 얼마나 가까워질까요?</div>
-<h3>실습 2 — 성적 분석 프로젝트</h3>
-<p><strong>목표:</strong> 앞의 내용을 종합해 총점 계산, 등급 구분, 파일 저장까지 수행한다.</p>
-<pre><code>import numpy as np
-scores = np.array([[80, 90, 70],
-                   [85, 95, 88],
-                   [75, 80, 90]])
-weights = np.array([0.3, 0.3, 0.4])   # 과목별 반영 비율
-total = scores @ weights
-print("가중 총점:", total)
-grade = np.where(total &gt;= 80, "우수", "보통")
-print("등급:", grade)
-np.savetxt("scores.csv", scores, delimiter=",", fmt="%d")
-loaded = np.loadtxt("scores.csv", delimiter=",", dtype=int)
-print("불러온 배열 shape:", loaded.shape)</code></pre>
-<pre class="out">가중 총점: [79.  89.2 82.5]
-등급: ['보통' '우수' '우수']
-불러온 배열 shape: (3, 3)</pre>
-<div class="q">도전 과제: 학생을 5명으로 늘리고, 총점 상위 3명만 출력해 보세요. (힌트: <code>np.argsort</code>)</div>
-</section>
+print(np.random.randint(1, 7, size=5))
+print(np.random.rand(2, 2))
+print(np.random.choice([10, 20, 30, 40], 2, replace=False))
 
-<section id="methods">
-<h2>NumPy 메소드 정리표</h2>
-<div class="wrap"><table>
-<tr><th>분류</th><th>함수/속성</th><th>설명</th><th>예시</th></tr>
-<tr><td>배열 생성</td><td>np.array()</td><td>리스트를 배열로 변환</td><td>np.array([1,2,3])</td></tr>
-<tr><td>배열 생성</td><td>np.arange()</td><td>범위 배열(끝값 제외)</td><td>np.arange(1,6) → [1 2 3 4 5]</td></tr>
-<tr><td>배열 생성</td><td>np.linspace()</td><td>구간을 균등 분할</td><td>np.linspace(0,1,5)</td></tr>
-<tr><td>배열 생성</td><td>np.zeros() / np.ones()</td><td>0 / 1로 채운 배열</td><td>np.zeros((2,3))</td></tr>
-<tr><td>배열 생성</td><td>np.full() / np.eye()</td><td>지정값 배열 / 단위행렬</td><td>np.full(3,7), np.eye(3)</td></tr>
-<tr><td>속성</td><td>shape · ndim · size · dtype</td><td>모양·차원·원소 개수·자료형</td><td>a.shape → (3, 3)</td></tr>
-<tr><td>모양 변경</td><td>reshape()</td><td>원소 수를 유지하며 모양 변경</td><td>a.reshape(3,4)</td></tr>
-<tr><td>모양 변경</td><td>flatten() / ravel()</td><td>1차원으로 펼치기</td><td>m.flatten()</td></tr>
-<tr><td>모양 변경</td><td>T / transpose()</td><td>행과 열 바꾸기(전치)</td><td>m.T</td></tr>
-<tr><td>결합·분리</td><td>concatenate() / vstack() / hstack()</td><td>배열 이어 붙이기</td><td>np.vstack([a,b])</td></tr>
-<tr><td>결합·분리</td><td>split()</td><td>배열 나누기</td><td>np.split(a,3)</td></tr>
-<tr><td>통계</td><td>sum · mean · median</td><td>합계 · 평균 · 중앙값</td><td>a.mean(axis=0)</td></tr>
-<tr><td>통계</td><td>max · min · std · var</td><td>최대 · 최소 · 표준편차 · 분산</td><td>np.std(a)</td></tr>
-<tr><td>통계</td><td>argmax · argmin</td><td>최대·최소값의 위치(인덱스)</td><td>a.argmax()</td></tr>
-<tr><td>통계</td><td>cumsum()</td><td>누적합</td><td>np.cumsum([1,2,3]) → [1 3 6]</td></tr>
-<tr><td>수학</td><td>sqrt · exp · log · abs</td><td>제곱근 · 지수 · 로그 · 절댓값</td><td>np.sqrt(a)</td></tr>
-<tr><td>수학</td><td>round · floor · ceil</td><td>반올림 · 내림 · 올림</td><td>np.round(a,1)</td></tr>
-<tr><td>수학</td><td>clip()</td><td>값의 범위 제한</td><td>np.clip(a,0,100)</td></tr>
-<tr><td>조건·정렬</td><td>np.where()</td><td>조건에 따라 값 선택 / 위치 반환</td><td>np.where(a&gt;=60,"P","F")</td></tr>
-<tr><td>조건·정렬</td><td>sort() / argsort()</td><td>정렬 / 정렬 순서의 인덱스</td><td>np.sort(a)</td></tr>
-<tr><td>조건·정렬</td><td>unique() / bincount()</td><td>중복 제거 / 값별 개수</td><td>np.unique(a)</td></tr>
-<tr><td>조건·정렬</td><td>any() / all()</td><td>하나라도 / 모두 참인지</td><td>(a&gt;90).any()</td></tr>
-<tr><td>난수</td><td>np.random.seed()</td><td>난수 시드 고정</td><td>np.random.seed(42)</td></tr>
-<tr><td>난수</td><td>rand · randint · randn</td><td>0~1 난수 · 정수 난수 · 정규분포 난수</td><td>np.random.randint(1,7,10)</td></tr>
-<tr><td>난수</td><td>np.random.choice()</td><td>무작위 추출</td><td>np.random.choice(a,3)</td></tr>
-<tr><td>선형대수</td><td>dot() / @</td><td>행렬 곱</td><td>A @ B</td></tr>
-<tr><td>선형대수</td><td>np.linalg.inv() / det()</td><td>역행렬 / 행렬식</td><td>np.linalg.inv(A)</td></tr>
-<tr><td>변환</td><td>astype()</td><td>자료형 변환</td><td>a.astype(float)</td></tr>
-<tr><td>복사</td><td>copy()</td><td>독립된 복사본 생성(슬라이스는 원본과 공유)</td><td>b = a.copy()</td></tr>
-<tr><td>파일</td><td>savetxt() / loadtxt()</td><td>텍스트·CSV 저장 / 불러오기</td><td>np.loadtxt("a.csv",delimiter=",")</td></tr>
-<tr><td>파일</td><td>save() / load()</td><td>.npy 이진 파일 저장 / 불러오기</td><td>np.save("a.npy", a)</td></tr>
-</table></div>
-<p>※ axis 지원 함수(sum, mean, max, min, std, sort 등)는 <code>axis=0</code>(열 방향), <code>axis=1</code>(행 방향)을 지정할 수 있습니다.</p>
-</section>
-
+print(&quot;===== ⑦ 변환·복사·계산·파일 =====&quot;)
+print(np.array([1.7, 2.9]).astype(int))
+b = x.copy()
+b[0] = 99
+print(x, b)
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+print(A @ B)
+np.savetxt(&quot;a.csv&quot;, A, delimiter=&quot;,&quot;, fmt=&quot;%d&quot;)
+print(np.loadtxt(&quot;a.csv&quot;, delimiter=&quot;,&quot;, dtype=int))</pre>
+<div class="note">💡 난수(⑥)는 <code class="k">seed(42)</code>로 고정해 같은 코드면 같은 값이 나오지만, NumPy 버전에 따라 카드의 예시 값과 다를 수 있습니다. 마지막의 <code class="k">a.csv</code>는 실행한 폴더에 저장됩니다.</div></section>
 </main>
-</body>
-</html>
+<footer>예제는 모두 <code>import numpy as np</code> 후 실행합니다 · Jupyter / Colab에서 실습하세요</footer>
+
+<script>
+// 그림용 격자 그리기
+document.querySelectorAll('.g').forEach(g=>{
+ const m=JSON.parse(g.dataset.m),hl=(g.dataset.hl||'').split(';'),ix=g.dataset.i;
+ g.style.gridTemplateColumns=`repeat(${m[0].length},auto)`;
+ if(ix)m[0].forEach((_,c)=>g.innerHTML+=`<div class="i">${c}</div>`);
+ m.forEach((row,r)=>row.forEach((v,c)=>g.innerHTML+=`<div class="${hl.includes(r+','+c)?'h':''}">${v}</div>`));
+});
+// 메소드 데이터: [이름, 매개변수(이름:뜻|...), 코드, 결과]
+const D={
+"① 배열 만들기":[
+["np.array(object, dtype=None)","object:리스트·튜플 등 원본 데이터|dtype:자료형(int, float 등). 생략하면 자동 결정","np.array([1,2,3], dtype=float)","[1. 2. 3.]"],
+["np.arange(start, stop, step=1)","start:시작값(포함)|stop:끝값(<b>제외</b>)|step:증가 간격","np.arange(0, 10, 3)","[0 3 6 9]"],
+["np.linspace(start, stop, num=50)","start:시작값|stop:끝값(<b>포함</b>)|num:만들 개수(같은 간격으로 나눔)","np.linspace(0, 1, 5)","[0.   0.25 0.5  0.75 1.  ]"],
+["np.zeros(shape) / np.ones(shape)","shape:모양. 숫자 하나면 1차원, (행,열)이면 2차원. zeros는 0, ones는 1로 채움","np.zeros((2, 3))","[[0. 0. 0.]\n [0. 0. 0.]]"],
+["np.full(shape, fill_value)","shape:모양|fill_value:채울 값","np.full((2, 2), 7)","[[7 7]\n [7 7]]"],
+["np.eye(N)","N:한 변의 크기. 대각선이 1인 단위행렬 생성","np.eye(3)","[[1. 0. 0.]\n [0. 1. 0.]\n [0. 0. 1.]]"]],
+"② 모양 바꾸기·합치기":[
+["a.reshape(rows, cols)","rows, cols:새 행·열 수(곱이 원소 수와 같아야 함). <b>-1</b>은 \"알아서 계산\"","a = np.arange(6)\nprint(a.reshape(2, 3))\nprint(a.reshape(3, -1))","[[0 1 2]\n [3 4 5]]\n[[0 1]\n [2 3]\n [4 5]]"],
+["m.flatten()","매개변수 없음. 2차원을 1차원으로 펼친 <b>복사본</b> 반환","m = np.array([[1,2,3],[4,5,6]])\nprint(m.flatten())","[1 2 3 4 5 6]"],
+["m.T","매개변수 없음. 행과 열을 서로 바꿈(전치)","print(m.T)","[[1 4]\n [2 5]\n [3 6]]"],
+["np.vstack(tup) / np.hstack(tup)","tup:합칠 배열들을 묶은 튜플. vstack은 위아래로, hstack은 좌우로 붙임","a = np.array([1,2,3]); b = np.array([4,5,6])\nprint(np.vstack((a, b)))\nprint(np.hstack((a, b)))","[[1 2 3]\n [4 5 6]]\n[1 2 3 4 5 6]"],
+["np.concatenate(arrays, axis=0)","arrays:합칠 배열들|axis:붙일 방향(0=세로, 1=가로)","np.concatenate((a, b))","[1 2 3 4 5 6]"]],
+"③ 통계":[
+["a.sum(axis=None) / a.mean(axis=None)","axis:None이면 전체, 0이면 열별, 1이면 행별로 합계·평균 계산","m = np.array([[1,2,3],[4,5,6]])\nprint(m.sum())\nprint(m.mean(axis=0))\nprint(m.mean(axis=1))","21\n[2.5 3.5 4.5]\n[2. 5.]"],
+["a.max() / a.min()  (axis 지정 가능)","axis:계산 방향. 생략하면 전체에서 최대·최소","print(m.max(), m.min(axis=1))","6 [1 4]"],
+["np.median(a) / np.std(a)","a:배열. median=중앙값(정렬 후 가운데), std=표준편차(데이터가 퍼진 정도)","print(np.median([3,1,2,10]))\nprint(np.std([2,4,4,4,5,5,7,9]))","2.5\n2.0"],
+["a.argmax() / a.argmin()","최대·최소값이 있는 <b>위치(인덱스)</b>를 반환. 값이 아니라 번호!","np.array([3, 9, 2]).argmax()","1"],
+["np.cumsum(a)","a:배열. 앞에서부터 차례로 더한 누적합","np.cumsum([1, 2, 3, 4])","[ 1  3  6 10]"]],
+"④ 수학 계산":[
+["np.sqrt(a) / np.abs(a)","a:배열. 각 원소의 제곱근 / 절댓값","print(np.sqrt([1, 4, 9]))\nprint(np.abs([-3, 2]))","[1. 2. 3.]\n[3 2]"],
+["np.round(a, decimals=0)","decimals:소수 몇째 자리까지 남길지","np.round([1.234, 5.678], 1)","[1.2 5.7]"],
+["np.clip(a, a_min, a_max)","a_min:최솟값 제한|a_max:최댓값 제한. 범위를 벗어난 값을 경계값으로 바꿈","np.clip([-5, 50, 120], 0, 100)","[  0  50 100]"]],
+"⑤ 조건·정렬":[
+["np.where(condition, x, y)","condition:조건식|x:참일 때 값|y:거짓일 때 값","a = np.array([55, 70, 90])\nnp.where(a >= 60, '합격', '불합격')","['불합격' '합격' '합격']"],
+["np.sort(a, axis=-1)","a:배열|axis:정렬 방향(기본은 마지막 축). 오름차순 정렬된 복사본 반환","np.sort([3, 1, 2])","[1 2 3]"],
+["np.argsort(a)","정렬했을 때의 <b>원소 순서(인덱스)</b>를 반환. 순위 구할 때 유용","np.argsort([30, 10, 20])","[1 2 0]"],
+["np.unique(a, return_counts=False)","return_counts:True면 값별 등장 횟수도 함께 반환","np.unique([1,2,2,3,3,3], return_counts=True)","(array([1, 2, 3]), array([1, 2, 3]))"],
+["(조건).any() / (조건).all()","any:하나라도 참이면 True|all:전부 참이어야 True","s = np.array([50, 95])\nprint((s > 90).any(), (s > 90).all())","True False"]],
+"⑥ 난수":[
+["np.random.seed(seed)","seed:난수의 출발 번호. 같은 번호면 항상 같은 결과가 나와 수업·검증에 편리","np.random.seed(42)","(출력 없음)"],
+["np.random.randint(low, high, size)","low:최솟값(포함)|high:최댓값(<b>제외</b>)|size:만들 개수","np.random.randint(1, 7, size=5)  # 주사위 5번","예: [3 6 1 2 5]  (값은 달라질 수 있음)"],
+["np.random.rand(d0, d1)","0 이상 1 미만의 난수. 괄호 안은 모양(행, 열)","np.random.rand(2, 2)","예: [[0.37 0.95]\n [0.73 0.60]]"],
+["np.random.choice(a, size, replace=True)","a:뽑을 대상|size:뽑을 개수|replace:True면 중복 허용(False면 중복 없음)","np.random.choice([10,20,30,40], 2, replace=False)","예: [30 10]"]],
+"⑦ 변환·복사·계산·파일":[
+["a.astype(dtype)","dtype:바꿀 자료형. 실수→정수는 소수점 아래를 버림","np.array([1.7, 2.9]).astype(int)","[1 2]"],
+["a.copy()","매개변수 없음. 원본과 독립된 복사본 생성. (b = a 는 같은 배열을 가리킬 뿐!)","a = np.array([1,2,3])\nb = a.copy()\nb[0] = 99\nprint(a, b)","[1 2 3] [99  2  3]"],
+["A @ B  또는  np.dot(A, B)","A, B:곱할 행렬. A의 열 수 = B의 행 수여야 함","A = np.array([[1,2],[3,4]])\nB = np.array([[5,6],[7,8]])\nprint(A @ B)","[[19 22]\n [43 50]]"],
+["np.savetxt(fname, X, delimiter, fmt) / np.loadtxt(fname, delimiter, dtype)","fname:파일 이름|X:저장할 배열|delimiter:구분 문자(CSV는 ',')|fmt:저장 형식(%d=정수)|dtype:불러올 자료형","np.savetxt('a.csv', A, delimiter=',', fmt='%d')\nprint(np.loadtxt('a.csv', delimiter=',', dtype=int))","[[1 2]\n [3 4]]"]]
+};
+const lib=document.getElementById('lib');
+for(const [cat,items] of Object.entries(D)){
+ lib.innerHTML+=`<h3>${cat}</h3>`+items.map(([n,p,c,o])=>`<div class="card"><h4>${n}</h4><ul>${p.split('|').map(x=>{const i=x.indexOf(':');return `<li><code class="k">${x.slice(0,i)}</code> — ${x.slice(i+1)}</li>`}).join('')}</ul><pre>${c}</pre><pre class="o">${o}</pre></div>`).join('');
+}
+</script></body></html>
