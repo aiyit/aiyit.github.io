@@ -87,16 +87,16 @@ function msg(t,c){const m=$('msg');m.textContent=t;m.className=c||''}
 const stage=$('stage');
 const R=new THREE.WebGLRenderer({antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,2));stage.insertBefore(R.domElement,stage.firstChild);
 R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=.85;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
-const S=new THREE.Scene();S.background=new THREE.Color(0xbfd9ee);
+const S=new THREE.Scene();S.background=new THREE.Color(0x1a2330);
 const C=new THREE.PerspectiveCamera(45,1,.1,100);C.position.set(0,13,11);
 const O=new THREE.OrbitControls(C,R.domElement);O.target.set(0,0,.8);O.maxPolarAngle=1.45;O.update();
-S.add(new THREE.HemisphereLight(0xffffff,0x778899,.35));
+S.add(new THREE.HemisphereLight(0xdfe8f5,0x445566,.30));
 // 반사용 환경맵(스튜디오 조명 박스) — 금속 재질의 하이라이트를 만든다
 {const pm=new THREE.PMREMGenerator(R),es=new THREE.Scene();
  es.add(new THREE.Mesh(new THREE.BoxGeometry(30,14,30),new THREE.MeshBasicMaterial({color:0x6f7f90,side:THREE.BackSide})));
  [[0,6.5,0,12,0xffffff],[-9,4,6,5,0xfff2dd],[9,4,-6,5,0xddeeff]].forEach(l=>{const m=new THREE.Mesh(new THREE.BoxGeometry(l[3],.3,l[3]*.6),new THREE.MeshBasicMaterial({color:l[4]}));m.material.color.multiplyScalar(8);m.position.set(l[0],l[1],l[2]);es.add(m)});
  S.environment=pm.fromScene(es,.04).texture;}
-const DL=new THREE.DirectionalLight(0xffffff,.9);DL.position.set(5,12,6);DL.castShadow=true;DL.shadow.mapSize.set(2048,2048);
+const DL=new THREE.DirectionalLight(0xffffff,.75);DL.position.set(5,12,6);DL.castShadow=true;DL.shadow.mapSize.set(2048,2048);
 Object.assign(DL.shadow.camera,{left:-12,right:12,top:12,bottom:-12,near:1,far:40});DL.shadow.bias=-.0004;S.add(DL);
 const std=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6},o||{}));
 const mt=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.95,roughness:.28,envMapIntensity:1.2},o||{})); // 금속
@@ -105,10 +105,10 @@ function box(w,h,d,c,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
 function screw(x,y,z,r){const s=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.12,20),mt(0xc9ced4,{roughness:.3}));s.position.set(x,y+.06,z);S.add(s);
  const k=new THREE.Mesh(new THREE.BoxGeometry(r*1.5,.03,r*.28),std(0x15181b));k.position.set(x,y+.125,z);k.rotation.y=Math.random()*3;S.add(k)}
 function label(t,p,s,col){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');
-  x.font='bold 38px sans-serif';x.fillStyle=col||'#12263a';x.textAlign='center';x.textBaseline='middle';x.fillText(t,128,34);
+  x.font='bold 38px sans-serif';x.fillStyle=col||'#12263a';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineWidth=7;x.strokeStyle='rgba(255,255,255,.92)';x.strokeText(t,128,34);x.fillText(t,128,34);
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:Object.assign(new THREE.CanvasTexture(c),{encoding:THREE.sRGBEncoding}),toneMapped:false,depthTest:false,transparent:true}));
   sp.position.copy(p);sp.scale.set(2*s,.5*s,1);sp.renderOrder=5;S.add(sp)}
-{const p=box(17,.4,10.5,0x9aa3ad,0,-.2,.8);p.material=plas(0x1f7a5c,{roughness:.55,clearcoat:.35});
+{const p=box(17,.4,10.5,0x9aa3ad,0,-.2,.8);p.material=plas(0x123a2e,{roughness:.55,clearcoat:.35});
  [[-8,-4.2],[8,-4.2],[-8,5.6],[8,5.6]].forEach(a=>screw(a[0],0,a[1],.28))}
 // terminals
 const TM={},TP={};
@@ -118,16 +118,16 @@ function term(id,x,y,z,col,lab){const m=new THREE.Mesh(new THREE.CylinderGeometr
    const cl=new THREE.Mesh(new THREE.CylinderGeometry(.36,.38,.18,24),plas(col,{roughness:.5}));cl.position.set(x,y-.22,z);S.add(cl)}
   label(lab,new THREE.Vector3(x,y+.1,z+.55),.6)}
 // DC source
-{const h=box(2.4,1.8,2.6,0x44505e,-6.4,.9,-1.8);h.material=mt(0x2a5db0,{roughness:.35,metalness:.55});
+{const h=box(2.4,1.8,2.6,0x44505e,-6.4,.9,-1.8);h.material=mt(0x1b2f55,{roughness:.35,metalness:.55});
  for(let i=0;i<7;i++)box(1.6,.03,.07,0x050607,-6.4,1.81,-2.7+i*.28);
  box(2.1,.05,.5,0x1b1e22,-6.4,1.1,-.46)}label('DC 24V',new THREE.Vector3(-6.4,2.3,-1.8),1.1,'#222');
 term('P',-7,.3,-.1,0xd62828,'+24V');term('N',-5.8,.3,-.1,0x1f5fd6,'0V');
 // timers
 const TD={};
 function timer(n,x){
-  const tb=box(3.4,1.8,2.2,0xe4e4de,x,.9,-1.4);tb.material=plas(n==1?0x3f9be0:0xf0b429,{roughness:.42,clearcoat:.5});
+  const tb=box(3.4,1.8,2.2,0xe4e4de,x,.9,-1.4);tb.material=plas(n==1?0x1f4e75:0x7a5a14,{roughness:.42,clearcoat:.5});
   box(3.4,.3,.5,0x2c3036,x,.15,.1);
-  const rl=box(3.9,.1,.55,0xb7bcc3,x,.05,-.3);rl.material=mt(0xb7bcc3,{roughness:.35}); // DIN 레일
+  const rl=box(3.9,.1,.55,0xb7bcc3,x,.05,-.3);rl.material=mt(0x707680,{roughness:.35}); // DIN 레일
   box(2.1,.06,1.2,0x14181c,x,1.78,-1.9);
   label('타이머 T'+n,new THREE.Vector3(x,2.4,-.9),1,'#1d4e89');
   const k=new THREE.Mesh(new THREE.CylinderGeometry(.4,.42,.3,32),plas(0x1a1c1f,{roughness:.5}));k.position.set(x,1.95,-.6);S.add(k);
@@ -143,19 +143,23 @@ function timer(n,x){
 timer(1,-2);timer(2,3);
 label('15=COM · 16=b접점 · 18=a접점',new THREE.Vector3(.5,3,-.2),.9,'#555');
 // lamp
-box(1.8,.3,1.8,0xe67e22,-2,.15,3.2);
+box(1.8,.3,1.8,0x6b3a14,-2,.15,3.2);
 const sk=new THREE.Mesh(new THREE.CylinderGeometry(.42,.48,.5,32),mt(0xb9a06a,{roughness:.3}));sk.position.set(-2,.55,3.2);S.add(sk);
 for(let i=0;i<3;i++){const rg=new THREE.Mesh(new THREE.TorusGeometry(.45,.035,8,32),mt(0x9c8550,{roughness:.35}));rg.rotation.x=Math.PI/2;rg.position.set(-2,.4+i*.13,3.2);S.add(rg)}
 const fil=new THREE.Mesh(new THREE.TorusGeometry(.18,.02,6,20),mt(0xdddddd));fil.position.set(-2,1.1,3.2);S.add(fil);
 const bulb=new THREE.Mesh(new THREE.SphereGeometry(.6,32,20),new THREE.MeshPhysicalMaterial({color:0xd8dcd8,roughness:.05,transparent:true,opacity:.6,clearcoat:1,emissive:0x000000}));bulb.position.set(-2,1.15,3.2);S.add(bulb);
-const lampL=new THREE.PointLight(0xffd54f,0,8);lampL.position.set(-2,1.6,3.2);S.add(lampL);
+const lampL=new THREE.PointLight(0xffd54f,0,14,1.4);lampL.position.set(-2,1.6,3.2);S.add(lampL);
+const halo=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),gr=g.createRadialGradient(64,64,0,64,64,64);
+  gr.addColorStop(0,'rgba(255,230,140,1)');gr.addColorStop(.35,'rgba(255,190,60,.55)');gr.addColorStop(1,'rgba(255,160,0,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,toneMapped:false}));
+  sp.position.set(-2,1.2,3.2);sp.scale.set(.01,.01,1);sp.renderOrder=4;S.add(sp);return sp})();
 label('램프',new THREE.Vector3(-2,2.2,3.2),.8);
 term('L+',-2.7,.4,4.4,0xd62828,'+');term('L-',-1.3,.4,4.4,0x1f5fd6,'−');
 // buzzer
-const bz=new THREE.Mesh(new THREE.CylinderGeometry(1,1.1,.9,40),plas(0xd23b3b,{roughness:.4}));bz.position.set(4.5,.45,3.2);S.add(bz);
+const bz=new THREE.Mesh(new THREE.CylinderGeometry(1,1.1,.9,40),plas(0x6e2020,{roughness:.4}));bz.position.set(4.5,.45,3.2);S.add(bz);
 const rim=new THREE.Mesh(new THREE.TorusGeometry(.8,.05,8,40),mt(0xcfd3d8,{roughness:.25}));rim.rotation.x=Math.PI/2;rim.position.y=.46;bz.add(rim);
 for(let r=0;r<3;r++)for(let i=0;i<6*(r+1);i++){const h=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.02,8),new THREE.MeshBasicMaterial({color:0}));const a=i/(6*(r+1))*6.283,rr=.2+r*.22;h.position.set(Math.cos(a)*rr,.46,Math.sin(a)*rr);bz.add(h)}
-const fl=new THREE.Mesh(new THREE.CylinderGeometry(1.3,1.3,.1,40),mt(0xd4a73a,{roughness:.35}));fl.position.set(4.5,.05,3.2);S.add(fl);
+const fl=new THREE.Mesh(new THREE.CylinderGeometry(1.3,1.3,.1,40),mt(0x7a6226,{roughness:.35}));fl.position.set(4.5,.05,3.2);S.add(fl);
 label('부저',new THREE.Vector3(4.5,1.7,3.2),.8);
 term('B+',3.8,.4,4.6,0xd62828,'+');term('B-',5.2,.4,4.6,0x1f5fd6,'−');
 
@@ -248,7 +252,8 @@ new ResizeObserver(size).observe(stage);size();
 S.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
 const clk=new THREE.Clock();
 (function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.1);step(dt);
-  bulb.material.color.setHex(st.lamp?0xffe082:0xd8dcd8);bulb.material.emissive.setHex(st.lamp?0xffb300:0);lampL.intensity=st.lamp?1.6:0;
+  bulb.material.color.setHex(st.lamp?0xfff1b0:0xd8dcd8);bulb.material.emissive.setHex(st.lamp?0xffb300:0);bulb.material.emissiveIntensity=st.lamp?2.2:1;bulb.material.opacity=st.lamp?.9:.6;
+  lampL.intensity=st.lamp?4:0;{const hs=st.lamp?4.2:.01;halo.scale.set(hs,hs,1)}
   bz.scale.setScalar(st.buz?1+.04*Math.sin(performance.now()/25):1);beep(st.buz);
   drawT(1);drawT(2);O.update();R.render(S,C)})();
 </script>
