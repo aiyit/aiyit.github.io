@@ -265,25 +265,38 @@
     #alert-banner{ top:54px; bottom:auto; width:calc(100% - 28px); text-align:center; font-size:12px; padding:8px 10px; box-sizing:border-box; }
   }
 
-  /* ===== PLC 모듈 실습 이동 버튼 (상단 우측) ===== */
-  #plcexe-link{
-    position:fixed; top:8px; right:14px; z-index:12;
-    display:inline-flex; align-items:center; gap:8px;
-    padding:8px 16px; border-radius:8px;
-    background:rgba(47,217,255,0.14); border:1px solid var(--accent-cyan);
-    color:var(--accent-cyan); text-decoration:none;
-    font:700 13px 'Malgun Gothic','Segoe UI',sans-serif; letter-spacing:0.3px;
+  /* ===== 상단 바로가기 버튼 2개 ===== */
+  #top-links{
+    position:fixed; top:54px; right:14px; z-index:30;
+    display:flex; align-items:center; justify-content:flex-end; gap:8px;
+    max-width:calc(100vw - 20px);
+  }
+  #top-links a{
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    min-height:34px; padding:8px 13px; border-radius:8px;
+    text-decoration:none; white-space:nowrap;
+    font:700 12px 'Malgun Gothic','Segoe UI',sans-serif; letter-spacing:0.1px;
     backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-    box-shadow:0 0 14px rgba(47,217,255,0.25);
     transition:background .15s, box-shadow .15s, transform .1s;
   }
-  #plcexe-link:hover{ background:rgba(47,217,255,0.28); box-shadow:0 0 20px rgba(47,217,255,0.5); }
-  #plcexe-link:active{ transform:translateY(1px) scale(0.985); }
-  #plcexe-link .arrow{ font-size:15px; line-height:1; }
+  #conveyexp-link{
+    background:rgba(183,155,255,0.14); border:1px solid #b79bff;
+    color:#d2c4ff; box-shadow:0 0 14px rgba(183,155,255,0.22);
+  }
+  #conveyexp-link:hover{background:rgba(183,155,255,0.28);box-shadow:0 0 20px rgba(183,155,255,0.45);}
+  #plcexe-link{
+    background:rgba(47,217,255,0.14); border:1px solid var(--accent-cyan);
+    color:var(--accent-cyan); box-shadow:0 0 14px rgba(47,217,255,0.25);
+  }
+  #plcexe-link:hover{background:rgba(47,217,255,0.28);box-shadow:0 0 20px rgba(47,217,255,0.5);}
+  #top-links a:active{transform:translateY(1px) scale(0.985);}
+  #top-links .arrow{font-size:15px;line-height:1;}
   @media (max-width: 700px), (max-height: 520px){
-    #plcexe-link{ top:8px; right:10px; padding:6px 12px; font-size:12px; }
-    #hmi-panel{ top:46px; max-height:calc(62vh - 36px); }
-    #alert-banner{ top:90px; }
+    #top-links{top:54px;right:8px;left:8px;gap:5px;}
+    #top-links a{flex:1;min-width:0;padding:7px 5px;font-size:10.5px;gap:4px;}
+    #top-links .arrow{font-size:12px;}
+    #hmi-panel{top:96px;max-height:calc(62vh - 86px);}
+    #alert-banner{top:140px;}
   }
 </style>
 </head>
@@ -291,9 +304,10 @@
 
 
 <div id="scene-container"></div>
-<a id="conveyexp-link" href="doc/conveyexp.html" target="_self" title="PLC 시스템 기초설명">PLC 시스템 기초 설명 <span class="arrow">→</span></a>
-
-<a id="plcexe-link" href="plcexe.html" target="_self" title="PLC 모듈 실습 페이지로 이동">PLC 모듈 실습 <span class="arrow">→</span></a>
+<nav id="top-links" aria-label="관련 학습 페이지 바로가기">
+  <a id="conveyexp-link" href="doc/conveyexp.html" target="_self" title="PLC 시스템 기초설명">PLC 시스템 기초 설명 <span class="arrow">→</span></a>
+  <a id="plcexe-link" href="plcexe.html" target="_self" title="PLC 모듈 실습 페이지로 이동">PLC 모듈 실습 <span class="arrow">→</span></a>
+</nav>
 
 <div id="hmi-panel">
   <div id="hmi-header">
