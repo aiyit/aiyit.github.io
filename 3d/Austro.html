@@ -7,11 +7,11 @@
 <div><button id="now">현재 시각</button><button id="play">▶ 시간 흐름</button><button id="stop">⏸ 정지</button></div>
 <p>시간 흐름 속도 <input id="speed" type="range" min="1" max="2000" value="120"><span id="speedLabel">120배</span></p>
 <p>별자리 <select id="target"></select> <button id="goto">찾아보기</button></p>
-<p><label><input type="checkbox" id="lines" checked>별자리 선</label><label><input type="checkbox" id="names" checked>이름</label><label><input type="checkbox" id="mw" checked>은하수</label></p>
+<p><label><input type="checkbox" id="lines" checked>별자리 선</label><label><input type="checkbox" id="names" checked>이름</label><label><input type="checkbox" id="mw" checked>은하수</label><label><input type="checkbox" id="pl" checked>행성</label></p>
 <button id="scope">🔭 망원경 관측 [E]</button><button id="lookScope">망원경 쪽 보기</button><button id="reset">전체 하늘</button>
 <p id="info"></p>
 <p>마우스 드래그: 시선 회전(망원경 관측 중엔 망원경 이동) · 휠: 확대/축소(망원경: 시야각)<br>더블클릭: 시점 초기화 · VR: 컨트롤러 조준 후 트리거</p>
-<small>교육용 시뮬레이션입니다. 밝은 별 5,000여 개(예일 밝은별 목록 기준, J2000 좌표·실제 등급·색지수)와 근사 항성시·태양 위치를 사용하며, 행성·달·대기 굴절은 단순화했습니다. 별자리 선은 학습용으로 강조한 것입니다.</small>
+<small>교육용 시뮬레이션입니다. 밝은 별 5,000여 개와 6~8등급 배경별 수만 개(예일 밝은별 목록 기준, J2000 좌표·실제 등급·색지수)와 근사 항성시·태양 위치를 사용하며, 수성~해왕성은 케플러 근사궤도(오차 약 1°)로 계산하며, 은하수·배경별은 절차적으로 생성한 것이고 달·대기 굴절은 단순화했습니다. 별자리 선은 학습용으로 강조한 것입니다.</small>
 <p id="err"></p></div><div id="eyepiece"></div><div id="viewHelp">마우스 드래그: 하늘 관찰 · 휠: 확대/축소 · 더블클릭: 시점 초기화 · E: 망원경 관측</div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
 <script type="module">
@@ -45,17 +45,17 @@ const GAL=[[-.0548755604,-.8734370902,-.4838350155],[.4941094279,-.44482963,.746
 const gal2eq=(l,b)=>{const x=Math.cos(b)*Math.cos(l),y=Math.cos(b)*Math.sin(l),z=Math.sin(b);return new T.Vector3(GAL[0][0]*x+GAL[1][0]*y+GAL[2][0]*z,GAL[0][1]*x+GAL[1][1]*y+GAL[2][1]*z,GAL[0][2]*x+GAL[1][2]*y+GAL[2][2]*z)};
 // ───────── 천구(별·은하수·별자리): 적도좌표로 한 번만 만들고 항성시에 맞춰 회전만 시킴 ─────────
 const sky=new T.Group();sky.matrixAutoUpdate=false;scene.add(sky);const conGroup=new T.Group();sky.add(conGroup);
-const starVS=`attribute float aMag,aSeed;attribute vec3 aColor;uniform float uTime,uLimit,uPx,uZoom;varying vec3 vCol;varying float vA;
+const starVS=`attribute float aMag,aSeed;attribute vec3 aColor;uniform float uTime,uLimit,uPx,uZoom,uDeep;varying vec3 vCol;varying float vA,vS;
 void main(){vec4 wp=modelMatrix*vec4(position,1.0);vec3 rel=wp.xyz-cameraPosition;float alt=rel.y/length(rel);
-if(alt<0.0){gl_Position=vec4(2.,2.,2.,1.);gl_PointSize=0.;vCol=vec3(0.);vA=0.;return;}
-float vis=clamp(uLimit-aMag+0.6,0.,1.);float air=1.0/(alt+0.06);float ext=exp(-0.09*(air-1.0));
-float tw=1.0+(0.06+0.45*clamp(0.3-alt,0.,0.3))*sin(uTime*(4.0+aSeed*6.0)+aSeed*50.0);
-float b=clamp((6.8-aMag)/8.3,0.,1.);float faint=pow(10.,-0.14*max(aMag-6.8,0.));
-vA=(0.38+0.9*sqrt(b))*faint*vis*ext*tw;vCol=aColor;
-gl_PointSize=uPx*(2.4+9.0*pow(b,1.15))*(1.0+0.3*log2(uZoom))*(0.8+0.2*vis);
-gl_Position=projectionMatrix*viewMatrix*wp;}`;
-const starFS=`varying vec3 vCol;varying float vA;void main(){vec2 c=gl_PointCoord-.5;float d=length(c)*2.;if(d>1.)discard;float i=(exp(-d*d*6.)+.22*exp(-d*d*1.6))*vA;gl_FragColor=vec4(vCol*i,1.);}`;
-const mkStarMat=()=>new T.ShaderMaterial({uniforms:{uTime:{value:0},uLimit:{value:7},uPx:{value:PX},uZoom:{value:1}},vertexShader:starVS,fragmentShader:starFS,transparent:true,depthWrite:false,blending:T.AdditiveBlending});
+if(alt<0.0){gl_Position=vec4(2.,2.,2.,1.);gl_PointSize=0.;vCol=vec3(0.);vA=0.;vS=0.;return;}
+float air=1.0/(alt+0.06);float ext=exp(-0.09*(air-1.0));float vis,b,a,sz;
+if(uDeep>0.5){vis=clamp(uLimit-aMag+0.6,0.,1.);b=clamp((6.8-aMag)/8.3,0.,1.);a=(0.38+0.9*sqrt(b))*pow(10.,-0.14*max(aMag-6.8,0.))*vis;sz=(2.4+9.0*pow(b,1.15))*(0.8+0.2*vis);}
+else{vis=clamp((uLimit+0.9-aMag)/1.1,0.,1.);b=clamp((7.0-aMag)/8.4,0.,1.);a=(0.30+0.95*pow(b,0.45))*pow(10.,-0.36*max(aMag-(uLimit-0.8),0.))*vis;sz=(2.3+8.5*pow(b,1.5))*(0.75+0.25*vis);}
+float k=(0.10+0.55*clamp(0.35-alt,0.,0.35))*(1.0+0.7*(1.0-clamp(b*4.,0.,1.)));
+float tw=max(1.0+k*(0.65*sin(uTime*(2.5+aSeed*6.0)+aSeed*50.0)+0.35*sin(uTime*(6.0+aSeed*9.0)+aSeed*97.0)),0.35);
+vA=a*ext*tw;vCol=aColor;sz*=(1.0+0.3*log2(uZoom));vS=sz;gl_PointSize=uPx*sz;gl_Position=projectionMatrix*viewMatrix*wp;}`;
+const starFS=`varying vec3 vCol;varying float vA,vS;void main(){vec2 c=gl_PointCoord-.5;float d=length(c)*2.;if(d>1.)discard;float k=mix(2.2,8.0,clamp((vS-3.)/9.,0.,1.));float i=(exp(-d*d*k)+.2*exp(-d*d*1.4)*clamp((vS-4.)/8.,0.,1.))*(1.-smoothstep(.7,1.,d))*vA;gl_FragColor=vec4(vCol*i,1.);}`;
+const mkStarMat=(deep=false)=>new T.ShaderMaterial({uniforms:{uTime:{value:0},uLimit:{value:7},uPx:{value:PX},uZoom:{value:1},uDeep:{value:deep?1:0}},vertexShader:starVS,fragmentShader:starFS,transparent:true,depthWrite:false,blending:T.AdditiveBlending});
 const starMat=mkStarMat();let starPts=null;
 function setStars(list){const n=list.length,pos=new Float32Array(n*3),mag=new Float32Array(n),col=new Float32Array(n*3),seed=new Float32Array(n);
 for(let i=0;i<n;i++){const[ra,dec,m,bv]=list[i],e=eqv(ra/15,dec,500),c=bvRGB(bv);pos.set([e.x,e.y,e.z],i*3);mag[i]=m;col.set(c,i*3);let h=(Math.sin(i*12.9898)*43758.5453)%1;seed[i]=h<0?h+1:h}
@@ -63,23 +63,42 @@ const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(p
 if(starPts){sky.remove(starPts);starPts.geometry.dispose()}starPts=new T.Points(g,starMat);starPts.frustumCulled=false;sky.add(starPts)}
 {const u=Uint8Array.from(atob(FALLBACK),c=>c.charCodeAt(0)),dv=new DataView(u.buffer),n=u.length/6,l=[];for(let i=0;i<n;i++)l.push([dv.getUint16(i*6,true)/65535*360,dv.getUint16(i*6+2,true)/65535*180-90,dv.getInt8(i*6+4)/10,dv.getInt8(i*6+5)/50]);setStars(l)}
 fetch(CAT_URL).then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>setStars(j.features.map(f=>{const[lo,la]=f.geometry.coordinates,bv=parseFloat(f.properties.bv);return[(lo+360)%360,la,f.properties.mag,isNaN(bv)?.6:bv]}))).catch(()=>{$('#err').textContent='별 카탈로그를 불러오지 못해 밝은 별 233개만 표시합니다.'});
-// 은하수: 은하좌표 기준의 부드러운 절차적 텍스처(은하 중심 방향이 가장 밝고, 백조자리~전갈자리 쪽 암흑대 포함)
 const mwMat=new T.ShaderMaterial({side:T.BackSide,transparent:true,depthWrite:false,blending:T.AdditiveBlending,uniforms:{uTex:{value:null},uVis:{value:1}},
 vertexShader:'varying vec3 vE;varying float vAlt;void main(){vE=position;vec4 w=modelMatrix*vec4(position,1.);vec3 rel=w.xyz-cameraPosition;vAlt=rel.y/length(rel);gl_Position=projectionMatrix*viewMatrix*w;}',
 fragmentShader:`varying vec3 vE;varying float vAlt;uniform sampler2D uTex;uniform float uVis;const mat3 G=mat3(-0.0548755604,0.4941094279,-0.8676661490,-0.8734370902,-0.4448296300,-0.1980763734,-0.4838350155,0.7469822445,0.4559837762);
 void main(){vec3 g=G*normalize(vE);float l=atan(g.y,g.x),b=asin(clamp(g.z,-1.,1.));vec2 uv=vec2(l/6.2831853+.5,b/3.1415927+.5);vec3 c=texture2D(uTex,uv).rgb*uVis*smoothstep(-.02,.22,vAlt);gl_FragColor=vec4(c,1.);}`});
-{const W=768,H=384,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d'),im=x.createImageData(W,H),hs=(a,b,c)=>{let h=Math.sin(a*127.1+b*311.7+c*74.7)*43758.5453;return h-Math.floor(h)},sm=t=>t*t*(3-2*t),
+// 은하수: 은하좌표 기준 절차적 텍스처 — 은하 중심(궁수자리) 팽대부, 백조~전갈자리 방향 대암흑대(Great Rift), 먼지 띠, 미세한 별구름 알갱이
+var mwD=null,mwW=1024,mwH=512;
+{const W=mwW,H=mwH,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d'),im=x.createImageData(W,H),hs=(a,b,c)=>{let h=Math.sin(a*127.1+b*311.7+c*74.7)*43758.5453;return h-Math.floor(h)},sm=t=>t*t*(3-2*t),
 vn=(px,py,pz)=>{const ix=Math.floor(px),iy=Math.floor(py),iz=Math.floor(pz),fx=sm(px-ix),fy=sm(py-iy),fz=sm(pz-iz);let v=0;for(let dx=0;dx<2;dx++)for(let dy=0;dy<2;dy++)for(let dz=0;dz<2;dz++)v+=hs(ix+dx,iy+dy,iz+dz)*(dx?fx:1-fx)*(dy?fy:1-fy)*(dz?fz:1-fz);return v},
-fbm=(px,py,pz)=>{let a=.5,f=1,s=0;for(let o=0;o<5;o++){s+=a*vn(px*f,py*f,pz*f);f*=2.03;a*=.5}return s};
-for(let j=0;j<H;j++){const b=(.5-(j+.5)/H)*Math.PI;for(let i=0;i<W;i++){const l=((i+.5)/W-.5)*2*Math.PI,ld=l/D2R,bd=b/D2R,gx=Math.cos(b)*Math.cos(l),gy=Math.cos(b)*Math.sin(l),gz=Math.sin(b);
-const sig=3.5+8*Math.exp(-((ld/38)**2)),core=Math.exp(-((bd/sig)**2)),n=fbm(gx*5+9,gy*5+3,gz*5+1),fine=fbm(gx*22,gy*22,gz*22);
-const rift=1-.6*Math.exp(-(((bd-.8)/2.8)**2))*Math.exp(-(((ld-28)/48)**2))*(.5+.8*n);
-const lum=(.05+.2*Math.exp(-((ld/50)**2))+.05*Math.exp(-(((Math.abs(ld)-75)/25)**2)))*core*rift*(.45+1.1*n)*(.75+.5*fine)+.012*Math.exp(-((bd/22)**2))*n;
-const w=Math.exp(-((ld/34)**2)*(1+(bd/12)**2)),k=(j*W+i)*4;im.data[k]=Math.min(255,lum*255*(.74+.3*w));im.data[k+1]=Math.min(255,lum*255*(.8+.14*w));im.data[k+2]=Math.min(255,lum*255*(1-.28*w));im.data[k+3]=255}}
-x.putImageData(im,0,0);const tex=new T.CanvasTexture(cv);tex.generateMipmaps=false;tex.minFilter=tex.magFilter=T.LinearFilter;tex.wrapS=T.RepeatWrapping;mwMat.uniforms.uTex.value=tex;
+fbm=(px,py,pz,oct=5)=>{let a=.5,f=1,s=0;for(let o=0;o<oct;o++){s+=a*vn(px*f,py*f,pz*f);f*=2.03;a*=.5}return s},
+ssm=(a,b,v)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
+for(let j=0;j<H;j++){const b=(.5-(j+.5)/H)*Math.PI,bd=b/D2R;for(let i=0;i<W;i++){const l=((i+.5)/W-.5)*2*Math.PI,ld=l/D2R,k=(j*W+i)*4;let lum=0,w=0;
+if(Math.abs(bd)>42){lum=.012*Math.exp(-((bd/22)**2))+.002}
+else{const gx=Math.cos(b)*Math.cos(l),gy=Math.cos(b)*Math.sin(l),gz=Math.sin(b),
+n=fbm(gx*4+9,gy*4+3,gz*4+1),fine=fbm(gx*26,gy*26,gz*26,4),
+sig=3+9*Math.exp(-((ld/34)**2)),
+core=.7*Math.exp(-((bd/sig)**2))+.3*Math.exp(-((bd/(2.7*sig))**2)),
+L=.2+.8*Math.exp(-((ld/46)**2))+.16*Math.exp(-(((Math.abs(ld)-82)/28)**2)),
+bulge=Math.exp(-((ld/10)**2+((bd+1)/5.5)**2)),
+rn=fbm(gx*8+4,gy*8+7,gz*8+2,4),ridge=Math.pow(1-Math.abs(2*rn-1),5),
+plane=Math.exp(-(((bd-.6)/3.4)**2)),dustL=Math.exp(-(((ld-35)/55)**2))+.35*Math.exp(-(((ld+45)/40)**2)),
+rift=Math.exp(-(((bd-1.2+4*Math.sin(ld*.06))/1.8)**2))*Math.exp(-(((ld-30)/45)**2)),
+coal=Math.exp(-(((ld+57)/4)**2+(bd/3.5)**2)),
+dark=Math.min(.9,.85*(ridge*1.5+.25)*plane*dustL*(.6+.8*n)+.5*rift*(.5+.7*n)+.8*coal);
+lum=(.26*L*core*(.5+1.0*n)*(.7+.6*fine)+.30*bulge*(.6+.6*fine))*(1-dark)+.015*Math.exp(-((bd/25)**2))*n+(hs(i,j,3)-.5)*.01;
+w=Math.exp(-((ld/34)**2)*(1+(bd/12)**2))}
+lum=Math.max(lum,0);im.data[k]=Math.min(255,lum*255*(.8+.28*w));im.data[k+1]=Math.min(255,lum*255*(.88+.1*w));im.data[k+2]=Math.min(255,lum*255*(1-.3*w));im.data[k+3]=255}}
+x.putImageData(im,0,0);mwD=im.data;const tex=new T.CanvasTexture(cv);tex.generateMipmaps=false;tex.minFilter=tex.magFilter=T.LinearFilter;tex.wrapS=T.RepeatWrapping;mwMat.uniforms.uTex.value=tex;
 var mwPts=new T.Mesh(new T.SphereGeometry(498,64,32),mwMat);mwPts.frustumCulled=false;mwPts.renderOrder=-1;sky.add(mwPts)}
+// 맨눈 한계 부근(6~8등급) 배경별 + 은하수 속 미분해 별구름: 은하면에 몰려 있어 칠흑 같은 하늘에 알갱이처럼 반짝임
+{const rng=mulberry(20261126),R=500,rv=()=>{const z=2*rng()-1,ph=2*Math.PI*rng(),s=Math.sqrt(1-z*z);return new T.Vector3(s*Math.cos(ph),s*Math.sin(ph),z)},
+gal=v=>[Math.atan2(GAL[1][0]*v.x+GAL[1][1]*v.y+GAL[1][2]*v.z,GAL[0][0]*v.x+GAL[0][1]*v.y+GAL[0][2]*v.z)/D2R,Math.asin(clamp(GAL[2][0]*v.x+GAL[2][1]*v.y+GAL[2][2]*v.z,-1,1))/D2R],
+mk=(P,M,C,S)=>{const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setAttribute('aMag',new T.Float32BufferAttribute(M,1));g.setAttribute('aColor',new T.Float32BufferAttribute(C,3));g.setAttribute('aSeed',new T.Float32BufferAttribute(S,1));const p=new T.Points(g,starMat);p.frustumCulled=false;sky.add(p)};
+{const P=[],M=[],C=[],S=[];let n=0,guard=0;while(n<26000&&guard++<400000){const v=rv(),[l,b]=gal(v),pr=.22+.78*Math.exp(-b*b/512)*(.75+.45*Math.exp(-((l/50)**2)));if(rng()*1.2>pr)continue;const m=5.9+Math.log10(1+rng()*(Math.pow(10,.4*1.9)-1))/.4,c=bvRGB(.05+1.25*Math.pow(rng(),.85));P.push(v.x*R,v.y*R,v.z*R);M.push(m);C.push(c[0],c[1],c[2]);S.push(rng());n++}mk(P,M,C,S)}
+{const P=[],M=[],C=[],S=[];let n=0,guard=0;while(n<42000&&guard++<1500000){const v=rv(),[l,b]=gal(v);if(Math.abs(b)>35)continue;const ix=Math.min(mwW-1,Math.floor((l/360+.5)*mwW)),iy=Math.min(mwH-1,Math.floor((.5-b/180)*mwH)),lum=mwD[(iy*mwW+ix)*4]/255;if(rng()>Math.min(1,Math.pow(lum*3.2,1.1)))continue;const c=bvRGB(.45+.9*rng());P.push(v.x*R,v.y*R,v.z*R);M.push(6.9+.9*rng());C.push(c[0],c[1],c[2]);S.push(rng());n++}mk(P,M,C,S)}}
 // 망원경 시야용 희미한 별(6.6~12등급): 시선 주변만 격자 단위로 결정론적 생성 → 시야를 움직여도 같은 별이 같은 자리에 보임
-const deepPts=new T.Points(new T.BufferGeometry(),mkStarMat());deepPts.frustumCulled=false;deepPts.visible=false;sky.add(deepPts);let deepC=null;
+const deepPts=new T.Points(new T.BufferGeometry(),mkStarMat(true));deepPts.frustumCulled=false;deepPts.visible=false;sky.add(deepPts);let deepC=null;
 function genDeep(ra0,dec0){const R=12,pos=[],mag=[],col=[],seed=[],c0=eqv(ra0,dec0,1),cr=Math.cos(R*D2R)-.03;
 for(let j=Math.floor(dec0-R-1);j<=Math.ceil(dec0+R+1);j++){if(j<-90||j>=90)continue;const dc=j+.5,cd=Math.cos(dc*D2R),N=Math.max(1,Math.round(360*cd)),span=Math.min(180,(R+1.5)/Math.max(cd,.02));let i0=Math.floor((ra0*15-span)/360*N),i1=Math.ceil((ra0*15+span)/360*N);if(i1-i0+1>N)i1=i0+N-1;
 for(let ii=i0;ii<=i1;ii++){const i=((ii%N)+N)%N,cv=eqv((i+.5)/N*24,dc,1);if(cv.dot(c0)<cr)continue;const rng=mulberry((j+120)*7919+i*104729+13),b=Math.asin(clamp(GAL[2][0]*cv.x+GAL[2][1]*cv.y+GAL[2][2]*cv.z,-1,1))/D2R,lam=11*(1+3.5*Math.exp(-b*b/392)),n=Math.floor(lam*(.7+.6*rng()));
@@ -87,8 +106,8 @@ for(let k=0;k<n;k++){const ra=(i+rng())/N*24,dec=j+rng(),m=6.6+Math.log10(1+rng(
 deepPts.geometry.dispose();const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('aMag',new T.Float32BufferAttribute(mag,1));g.setAttribute('aColor',new T.Float32BufferAttribute(col,3));g.setAttribute('aSeed',new T.Float32BufferAttribute(seed,1));deepPts.geometry=g;deepC=c0}
 // ───────── 하늘 돔·태양·대기 ─────────
 const hexRGB=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);
-const SKY=[[-18,hexRGB('#02040b'),hexRGB('#0d1626')],[-12,hexRGB('#050b1f'),hexRGB('#18284a')],[-6,hexRGB('#10224a'),hexRGB('#6a6088')],[-1,hexRGB('#2a4c86'),hexRGB('#eba274')],[6,hexRGB('#3b78c8'),hexRGB('#c3d5ea')],[30,hexRGB('#2f6fc9'),hexRGB('#abcaef')]];
-const MAGLIM=[[-18,6.9],[-15,6.2],[-12,5],[-9,3.2],[-6,1.4],[-3,-.6],[0,-3],[10,-5]];
+const SKY=[[-18,hexRGB('#010208'),hexRGB('#070c16')],[-12,hexRGB('#050b1f'),hexRGB('#18284a')],[-6,hexRGB('#10224a'),hexRGB('#6a6088')],[-1,hexRGB('#2a4c86'),hexRGB('#eba274')],[6,hexRGB('#3b78c8'),hexRGB('#c3d5ea')],[30,hexRGB('#2f6fc9'),hexRGB('#abcaef')]];
+const MAGLIM=[[-18,7.2],[-15,6.4],[-12,5],[-9,3.2],[-6,1.4],[-3,-.6],[0,-3],[10,-5]];
 function tab(t,a){if(a<=t[0][0])return t[0].slice(1);const L=t.length;if(a>=t[L-1][0])return t[L-1].slice(1);let i=1;while(t[i][0]<a)i++;const f=(a-t[i-1][0])/(t[i][0]-t[i-1][0]);return t[i].slice(1).map((v,k)=>{const u=t[i-1][k+1];return Array.isArray(v)?v.map((x,m)=>u[m]+(x-u[m])*f):u+(v-u)*f})}
 const dome=new T.Mesh(new T.SphereGeometry(1000,48,24),new T.ShaderMaterial({side:T.BackSide,depthWrite:false,uniforms:{uZen:{value:new T.Vector3()},uHor:{value:new T.Vector3()},uSunGlow:{value:new T.Vector3()},uSunDir:{value:new T.Vector3(0,-1,0)}},vertexShader:'varying vec3 vDir;void main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec3 vDir;uniform vec3 uZen,uHor,uSunGlow,uSunDir;void main(){vec3 d=normalize(vDir);float h=clamp(d.y,0.,1.);vec3 c=mix(uHor,uZen,pow(h,.5));float s=max(dot(d,normalize(uSunDir)),0.);c+=uSunGlow*(.25*pow(s,6.)+.6*pow(s,40.));if(d.y<0.)c=uHor;gl_FragColor=vec4(c,1.);}'}));dome.renderOrder=-10;scene.add(dome);
 const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'#fff');g.addColorStop(.12,'#fff');g.addColorStop(.35,'rgba(255,230,170,.35)');g.addColorStop(1,'rgba(255,200,120,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)})();
@@ -106,7 +125,7 @@ const warm=1-clamp(sunAlt/25,0,1),gi=clamp((sunAlt+12)/11,0,1)*.45;u.uSunGlow.va
 scene.fog.color.setRGB(hor[0],hor[1],hor[2],T.SRGBColorSpace);
 const dayF=clamp((sunAlt+6)/18,0,1);hemi.intensity=.1+1.5*dayF;hemi.color.setRGB(zen[0]*.5+.25*dayF,zen[1]*.5+.3*dayF,zen[2]*.5+.4*dayF+.2*(1-dayF),T.SRGBColorSpace);sunLight.intensity=3.2*clamp(sunDir.y*2.5,0,1);sunLight.position.copy(sunDir).multiplyScalar(60);scene.environmentIntensity=.1+1*dayF;lamp.intensity=(1-dayF)*7;lampBulb.material.emissiveIntensity=.4+1.6*(1-dayF);
 const vis=sunAlt>-4;sunGlow.visible=sunCore.visible=vis;sunGlow.position.copy(sunDir).multiplyScalar(900);sunCore.position.copy(sunGlow.position);sunGlow.material.opacity=clamp((sunAlt+4)/6,0,1)*.9;
-starMat.uniforms.uLimit.value=magLim;deepPts.material.uniforms.uLimit.value=magLim+5.4;mwMat.uniforms.uVis.value=clamp((magLim-3.5)/3,0,1)*($('#mw').checked?1:0)}
+starMat.uniforms.uLimit.value=magLim;deepPts.material.uniforms.uLimit.value=magLim+5.4;mwMat.uniforms.uVis.value=clamp((magLim-3.5)/3,0,1)*($('#mw').checked?1:0);planetMat.uniforms.uLimit.value=magLim;updatePlanets()}
 // ───────── 관측 데크·지형 ─────────
 const mat=(c,m,r)=>new T.MeshStandardMaterial({color:c,metalness:m,roughness:r});
 const M={alu:mat(0xc9d0d8,1,.26),steel:mat(0x8e959d,1,.38),dark:mat(0x14171b,.7,.45),brass:mat(0xb8924f,1,.3),blue:mat(0x1c3a63,.85,.32),glass:new T.MeshStandardMaterial({color:0x6f9bd0,metalness:.2,roughness:.05,transparent:true,opacity:.4})};
@@ -155,9 +174,9 @@ for(const[name,s,chain,branches,anchor]of groups){if(s!==season)continue;for(con
 const a=stars[anchor],p=eqv(a[0],a[1],500);p.z+=22;labels.push(textSprite(name,p,17,conGroup))}
 const l=new T.LineSegments(new T.BufferGeometry().setFromPoints(seg),new T.LineBasicMaterial({color:0x59b8e0,transparent:true,opacity:.42,fog:false}));l.frustumCulled=false;conGroup.add(l);lines.push(l);
 for(const id of used)if(NAMES[id]){const a=stars[id],p=eqv(a[0],a[1],500);p.z-=11;labels.push(textSprite(NAMES[id],p,9,conGroup,'#ffe9b0'))}
-applyVis();$('#target').innerHTML=groups.filter(g=>g[1]===season).map(g=>`<option value="${g[4]}">${g[0]}</option>`).join('')}
+applyVis();const keep=$('#target').value;$('#target').innerHTML=groups.filter(g=>g[1]===season).map(g=>`<option value="${g[4]}">${g[0]}</option>`).join('')+'<optgroup label="행성">'+PL.map(p=>`<option value="P:${p.k}">${p.n}</option>`).join('')+'</optgroup>';if(keep&&[...$('#target').options].some(o=>o.value===keep&&keep.startsWith('P:')))$('#target').value=keep}
 function applyVis(){lines.forEach(l=>l.visible=$('#lines').checked);labels.forEach(l=>l.visible=$('#names').checked&&!scope)}
-function aim(id){const s=stars[id];if(!s)return;const p=eqv(s[0],s[1],1).applyMatrix4(skyM);yaw=Math.atan2(-p.x,-p.z);pitch=Math.asin(clamp(p.y,-1,1));if(p.y>.09){tRA=s[0];tDec=s[1]}}
+function aim(id){const s=id.startsWith('P:')?(PL.find(p=>'P:'+p.k===id)||{}).eq:stars[id];if(!s)return;const p=eqv(s[0],s[1],1).applyMatrix4(skyM);yaw=Math.atan2(-p.x,-p.z);pitch=Math.asin(clamp(p.y,-1,1));if(p.y>.09){tRA=s[0];tDec=s[1]}}
 const viewForward=()=>new T.Vector3(-Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch));
 function toggle(){if(!scope){if(!renderer.xr.isPresenting){const f=viewForward();if(f.y>.09){const[ra,de]=horToEq(f);tRA=ra;tDec=de}}scope=true}else{yaw=Math.atan2(-curDir.x,-curDir.z);pitch=Math.asin(clamp(curDir.y,-1,1));scope=false}
 $('#scope').textContent=scope?'관측 종료 [E]':'🔭 망원경 관측 [E]';applyVis()}
@@ -188,7 +207,49 @@ function updateInfo(){const lh=Math.floor(lstNow),lm=Math.floor((lstNow-lh)*60),
 const ph=sunAlt>0?'낮':sunAlt>-6?'시민 박명':sunAlt>-12?'항해 박명':sunAlt>-18?'천문 박명':'밤';
 let t=`${seasonsName()} · ${fmtKST(simTime)} (KST)\n현지 항성시 ${String(lh).padStart(2,'0')}:${String(lm).padStart(2,'0')} · 위도 ${latitude.toFixed(2)}°N, 경도 ${longitude.toFixed(2)}°E\n태양 고도 ${sunAlt.toFixed(1)}° (${ph})`;
 t+=magLim<0?'\n※ 태양 빛 때문에 별이 보이지 않습니다. 계절 버튼이나 시각으로 밤 시간대로 이동하세요.':`\n맨눈 한계등급 약 ${magLim.toFixed(1)}등`;
+if(plInfo&&magLim>-1)t+=`\n보이는 행성: ${plInfo}`;
 t+=`\n망원경: 고도 ${alt.toFixed(1)}° · 방위 ${az.toFixed(0)}° · 적경 ${tRA.toFixed(2)}h · 적위 ${tDec>=0?'+':''}${tDec.toFixed(1)}°`+(scope?` · 시야 ${scopeFov.toFixed(1)}°`:'');$('#info').textContent=t}
+// ───────── 행성 위치(케플러 근사궤도, P. Schlyter 방식; 오차 약 1° 이내) ─────────
+const PL=[
+{k:'mer',n:'수성',c:'#d9d2c6',m:-.36,f1:.027,f3:0,f6:2.2e-13,el:[48.3313,3.24587e-5,7.0047,5e-8,29.1241,1.01444e-5,.387098,0,.205635,5.59e-10,168.6562,4.0923344368]},
+{k:'ven',n:'금성',c:'#fff6e0',m:-4.34,f1:.013,f3:4.2e-7,f6:0,el:[76.6799,2.4659e-5,3.3946,2.75e-8,54.891,1.38374e-5,.72333,0,.006773,-1.302e-9,48.0052,1.6021302244]},
+{k:'mar',n:'화성',c:'#ff9a70',m:-1.51,f1:.016,f3:0,f6:0,el:[49.5574,2.11081e-5,1.8497,-1.78e-8,286.5016,2.92961e-5,1.523688,0,.093405,2.516e-9,18.6021,.5240207766]},
+{k:'jup',n:'목성',c:'#ffeccc',m:-9.25,f1:.014,f3:0,f6:0,el:[100.4542,2.76854e-5,1.303,-1.557e-7,273.8777,1.64505e-5,5.20256,0,.048498,4.469e-9,19.895,.0830853001]},
+{k:'sat',n:'토성',c:'#f6e0a8',m:-9.0,f1:.044,f3:0,f6:0,el:[113.6634,2.3898e-5,2.4886,-1.081e-7,339.3939,2.97661e-5,9.55475,0,.055546,-9.499e-9,316.967,.0334442282]},
+{k:'ura',n:'천왕성',c:'#aee8ee',m:-7.15,f1:.001,f3:0,f6:0,el:[74.0005,1.3978e-5,.7733,1.9e-8,96.6612,3.0565e-5,19.18171,-1.55e-8,.047318,7.45e-9,142.5905,.011725806]},
+{k:'nep',n:'해왕성',c:'#8fa8ff',m:-6.9,f1:.001,f3:0,f6:0,el:[131.7806,3.0173e-5,1.77,-2.55e-7,272.8461,-6.027e-6,30.05826,3.313e-8,.008606,2.15e-9,260.2471,.005995147]}];
+const sunPos=d=>{const w=(282.9404+4.70935e-5*d)*D2R,e=.016709-1.151e-9*d,M=(356.047+.9856002585*d)*D2R;let E=M+e*Math.sin(M)*(1+e*Math.cos(M));const xv=Math.cos(E)-e,yv=Math.sqrt(1-e*e)*Math.sin(E),v=Math.atan2(yv,xv),r=Math.hypot(xv,yv);return{x:r*Math.cos(v+w),y:r*Math.sin(v+w),r}};
+function planetPos(p,d,s){const[N0,N1,i0,i1,w0,w1,a0,a1,e0,e1,M0,M1]=p.el,N=(N0+N1*d)*D2R,inc=(i0+i1*d)*D2R,w=(w0+w1*d)*D2R,a=a0+a1*d,e=e0+e1*d,M=(((M0+M1*d)%360)+360)%360*D2R;
+let E=M+e*Math.sin(M)*(1+e*Math.cos(M));for(let k=0;k<6;k++)E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));
+const xv=a*(Math.cos(E)-e),yv=a*Math.sqrt(1-e*e)*Math.sin(E),v=Math.atan2(yv,xv),r=Math.hypot(xv,yv),u=v+w;
+const xh=r*(Math.cos(N)*Math.cos(u)-Math.sin(N)*Math.sin(u)*Math.cos(inc)),yh=r*(Math.sin(N)*Math.cos(u)+Math.cos(N)*Math.sin(u)*Math.cos(inc)),zh=r*Math.sin(u)*Math.sin(inc);
+const xg=xh+s.x,yg=yh+s.y,zg=zh,R=Math.sqrt(xg*xg+yg*yg+zg*zg);
+// 날짜 기준 황경 → J2000 황경(세차 보정)으로 돌려 별 카탈로그(J2000)와 좌표계를 맞춤
+const pr=-.013969*(d/365.2425)*D2R,x2=xg*Math.cos(pr)-yg*Math.sin(pr),y2=xg*Math.sin(pr)+yg*Math.cos(pr),ec=23.4393*D2R;
+const ye=y2*Math.cos(ec)-zg*Math.sin(ec),ze=y2*Math.sin(ec)+zg*Math.cos(ec);
+const ra=((Math.atan2(ye,x2)/D2R%360+360)%360)/15,dec=Math.atan2(ze,Math.hypot(x2,ye))/D2R;
+const FV=Math.acos(Math.max(-1,Math.min(1,(r*r+R*R-s.r*s.r)/(2*r*R))))/D2R;
+let mag=p.m+5*Math.log10(r*R)+p.f1*FV+p.f3*FV**3+p.f6*FV**6;
+if(p.k==='sat'){const lon=Math.atan2(yg,xg),lat=Math.atan2(zg,Math.hypot(xg,yg)),ir=28.06*D2R,Nr=(169.51+3.82e-5*d)*D2R,sB=Math.sin(ir)*Math.cos(lat)*Math.sin(lon-Nr)-Math.cos(ir)*Math.sin(lat);mag+=-2.6*Math.abs(sB)+1.2*sB*sB}
+return{ra,dec,mag}}
+// 행성 표시: 별보다 크고 안정적으로 빛나며(낮은 고도에서만 더 흔들림) 이름표와 함께 표시. 위치는 매 프레임 시각에 맞춰 갱신.
+const planetVS=`attribute float aMag,aSeed;attribute vec3 aColor;uniform float uTime,uLimit,uPx,uZoom;varying vec3 vCol;varying float vA,vS;
+void main(){vec4 wp=modelMatrix*vec4(position,1.0);vec3 rel=wp.xyz-cameraPosition;float alt=rel.y/length(rel);
+if(alt<0.0){gl_Position=vec4(2.,2.,2.,1.);gl_PointSize=0.;vCol=vec3(0.);vA=0.;vS=0.;return;}
+float air=1.0/(alt+0.06);float ext=exp(-0.09*(air-1.0));float vis=clamp(uLimit-aMag+0.6,0.,1.);
+float tw=1.0+(0.03+0.3*clamp(0.3-alt,0.,0.3))*(0.7*sin(uTime*(2.0+aSeed*3.0)+aSeed*40.)+0.3*sin(uTime*7.1+aSeed*13.));
+float sz=(2.8+12.5*pow(clamp((2.6-aMag)/6.6,0.,1.),1.2))*(1.0+0.25*log2(uZoom));
+vA=clamp(0.35+0.2*(3.0-aMag),0.22,1.2)*vis*ext*tw;vCol=aColor;vS=sz;gl_PointSize=uPx*sz;gl_Position=projectionMatrix*viewMatrix*wp;}`;
+const planetMat=new T.ShaderMaterial({uniforms:{uTime:{value:0},uLimit:{value:7},uPx:{value:PX},uZoom:{value:1}},vertexShader:planetVS,fragmentShader:starFS,transparent:true,depthWrite:false,blending:T.AdditiveBlending});
+const plGeo=new T.BufferGeometry(),plPos=new Float32Array(PL.length*3),plMagA=new Float32Array(PL.length);
+plGeo.setAttribute('position',new T.BufferAttribute(plPos,3));plGeo.setAttribute('aMag',new T.BufferAttribute(plMagA,1));plGeo.setAttribute('aColor',new T.Float32BufferAttribute(PL.flatMap(p=>hexRGB(p.c)),3));plGeo.setAttribute('aSeed',new T.Float32BufferAttribute(PL.map((p,i)=>(i*.37+.11)%1),1));
+const planetPts=new T.Points(plGeo,planetMat);planetPts.frustumCulled=false;planetPts.renderOrder=2;sky.add(planetPts);
+const plLabels=PL.map(p=>textSprite(p.n,new T.Vector3(),9,sky,'#ffb86b'));
+const _pv=new T.Vector3();let plInfo='';
+function updatePlanets(){const d=simTime.getTime()/86400000-10956,s=sunPos(d),on=$('#pl').checked,nm=$('#names').checked,vis=[];
+PL.forEach((p,i)=>{const r=planetPos(p,d,s);p.eq=[r.ra,r.dec];p.mag=r.mag;const e=eqv(r.ra,r.dec,500);plPos[i*3]=e.x;plPos[i*3+1]=e.y;plPos[i*3+2]=e.z;plMagA[i]=r.mag;
+const up=_pv.copy(e).normalize().applyMatrix4(skyM).y,seen=r.mag<magLim-.2&&up>.03,lab=plLabels[i];lab.position.set(e.x,e.y,e.z-13);lab.visible=on&&nm&&!scope&&seen;if(seen&&up>.05)vis.push(`${p.n} ${r.mag.toFixed(1)}등`)});
+plGeo.attributes.position.needsUpdate=true;plGeo.attributes.aMag.needsUpdate=true;planetPts.visible=on;plInfo=vis.join(' · ')}
 // ───────── 초기화 ─────────
 setPolar();{const d=new Date();d.setSeconds(0,0);simTime=d;season=seasonOf(d);latitude=37.5665;updateSky();if(sunAlt>-14){const k=new Date(d.getTime()+9*3600e3).toISOString().slice(0,10);simTime=new Date(`${k}T21:00:00+09:00`)}setTime(simTime)}
 updateSky();buildConstellations();aim($('#target').value);updateScope(0,true);updateInfo();
@@ -200,7 +261,7 @@ if(playing){simTime=new Date(simTime.getTime()+dt*speed*1000);if(t-timeT>.25){ti
 updateSky();updateScope(dt,false);
 if(scope&&(!deepC||deepC.angleTo(eqv(tRA,tDec,1))>3*D2R))genDeep(tRA,tDec);
 deepPts.visible=scope;const zoom=clamp(65/(scope?scopeFov:freeFov),.7,40);
-starMat.uniforms.uTime.value=deepPts.material.uniforms.uTime.value=t;starMat.uniforms.uZoom.value=deepPts.material.uniforms.uZoom.value=zoom;mwMat.uniforms.uVis.value=clamp((magLim-3.5)/3,0,1)*($('#mw').checked?1:0)*clamp(1.25-zoom*.12,0,1);
+starMat.uniforms.uTime.value=deepPts.material.uniforms.uTime.value=t;starMat.uniforms.uZoom.value=deepPts.material.uniforms.uZoom.value=zoom;planetMat.uniforms.uTime.value=t;planetMat.uniforms.uZoom.value=zoom;mwMat.uniforms.uVis.value=clamp((magLim-3.5)/3,0,1)*($('#mw').checked?1:0)*clamp(1.25-zoom*.12,0,1);
 const xr=renderer.xr.isPresenting;ota.updateWorldMatrix(true,true);scopeEye.getWorldPosition(_p);scopeEye.getWorldQuaternion(_q);
 $('#eyepiece').style.display=scope&&!xr?'block':'none';
 if(!xr){anchorSky(scope?_p:_c.set(0,1.65,0));if(scope){camera.position.copy(_p);camera.quaternion.copy(_q);const f=scopeFov;if(camera.fov!==f){camera.fov=f;camera.updateProjectionMatrix()}}else{camera.position.set(0,1.65,0);camera.rotation.set(pitch,yaw,0,'YXZ');if(camera.fov!==freeFov){camera.fov=freeFov;camera.updateProjectionMatrix()}}}
