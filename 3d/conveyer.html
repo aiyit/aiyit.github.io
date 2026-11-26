@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><base target="_blank">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전기 설비 3D 구현 및 안전 설치 · PLC 디지털 트윈</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<style>
+  :root{
+    --bg-deep:#060a10;
+    --panel-glass: rgba(16,26,38,0.62);
+    --panel-border: rgba(120,200,255,0.18);
+    --accent-cyan:#2fd9ff;
+    --accent-cyan-dim: rgba(47,217,255,0.35);
+    --safety-green:#00e676;
+    --safety-red:#ff3b3b;
+    --safety-amber:#ffb300;
+    --text-main:#dfeaf2;
+    --text-dim:#7f93a3;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; width:100%; height:100%; overflow:hidden;
+    background:var(--bg-deep);
+    font-family: 'Consolas','Segoe UI',ui-monospace,monospace;
+    color:var(--text-main);
+  }
+  #scene-container{position:fixed; inset:0;}
+  canvas{display:block;}
+
+  /* ===== HMI Panel (compact) ===== */
+  #hmi-panel{
+    position:fixed; top:16px; left:16px; width:220px;
+    background:var(--panel-glass);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    padding:11px 12px 12px;
+    z-index:10;
+    user-select:none;
+  }
+  #hmi-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-bottom:8px; margin-bottom:9px;
+    border-bottom:1px solid rgba(120,200,255,0.14);
+    gap:6px;
+  }
+  #hmi-title{
+    font-size:10.5px; letter-spacing:0.2px; color:#fff; font-weight:700;
+    line-height:1.25;
+  }
+  #hmi-title b{display:block; font-size:8.5px; color:var(--accent-cyan); font-weight:600; letter-spacing:0.6px; margin-top:1px;}
+  #status-badge{
+    padding:3px 7px; border-radius:14px; font-size:8.5px; font-weight:700;
+    letter-spacing:0.3px; white-space:nowrap; flex-shrink:0;
+    transition: all 0.25s ease;
+    border:1px solid rgba(255,255,255,0.15);
+  }
+  .badge-stop{ background:rgba(255,59,59,0.16); color:var(--safety-red); box-shadow:0 0 10px rgba(255,59,59,0.25) inset;}
+  .badge-run{ background:rgba(0,230,118,0.16); color:var(--safety-green); box-shadow:0 0 10px rgba(0,230,118,0.25) inset;}
+  .badge-sensor{ background:rgba(255,179,0,0.18); color:var(--safety-amber); box-shadow:0 0 10px rgba(255,179,0,0.3) inset; animation: badgePulse 0.6s infinite alternate;}
+  @keyframes badgePulse{ from{opacity:1;} to{opacity:0.55;} }
+
+  #btn-row{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px;}
+  .plc-btn{
+    position:relative;
+    padding:7px 10px;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.12);
+    font-family:inherit; font-size:10.5px; font-weight:700; letter-spacing:0.2px;
+    cursor:pointer;
+    color:#08110d;
+    transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.15s ease;
+    display:flex; align-items:center; gap:7px;
+  }
+  .plc-btn:active{ transform: translateY(1px) scale(0.985); }
+  .plc-btn:disabled{ opacity:0.35; cursor:not-allowed; filter:grayscale(0.4); }
+  .btn-dot{ width:6px; height:6px; border-radius:50%; background:rgba(0,0,0,0.35); flex-shrink:0; }
+
+  #btn-start{ background:linear-gradient(145deg,#28e07a,#0aa855); color:#032414; box-shadow:0 3px 10px rgba(10,168,85,0.3);}
+  #btn-start:not(:disabled):hover{ filter:brightness(1.12); }
+  #btn-stop{ background:linear-gradient(145deg,#ff5b5b,#c81f1f); color:#2b0505; box-shadow:0 3px 10px rgba(200,31,31,0.3);}
+  #btn-stop:not(:disabled):hover{ filter:brightness(1.12); }
+  #btn-estop{ background:linear-gradient(145deg,#ff3030,#9e0f0f); color:#fff; box-shadow:0 3px 10px rgba(200,31,31,0.4);}
+  #btn-estop:not(:disabled):hover{ filter:brightness(1.12); }
+  #btn-guard{ background:linear-gradient(145deg,#ffcc00,#b38600); color:#111; box-shadow:0 3px 10px rgba(255,204,0,0.35);}
+  #alert-banner{position:fixed;top:14px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:8px;font:700 15px 'Malgun Gothic',sans-serif;z-index:50;display:none;pointer-events:none}
+  #alert-banner.warn{display:block;background:rgba(255,59,59,.93);color:#fff;box-shadow:0 0 24px rgba(255,59,59,.6);animation:badgePulse .6s infinite alternate}
+  #alert-banner.info{display:block;background:rgba(255,179,0,.95);color:#111}
+  #demo-caption{cursor:pointer;position:fixed;bottom:170px;left:50%;transform:translateX(-50%);padding:8px 16px;border-radius:8px;background:rgba(16,26,38,.93);border:1px solid var(--accent-cyan);color:#fff;font:700 14px 'Malgun Gothic',sans-serif;z-index:40;display:none;white-space:nowrap}
+  #demo-caption.show{display:block}
+  #btn-guard.open{ background:linear-gradient(145deg,#ff3030,#9e0f0f); color:#fff; box-shadow:0 3px 10px rgba(200,31,31,0.4);}
+  #btn-manual{ background:linear-gradient(145deg,#2fd9ff,#1583a8); color:#03202b; box-shadow:0 3px 10px rgba(21,131,168,0.3);}
+  #btn-manual:hover{ filter:brightness(1.12); }
+  #btn-circuit{ background:linear-gradient(145deg,#b79bff,#6a4fd6); color:#140a2b; box-shadow:0 3px 10px rgba(106,79,214,0.35);}
+  #btn-circuit:hover{ filter:brightness(1.12); }
+  #btn-circuit.active{ background:linear-gradient(145deg,#8a7bff,#4a2fb3); color:#fff; box-shadow:0 0 12px rgba(138,123,255,0.7);}
+
+  #speed-row{
+    background:rgba(4,10,16,0.5);
+    border:1px solid rgba(120,200,255,0.1);
+    border-radius:7px; padding:7px 9px 8px;
+    margin-bottom:10px;
+  }
+  #speed-label-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+  #speed-caption{ font-size:8.5px; color:var(--text-dim); letter-spacing:0.8px; }
+  #speed-value{ font-size:10px; font-weight:700; color:var(--accent-cyan); font-variant-numeric:tabular-nums; }
+  #speed-slider{
+    -webkit-appearance:none; appearance:none; width:100%; height:3px;
+    border-radius:3px; background:rgba(120,200,255,0.18); outline:none; cursor:pointer; display:block;
+  }
+  #speed-slider::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:12px; height:12px; border-radius:50%;
+    background:var(--accent-cyan); box-shadow:0 0 6px rgba(47,217,255,0.8); cursor:pointer;
+  }
+  #speed-slider::-moz-range-thumb{
+    width:12px; height:12px; border-radius:50%; border:none;
+    background:var(--accent-cyan); box-shadow:0 0 6px rgba(47,217,255,0.8); cursor:pointer;
+  }
+
+  #counter-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px;
+  }
+  .counter-box{
+    background:rgba(4,10,16,0.55);
+    border:1px solid rgba(120,200,255,0.12);
+    border-radius:6px;
+    padding:5px 4px 5px;
+    text-align:center;
+  }
+  .counter-label{ font-size:7.5px; color:var(--text-dim); letter-spacing:0.6px; margin-bottom:2px;}
+  .counter-value{ font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; text-shadow:0 0 6px currentColor;}
+  #count-total .counter-value{ color:var(--accent-cyan);}
+  #count-pass .counter-value{ color:var(--safety-green);}
+  #count-defect .counter-value{ color:var(--safety-red);}
+
+  #lamp-row{
+    display:flex; justify-content:space-between; align-items:center;
+    background:rgba(4,10,16,0.5);
+    border:1px solid rgba(120,200,255,0.1);
+    border-radius:6px; padding:6px 9px;
+  }
+  .lamp-item{ display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .lamp-led{
+    width:9px; height:9px; border-radius:50%;
+    background:#241010; border:1px solid rgba(255,255,255,0.15);
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.6);
+    transition: all 0.2s ease;
+  }
+  .lamp-led.on-green{ background:radial-gradient(circle at 35% 30%, #b7ffd8, #00e676); box-shadow:0 0 9px 2px rgba(0,230,118,0.9);}
+  .lamp-led.on-yellow{ background:radial-gradient(circle at 35% 30%, #ffe9b0, #ffb300); box-shadow:0 0 9px 2px rgba(255,179,0,0.9);}
+  .lamp-led.on-red{ background:radial-gradient(circle at 35% 30%, #ffb3b3, #ff3b3b); box-shadow:0 0 9px 2px rgba(255,59,59,0.9);}
+  .lamp-caption{ font-size:7px; color:var(--text-dim); letter-spacing:0.3px;}
+
+  #footer-note{
+    margin-top:8px; font-size:7px; color:var(--text-dim); text-align:center; letter-spacing:0.2px; opacity:0.75;
+  }
+
+  #viewport-hint{
+    position:fixed; top:14px; right:16px; font-size:9.5px; color:var(--text-dim);
+    background:rgba(10,16,24,0.5); padding:5px 9px; border-radius:6px; border:1px solid rgba(120,200,255,0.1);
+    z-index:10; letter-spacing:0.2px;
+  }
+
+  #btn-mccb{ background:linear-gradient(145deg,#ffb648,#e07d00); color:#2b1600; box-shadow:0 3px 10px rgba(224,125,0,0.3);}
+  #btn-mccb:disabled{ opacity:1; }
+  #hmi-panel{width:260px}
+  @media (max-width:900px){ #factory-panel{display:none} }
+  #speed-caption{font-size:9.5px} .counter-label{font-size:9px} .lamp-caption{font-size:9px}
+  #footer-note{font-size:8.5px} #hmi-title b{font-size:9.5px} #status-badge{font-size:9px}
+  .plc-btn{font-size:11.5px} #viewport-hint{font-size:11px}
+  #plc-dock{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(700px,94vw);background:var(--panel-glass);border:1px solid var(--panel-border);border-radius:10px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:8px 10px;z-index:10;font-size:10.5px;user-select:none}
+  .dock-head{display:flex;justify-content:space-between;gap:10px;white-space:nowrap;font-size:10px;color:var(--accent-cyan);font-weight:700;letter-spacing:.4px;margin-bottom:6px}
+  #judge.ng{color:var(--safety-red)} #judge.ok{color:var(--safety-green)}
+  .flow-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .flow-row b{width:34px;color:var(--text-dim);font-size:8.5px;flex-shrink:0}
+  .flow{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+  .flow span,.rung span{padding:2px 6px;border:1px solid rgba(120,200,255,.25);border-radius:4px;color:var(--text-dim);transition:all .15s;white-space:nowrap}
+  .flow i{color:var(--text-dim);font-style:normal}
+  .on{color:#04140a!important;background:var(--safety-green);border-color:var(--safety-green)!important;box-shadow:0 0 8px rgba(0,230,118,.7)}
+  .ladder{border-top:1px solid rgba(120,200,255,.14);margin-top:6px;padding-top:4px}
+  .rung{display:flex;align-items:center;gap:4px;margin-top:4px}
+  .rung em{color:var(--accent-cyan);font-style:normal}
+  .rung .ln{flex:1;height:1px;background:rgba(120,200,255,.3);min-width:10px}
+  .rung .coil{border-radius:10px}
+  #manual-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:center;justify-content:center}
+  #manual-modal.hidden{display:none}
+  #manual-box{background:#101a26;border:1px solid var(--panel-border);border-radius:12px;padding:18px 20px;max-width:560px;width:92vw;max-height:84vh;overflow:auto;font-size:12px;line-height:1.55;position:relative}
+  #manual-box h3{margin:0 0 6px;color:#fff;font-size:15px}
+  #manual-box dt{color:var(--accent-cyan);font-weight:700;margin-top:8px}
+  #manual-box dd{margin:0;color:var(--text-main)}
+  #manual-box pre{background:rgba(0,0,0,.35);padding:10px;border-radius:6px;color:var(--safety-green);font-size:11px}
+  #manual-box table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px}
+  #manual-box th,#manual-box td{border:1px solid rgba(120,200,255,.22);padding:4px 6px;text-align:left;vertical-align:top}
+  #manual-box th{color:var(--accent-cyan);background:rgba(120,200,255,.08)}
+  #manual-box td:first-child{white-space:nowrap;font-weight:700;color:#fff}
+  #manual-close{position:absolute;top:8px;right:10px;background:none;border:0;color:#fff;font-size:16px;cursor:pointer}
+
+  /* ===== multi-line factory UI ===== */
+  #line-tabs{display:flex;gap:4px;margin-bottom:8px}
+  .line-tab{flex:1;padding:6px 0;border-radius:6px;border:1px solid rgba(120,200,255,.25);background:rgba(4,10,16,.55);color:var(--text-dim);font:700 12px 'Consolas','Malgun Gothic',monospace;cursor:pointer}
+  .line-tab i{display:none}
+  .line-tab.active{color:#031a24;background:linear-gradient(145deg,#2fd9ff,#1583a8);border-color:transparent}
+  .mini-row{display:flex;gap:4px;margin-bottom:6px}
+  .mini-btn{flex:1;padding:5px 2px;border-radius:5px;border:1px solid rgba(120,200,255,.25);background:rgba(4,10,16,.55);color:var(--accent-cyan);font:700 10px 'Malgun Gothic',sans-serif;cursor:pointer;white-space:nowrap}
+  .mini-btn:hover{background:rgba(47,217,255,.14)}
+  .mini-btn:disabled{opacity:.35;cursor:not-allowed}
+  .mini-btn .btn-dot{display:none}
+  .mini-btn.fault{color:#fff;background:rgba(255,59,59,.55);border-color:#ff3b3b}
+  #factory-panel{position:fixed;top:42px;right:14px;width:310px;background:var(--panel-glass);border:1px solid var(--panel-border);border-radius:10px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:9px 10px;z-index:10;font-size:10.5px;user-select:none}
+  .fp-head{display:flex;justify-content:space-between;align-items:center;color:var(--accent-cyan);font-weight:700;letter-spacing:.4px;margin-bottom:6px;font-size:10px}
+  #fp-alarm-count{padding:2px 7px;border-radius:10px;background:rgba(0,230,118,.14);color:var(--safety-green)}
+  #fp-alarm-count.hot{background:rgba(255,59,59,.3);color:#ff8a8a;animation:badgePulse .6s infinite alternate}
+  #fp-table{width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums}
+  #fp-table th{color:var(--text-dim);font-weight:700;font-size:9px;text-align:center;padding:2px 2px;border-bottom:1px solid rgba(120,200,255,.18)}
+  #fp-table td{text-align:center;padding:3px 2px;color:var(--text-main)}
+  #fp-table tr[data-i]{cursor:pointer}
+  #fp-table tr[data-i]:hover td{background:rgba(120,200,255,.08)}
+  #fp-table tr.sel td{background:rgba(47,217,255,.14)}
+  #fp-table tr.tot td{border-top:1px solid rgba(120,200,255,.18);color:#fff;font-weight:700}
+  .s-run{color:var(--safety-green)!important;font-weight:700}.s-busy{color:var(--safety-amber)!important;font-weight:700}.s-alarm{color:#ff6b6b!important;font-weight:700}.s-stop{color:var(--text-dim)!important}
+  .fp-sub{display:flex;justify-content:space-between;align-items:center;margin:8px 0 4px;color:var(--text-dim);font-size:9px;font-weight:700;letter-spacing:.5px}
+  .fp-sub .mini-btn{flex:none;padding:2px 6px;font-size:9px}
+  .al{font-size:10px;padding:2px 0;color:var(--text-main);border-top:1px solid rgba(120,200,255,.08)}
+  .al b{color:var(--text-dim);font-weight:400;margin-right:4px}
+  .al.act{color:#ff9a9a}.al.clr{color:var(--text-dim)}.al em{font-style:normal;opacity:.7}
+  #io-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:center;justify-content:center}
+  #io-modal.hidden{display:none}
+  #io-box{background:#101a26;border:1px solid var(--panel-border);border-radius:12px;padding:16px 18px;max-width:560px;width:92vw;max-height:84vh;overflow:auto;font-size:11.5px;position:relative}
+  #io-box h3{margin:0 0 4px;color:#fff;font-size:14px}
+  #io-close{position:absolute;top:8px;right:10px;background:none;border:0;color:#fff;font-size:16px;cursor:pointer}
+  #io-stats{color:var(--text-dim);font-size:10px;margin-bottom:8px}
+  #io-table{width:100%;border-collapse:collapse}
+  #io-table th,#io-table td{border:1px solid rgba(120,200,255,.2);padding:3px 6px;text-align:left}
+  #io-table th{color:var(--accent-cyan);background:rgba(120,200,255,.08)}
+  #io-table td:first-child{font-weight:700;color:#fff;white-space:nowrap}
+  #io-table td.v{text-align:center;font-weight:700;width:46px}
+  #io-table td.on1{color:#04140a;background:var(--safety-green)}
+  #io-table td.off1{color:var(--text-dim)}
+
+  /* ===== Mobile / small screens: collapsible panels so the 3D view stays visible ===== */
+  @media (max-width: 700px), (max-height: 520px){
+    #hmi-panel{ width:calc(100% - 20px); left:10px; top:10px; padding:8px 10px; max-height:62vh; overflow-y:auto; }
+    #hmi-header{ cursor:pointer; }
+    #hmi-header::after{ content:'▾'; color:var(--text-dim); margin-left:8px; font-size:12px; }
+    #hmi-panel.collapsed > :not(#hmi-header){ display:none; }
+    #hmi-panel.collapsed #hmi-header{ margin:0; padding:0; border:0; }
+    #hmi-panel.collapsed #hmi-header::after{ content:'▸'; }
+    #btn-row{ display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+    .plc-btn{ font-size:11px; padding-left:6px; padding-right:6px; min-width:0; white-space:normal; }
+    #plc-dock{ bottom:8px; width:calc(100% - 20px); max-height:36vh; overflow-y:auto; padding:6px 8px; }
+    .dock-head{ cursor:pointer; }
+    .dock-head::after{ content:'▾'; }
+    #plc-dock.collapsed > :not(.dock-head){ display:none; }
+    #plc-dock.collapsed .dock-head{ margin:0; }
+    #plc-dock.collapsed .dock-head::after{ content:'▴'; }
+    #viewport-hint{ display:none; }
+    #demo-caption{ width:calc(100% - 28px); white-space:normal; text-align:center; font-size:12px; padding:7px 10px; box-sizing:border-box; }
+    #alert-banner{ top:54px; bottom:auto; width:calc(100% - 28px); text-align:center; font-size:12px; padding:8px 10px; box-sizing:border-box; }
+  }
+
+  /* ===== PLC 모듈 실습 이동 버튼 (상단 우측) ===== */
+  #plcexe-link{
+    position:fixed; top:8px; right:14px; z-index:12;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 16px; border-radius:8px;
+    background:rgba(47,217,255,0.14); border:1px solid var(--accent-cyan);
+    color:var(--accent-cyan); text-decoration:none;
+    font:700 13px 'Malgun Gothic','Segoe UI',sans-serif; letter-spacing:0.3px;
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    box-shadow:0 0 14px rgba(47,217,255,0.25);
+    transition:background .15s, box-shadow .15s, transform .1s;
+  }
+  #plcexe-link:hover{ background:rgba(47,217,255,0.28); box-shadow:0 0 20px rgba(47,217,255,0.5); }
+  #plcexe-link:active{ transform:translateY(1px) scale(0.985); }
+  #plcexe-link .arrow{ font-size:15px; line-height:1; }
+  @media (max-width: 700px), (max-height: 520px){
+    #plcexe-link{ top:8px; right:10px; padding:6px 12px; font-size:12px; }
+    #hmi-panel{ top:46px; max-height:calc(62vh - 36px); }
+    #alert-banner{ top:90px; }
+  }
+</style>
+</head>
+<body>
+
+
+<div id="scene-container"></div>
+
+<a id="plcexe-link" href="plcexe.html" target="_self" title="PLC 모듈 실습 페이지로 이동">PLC 모듈 실습 <span class="arrow">→</span></a>
+
+<div id="hmi-panel">
+  <div id="hmi-header">
+    <div id="hmi-title">PLC 기반 스마트 팩토리<b id="hmi-sub">LINE 1 · SORTING</b></div>
+    <div id="status-badge" class="badge-stop">STOP</div>
+  </div>
+
+  <div id="line-tabs"></div>
+
+  <div id="btn-row">
+    <button id="btn-start" class="plc-btn"><span class="btn-dot"></span>START · 가동 시작</button>
+    <button id="btn-stop" class="plc-btn"><span class="btn-dot"></span>STOP · 정지</button>
+    <button id="btn-estop" class="plc-btn"><span class="btn-dot"></span>E-STOP · 비상 정지</button>
+    <button id="btn-mccb" class="plc-btn"><span class="btn-dot"></span>MCCB · 전원 ON</button>
+    <button id="btn-guard" class="plc-btn"><span class="btn-dot"></span>SAFETY GUARD · 도어 닫힘</button>
+    <button id="btn-demo" class="plc-btn"><span class="btn-dot"></span>작업자 점검 시연</button>
+    <button id="btn-manual" class="plc-btn"><span class="btn-dot"></span>설비 설명서</button>
+    <button id="btn-circuit" class="plc-btn"><span class="btn-dot"></span>⚡ 회로도 보기</button>
+  </div>
+
+  <div class="mini-row" id="fac-row">
+    <button id="btn-allstart" class="mini-btn">ALL START</button>
+    <button id="btn-allstop" class="mini-btn">ALL STOP</button>
+    <button id="btn-overview" class="mini-btn">전체 보기</button>
+    <button id="btn-cabview" class="mini-btn">제어반</button>
+  </div>
+  <div class="mini-row" id="maint-row">
+    <button id="btn-ol" class="mini-btn"><span class="btn-dot"></span>모터 과부하</button>
+    <button id="btn-bin" class="mini-btn">통 비우기</button>
+    <button id="btn-io" class="mini-btn">I/O 표</button>
+  </div>
+
+  <div id="speed-row">
+    <div id="speed-label-row">
+      <span id="speed-caption">BELT SPEED</span>
+      <span id="speed-value">2.6x</span>
+    </div>
+    <input type="range" id="speed-slider" min="0.5" max="5" step="0.1" value="2.6">
+  </div>
+
+  <div id="counter-grid">
+    <div class="counter-box" id="count-total">
+      <div class="counter-label">TOTAL</div>
+      <div class="counter-value" id="val-total">0</div>
+    </div>
+    <div class="counter-box" id="count-pass">
+      <div class="counter-label">PASS</div>
+      <div class="counter-value" id="val-pass">0</div>
+    </div>
+    <div class="counter-box" id="count-defect">
+      <div class="counter-label">DEFECT</div>
+      <div class="counter-value" id="val-defect">0</div>
+    </div>
+  </div>
+
+  <div id="lamp-row">
+    <div class="lamp-item"><div class="lamp-led" id="led-green"></div><div class="lamp-caption">RUN</div></div>
+    <div class="lamp-item"><div class="lamp-led" id="led-yellow"></div><div class="lamp-caption">SENSOR</div></div>
+    <div class="lamp-item"><div class="lamp-led" id="led-red"></div><div class="lamp-caption">STOP/ALARM</div></div>
+  </div>
+
+  <div id="footer-note">MULTI-LINE PLC · I/O SIMULATION</div>
+</div>
+
+<div id="plc-dock">
+  <div class="dock-head"><span id="dock-title">PLC I/O SIMULATION</span><span id="judge">VISION 판정: --</span></div>
+  <div class="flow-row"><b>RUN</b><div class="flow" id="flow-a"></div></div>
+  <div class="flow-row"><b>REJECT</b><div class="flow" id="flow-b"></div></div>
+  <div class="ladder">
+    <div class="rung"><em>┣</em><span data-l="x0">X0 START</span><span data-l="y0h">Y0 자기유지</span><span data-l="x2n">/X2 E-STOP</span><span data-l="x4">X4 GUARD 닫힘</span><i class="ln"></i><span class="coil" data-l="y0">( Y0 MOTOR )</span></div>
+    <div class="rung"><em>┣</em><span data-l="x1">X1 PHOTO SENSOR</span><span data-l="x3">X3 VISION NG</span><i class="ln"></i><span class="coil" data-l="y1">( Y1 SOLENOID )</span></div>
+  </div>
+</div>
+
+<div id="factory-panel">
+  <div class="fp-head"><span>FACTORY DASHBOARD</span><span id="fp-alarm-count">ALARM 0</span></div>
+  <table id="fp-table"></table>
+  <div class="fp-sub"><span>ALARM LOG</span><button id="fp-clear" class="mini-btn">복귀 알람 지우기</button></div>
+  <div id="fp-alarms"></div>
+</div>
+
+<div id="io-modal" class="hidden"><div id="io-box">
+  <button id="io-close">✕</button>
+  <h3 id="io-title">PLC I/O 테이블</h3>
+  <div id="io-stats"></div>
+  <table id="io-table"></table>
+</div></div>
+
+<div id="manual-modal" class="hidden"><div id="manual-box">
+  <button id="manual-close">✕</button>
+  <h3>설비 설명서</h3>
+  <dl>
+    <dt>MCCB</dt><dd>전기 설비의 전원 차단 및 보호 (제어반 MCCB 손잡이 또는 제어 패널의 MCCB 버튼으로 ON/OFF). OFF이면 PLC·출력·타워램프가 모두 꺼지고 E-STOP도 동작하지 않음</dd>
+    <dt>24V DC SMPS</dt><dd>제어 회로에 필요한 DC 전원 공급</dd>
+    <dt>PLC</dt><dd>입력 신호를 받아 프로그램에 따라 출력 장치를 제어</dd>
+    <dt>릴레이 (K1)</dt><dd>PLC 출력(Y0) 신호로 모터 회로를 개폐</dd>
+    <dt>포토센서</dt><dd>제품의 위치 또는 통과 여부만 감지 (제품 도착 신호). 감지되면 컨베이어가 잠시 멈추고 비전 검사가 진행됨</dd>
+    <dt>비전 검사 장치</dt><dd>카메라로 제품 외관을 검사해 불량(NG)이면 PLC에 신호 전달</dd>
+    <dt>모터</dt><dd>컨베이어 구동</dd>
+    <dt>솔레노이드 밸브</dt><dd>공압 실린더 동작 제어</dd>
+    <dt>실린더</dt><dd>불량품을 옆의 불량품 통(REJECT BIN)으로 밀어내 배출</dd>
+    <dt>START / STOP</dt><dd>라인 가동 시작·정지 (START는 PLC 입력 X0). E-STOP 작동, MCCB OFF, 안전가드 도어 열림 상태에서는 START가 잠김</dd>
+    <dt>Emergency Stop</dt><dd>비상 상황에서 설비 정지 (누르면 래치되어 유지, 해제 후 START를 눌러야 재가동)</dd>
+    <dt>타워램프</dt><dd>설비 상태 표시 (PLC 출력 Y2): 녹색 = 가동 중, 황색 점멸 = 센서 감지·검사 중, 적색 점등 = 정상 정지, 적색 점멸 = 비상(E-STOP 작동 또는 안전가드 도어 열림). MCCB OFF이면 모두 소등</dd>
+    <dt>안전가드</dt><dd>작업자가 구동부(모터·구동 롤러·벨트 끝단)에 접근하는 것을 방지. 도어를 열면 인터락 스위치(X4)가 OFF되어 설비가 즉시 정지하고, 도어를 닫아도 START를 눌러야 재가동 (자동 재기동 방지)</dd>
+    <dt>⚡ 회로도 보기</dt><dd>평소에는 숨겨져 있는 제어반 내부 각 부품(MCCB·SMPS·PLC CPU·I/O모듈·릴레이·단자대)의 세부 회로도를 켜고 끌 수 있는 토글 버튼. 켜면 각 부품 앞에 블록 다이어그램이 떠서 내부 구성과 신호 흐름을 확인할 수 있음</dd>
+    <dt>작업자 점검 시연</dt>
+    <dd><b>목적:</b> 점검·정비를 위해 안전가드 도어를 열었을 때 설비가 어떻게 보호되는지, 작업자의 접근부터 퇴장까지 단계별로 보여 주는 안전 교육용 시연입니다.</dd>
+    <dd><b>학습 포인트:</b> ① 도어 열림 = 인터락 X4 OFF → 모터 출력 Y0 차단(즉시 정지) ② 도어가 열린 동안 START 잠금 ③ 도어를 닫아도 자동 재기동 없음(START 필요) ④ 바닥 해저드 표시로 위험구역 인지</dd>
+    <dd><b>사용법:</b> MCCB ON · E-STOP 해제 · 도어 닫힘 상태에서 [작업자 점검 시연] 버튼을 누르면 카메라가 이동하고 화면 하단에 단계별 설명이 표시됩니다. 라인이 정지 상태이면 시연 시작 시 자동으로 가동되며, 시연 중에는 도어를 직접 조작할 수 없습니다. 설명을 탭하면 일시정지/계속할 수 있습니다.</dd>
+  </dl>
+  <h3 style="margin-top:12px">PLC I/O 정리</h3>
+  <dd style="color:var(--text-dim)">제어반의 DIGITAL INPUT / OUTPUT 모듈 LED는 해당 신호가 ON일 때 켜집니다.</dd>
+  <table>
+    <tr><th>입력</th><th>장치</th><th>핵심 동작</th></tr>
+    <tr><td>X0</td><td>START</td><td>START를 누르면 ON → 라인 가동 시작</td></tr>
+    <tr><td>X1</td><td>PHOTO SENSOR</td><td>제품이 센서 위치에 도착하면 ON → 컨베이어 정지 후 비전 검사 시작</td></tr>
+    <tr><td>X2</td><td>EMERGENCY STOP</td><td>E-STOP을 누르면 ON → 모터 출력 차단, 설비 정지</td></tr>
+    <tr><td>X3</td><td>VISION NG</td><td>비전이 불량(NG)으로 판정하면 ON → 불량품 배출 동작</td></tr>
+    <tr><td>X4</td><td>GUARD CLOSED</td><td>안전가드 도어가 닫혀 있으면 ON, 열리면 OFF → 설비 정지·START 잠금</td></tr>
+  </table>
+  <table>
+    <tr><th>출력</th><th>장치</th><th>핵심 동작</th></tr>
+    <tr><td>Y0</td><td>MOTOR</td><td>컨베이어 모터 구동 (릴레이 K1 경유). 제품 검사 중, E-STOP, 도어 열림 시 OFF</td></tr>
+    <tr><td>Y1</td><td>SOLENOID</td><td>솔레노이드 밸브 작동 → 실린더가 불량품을 밀어내 배출</td></tr>
+    <tr><td>Y2</td><td>TOWER LAMP</td><td>타워램프 출력(녹색 Y2 / 황색 Y3 / 적색 Y4). 가동=녹색, 센서 검사 중=황색, 정지=적색, 알람=적색 점멸. 제어반 LED는 셋 중 하나라도 켜지면 점등</td></tr>
+  </table>
+  <dd style="margin-top:6px"><b>RUN</b> LED: PLC가 가동 상태일 때 점등</dd>
+  <dd><b>래더 1:</b> (X0 START 또는 Y0 자기유지) + /X2 + X4 GUARD 닫힘 → Y0 MOTOR<br><span style="color:var(--text-dim)">자기유지: START를 한 번만 눌러도 모터 출력이 유지됨. /X2는 E-STOP을 누르지 않았을 때 연결되는 접점</span></dd>
+  <dd><b>래더 2:</b> X1 PHOTO SENSOR + X3 VISION NG → Y1 SOLENOID<br><span style="color:var(--text-dim)">제품이 도착했고 비전이 불량으로 판정했을 때만 배출 실린더 작동</span></dd>
+
+  <h3 style="margin-top:12px">기본 제어 흐름</h3>
+  <pre>센서 / 버튼 / 인터락
+     ↓
+PLC 입력 (X)
+     ↓
+PLC 제어 로직
+     ↓
+PLC 출력 (Y)
+     ↓
+모터 / 솔레노이드
+     ↓
+설비 동작</pre>
+  <h3 style="margin-top:12px">스마트 팩토리 기능</h3>
+  <dl>
+    <dt>라인 탭 (1·2·3)</dt><dd>조작·카운터·PLC 표시 대상 라인을 선택합니다. 라인마다 PLC 입출력 블록(16점)이 따로 있습니다 (LINE 1 = X0~ / Y0~, LINE 2 = X16~ / Y16~ …).</dd>
+    <dt>PLC 구조</dt><dd>PLC 엔진이 20ms 주기로 <b>입력 읽기 → 래더 실행 → 출력 쓰기</b>를 반복합니다. 3D 장치는 PLC 출력(Y)만 따르고, 센서·버튼 신호(X)를 PLC에 넣을 뿐입니다. PASS/DEFECT 카운터도 PLC 카운터입니다.</dd>
+    <dt>원격 I/O 스테이션</dt><dd>LINE 2·3은 라인 옆 원격 I/O 패널(LED·누름버튼)이 설비 네트워크(청록 케이블)로 중앙 PLC 제어반과 연결됩니다.</dd>
+    <dt>FACTORY DASHBOARD</dt><dd>라인별 상태·양품·불량·수율·분당 생산량·가동률과 알람 이력을 표시합니다. 행을 누르면 해당 라인이 선택됩니다.</dd>
+    <dt>모터 과부하</dt><dd>열동계전기 트립을 모의합니다. X8이 OFF 되어 라인이 정지하고 알람이 기록됩니다. 해제 후 START로 복귀합니다.</dd>
+    <dt>통 비우기</dt><dd>불량품 통이 가득 차면 레벨 스위치(X9)가 동작해 배출 사이클이 끝난 뒤 라인이 멈춥니다. 통을 비우고 START 하세요.</dd>
+    <dt>I/O 표</dt><dd>선택한 라인의 입력·출력·내부 메모리 비트를 실시간으로 확인합니다.</dd>
+  </dl>
+  <dd style="color:var(--text-dim)">※ 본 화면은 PLC I/O 시뮬레이션이며 실제 PLC와 통신하지 않습니다.</dd>
+</div></div>
+
+<div id="alert-banner"></div>
+<div id="demo-caption"></div>
+<div id="viewport-hint">마우스 드래그: 회전 · 휠: 확대/축소 · 안전가드 도어 클릭: 열기/닫기</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     0. GLOBAL STATE
+  ========================================================= */
+  // Physical state of the things a person can change. Everything the PLC decides (RUN, BUSY, counters, lamps...) lives in factory.plc.
+  const STATE = { mccb: true, estop: false, guardOpen: false };
+
+  const CONVEYOR = {
+    zStart: -9.2,
+    zEnd: 9.6,
+    beltTopY: 1.0,
+    halfWidthX: 1.5
+  };
+  const SENSOR_Z = -0.6;
+  // The pusher MUST sit at the exact same Z as the sensor: the box freezes
+  // in place the instant it crosses the sensor beam (belt stops immediately),
+  // so the ejector has to be aligned with that stop point, not further down
+  // the line, or the rod visually misses the box entirely.
+  const PUSHER_Z = SENSOR_Z;
+  const SPAWN_SAFE_GAP = 1.6; // minimum Z gap required before a new box may spawn (prevents overlap)
+
+  const LINE_SPACING = 10;
+  /* ---- shared geometry (used by the 3D views AND the plant model) ---- */
+  const BOX_W = 1.0, BOX_H = 0.8, BOX_D = 1.0;
+  const boxRestY = CONVEYOR.beltTopY + BOX_H/2 + 0.02;
+  const BEAM_Z = SENSOR_Z + 0.59;    // beam line: just ahead of the box front at its stop position
+  const sensorHeight = CONVEYOR.beltTopY + 0.55;
+  const sensorEmitterX = -CONVEYOR.halfWidthX - 0.35, sensorReceiverX = CONVEYOR.halfWidthX + 0.35;
+  const pusherY = CONVEYOR.beltTopY + 0.35, pusherRestX = -CONVEYOR.halfWidthX - 1.1;
+  const CH_X1 = CONVEYOR.halfWidthX + 0.18, CH_X2 = CONVEYOR.halfWidthX + 1.55;
+  const CH_Y1 = CONVEYOR.beltTopY, CH_Y2 = 0.78;
+  const CH_SLOPE = (CH_Y1 - CH_Y2) / (CH_X2 - CH_X1), CH_ANG = Math.atan(CH_SLOPE);
+  const BIN_X = CONVEYOR.halfWidthX + 2.4, BIN_REST_Y = 0.1 + 0.4;
+  const towerX = -CONVEYOR.halfWidthX - 1.3, towerZ = CONVEYOR.zStart + 0.4;
+  const TOWER_TOP = CONVEYOR.beltTopY + 2.4, poleH = TOWER_TOP - 0.12;
+  const SPAWN_Z = CONVEYOR.zStart - 0.6, EXIT_Z = CONVEYOR.zEnd - 0.2;
+  const GEO = { zStart:CONVEYOR.zStart, zEnd:CONVEYOR.zEnd, SENSOR_Z:SENSOR_Z, BEAM_Z:BEAM_Z, PUSHER_Z:PUSHER_Z, EXIT_Z:EXIT_Z, SPAWN_Z:SPAWN_Z,
+                SPAWN_GAP:SPAWN_SAFE_GAP, boxRestY:boxRestY, BOX_H:BOX_H, CH_X1:CH_X1, CH_X2:CH_X2, CH_Y1:CH_Y1, CH_Y2:CH_Y2,
+                CH_SLOPE:CH_SLOPE, CH_ANG:CH_ANG, BIN_X:BIN_X, BIN_REST_Y:BIN_REST_Y };
+
+  /* =========================================================
+     A. PLC ENGINE  (pure logic - no THREE / DOM)
+     One CPU scans every line's program each cycle:
+        1) inputs are written by the plant models (sensors, buttons)
+        2) the rungs run top to bottom
+        3) outputs (Y) are read back by the plant models (motor, valve, lamps)
+     Everything addressable lives in plc.bits: X = inputs, Y = outputs, L<n>_* = internal memory (M bits).
+  ========================================================= */
+  function createPLC(){
+    const bits = Object.create(null), tmr = Object.create(null), prev = Object.create(null);
+    const counters = Object.create(null), rungs = [];
+    const plc = {
+      bits, counters, rungs, powered:true, scanDt:0.02, scans:0, scanMs:0, scanMsMax:0, clk:false, _clkT:0,
+      get(n){ return !!bits[n]; },
+      set(n,v){ bits[n] = !!v; },
+      // TON on-delay timer: returns true once `en` has been true for `preset` seconds; resets when `en` drops
+      ton(name, en, preset){
+        if(!en){ tmr[name] = 0; return false; }
+        tmr[name] = (tmr[name] || 0) + plc.scanDt;
+        return tmr[name] >= preset;
+      },
+      resetTimer(name){ tmr[name] = 0; },
+      // rising-edge contact (one unique name per call site)
+      rise(name, v){ const r = !!v && !prev[name]; prev[name] = !!v; return r; },
+      ctu(name, trig){ if(trig) counters[name] = (counters[name] | 0) + 1; return counters[name] | 0; },
+      addRung(label, fn){ rungs.push({label:label, fn:fn}); },
+      // MCCB off => CPU dead: outputs & memory cleared, retentive counters kept
+      setPower(on){
+        if(plc.powered === on) return;
+        plc.powered = on;
+        if(!on){
+          Object.keys(bits).forEach(k => { if(k[0] !== 'X') bits[k] = false; });
+          Object.keys(tmr).forEach(k => { tmr[k] = 0; });
+          Object.keys(prev).forEach(k => { prev[k] = false; });
+        }
+      },
+      scan(dt){
+        plc.scanDt = dt;
+        const t0 = (typeof performance !== 'undefined') ? performance.now() : 0;
+        if(plc.powered){
+          // system flasher bit (0.45 s on / 0.45 s off)
+          plc._clkT += dt; if(plc._clkT >= 0.45){ plc._clkT -= 0.45; plc.clk = !plc.clk; }
+          for(let i = 0; i < rungs.length; i++) rungs[i].fn(plc);
+        }
+        plc.scans++;
+        const ms = ((typeof performance !== 'undefined') ? performance.now() : 0) - t0;
+        plc.scanMs = plc.scanMs*0.9 + ms*0.1; if(ms > plc.scanMsMax) plc.scanMsMax = ms;
+      }
+    };
+    return plc;
+  }
+
+  /* Ladder program for ONE sorting line. Each line owns a block of 16 inputs and 16 outputs:
+       X+0 START pb        X+5 CYLINDER HOME (reed)     Y+0 MOTOR contactor K1   Y+4 LAMP RED
+       X+1 PHOTO SENSOR    X+6 STOP pb                  Y+1 SOLENOID VALVE       Y+5 FEEDER enable
+       X+2 E-STOP          X+7 EXIT photo-eye           Y+2 LAMP GREEN           Y+6 HORN
+       X+3 VISION NG       X+8 MOTOR OVERLOAD OK        Y+3 LAMP YELLOW
+       X+4 GUARD CLOSED    X+9 BIN FULL (level sw)                                                    */
+  function lineAddr(index){
+    const b = index * 16, X = i => 'X' + (b + i), Y = i => 'Y' + (b + i), id = 'L' + (index + 1) + '_';
+    return {
+      index:index, id:id, xBase:b, yBase:b,
+      START:X(0), SENSOR:X(1), ESTOP:X(2), VNG:X(3), GUARD:X(4), CYL_HOME:X(5), STOP:X(6), EXIT:X(7), OL_OK:X(8), BIN_FULL:X(9),
+      MOTOR:Y(0), SOL:Y(1), LAMP_G:Y(2), LAMP_Y:Y(3), LAMP_R:Y(4), FEEDER:Y(5), HORN:Y(6),
+      M:{ SAFE:id+'SAFE', RUN:id+'RUN', BUSY:id+'BUSY', DONE:id+'DONE', ALARM:id+'ALARM',
+          S_INSP:id+'S_INSP', S_OK:id+'S_OK', S_NGD:id+'S_NGD', S_PUSH:id+'S_PUSH', S_RET:id+'S_RET' },
+      C:{ PASS:id+'PASS', DEF:id+'DEF' }
+    };
+  }
+
+  function addLineProgram(plc, A){
+    const M = A.M, g = n => plc.get(n), s = (n,v) => plc.set(n,v), T = n => A.id + n;
+    // R1  permissive: E-STOP not pressed, guard closed, motor overload OK
+    plc.addRung(A.id + 'R1 SAFE', p => s(M.SAFE, !g(A.ESTOP) && g(A.GUARD) && g(A.OL_OK)));
+    // R2  start/stop seal-in:  (START | RUN) & /STOP & SAFE & /BINFULL
+    // (a full bin only stops the line once the running eject cycle is finished, so that last reject is still counted)
+    plc.addRung(A.id + 'R2 RUN', p => s(M.RUN, (g(A.START) || g(M.RUN)) && !g(A.STOP) && g(M.SAFE) && !(g(A.BIN_FULL) && !g(M.BUSY))));
+    // R3  sensor sequence (level-triggered so a box left at the sensor is re-inspected after any interruption)
+    plc.addRung(A.id + 'R3 SEQ', p => {
+      const busy = g(M.S_INSP) || g(M.S_OK) || g(M.S_NGD) || g(M.S_PUSH) || g(M.S_RET);
+      if(!g(A.SENSOR)) s(M.DONE, false);
+      if(!g(M.RUN)){                                   // line not running -> abort the whole sequence
+        [M.S_INSP, M.S_OK, M.S_NGD, M.S_PUSH, M.S_RET].forEach(n => s(n, false));
+      } else if(!busy && g(A.SENSOR) && !g(M.DONE)){
+        s(M.S_INSP, true);
+      }
+      // inspection time (vision result is read when it expires)
+      if(plc.ton(T('t_insp'), g(M.S_INSP), 0.6)){
+        s(M.S_INSP, false);
+        if(g(A.VNG)) s(M.S_NGD, true); else s(M.S_OK, true);
+      }
+      // good part: short dwell, then let it go
+      if(plc.ton(T('t_ok'), g(M.S_OK), 1.0)){ s(M.S_OK, false); s(M.DONE, true); }
+      // bad part: delay -> push with the cylinder -> wait for it to come home
+      if(plc.ton(T('t_ngd'), g(M.S_NGD), 0.3)){ s(M.S_NGD, false); s(M.S_PUSH, true); }
+      if(plc.ton(T('t_push'), g(M.S_PUSH), 1.0)){ s(M.S_PUSH, false); s(M.S_RET, true); }
+      if(g(M.S_RET) && g(A.CYL_HOME)){
+        s(M.S_RET, false);
+        if(!g(A.SENSOR)) plc.ctu(A.C.DEF, true);       // counted only when the box really left the belt
+      }
+      s(M.BUSY, g(M.S_INSP) || g(M.S_OK) || g(M.S_NGD) || g(M.S_PUSH) || g(M.S_RET));
+    });
+    // R4  PASS counter on the exit photo-eye
+    plc.addRung(A.id + 'R4 COUNT', p => { plc.ctu(A.C.PASS, plc.rise(T('exit'), g(A.EXIT))); });
+    // R5  outputs
+    plc.addRung(A.id + 'R5 OUT', p => {
+      const alarm = !g(M.SAFE) || g(A.BIN_FULL);
+      s(M.ALARM, alarm);
+      s(A.MOTOR,  g(M.RUN) && !g(M.BUSY));
+      s(A.SOL,    g(M.S_PUSH) && g(M.RUN));
+      s(A.FEEDER, g(M.RUN));
+      s(A.LAMP_G, g(M.RUN) && !g(M.BUSY) && !alarm);
+      s(A.LAMP_Y, g(M.BUSY));
+      s(A.LAMP_R, alarm ? plc.clk : !g(M.RUN));
+      s(A.HORN,   alarm && plc.clk);
+    });
+  }
+
+  /* =========================================================
+     B. PLANT MODEL  (what the field devices physically do)
+     Reads PLC outputs, moves boxes / cylinder, produces sensor inputs.
+  ========================================================= */
+  function bounceOut(t){
+    if(t < 1/2.75) return 7.5625*t*t;
+    if(t < 2/2.75){ t -= 1.5/2.75; return 7.5625*t*t + 0.75; }
+    if(t < 2.5/2.75){ t -= 2.25/2.75; return 7.5625*t*t + 0.9375; }
+    t -= 2.625/2.75; return 7.5625*t*t + 0.984375;
+  }
+  const clamp01 = v => v < 0 ? 0 : (v > 1 ? 1 : v);
+
+  function createPlant(cfg, G, rand){
+    rand = rand || Math.random;
+    const p = {
+      cfg:cfg, boxes:[], idCounter:0, speed:cfg.speed, feederT:0, feederPrev:false,
+      cylExt:0, binReserved:0, defectCounter:0, binCapacity:cfg.binCapacity, fault:{ol:false},
+      barOffset:0, inspecting:false, judge:'--', judgeHold:0, startUntil:0, stopUntil:0, simT:0,
+      motorOn:false, solOn:false, exitFlag:false,
+      stats:{ tTotal:0, tRun:0, events:[] }
+    };
+    const restY = G.boxRestY;
+    const chuteBoxY = x => x < G.CH_X1 ? restY : (G.CH_Y1 - (x - G.CH_X1)*G.CH_SLOPE) + G.BOX_H/2 + 0.01;
+
+    function boxAtBeam(b){ return b.state === 'moving' && Math.abs(b.z - G.BEAM_Z) < 0.5 && b.x < 1.9; }
+
+    // physical sensor signals this plant feeds into the PLC input table
+    p.readInputs = function(ctx){
+      const A = cfg.addr, bits = ctx.plc.bits, on = ctx.power;
+      let sensor = false, vng = false, exit = false;
+      for(let i = 0; i < p.boxes.length; i++){
+        const b = p.boxes[i];
+        if(boxAtBeam(b)){ sensor = true; if(b.isDefect && b.inspectT >= 0.5) vng = true; }
+        if(b.state === 'moving' && Math.abs(b.z - G.EXIT_Z) < 0.5) exit = true;
+      }
+      bits[A.START]    = on && ctx.now < p.startUntil;
+      bits[A.STOP]     = on && ctx.now < p.stopUntil;
+      bits[A.SENSOR]   = on && sensor;
+      bits[A.ESTOP]    = on && ctx.estop;
+      bits[A.VNG]      = on && vng;
+      bits[A.GUARD]    = on && (cfg.hasGuard ? !ctx.guardOpen : true);
+      bits[A.CYL_HOME] = on && p.cylExt < 0.02;
+      bits[A.EXIT]     = on && exit;
+      bits[A.OL_OK]    = on && !p.fault.ol;
+      bits[A.BIN_FULL] = on && p.binReserved >= p.binCapacity;
+    };
+
+    function spawn(){
+      const n = p.idCounter++;
+      const isDefect = cfg.defectEvery ? ((n + 1) % cfg.defectEvery === 0) : (rand() < cfg.defectRate);
+      const b = { id:n, isDefect:isDefect, flawIdx: isDefect ? p.defectCounter++ : -1, state:'moving', x:0, y:restY, z:G.SPAWN_Z,
+                  rotY:0, rotZ:0, inspectT:0, slideT:0, slot:0, fadeT:0, view:null };
+      p.boxes.push(b); return b;
+    }
+    function canSpawn(){
+      for(let i = p.boxes.length - 1; i >= 0; i--){
+        const b = p.boxes[i]; if(b.state !== 'moving') continue;
+        return (b.z - G.SPAWN_Z) >= G.SPAWN_GAP;
+      }
+      return true;
+    }
+
+    p.step = function(dt, ctx){
+      const A = cfg.addr, bits = ctx.plc.bits, on = ctx.power;
+      p.simT += dt;
+      const motor = on && !!bits[A.MOTOR], sol = on && !!bits[A.SOL], feeder = on && !!bits[A.FEEDER];
+      p.motorOn = motor; p.solOn = sol;
+
+      // statistics for the dashboard
+      p.stats.tTotal += dt;
+      if(bits[cfg.addr.M.RUN] && !bits[cfg.addr.M.ALARM]) p.stats.tRun += dt;
+
+      // belt
+      const v = p.speed * dt;
+      if(motor) p.barOffset += v;
+
+      // feeder (upstream machine): spawns a box every spawnInterval while enabled
+      if(feeder && !p.feederPrev) p.feederT = cfg.spawnInterval;     // first box immediately after START
+      p.feederPrev = feeder;
+      if(feeder){
+        p.feederT += dt;
+        if(p.feederT >= cfg.spawnInterval && canSpawn()){ spawn(); p.feederT = 0; }
+      }
+
+      // pneumatic cylinder follows the solenoid (spring return)
+      p.cylExt = Math.max(0, Math.min(3.3, p.cylExt + (sol ? 3.7 : -4.7)*dt));
+
+      p.inspecting = false;
+      for(let i = 0; i < p.boxes.length; i++){
+        const b = p.boxes[i];
+        if(b.state === 'moving'){
+          if(motor){ b.z += v; b.rotY = Math.sin(p.simT*2 + b.id)*0.01; }
+          if(boxAtBeam(b) && on){
+            b.inspectT += dt;
+            if(b.inspectT < 0.5) p.inspecting = true;
+            // cylinder head pushes the box that is parked at the beam
+            if(Math.abs(b.z - G.PUSHER_Z) < 0.85 && p.cylExt > 1.3) b.x = Math.max(b.x, p.cylExt - 1.3);
+            if(b.x >= 1.95){ b.state = 'slide'; b.slideT = 0; b.slot = p.binReserved++; b.z0 = b.z; }
+          }
+          if(b.z > G.zEnd + 0.8){ b.state = 'gone'; }
+        } else if(b.state === 'slide'){
+          b.slideT += dt;
+          const t = b.slideT, layer = Math.floor(b.slot/2), slotZ = G.PUSHER_Z + ((b.slot % 2 === 0) ? -0.52 : 0.52);
+          const finalY = G.BIN_REST_Y + layer*G.BOX_H, finalRotZ = (b.slot % 2 === 0) ? 0.05 : -0.04, finalRotY = (b.slot % 2 === 0) ? 0.12 : -0.1;
+          const uA = clamp01(t/0.5), xA = 2.0 + 1.2*uA*uA;
+          const uB = clamp01((t - 0.5)/0.3), eB = 1 - (1-uB)*(1-uB);
+          b.x = xA + (G.BIN_X - 3.2)*eB;
+          b.z = b.z0 + (slotZ - b.z0)*eB;
+          const yA = chuteBoxY(xA);
+          const uC = clamp01((t - 0.7)/0.55);
+          b.y = (uC > 0) ? yA + (finalY - yA)*bounceOut(uC) : yA;
+          const rA = -G.CH_ANG*clamp01((xA - 1.85)/0.35), uR = clamp01((t - 0.7)/0.5), eR = 1 - (1-uR)*(1-uR)*(1-uR);
+          b.rotZ = rA + (finalRotZ - rA)*eR;
+          b.rotY = finalRotY*eR;
+          if(t >= 1.25){ b.state = 'inbin'; b.x = G.BIN_X; b.z = slotZ; b.y = finalY; b.rotZ = finalRotZ; b.rotY = finalRotY; }
+        } else if(b.state === 'fade'){
+          b.fadeT += dt; if(b.fadeT >= 0.3) b.state = 'gone';
+        }
+      }
+      p.boxes = p.boxes.filter(b => b.state !== 'gone' || b.view);   // views must see 'gone' once to dispose meshes
+
+      // vision judgement text for the HMI
+      let atBeam = null;
+      for(let i = 0; i < p.boxes.length; i++) if(boxAtBeam(p.boxes[i])) atBeam = p.boxes[i];
+      if(atBeam){ p.judge = atBeam.inspectT < 0.5 ? '검사중' : (atBeam.isDefect ? 'NG' : 'OK'); p.judgeHold = 1.2; }
+      else if(p.judgeHold > 0){ p.judgeHold -= dt; if(p.judgeHold <= 0) p.judge = '--'; }
+    };
+
+    p.pressStart = function(now){ p.startUntil = now + 0.5; };
+    p.pressStop  = function(now){ p.stopUntil  = now + 0.5; };
+    p.emptyBin = function(){
+      let reserved = 0;
+      p.boxes.forEach(b => {
+        if(b.state === 'inbin'){ b.state = 'fade'; b.fadeT = 0; }
+        else if(b.state === 'slide') reserved++;
+      });
+      p.binReserved = reserved;
+    };
+    p.binCount = () => p.boxes.filter(b => b.state === 'inbin' || b.state === 'slide').length;
+    return p;
+  }
+
+  /* =========================================================
+     C. FACTORY: config -> lines (each = plant + ladder program) sharing ONE PLC
+  ========================================================= */
+  function createFactory(config, G, rand){
+    const plc = createPLC();
+    const factory = { plc:plc, lines:[], now:0, acc:0, estop:false, mccb:true, guardOpen:false, step:null };
+    config.lines.forEach((lc, i) => {
+      const addr = lineAddr(i);
+      const cfg = Object.assign({ speed:2.6, spawnInterval:3.0, defectRate:0.3, binCapacity:6, hasGuard:false, ox:i*(config.spacing || 10) }, lc, { addr:addr });
+      addLineProgram(plc, addr);
+      factory.lines.push({ index:i, cfg:cfg, addr:addr, plant:createPlant(cfg, G, rand) });
+    });
+    const DT = 0.02;
+    factory.step = function(dt){
+      plc.setPower(factory.mccb);
+      factory.acc += Math.min(dt, 0.1);
+      while(factory.acc >= DT){
+        factory.acc -= DT; factory.now += DT;
+        const ctx = { plc:plc, now:factory.now, power:factory.mccb, estop:factory.estop, guardOpen:factory.guardOpen };
+        factory.lines.forEach(L => L.plant.readInputs(ctx));
+        plc.scan(DT);
+        factory.lines.forEach(L => L.plant.step(DT, ctx));
+      }
+    };
+    factory.lineState = function(L){
+      const b = plc.bits, M = L.addr.M;
+      return {
+        run:!!b[M.RUN], busy:!!b[M.BUSY], alarm:!!b[M.ALARM],
+        pass:plc.counters[L.addr.C.PASS] | 0, def:plc.counters[L.addr.C.DEF] | 0
+      };
+    };
+    return factory;
+  }
+
+  /* ---- factory layout: one entry per sorting line. Add an entry and a complete line (3D + PLC program + I/O block) appears. ---- */
+  const FACTORY_CONFIG = { spacing: LINE_SPACING, lines: [
+    { name:'LINE 1', speed:2.6, spawnInterval:3.0, defectEvery:3,  hasGuard:true,  binCapacity:6 },
+    { name:'LINE 2', speed:2.2, spawnInterval:3.4, defectRate:0.25, binCapacity:6 },
+    { name:'LINE 3', speed:3.0, spawnInterval:2.8, defectRate:0.35, binCapacity:6 }
+  ]};
+  const factory = createFactory(FACTORY_CONFIG, GEO);
+
+  /* =========================================================
+     1. THREE.JS BASE SETUP
+  ========================================================= */
+  const container = document.getElementById('scene-container');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0f16);
+  scene.fog = new THREE.Fog(0x0a0f16, 60, 170);
+
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 400);
+  camera.position.copy(new THREE.Vector3(32, 22, 36));   // factory overview
+  camera.lookAt(0,0,0);
+
+  const renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace || THREE.sRGBEncoding;
+  container.appendChild(renderer.domElement);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(8,1,0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.maxPolarAngle = Math.PI * 0.49;
+  controls.minDistance = 6;
+  controls.maxDistance = 100;
+  controls.update();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  /* =========================================================
+     2. LIGHTING
+  ========================================================= */
+  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambient);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  dirLight.position.set(20, 22, 12);
+  dirLight.target.position.set(8, 0, 0); scene.add(dirLight.target);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 4096;
+  dirLight.shadow.mapSize.height = 4096;
+  dirLight.shadow.camera.near = 1;
+  dirLight.shadow.camera.far = 90;
+  dirLight.shadow.camera.left = -34;
+  dirLight.shadow.camera.right = 34;
+  dirLight.shadow.camera.top = 30;
+  dirLight.shadow.camera.bottom = -30;
+  dirLight.shadow.bias = -0.0015;
+  scene.add(dirLight);
+
+  const fillLight = new THREE.DirectionalLight(0x6fb8ff, 0.25);
+  fillLight.position.set(-10, 8, -14);
+  scene.add(fillLight);
+
+  const rimLight = new THREE.PointLight(0x2fd9ff, 0.5, 30);
+  rimLight.position.set(-4, 6, 6);
+  scene.add(rimLight);
+
+  /* =========================================================
+     3. FLOOR
+  ========================================================= */
+  const floorGeo = new THREE.PlaneGeometry(160, 160);
+  const floorMat = new THREE.MeshStandardMaterial({color:0x141c26, roughness:0.92, metalness:0.05});
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI/2;
+  floor.position.y = 0;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  const grid = new THREE.GridHelper(160, 160, 0x2fd9ff, 0x1a2733);
+  grid.position.y = 0.005;
+  grid.material.opacity = 0.35;
+  grid.material.transparent = true;
+  scene.add(grid);
+
+  /* =========================================================
+     4. MATERIALS (shared)
+  ========================================================= */
+  const MAT_ALU = new THREE.MeshStandardMaterial({color:0x8b929c, metalness:0.85, roughness:0.22});
+  const MAT_ALU_DARK = new THREE.MeshStandardMaterial({color:0x565d66, metalness:0.8, roughness:0.28});
+  const MAT_BELT = new THREE.MeshStandardMaterial({color:0x14181d, metalness:0.15, roughness:0.85});
+  const MAT_BAR = new THREE.MeshStandardMaterial({color:0x2b2f36, metalness:0.4, roughness:0.55});
+  const MAT_PVC_YELLOW = new THREE.MeshStandardMaterial({color:0xffcc33, metalness:0.2, roughness:0.5});
+
+  /* =========================================================
+     5-8. LINE VIEW FACTORY
+     One call builds a complete sorting line (belt, motor, photosensor, valve + cylinder, chute, reject bin,
+     tower lamp) inside its own THREE.Group at x = L.cfg.ox. The plant model decides what moves; the view only
+     mirrors it (see syncView), so adding a line = adding one entry to FACTORY_CONFIG.
+  ========================================================= */
+  const BAR_SPACING = 0.55;
+  const BELT_PERIOD = CONVEYOR.zEnd - CONVEYOR.zStart + BAR_SPACING;
+  const beltLength = CONVEYOR.zEnd - CONVEYOR.zStart;
+  const beltCenterZ = (CONVEYOR.zStart + CONVEYOR.zEnd) / 2;
+  const barGeo = new THREE.BoxGeometry(CONVEYOR.halfWidthX*2 - 0.08, 0.045, 0.09);
+  const chuteLen = Math.sqrt((CH_X2-CH_X1)*(CH_X2-CH_X1) + (CH_Y1-CH_Y2)*(CH_Y1-CH_Y2));
+
+  // soft round glow texture (additive halo so the lit lamp is visible from far away)
+  const glowTex = (function(){
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d'), grd = g.createRadialGradient(64,64,0,64,64,64);
+    grd.addColorStop(0,'rgba(255,255,255,1)'); grd.addColorStop(0.3,'rgba(255,255,255,0.45)'); grd.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle = grd; g.fillRect(0,0,128,128);
+    return new THREE.CanvasTexture(c);
+  })();
+
+  function buildLineView(L){
+    const grp = new THREE.Group(); grp.position.set(L.cfg.ox, 0, 0); scene.add(grp);
+    const V = { L:L, group:grp, beltBars:[] };
+
+    // raised platform under the machine
+    const platform = new THREE.Mesh(new THREE.BoxGeometry(7, 0.2, 22), new THREE.MeshStandardMaterial({color:0x1c2733, roughness:0.7, metalness:0.3}));
+    platform.position.set(0, 0.1, 0.2); platform.receiveShadow = true; grp.add(platform);
+
+    /* ---- conveyor structure ---- */
+    const conveyorGroup = new THREE.Group(); grp.add(conveyorGroup);
+    function makeRail(xPos){
+      const railGroup = new THREE.Group();
+      const zMin = beltCenterZ - (beltLength + 0.6)/2, zMax = beltCenterZ + (beltLength + 0.6)/2;
+      // opening in the rail for the reject pusher (rod, head and box pass through here)
+      [[zMin, PUSHER_Z - 0.65], [PUSHER_Z + 0.65, zMax]].forEach(seg => {
+        const len = seg[1] - seg[0], cz = (seg[0] + seg[1]) / 2;
+        const rail = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.32, len), MAT_ALU);
+        rail.position.set(xPos, CONVEYOR.beltTopY + 0.16, cz); rail.castShadow = true; rail.receiveShadow = true; railGroup.add(rail);
+        const groove = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, len), MAT_ALU_DARK);
+        groove.position.set(xPos, CONVEYOR.beltTopY + 0.33, cz); railGroup.add(groove);
+      });
+      return railGroup;
+    }
+    conveyorGroup.add(makeRail(-CONVEYOR.halfWidthX - 0.15));
+    conveyorGroup.add(makeRail(CONVEYOR.halfWidthX + 0.15));
+
+    const beltMesh = new THREE.Mesh(new THREE.BoxGeometry(CONVEYOR.halfWidthX*2, 0.12, beltLength), MAT_BELT);
+    beltMesh.position.set(0, CONVEYOR.beltTopY - 0.06, beltCenterZ); beltMesh.receiveShadow = true; beltMesh.castShadow = true;
+    conveyorGroup.add(beltMesh);
+
+    function makeRoller(zPos){
+      const roller = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, CONVEYOR.halfWidthX*2 + 0.4, 20), MAT_ALU_DARK);
+      roller.rotation.z = Math.PI/2; roller.position.set(0, CONVEYOR.beltTopY, zPos); roller.castShadow = true;
+      return roller;
+    }
+    conveyorGroup.add(makeRoller(CONVEYOR.zStart - 0.2));
+    conveyorGroup.add(makeRoller(CONVEYOR.zEnd + 0.2));
+
+    // moving belt bars (tread pattern) -> "rolling" illusion; positions come from plant.barOffset
+    for(let z = CONVEYOR.zStart; z <= CONVEYOR.zEnd; z += BAR_SPACING){
+      const bar = new THREE.Mesh(barGeo, MAT_BAR);
+      bar.position.set(0, CONVEYOR.beltTopY + 0.045, z); bar.receiveShadow = true;
+      conveyorGroup.add(bar); V.beltBars.push(bar);
+    }
+    function makeLeg(x,z){
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.22, CONVEYOR.beltTopY - 0.1, 0.22), MAT_ALU);
+      leg.position.set(x, (CONVEYOR.beltTopY - 0.1)/2, z); leg.castShadow = true; leg.receiveShadow = true; conveyorGroup.add(leg);
+      const foot = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.06, 0.4), MAT_ALU_DARK);
+      foot.position.set(x, 0.03, z); foot.castShadow = true; foot.receiveShadow = true; conveyorGroup.add(foot);
+    }
+    const legZs = [CONVEYOR.zStart + 0.5, -3, 3, CONVEYOR.zEnd - 0.5];
+    [-CONVEYOR.halfWidthX - 0.1, CONVEYOR.halfWidthX + 0.1].forEach(x => legZs.forEach(z => makeLeg(x,z)));
+    legZs.forEach(z => {
+      const brace = new THREE.Mesh(new THREE.BoxGeometry(CONVEYOR.halfWidthX*2 + 0.4, 0.08, 0.08), MAT_ALU_DARK);
+      brace.position.set(0, (CONVEYOR.beltTopY - 0.1)*0.5, z); brace.castShadow = true; conveyorGroup.add(brace);
+    });
+
+    /* ---- motor + coupling shaft (drives the end roller) ---- */
+    const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,1.0,20), new THREE.MeshStandardMaterial({color:0x1f5fbf, metalness:0.5, roughness:0.4}));
+    motor.rotation.z = Math.PI/2; motor.position.set(-2.4, CONVEYOR.beltTopY, CONVEYOR.zEnd + 0.2); motor.castShadow = true; grp.add(motor);
+    cbox(0.9,0.7,0.7,MAT_ALU_DARK,-2.4,0.35,CONVEYOR.zEnd + 0.2,grp);
+    V.shaftG = new THREE.Group(); V.shaftG.position.set(-1.75, CONVEYOR.beltTopY, CONVEYOR.zEnd + 0.2); grp.add(V.shaftG);
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.3,12), MAT_ALU);
+    shaft.rotation.z = Math.PI/2; V.shaftG.add(shaft);
+    cbox(0.04,0.36,0.08,new THREE.MeshStandardMaterial({color:0xffcc00}),0,0,0,V.shaftG);   // spinning coupling
+
+    /* ---- solenoid valve + pneumatic line to the pusher cylinder ---- */
+    cbox(0.1,0.6,0.1,MAT_ALU_DARK,-3.8,0.3,0.6,grp);
+    cbox(0.4,0.4,0.3,new THREE.MeshStandardMaterial({color:0x1d6fd6,metalness:0.4,roughness:0.4}),-3.8,0.8,0.6,grp);
+    V.valveLedMat = new THREE.MeshStandardMaterial({color:0xffb300, emissive:0xffb300, emissiveIntensity:0.05});
+    const valveLed = new THREE.Mesh(new THREE.SphereGeometry(0.05,12,12), V.valveLedMat);
+    valveLed.position.set(-3.6, 0.8, 0.6); grp.add(valveLed);
+    const airPath = new THREE.CatmullRomCurve3([new THREE.Vector3(-3.8,1.0,0.6), new THREE.Vector3(-3.7,1.4,0.0), new THREE.Vector3(-3.4,1.52,-0.6)]);
+    grp.add(new THREE.Mesh(new THREE.TubeGeometry(airPath, 20, 0.03, 6, false), new THREE.MeshStandardMaterial({color:0x4da6ff, roughness:0.4})));
+
+    /* ---- photosensor ---- */
+    function makeSensorPost(xPos){
+      const g = new THREE.Group();
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.6, 12), MAT_ALU_DARK);
+      pole.position.set(xPos, sensorHeight - 0.3 + 0.32, BEAM_Z); pole.castShadow = true; g.add(pole);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.16, 0.16), new THREE.MeshStandardMaterial({color:0x2c2f34, metalness:0.6, roughness:0.35}));
+      head.position.set(xPos, sensorHeight, BEAM_Z); head.castShadow = true; g.add(head);
+      return g;
+    }
+    grp.add(makeSensorPost(sensorEmitterX)); grp.add(makeSensorPost(sensorReceiverX));
+    V.sensorLedMat = new THREE.MeshStandardMaterial({color:0x550000, emissive:0xff0000, emissiveIntensity:0.15});
+    const sensorLed = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), V.sensorLedMat);
+    sensorLed.position.set(sensorEmitterX + 0.1, sensorHeight, BEAM_Z); grp.add(sensorLed);
+    V.laserMat = new THREE.MeshBasicMaterial({color:0xff2222, transparent:true, opacity:0.4});
+    const laserBeam = new THREE.Mesh(new THREE.BoxGeometry(sensorReceiverX - sensorEmitterX, 0.025, 0.025), V.laserMat);
+    laserBeam.position.set(0, sensorHeight, BEAM_Z); grp.add(laserBeam);
+
+    /* ---- pusher cylinder (rod + head follow plant.cylExt) ---- */
+    const cylBody = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.0, 20), new THREE.MeshStandardMaterial({color:0xb0b6bd, metalness:0.75, roughness:0.25}));
+    cylBody.rotation.z = Math.PI/2; cylBody.position.set(pusherRestX - 0.75, pusherY, PUSHER_Z); cylBody.castShadow = true; grp.add(cylBody);
+    const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.5, 0.3), MAT_ALU_DARK);
+    bracket.position.set(pusherRestX - 1.35, pusherY - 0.1, PUSHER_Z); bracket.castShadow = true; grp.add(bracket);
+    V.pusherRod = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 1.3, 16), new THREE.MeshStandardMaterial({color:0xe8ecef, metalness:0.9, roughness:0.12}));
+    V.pusherRod.rotation.z = Math.PI/2; V.pusherRod.position.set(pusherRestX + 0.1, pusherY, PUSHER_Z); V.pusherRod.castShadow = true; grp.add(V.pusherRod);
+    V.pusherHead = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.7), new THREE.MeshStandardMaterial({color:0xffb300, metalness:0.5, roughness:0.4}));
+    V.pusherHead.position.set(pusherRestX + 0.75, pusherY, PUSHER_Z); V.pusherHead.castShadow = true; grp.add(V.pusherHead);
+
+    /* ---- gravity chute + reject bin ---- */
+    const chute = new THREE.Group();
+    chute.position.set((CH_X1+CH_X2)/2, (CH_Y1+CH_Y2)/2 - 0.025, PUSHER_Z); chute.rotation.z = -CH_ANG;
+    const chutePlate = new THREE.Mesh(new THREE.BoxGeometry(chuteLen, 0.05, 1.25), MAT_ALU);
+    chutePlate.castShadow = true; chutePlate.receiveShadow = true; chute.add(chutePlate);
+    [-0.64, 0.64].forEach(dz => { const guide = new THREE.Mesh(new THREE.BoxGeometry(chuteLen, 0.16, 0.04), MAT_ALU_DARK); guide.position.set(0, 0.1, dz); guide.castShadow = true; chute.add(guide); });
+    grp.add(chute);
+    [CH_X1 + 0.5, CH_X2 - 0.2].forEach(x => [-0.6, 0.6].forEach(dz => {
+      const top = CH_Y1 - (x - CH_X1) * CH_SLOPE - 0.05;
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, top, 0.08), MAT_ALU_DARK);
+      leg.position.set(x, top/2, PUSHER_Z + dz); leg.castShadow = true; grp.add(leg);
+    }));
+    const binMat = new THREE.MeshStandardMaterial({color:0x8b3a3a, metalness:0.4, roughness:0.6});
+    const binFloor = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.1, 2.3), binMat);
+    binFloor.position.set(BIN_X, 0.05, PUSHER_Z); binFloor.receiveShadow = true; binFloor.castShadow = true; grp.add(binFloor);
+    [[-0.87,0],[0.87,0],[0,-1.12],[0,1.12]].forEach(([dx,dz]) => {
+      const wall = new THREE.Mesh((dz===0) ? new THREE.BoxGeometry(0.06,0.75,2.3) : new THREE.BoxGeometry(1.8,0.75,0.06), binMat);
+      wall.position.set(BIN_X + dx, 0.375, PUSHER_Z + dz); wall.castShadow = true; wall.receiveShadow = true; grp.add(wall);
+    });
+    // bin level indicator (turns red when the level switch trips)
+    V.binLedMat = new THREE.MeshStandardMaterial({color:0x00e676, emissive:0x00e676, emissiveIntensity:0.9});
+    const binLed = new THREE.Mesh(new THREE.SphereGeometry(0.07,12,12), V.binLedMat);
+    binLed.position.set(BIN_X + 0.87, 0.82, PUSHER_Z + 1.12); grp.add(binLed);
+
+    /* ---- tower lamp (green / yellow / red) ---- */
+    const tower = new THREE.Group(); grp.add(tower);
+    const pole2 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, poleH, 12), MAT_ALU_DARK);
+    pole2.position.set(towerX, 0.12 + poleH/2, towerZ); pole2.castShadow = true; tower.add(pole2);
+    const base2 = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.3, 0.12, 20), MAT_ALU_DARK);
+    base2.position.set(towerX, 0.06, towerZ); base2.castShadow = true; base2.receiveShadow = true; tower.add(base2);
+    function makeLampSegment(colorHex, yPos){
+      const mat = new THREE.MeshStandardMaterial({color:colorHex, emissive:colorHex, emissiveIntensity:0.06, metalness:0.1, roughness:0.35});
+      const seg = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.34, 24), mat);
+      seg.position.set(towerX, yPos, towerZ); seg.castShadow = true; tower.add(seg);
+      const glow = new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex, color:colorHex, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false}));
+      glow.scale.set(1.5, 1.5, 1); glow.position.set(towerX, yPos, towerZ); glow.visible = false; glow.renderOrder = 12; tower.add(glow);
+      seg.userData.glow = glow;
+      return seg;
+    }
+    V.lampRed = makeLampSegment(0xff2b2b, CONVEYOR.beltTopY + 2.55);
+    V.lampYellow = makeLampSegment(0xffc400, CONVEYOR.beltTopY + 2.18);
+    V.lampGreen = makeLampSegment(0x2bff6a, CONVEYOR.beltTopY + 1.81);
+    [1.625, 1.995, 2.365].forEach(dy => {
+      const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.205, 0.205, 0.04, 24), MAT_ALU_DARK);
+      ring.position.set(towerX, CONVEYOR.beltTopY + dy, towerZ); tower.add(ring);
+    });
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.16, 24), MAT_ALU_DARK);
+    cap.position.set(towerX, CONVEYOR.beltTopY + 2.8, towerZ); tower.add(cap);
+    V.towerLight = new THREE.PointLight(0xff2b2b, 0, 5, 2);
+    V.towerLight.position.set(towerX, CONVEYOR.beltTopY + 2.2, towerZ); tower.add(V.towerLight);
+
+    // lamp follows the PLC lamp outputs (green / yellow / red). Returns which colour is lit for the HMI.
+    V.lampHud = {g:false, y:false, r:false};
+    V.updateLamp = function(g, y, r, t){
+      const yl = y ? 0.25 + 0.75*(0.5 + 0.5*Math.sin(t*0.0105)) : 0;
+      const lv = {red: r ? 1 : 0, yellow: yl, green: g ? 1 : 0};
+      let lightCol = 0x000000, top = 0;
+      [['red',V.lampRed,0xff2b2b],['yellow',V.lampYellow,0xffc400],['green',V.lampGreen,0x2bff6a]].forEach(([k,m,col]) => {
+        const v = lv[k];
+        m.material.emissiveIntensity = 0.06 + 1.4*v;
+        const gl = m.userData.glow; gl.material.opacity = 0.8*v; gl.visible = v > 0.02;
+        if(v > top){ top = v; lightCol = col; }
+      });
+      V.towerLight.color.setHex(lightCol); V.towerLight.intensity = 1.6*top;
+      V.lampHud.g = !!g; V.lampHud.y = !!y && yl > 0.5; V.lampHud.r = !!r;
+    };
+
+    /* ---- name tags (line 1 keeps its own set further down) ---- */
+    const ox = L.cfg.ox;
+    tagSprite(L.cfg.name + ' · SORTING', 1.9, ox, 4.3, CONVEYOR.zStart - 0.6, '#0d3a4d', '#7fe3ff');
+    if(L.index > 0){
+      tagSprite('PHOTO SENSOR',1.3,ox+sensorEmitterX,2.5,BEAM_Z);
+      tagSprite('CYLINDER',0.9,ox-3.4,2.0,PUSHER_Z);
+      tagSprite('SOLENOID VALVE',1.5,ox-3.8,1.55,0.6);
+      tagSprite('MOTOR',0.8,ox-2.4,1.9,CONVEYOR.zEnd + 0.2);
+      tagSprite('REJECT BIN',1.1,ox+BIN_X,1.6,PUSHER_Z);
+      tagSprite('TOWER LAMP',1.1,ox+towerX,4.15,towerZ);
+    }
+    return V;
+  }
+
+  const views = factory.lines.map(buildLineView);
+  factory.lines.forEach((L, i) => { L.view = views[i]; });
+
+  /* =========================================================
+     8B. PLC CONTROL CABINET / FIELD DEVICES / WIRING / SAFETY
+  ========================================================= */
+  const clickables = [];
+  const leds = {};
+  const wires = {};
+
+  function canvasTex(text, w, h, bg, fg){
+    const c = document.createElement('canvas');
+    c.width = Math.round(w*256); c.height = Math.round(h*256);
+    const g = c.getContext('2d');
+    g.fillStyle = bg; g.fillRect(0,0,c.width,c.height);
+    g.strokeStyle = fg; g.lineWidth = 2; g.strokeRect(1,1,c.width-2,c.height-2);
+    g.fillStyle = fg; g.font = 'bold ' + Math.round(c.height*0.5) + 'px Consolas,monospace';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, c.width/2, c.height/2 + 2, c.width - 10);
+    return new THREE.CanvasTexture(c);
+  }
+  function tagPlane(text, w, h, bg, fg){
+    return new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+      new THREE.MeshBasicMaterial({map: canvasTex(text, w, h, bg || '#0d1620', fg || '#dfeaf2')}));
+  }
+  function tagSprite(text, w, x, y, z, bg, fg){
+    const h = 0.26;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({map: canvasTex(text, w, h, bg || 'rgba(13,22,32,0.92)', fg || '#2fd9ff'), depthTest:true, transparent:true}));
+    sp.scale.set(w, h, 1); sp.position.set(x,y,z); sp.renderOrder = 10;
+    scene.add(sp);
+  }
+
+  /* ---- control cabinet (local +z faces world +x, toward the conveyor) ---- */
+  const CAB_S = 1.5;
+  const cab = new THREE.Group();
+  cab.position.set(-8, 0, -3);
+  cab.scale.set(CAB_S, CAB_S, CAB_S);
+  cab.rotation.y = Math.PI/2;
+  scene.add(cab);
+  const W = (lx,ly,lz) => new THREE.Vector3(-8 + lz*CAB_S, ly*CAB_S, -3 - lx*CAB_S); // cabinet-local -> world
+
+  const MAT_CAB = new THREE.MeshStandardMaterial({color:0xaab3bd, metalness:0.6, roughness:0.4});
+  const MAT_PLATE = new THREE.MeshStandardMaterial({color:0xd8d4c8, metalness:0.2, roughness:0.7});
+  const MAT_DARK = new THREE.MeshStandardMaterial({color:0x22272e, metalness:0.3, roughness:0.5});
+  const MAT_GRAY = new THREE.MeshStandardMaterial({color:0x6d757f, metalness:0.3, roughness:0.5});
+  const MAT_DUCT = new THREE.MeshStandardMaterial({color:0x9aa3ad, roughness:0.8});
+  function cbox(w,h,d,mat,x,y,z,parent){
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+    m.position.set(x,y,z); m.castShadow = true; m.receiveShadow = true;
+    (parent || cab).add(m); return m;
+  }
+  const CW = 6.0, CH = 4.7, CD = 0.6, CY = 2.45;   // roomy enclosure: generous margins around every part
+  cbox(CW,0.2,CD,MAT_ALU_DARK,0,0.1,CD/2-0.02);                 // plinth
+  cbox(CW,CH,0.04,MAT_CAB,0,CY,-0.02);                          // back
+  cbox(CW-0.2,CH-0.2,0.03,MAT_PLATE,0,CY,0.02);                 // mounting plate
+  cbox(0.1,CH,CD,MAT_CAB,-CW/2,CY,CD/2-0.02);                   // sides / top / bottom of enclosure
+  cbox(0.1,CH,CD,MAT_CAB,CW/2,CY,CD/2-0.02);
+  cbox(CW,0.1,CD,MAT_CAB,0,CY+CH/2,CD/2-0.02);
+  cbox(CW,0.1,CD,MAT_CAB,0,CY-CH/2,CD/2-0.02);
+  const sign = tagPlane('PLC CONTROL PANEL · PLC I/O SIMULATION', 4.4, 0.28, '#0d1620', '#2fd9ff');
+  sign.position.set(0, 5.15, 0.3); cab.add(sign);
+  cbox(4.4,0.28,0.03,MAT_DARK,0,5.15,0.28);
+
+  // DIN rails (3 equipment rows) + wiring ducts. Rows: A power (y3.95), B PLC (y2.55), C relay/terminals (y1.0)
+  [3.95, 2.55, 1.0].forEach(y => cbox(5.4,0.07,0.03,MAT_ALU,0,y,0.05));
+  cbox(5.6,0.14,0.08,MAT_DUCT,0,3.36,0.07);                          // power duct (red/blue buses run along it)
+  cbox(4.8,0.3,0.3,MAT_DUCT,0.2,1.7,0.19);                           // signal duct: wires enter at the top, leave at the bottom
+  for(let x=-2.1; x<=2.5; x+=0.12) cbox(0.03,0.2,0.01,MAT_DARK,x,1.7,0.345);   // slotted cover
+  const ductTag = tagPlane('SIGNAL WIRING DUCT', 1.3, 0.14); ductTag.position.set(1.85,1.7,0.352); cab.add(ductTag);
+
+  function part(name,w,h,d,mat,x,y,labelDy){
+    const b = cbox(w,h,d,mat,x,y,0.04 + d/2);
+    const t = tagPlane(name, w - 0.06, 0.16);
+    t.position.set(x, y + labelDy, 0.04 + d + 0.004); cab.add(t);
+    return b;
+  }
+  function ledMat(color){ return new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:0.05}); }
+  function ioRow(key,ledX,y,labelCx,labelW,text,color){
+    const m = ledMat(color);
+    const sp = new THREE.Mesh(new THREE.SphereGeometry(0.055,12,12), m);
+    sp.position.set(ledX, y, 0.42); cab.add(sp);
+    const t = tagPlane(text, labelW, 0.15, '#0d1620', '#cfe6f2');
+    t.position.set(labelCx, y, 0.404); cab.add(t);
+    leds[key] = m;
+  }
+
+  /* ---- row A: power chain  MCCB -> SMPS -> 24V CP -> 24V/0V distribution ---- */
+  part('MCCB',0.6,0.7,0.3,MAT_DARK,-2.2,3.95,-0.22);
+  const mccbHandle = cbox(0.14,0.22,0.12,new THREE.MeshStandardMaterial({color:0xff7a00}),-2.2,4.18,0.04+0.3+0.05);
+  mccbHandle.userData.action = 'mccb'; clickables.push(mccbHandle);
+  function setMccbVisual(){ mccbHandle.position.y = STATE.mccb ? 4.18 : 4.02; mccbHandle.material.color.set(STATE.mccb ? 0xff7a00 : 0x555b63); }
+  part('24V DC SMPS',1.3,0.7,0.35,MAT_GRAY,-0.85,3.95,-0.22);
+  const smpsOk = ledMat(0x00e676); smpsOk.emissiveIntensity = 1.5;
+  const smpsLed = new THREE.Mesh(new THREE.SphereGeometry(0.04,12,12), smpsOk);
+  smpsLed.position.set(-1.3, 4.13, 0.42); cab.add(smpsLed);
+
+  const MAT_TRED = new THREE.MeshStandardMaterial({color:0xd32f2f, roughness:0.5});
+  const MAT_TBLU = new THREE.MeshStandardMaterial({color:0x1e6fd6, roughness:0.5});
+  part('24V CP',0.5,0.7,0.3,MAT_DARK,0.55,3.95,0);
+  cbox(0.12,0.16,0.1,new THREE.MeshStandardMaterial({color:0xff7a00}),0.55,4.22,0.04+0.3+0.03);   // breaker toggle
+  [0.4,0.7].forEach(x => cbox(0.1,0.1,0.06,MAT_TRED,x,3.72,0.37));                                // CP in / out
+  part('24V/0V DIST',1.0,0.7,0.3,MAT_GRAY,1.9,3.95,0);
+  [1.6,1.9,2.2].forEach(x => { cbox(0.12,0.1,0.06,MAT_TBLU,x,4.08,0.37); cbox(0.12,0.1,0.06,MAT_TRED,x,3.72,0.37); });
+
+  /* ---- row B: PLC base unit (backplane) carrying CPU + DIGITAL INPUT + DIGITAL OUTPUT ---- */
+  cbox(5.1,1.15,0.04,new THREE.MeshStandardMaterial({color:0x2c333b,metalness:0.3,roughness:0.6}),-0.05,2.55,0.06);
+  const baseTag = tagPlane('PLC BASE UNIT (BACKPLANE)', 2.0, 0.12); baseTag.position.set(0.4,3.07,0.09); cab.add(baseTag);
+  part('PLC CPU',0.8,0.9,0.36,MAT_DARK,-2.1,2.55,0.3);
+  ioRow('run',-2.38,2.5,-2.02,0.46,'RUN',0x00e676);
+  [-2.25].forEach(x => cbox(0.1,0.06,0.1,MAT_TRED,x,3.03,0.3));   // CPU +24V in
+  [-1.95].forEach(x => cbox(0.1,0.06,0.1,MAT_TBLU,x,3.03,0.3));   // CPU 0V in
+  part('DIGITAL INPUT',1.5,0.9,0.36,MAT_DARK,-0.4,2.55,0.35);
+  ioRow('x0',-1.0,2.75,-0.3,1.05,'X0 START',0x00e676);
+  ioRow('x1',-1.0,2.605,-0.3,1.05,'X1 PHOTO SENSOR',0xffb300);
+  ioRow('x2',-1.0,2.46,-0.3,1.05,'X2 EMERGENCY STOP',0xff3b3b);
+  ioRow('x3',-1.0,2.315,-0.3,1.05,'X3 VISION NG',0x7fd8ff);
+  ioRow('x4',-1.0,2.17,-0.3,1.05,'X4 GUARD CLOSED',0x00e676);
+  part('DIGITAL OUTPUT',1.5,0.9,0.36,MAT_DARK,1.7,2.55,0.32);
+  ioRow('y0',1.1,2.65,1.8,1.05,'Y0 MOTOR',0x00e676);
+  ioRow('y1',1.1,2.43,1.8,1.05,'Y1 SOLENOID',0xffb300);
+  ioRow('y2',1.1,2.21,1.8,1.05,'Y2 TOWER LAMP',0x2fd9ff);
+
+  /* ---- row C: K1 relay + terminal strip. Terminal order follows the order of the field devices along the
+         floor tray (farthest +z device on the left ... farthest -z device on the right) so every field cable
+         can leave the cabinet and reach its device WITHOUT crossing another cable. ---- */
+  const SIGCOL = {start:0x00e676, sensor:0xffb300, estop:0xff3b3b, vision:0xff80ab, guard:0xeeeeee,
+                  sol:0xb388ff, lamp:0xc6ff3d, y0:0x2fd9ff};
+  part('K1 RELAY',0.6,0.6,0.3,new THREE.MeshStandardMaterial({color:0x2a4d8f,roughness:0.5}),-1.8,1.0,-0.14);
+  cbox(0.1,0.06,0.1,new THREE.MeshStandardMaterial({color:SIGCOL.y0}),-1.8,1.3,0.22);       // coil terminal (Y0)
+  const TERM = [['guard',-1.0,'GUARD'],['sol',-0.7,'SOLENOID'],['sensor',-0.4,'SENSOR'],['vision',-0.1,'VISION'],
+                ['start',0.2,'START'],['estop',0.5,'E-STOP'],['lamp',0.8,'LAMP']];
+  const TX = {y0b:-1.8};
+  TERM.forEach(([id,x,label]) => {
+    TX[id] = x;
+    cbox(0.2,0.5,0.36,new THREE.MeshStandardMaterial({color:0x8a9099, roughness:0.6}),x,1.0,0.04+0.18);
+    cbox(0.2,0.08,0.36,new THREE.MeshStandardMaterial({color:SIGCOL[id], roughness:0.5}),x,1.21,0.04+0.18);   // colour cap = wire colour
+    const t = tagPlane(label,0.27,0.13,'#0d1620','#cfe6f2'); t.position.set(x,0.97,0.404); cab.add(t);
+  });
+  const tl = tagPlane('TERMINAL BLOCK', 1.5, 0.15); tl.position.set(-0.1,0.58,0.2); cab.add(tl);
+  cbox(5.2,0.05,0.06,new THREE.MeshStandardMaterial({color:0x2a9d4a}),0,0.4,0.1);
+  const pe = tagPlane('PE GROUND',0.9,0.15); pe.position.set(-2.4,0.55,0.2); cab.add(pe);
+
+  // wire-colour legend plate (right side of row C)
+  (function(){
+    const c = document.createElement('canvas'); c.width = 560; c.height = 400;
+    const g = c.getContext('2d');
+    g.fillStyle = '#0d1620'; g.fillRect(0,0,560,400);
+    g.strokeStyle = '#2fd9ff'; g.lineWidth = 3; g.strokeRect(2,2,556,396);
+    g.fillStyle = '#7fe3ff'; g.font = 'bold 30px "Malgun Gothic",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('WIRE COLOR CODE', 280, 36);
+    const items = [['+24V',0xff5252],['0V',0x4da6ff],['AC 220V',0xff8a00],['START',SIGCOL.start],['SENSOR',SIGCOL.sensor],['E-STOP',SIGCOL.estop],
+                   ['VISION',SIGCOL.vision],['GUARD',SIGCOL.guard],['SOLENOID',SIGCOL.sol],['LAMP',SIGCOL.lamp],['MOTOR (K1)',SIGCOL.y0]];
+    g.textAlign = 'left';
+    items.forEach((it,i) => {
+      const col = i < 6 ? 0 : 1, row = i < 6 ? i : i-6;
+      const x = 24 + col*270, y = 90 + row*52;
+      g.fillStyle = '#' + it[1].toString(16).padStart(6,'0'); g.fillRect(x, y-14, 46, 28);
+      g.fillStyle = '#eaf6ff'; g.font = 'bold 26px "Malgun Gothic",sans-serif'; g.fillText(it[0], x+60, y);
+    });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.07), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c)}));
+    m.position.set(2.1,0.98,0.075); cab.add(m);
+  })();
+
+  /* ---- per-module detail / circuit-diagram callouts ----
+     Hidden by default; toggled on only via the "회로도 보기" button so the
+     cabinet stays clean during normal operation and the schematic is an
+     on-demand drill-down, not permanent clutter. Diagrams are drawn as
+     plain canvas block-diagrams (no external images).
+     Laid out as a clean non-overlapping 2x3 grid floating well in front of
+     the whole cabinet (not hovering over each cramped physical part), so no
+     two panels ever share screen space, and every label is wrapped AND
+     auto-shrunk to fit inside its own box — nothing can render past its
+     border or another panel's border. */
+  const SCHEM_FONT = '"Malgun Gothic",sans-serif'; // proper Hangul coverage (Consolas has none)
+
+  // Wraps text to fit maxW: honors explicit \n line breaks, then wraps by
+  // word, and falls back to character-by-character wrapping for a single
+  // "word" (common in Korean, which has no spaces inside a compound term)
+  // that alone is still wider than maxW.
+  function wrapToWidth(g, text, maxW){
+    const out = [];
+    String(text).split('\n').forEach(line=>{
+      const words = line.split(' ').filter(Boolean);
+      let cur = '';
+      words.forEach(w=>{
+        if(g.measureText(w).width > maxW){
+          if(cur){ out.push(cur); cur = ''; }
+          let chunk = '';
+          for(const ch of w){
+            const test = chunk + ch;
+            if(g.measureText(test).width > maxW && chunk){ out.push(chunk); chunk = ch; } else chunk = test;
+          }
+          cur = chunk;
+          return;
+        }
+        const test = cur ? cur + ' ' + w : w;
+        if(g.measureText(test).width > maxW && cur){ out.push(cur); cur = w; } else cur = test;
+      });
+      if(cur) out.push(cur);
+      if(words.length === 0) out.push('');
+    });
+    return out;
+  }
+  // Draws text centered in a box, shrinking the font step by step until the
+  // wrapped lines fit within both maxW and maxH — guarantees no overflow.
+  function drawFitted(g, text, cx, cy, maxW, maxH, startPx, color){
+    let px = startPx, lines = [];
+    while(px > 7){
+      g.font = 'bold ' + px + 'px ' + SCHEM_FONT;
+      lines = wrapToWidth(g, text, maxW);
+      if(lines.length * (px*1.22) <= maxH) break;
+      px -= 1;
+    }
+    g.font = 'bold ' + px + 'px ' + SCHEM_FONT;
+    g.fillStyle = color || '#eaf6ff';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    const lineH = px*1.22;
+    const startY = cy - (lines.length-1)*lineH/2;
+    lines.forEach((ln,i) => g.fillText(ln, cx, startY + i*lineH));
+  }
+  // One row of connected blocks, vertically centered at yFrac*H.
+  function drawRow(g, Wd, H, yFrac, rowH, blocks){
+    const n = blocks.length;
+    const gap = 8;
+    const bw = (Wd*0.92 - gap*(n-1)) / n, bh = rowH, midY = H*yFrac;
+    const totalW = bw*n + gap*(n-1);
+    let x = (Wd - totalW)/2;
+    const centers = [];
+    blocks.forEach(label=>{
+      g.strokeStyle = '#2fd9ff'; g.lineWidth = 2;
+      g.fillStyle = 'rgba(47,217,255,0.10)';
+      g.fillRect(x, midY-bh/2, bw, bh);
+      g.strokeRect(x, midY-bh/2, bw, bh);
+      drawFitted(g, label, x+bw/2, midY, bw-12, bh-10, Math.round(H*0.075));
+      centers.push(x+bw/2);
+      x += bw + gap;
+    });
+    g.strokeStyle = '#ffb300'; g.lineWidth = 2;
+    for(let i=0;i<centers.length-1;i++){
+      const x0 = centers[i] + bw/2, x1 = centers[i+1] - bw/2, gy = midY;
+      g.beginPath(); g.moveTo(x0, gy); g.lineTo(x1, gy); g.stroke();
+      g.beginPath(); g.moveTo(x1-9, gy-5); g.lineTo(x1, gy); g.lineTo(x1-9, gy+5); g.stroke();
+    }
+  }
+  function drawBlockChain(g, Wd, H, title, blocks, note){
+    drawFitted(g, title, Wd/2, H*0.12, Wd*0.94, H*0.14, Math.round(H*0.1), '#7fe3ff');
+    drawRow(g, Wd, H, 0.46, H*0.3, blocks);
+    if(note) drawFitted(g, note, Wd/2, H*0.83, Wd*0.92, H*0.22, Math.round(H*0.058), '#9fb3c0');
+  }
+  function schematicPlane(w, h, drawFn){
+    const c = document.createElement('canvas');
+    c.width = Math.round(w*260); c.height = Math.round(h*260);
+    const g = c.getContext('2d');
+    g.fillStyle = '#0b1420'; g.fillRect(0,0,c.width,c.height);
+    g.strokeStyle = '#2fd9ff'; g.lineWidth = 3; g.strokeRect(2,2,c.width-4,c.height-4);
+    drawFn(g, c.width, c.height);
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+      new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(c), transparent:true}));
+    mesh.renderOrder = 20;
+    return mesh;
+  }
+  const circuitPlanes = [];
+  function addCircuitPanel(x,y,z,w,h,drawFn){
+    const p = schematicPlane(w,h,drawFn);
+    p.position.set(x,y,z);
+    p.visible = false;
+    cab.add(p);
+    circuitPlanes.push(p);
+    return p;
+  }
+
+  // Each panel floats directly in front of ITS OWN part (same x,y as the part).
+  // Widths stay below the distance to the neighbouring part and heights below the row spacing,
+  // so no two panels can overlap.
+  const PANEL_Z = 0.9, PANEL_H = 0.95;
+
+  // row A (y=3.95)
+  addCircuitPanel(-2.2, 3.95, PANEL_Z, 1.1, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'MCCB 차단기 회로',
+    ['AC 220V IN','MCCB (3P)','AC 220V OUT'], '정격 30A · 차단용량 2.5kA · 과부하/단락 보호'));
+  addCircuitPanel(-0.85, 3.95, PANEL_Z, 1.3, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'24V DC SMPS 회로',
+    ['AC 100-240V','정류·평활 (브릿지+C)','DC 24V OUT'], '출력 24V/5A · 리플 필터 · 과전류 보호'));
+  addCircuitPanel(1.2, 3.95, PANEL_Z, 1.7, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'24V 전원 분배 회로',
+    ['SMPS 24V/0V','24V CP 차단기','24V/0V 분배 단자'], '빨강 +24V · 파랑 0V → PLC CPU 로 공급 (I/O 모듈은 베이스 유닛 백플레인으로 전원 공급)'));
+
+  // row B (y=2.55)
+  addCircuitPanel(-2.1, 2.55, PANEL_Z, 1.1, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'PLC CPU 내부 구성',
+    ['전원부','CPU 연산장치','프로그램 메모리'], '래더 프로그램 스캔 실행 · RUN LED 표시'));
+  addCircuitPanel(-0.4, 2.55, PANEL_Z, 1.3, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'DIGITAL INPUT 절연 구조',
+    ['X0-X4 현장입력','포토커플러 절연','내부버스'], '입력 24V DC · 절연으로 PLC 내부 회로 보호'));
+  addCircuitPanel(1.7, 2.55, PANEL_Z, 1.4, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'DIGITAL OUTPUT 구조',
+    ['내부버스','Tr/릴레이 출력','Y0-Y2 현장출력'], '무전압 접점 출력 · 모터/솔레노이드/램프 구동'));
+
+  // row C (y=1.0)
+  addCircuitPanel(-1.8, 1.0, PANEL_Z, 1.1, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'K1 릴레이 회로',
+    ['PLC Y0 접점','코일 여자 24V','모터 전원 공급'], '서지흡수 다이오드 내장 · 접점 250V AC 10A'));
+  addCircuitPanel(-0.1, 1.0, PANEL_Z, 2.0, PANEL_H, (g,Wd,H)=>drawBlockChain(g,Wd,H,'단자대(TERMINAL) 결선',
+    ['모듈 핀','배선 덕트','단자대 → 현장 케이블'], '신호선은 덕트 안에서 정리되어 장치 위치 순서대로 단자대에 연결 · 케이블 색상 = 신호 구분'));
+
+  /* ---- wiring (signal flows animate when active) ---- */
+  // Wires are built from straight cylinders + ball joints (crisp 90-degree corners, no tube twisting).
+  function makeWire(id, color, pts, always, rad){
+    rad = rad || 0.03;
+    const P = [pts[0]];
+    for(let i=1;i<pts.length;i++) if(pts[i].distanceTo(P[P.length-1]) > 1e-3) P.push(pts[i]);   // drop zero-length pieces
+    const path = new THREE.CurvePath();
+    for(let i=0;i<P.length-1;i++) path.add(new THREE.LineCurve3(P[i], P[i+1]));
+    const mat = new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:0.08, roughness:0.5});
+    const grp = new THREE.Group(), UP = new THREE.Vector3(0,1,0);
+    for(let i=0;i<P.length-1;i++){
+      const a = P[i], b = P[i+1];
+      const seg = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, a.distanceTo(b), 8, 1), mat);
+      seg.position.copy(a).add(b).multiplyScalar(0.5);
+      seg.quaternion.setFromUnitVectors(UP, b.clone().sub(a).normalize());
+      grp.add(seg);
+    }
+    P.forEach(p => { const j = new THREE.Mesh(new THREE.SphereGeometry(rad, 8, 6), mat); j.position.copy(p); grp.add(j); });
+    scene.add(grp);
+    const pulse = new THREE.Mesh(new THREE.SphereGeometry(rad*2.6,10,10), new THREE.MeshBasicMaterial({color:0xffffff}));
+    pulse.visible = false; scene.add(pulse);
+    wires[id] = {path:path, mat:mat, pulse:pulse, t:Math.random(), on:false, always:!!always};
+  }
+
+  /* Floor cabling: every signal wire drops straight down the cabinet front (DROP_X), then lies flat on one
+     cable tray (FLOOR_Y) in its own parallel lane (LANE_X0 + lane*LANE_DX), runs along Z and branches off at
+     90 degrees toward its device. Lane order + terminal slots were chosen so that NO two wires cross. */
+  const FLOOR_Y = 0.14, FLOOR_R = 0.04, LANE_X0 = -6.8, LANE_DX = 0.17, DROP_X = -7.0;
+  function trunk(start, lane, dest, tail){
+    tail = tail || [];
+    const V = (x,y,z) => new THREE.Vector3(x,y,z);
+    const t0 = tail.length ? tail[0] : dest, xl = LANE_X0 + lane*LANE_DX;
+    return [start, V(DROP_X,start.y,start.z), V(DROP_X,FLOOR_Y,start.z), V(xl,FLOOR_Y,start.z),
+            V(xl,FLOOR_Y,t0.z), V(t0.x,FLOOR_Y,t0.z)].concat(tail, [dest]);
+  }
+
+  /* ---- field devices (motor, valve, sensor, cylinder, bin, lamp) are built per line by buildLineView ---- */
+  // operator station: START / STOP / E-STOP (clickable in 3D)
+  const station = new THREE.Group(); station.position.set(-4.6, 0, -6.0); scene.add(station);
+  cbox(0.12,1.35,0.12,MAT_ALU_DARK,0,0.675,0,station);
+  cbox(0.3,0.85,0.7,MAT_ALU,0,1.775,0,station);
+  function pbtn(color,r,x,y,z,action,emit){
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r,r,0.08,20), new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:emit}));
+    m.rotation.z = Math.PI/2; m.position.set(x,y,z); m.userData.action = action;
+    station.add(m); clickables.push(m); return m;
+  }
+  function stLabel(text,y,z){ const t = tagPlane(text,0.3,0.12); t.rotation.y = Math.PI/2; t.position.set(0.152,y,z); station.add(t); }
+  pbtn(0x00c060,0.09,0.19,2.06,0.2,'start',0.3);
+  pbtn(0xc01818,0.09,0.19,2.06,-0.2,'stop',0.3);
+  stLabel('START',1.91,0.2); stLabel('STOP',1.91,-0.2); stLabel('E-STOP',1.74,0);
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.17,0.04,24), new THREE.MeshStandardMaterial({color:0xffcc00}));
+  disc.rotation.z = Math.PI/2; disc.position.set(0.16,1.52,0); station.add(disc);
+  const estopMesh = pbtn(0xe01010,0.12,0.22,1.52,0,'estop',0.3);
+  function setEstopVisual(){
+    estopMesh.material.emissiveIntensity = STATE.estop ? 1.3 : 0.3;
+    estopMesh.position.x = STATE.estop ? 0.19 : 0.22;
+  }
+
+  // safety guards: full-height mesh tunnel over the drive end + enclosed motor cage, with an interlocked access door
+  function guardTex(w,h){
+    const c = document.createElement('canvas'); c.width = c.height = 32;
+    const g = c.getContext('2d'); g.strokeStyle = 'rgba(255,204,0,1)'; g.lineWidth = 2; g.strokeRect(0,0,32,32);
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(Math.round(w/0.15), Math.round(h/0.15)); return t;   // square mesh cells on every panel
+  }
+  const MAT_YEL = new THREE.MeshStandardMaterial({color:0xffcc00, roughness:0.5});
+  function guardMesh(w,h){
+    const geo = new THREE.PlaneGeometry(w,h);
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({map:guardTex(w,h), transparent:true, opacity:0.6, side:THREE.DoubleSide, depthWrite:false}));
+    m.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({color:0xffcc00})));
+    return m;
+  }
+  function guardPanel(x,y,z,w,h,rx,ry){ const m = guardMesh(w,h); m.position.set(x,y,z); m.rotation.set(rx||0, ry||0, 0); scene.add(m); }
+  function guardPost(x,z,y0,y1){ cbox(0.08,y1-y0,0.08,MAT_YEL,x,(y0+y1)/2,z,scene); }
+  const GY0 = 0.3, GY1 = 2.25, GH = GY1 - GY0, GYC = (GY0 + GY1)/2;
+  guardPanel( 1.95,GYC,8.6,4.0,GH,0,Math.PI/2);       // tunnel right
+  guardPanel(-1.95,GYC,8.7,0.6,GH,0,Math.PI/2);       // tunnel left (fixed part beside the door)
+  guardPanel(0,GY1,8.6,3.9,4.0,-Math.PI/2,0);         // tunnel top
+  [[-1.95,6.6],[1.95,6.6],[-1.95,10.6],[1.95,10.6],[-1.95,8.4]].forEach(p => guardPost(p[0],p[1],GY0,GY1));
+  guardPanel(-3.2,1.0,9.8,1.6,1.6,0,Math.PI/2);       // motor cage: outer side, front, back, top
+  guardPanel(-2.575,1.0,9.0,1.25,1.6,0,0);
+  guardPanel(-2.575,1.0,10.6,1.25,1.6,0,0);
+  guardPanel(-2.575,1.8,9.8,1.25,1.6,-Math.PI/2,0);
+  [[-3.2,9.0],[-3.2,10.6],[-1.95,9.0]].forEach(p => guardPost(p[0],p[1],0.2,1.8));
+  const warnSign = tagPlane('DANGER · ROTATING PARTS',1.3,0.22,'#ffcc00','#111');
+  warnSign.position.set(-3.22,1.55,9.8); warnSign.rotation.y = -Math.PI/2; scene.add(warnSign);
+
+  // hinged access door (left side, z 6.6-8.4) - click the door or use the HMI button
+  const DOOR_L = 1.8;
+  let doorAng = 0;
+  const guardDoor = new THREE.Group(); guardDoor.position.set(-1.95,0,6.6); scene.add(guardDoor);
+  const doorPanel = guardMesh(DOOR_L, GH);
+  doorPanel.rotation.y = Math.PI/2; doorPanel.position.set(0,GYC,DOOR_L/2);
+  doorPanel.userData.action = 'guard'; guardDoor.add(doorPanel); clickables.push(doorPanel);
+  cbox(0.05,0.05,DOOR_L,MAT_YEL,0,GY1-0.03,DOOR_L/2,guardDoor);
+  cbox(0.05,0.05,DOOR_L,MAT_YEL,0,GY0+0.03,DOOR_L/2,guardDoor);
+  cbox(0.06,GH,0.06,MAT_YEL,0,GYC,DOOR_L-0.03,guardDoor);
+  const doorHandle = cbox(0.1,0.28,0.07,new THREE.MeshStandardMaterial({color:0xff7a00}),-0.06,1.2,DOOR_L-0.15,guardDoor);
+  doorHandle.userData.action = 'guard'; clickables.push(doorHandle);
+
+  // interlock switch on the latch post (NC contact -> PLC X4: ON = door closed)
+  cbox(0.1,0.3,0.12,MAT_DARK,-2.04,1.3,8.4,scene);
+  const guardLedMat = ledMat(0x00e676);
+  const guardLed = new THREE.Mesh(new THREE.SphereGeometry(0.04,12,12), guardLedMat);
+  guardLed.position.set(-2.1,1.4,8.4); scene.add(guardLed);
+  tagSprite('INTERLOCK SW · X4',1.5,-2.4,1.85,8.4);
+
+  // hazard-striped floor zone (glows red while the door is open)
+  const zoneTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d'); g.fillStyle = '#ffcc00'; g.fillRect(0,0,64,64); g.fillStyle = '#111';
+    for(let i=-1;i<3;i++){ g.beginPath(); g.moveTo(i*32,64); g.lineTo(i*32+32,0); g.lineTo(i*32+48,0); g.lineTo(i*32+16,64); g.fill(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+  })();
+  function hazStrip(x,z,w,d){
+    const t = zoneTex.clone(); t.needsUpdate = true; if(w > d) t.repeat.set(w/0.45,1); else t.repeat.set(1,d/0.45);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w,d), new THREE.MeshBasicMaterial({map:t, polygonOffset:true, polygonOffsetFactor:-4, polygonOffsetUnits:-4}));
+    m.rotation.x = -Math.PI/2; m.position.set(x,0.05,z); scene.add(m);
+  }
+  const ZX0 = -3.7, ZX1 = 2.45, ZZ0 = 6.2, ZZ1 = 11.0;
+  hazStrip((ZX0+ZX1)/2,ZZ0,ZX1-ZX0+0.45,0.45); hazStrip((ZX0+ZX1)/2,ZZ1,ZX1-ZX0+0.45,0.45);
+  hazStrip(ZX0,(ZZ0+ZZ1)/2,0.45,ZZ1-ZZ0); hazStrip(ZX1,(ZZ0+ZZ1)/2,0.45,ZZ1-ZZ0);
+  [[ZX0,ZZ0],[ZX1,ZZ0],[ZX0,ZZ1],[ZX1,ZZ1]].forEach(c => cbox(0.12,0.9,0.12,MAT_YEL,c[0],0.45,c[1],scene));   // corner posts
+  const zoneGlow = new THREE.Mesh(new THREE.PlaneGeometry(ZX1-ZX0,ZZ1-ZZ0), new THREE.MeshBasicMaterial({color:0xff2b2b, transparent:true, opacity:0.14, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-2, polygonOffsetUnits:-2}));
+  zoneGlow.rotation.x = -Math.PI/2; zoneGlow.position.set((ZX0+ZX1)/2,0.035,(ZZ0+ZZ1)/2); scene.add(zoneGlow);
+
+  // maintenance worker (only visible during the demo)
+  const worker = new THREE.Group(); worker.visible = false; scene.add(worker);
+  const MAT_WK = new THREE.MeshStandardMaterial({color:0x2b6fd6, roughness:0.7});
+  const MAT_SK = new THREE.MeshStandardMaterial({color:0xf0c8a0, roughness:0.8});
+  cbox(0.42,0.62,0.24,MAT_WK,0,1.05,0,worker);
+  const wHead = new THREE.Mesh(new THREE.SphereGeometry(0.14,14,12), MAT_SK); wHead.position.set(0,1.54,0); worker.add(wHead);
+  const wHat = new THREE.Mesh(new THREE.SphereGeometry(0.16,14,8,0,Math.PI*2,0,Math.PI/2), MAT_YEL); wHat.position.set(0,1.57,0); worker.add(wHat);
+  function limb(x,y,len,mat){ const g = new THREE.Group(); g.position.set(x,y,0); cbox(0.12,len,0.12,mat,0,-len/2,0,g); worker.add(g); return g; }
+  const wLegL = limb(-0.11,0.74,0.74,MAT_DARK), wLegR = limb(0.11,0.74,0.74,MAT_DARK);
+  const wArmL = limb(-0.29,1.32,0.58,MAT_WK), wArmR = limb(0.29,1.32,0.58,MAT_WK);
+
+  /* ---- signal wires: PLC I/O -> signal duct -> terminal strip -> field devices ---- */
+  const V3 = (x,y,z) => new THREE.Vector3(x,y,z);
+  // PLC module output pins (module bottom face, x in cabinet-local coordinates)
+  const PINX = {x0:-0.9, x1:-0.65, x2:-0.4, x3:-0.15, x4:0.1, y0:1.2, y1:1.7, y2:2.2};
+  const PIN_Y = 2.1, DUCT_TOP = 1.85, DUCT_BOT = 1.55, TERM_TOP = 1.25, WZ = 0.22;
+  // Wire path: straight down from the module pin into the duct, re-ordered INSIDE the duct (hidden by the
+  // cover), then straight down out of the duct onto the matching terminal. No visible crossings.
+  function ductPath(px, tx, yin, yEnd){
+    return [W(px,PIN_Y,WZ), W(px,DUCT_TOP,WZ), W(px,yin,WZ), W(tx,yin,WZ), W(tx,DUCT_BOT,WZ), W(tx,yEnd,WZ)];
+  }
+  // args: id, PLC pin key, terminal id, inner duct height, floor lane, colour, device point, [riser points]
+  function fieldWire(id,pk,ti,yin,lane,color,dest,tail){
+    makeWire(id+'I', color, ductPath(PINX[pk], TX[ti], yin, TERM_TOP));
+    makeWire(id, color, trunk(W(TX[ti],0.75,0.2), lane, dest, tail), false, FLOOR_R);
+  }
+  // floor lanes were solved so that no two field cables cross: lamp0 estop1 start2 motor3 guard4 solenoid5 sensor6 vision7
+  fieldWire('start','x0','start',1.80,2,SIGCOL.start,V3(-4.72,1.35,-5.8),[V3(-4.82,1.35,-5.8)]);
+  fieldWire('sensor','x1','sensor',1.77,6,SIGCOL.sensor,V3(sensorEmitterX,sensorHeight,BEAM_Z),[V3(sensorEmitterX,1.75,BEAM_Z+0.5)]);
+  fieldWire('estop','x2','estop',1.74,1,SIGCOL.estop,V3(-4.72,1.35,-6.2),[V3(-4.82,1.35,-6.2)]);
+  fieldWire('vision','x3','vision',1.71,7,SIGCOL.vision,V3(0,2.95,SENSOR_Z),[V3(-2.22,3.09,-1.5),V3(0,3.09,-1.5),V3(0,3.09,SENSOR_Z)]);
+  fieldWire('guard','x4','guard',1.68,4,SIGCOL.guard,V3(-2.04,1.15,8.4));
+  // Y0 -> K1 coil (inside cabinet), then K1 contact -> motor
+  makeWire('y0', SIGCOL.y0, ductPath(PINX.y0, -1.8, 1.65, 1.3));
+  makeWire('y0b', SIGCOL.y0, trunk(W(-1.8,0.7,0.3),3,V3(-2.9,1.0,CONVEYOR.zEnd + 0.2),[V3(-3.05,1.0,CONVEYOR.zEnd + 0.2)]), false, FLOOR_R);
+  fieldWire('sol','y1','sol',1.62,5,SIGCOL.sol,V3(-4.0,0.8,0.6),[V3(-4.2,0.8,0.6)]);
+  fieldWire('lamp','y2','lamp',1.59,0,SIGCOL.lamp,V3(towerX-0.07,FLOOR_Y,towerZ));
+
+  // floor cable tray under the lanes (side rails + ladder rungs) so the cable route reads clearly
+  (function(){
+    const x0 = DROP_X - 0.05, x1 = LANE_X0 + 7*LANE_DX + 0.16, z0 = towerZ - 0.3, z1 = CONVEYOR.zEnd + 0.7, L = z1 - z0;
+    const bed = cbox(x1-x0, 0.02, L, new THREE.MeshStandardMaterial({color:0x151b22, roughness:0.9}), (x0+x1)/2, 0.011, (z0+z1)/2, scene);
+    bed.castShadow = false;
+    [x0+0.03, x1-0.03].forEach(x => cbox(0.06, 0.09, L, MAT_ALU_DARK, x, 0.045, (z0+z1)/2, scene));
+    const rungMat = new THREE.MeshStandardMaterial({color:0x39424d, metalness:0.5, roughness:0.5});
+    for(let z = z0 + 0.3; z < z1; z += 0.7){ const r = cbox(x1-x0-0.1, 0.03, 0.05, rungMat, (x0+x1)/2, 0.035, z, scene); r.castShadow = false; }
+    tagSprite('CABLE TRAY', 0.9, (x0+x1)/2, 0.55, z0 + 0.6);
+    tagSprite('CABLE TRAY', 0.9, (x0+x1)/2, 0.55, z1 - 0.6);
+  })();
+  // power chain (energised while the MCCB is ON): orange = AC 220V, red = +24V, blue = 0V
+  makeWire('pw1',   0xff8a00, [W(-2.2,4.3,0.4), W(-2.2,4.42,0.4), W(-0.85,4.42,0.4), W(-0.85,4.3,0.4)], true);   // MCCB -> SMPS
+  makeWire('pw3',   0xff5252, [W(-0.2,3.72,0.42), W(0.4,3.72,0.42)], true);                                          // SMPS +24V -> CP
+  makeWire('pw4',   0xff5252, [W(0.7,3.72,0.42), W(1.6,3.72,0.42)], true);                                           // CP -> distribution +24V
+  makeWire('pw5',   0x4da6ff, [W(-0.2,4.08,0.46), W(1.6,4.08,0.46)], true);                                         // SMPS 0V -> distribution 0V
+  makeWire('pw2',   0xff5252, [W(2.2,3.72,0.42), W(2.62,3.72,0.42), W(2.62,3.42,0.42), W(-2.25,3.42,0.42), W(-2.25,3.06,0.42)], true);   // +24V bus -> PLC CPU
+  makeWire('pw8',   0x4da6ff, [W(2.2,4.08,0.46), W(2.75,4.08,0.46), W(2.75,3.3,0.46), W(-1.95,3.3,0.46), W(-1.95,3.06,0.46)], true);     // 0V bus -> PLC CPU
+
+  /* ---- vision inspection camera on a gantry arm above the stop position ---- */
+  cbox(0.12,3.0,0.12,MAT_ALU_DARK,-2.1,1.5,-1.5,scene);
+  cbox(2.2,0.1,0.1,MAT_ALU_DARK,-1.0,3.0,-1.5,scene);
+  cbox(0.1,0.1,0.96,MAT_ALU_DARK,0,3.0,-1.05,scene);
+  cbox(0.34,0.26,0.4,MAT_DARK,0,2.8,SENSOR_Z,scene);
+  const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.16,16), MAT_GRAY);
+  lens.position.set(0,2.62,SENSOR_Z); scene.add(lens);
+  const visionRing = new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.24,0.05,24), ledMat(0x7fd8ff));
+  visionRing.position.set(0,2.52,SENSOR_Z); scene.add(visionRing);
+  const visionCone = new THREE.Mesh(new THREE.ConeGeometry(0.55,0.8,24,1,true),
+    new THREE.MeshBasicMaterial({color:0x7fd8ff, transparent:true, opacity:0.18, side:THREE.DoubleSide, depthWrite:false}));
+  visionCone.position.set(0,2.1,SENSOR_Z); visionCone.visible = false; scene.add(visionCone);
+  tagSprite('VISION CAMERA',1.3,0,3.4,SENSOR_Z);
+
+  /* ---- remote I/O stations for lines 2..N: each has its own field panel (LED bank + push buttons) wired to the main PLC over the plant network ---- */
+  const stations = [];
+  const MAT_RPANEL = new THREE.MeshStandardMaterial({color:0x1b232d, roughness:0.6, metalness:0.3});
+  function buildRemoteStation(L){
+    const V = L.view, A = L.addr, ox = L.cfg.ox, g = new THREE.Group();
+    g.position.set(-5.4, 0, -5.4); V.group.add(g);
+    const H = 1.9;
+    cbox(0.5, H, 1.4, MAT_ALU, 0, H/2 + 0.1, 0, g);                 // enclosure, front faces +x
+    cbox(0.05, H - 0.2, 1.25, MAT_RPANEL, 0.26, H/2 + 0.1, 0, g);   // mounting plate
+    const title = tagPlane('REMOTE I/O · ' + L.cfg.name, 1.2, 0.14); title.rotation.y = Math.PI/2; title.position.set(0.29, 1.88, 0); g.add(title);
+    const IN  = [['START','START'],['SENSOR','SENSOR'],['E-STOP','ESTOP'],['VISION NG','VNG'],['OL OK','OL_OK'],['BIN FULL','BIN_FULL']];
+    const OUT = [['MOTOR','MOTOR'],['SOLENOID','SOL'],['GREEN','LAMP_G'],['YELLOW','LAMP_Y'],['RED','LAMP_R'],['FEEDER','FEEDER']];
+    const st = { leds:[] };
+    function bank(list, ledZ, labelZ, color, head){
+      const h = tagPlane(head, 0.4, 0.11); h.rotation.y = Math.PI/2; h.position.set(0.29, 1.7, (ledZ + labelZ)/2); g.add(h);
+      list.forEach((it, r) => {
+        const y = 1.52 - r*0.16;
+        const m = new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:0.05});
+        const led = new THREE.Mesh(new THREE.SphereGeometry(0.045,10,10), m); led.position.set(0.3, y, ledZ); g.add(led);
+        const t = tagPlane(it[0], 0.44, 0.12, '#0d1620', '#cfe6f2'); t.rotation.y = Math.PI/2; t.position.set(0.29, y, labelZ); g.add(t);
+        st.leds.push({ mat:m, bit:A[it[1]] });
+      });
+    }
+    bank(IN, -0.56, -0.26, 0x00e676, 'INPUT');
+    bank(OUT, 0.1, 0.4, 0xffb300, 'OUTPUT');
+    function pb(color, r, z, action){
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.08, 20), new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:0.3}));
+      m.rotation.z = Math.PI/2; m.position.set(0.31, 0.5, z); m.userData.action = action; g.add(m); clickables.push(m);
+      return m;
+    }
+    pb(0x00c060, 0.09, -0.4, 'start:' + L.index); pb(0xc01818, 0.09, 0.0, 'stop:' + L.index);
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.04,24), new THREE.MeshStandardMaterial({color:0xffcc00}));
+    disc.rotation.z = Math.PI/2; disc.position.set(0.29, 0.5, 0.42); g.add(disc);
+    pb(0xe01010, 0.1, 0.42, 'estop').position.x = 0.33;
+    [['START',-0.4],['STOP',0.0],['E-STOP',0.42]].forEach(a => { const t = tagPlane(a[0], 0.3, 0.1); t.rotation.y = Math.PI/2; t.position.set(0.29, 0.3, a[1]); g.add(t); });
+    stations[L.index] = st;
+
+    // plant network cable: main PLC cabinet -> this station (cyan, always energised while the PLC is powered)
+    const zc = -12.2 - 0.35*(L.index - 1), p0 = W(2.95, 0.6, 0.3), v = (x,y,z) => new THREE.Vector3(x,y,z);
+    makeWire('net' + L.index, 0x2fd9ff, [p0, v(p0.x,0.14,p0.z), v(p0.x,0.14,zc), v(ox-5.4,0.14,zc), v(ox-5.4,0.14,-5.4), v(ox-5.4,0.7,-5.4)], true, 0.03);
+    tagSprite('PLANT NETWORK', 1.3, ox - 5.4, 2.4, -5.4);
+  }
+  factory.lines.forEach(L => { if(L.index > 0) buildRemoteStation(L); });
+
+  /* ---- floating name tags ---- */
+  tagSprite('PHOTO SENSOR',1.3,sensorEmitterX,2.5,BEAM_Z);
+  tagSprite('CYLINDER',0.9,-3.4,2.0,PUSHER_Z);
+  tagSprite('SOLENOID VALVE',1.5,-3.8,1.55,0.6);
+  tagSprite('MOTOR',0.8,-2.4,1.9,CONVEYOR.zEnd + 0.2);
+  tagSprite('REJECT BIN',1.1,CONVEYOR.halfWidthX + 2.4,1.6,PUSHER_Z);
+  tagSprite('E-STOP STATION',1.5,-4.6,2.55,-6.0);
+  tagSprite('SAFETY GUARD',1.3,0,2.7,8.5,'#ffcc00','#111');
+  tagSprite('TOWER LAMP',1.1,towerX,4.15,towerZ);
+
+
+  /* =========================================================
+     9. BOX FACTORY
+  ========================================================= */
+  // Normal and defect boxes share the same design. A defect box differs only by
+  // ONE subtle flaw (label skew / tape offset / slight dent) that is hard to spot by eye.
+  const labelTex = (() => {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 84;
+    const g = c.getContext('2d');
+    g.fillStyle = '#f4f1ea'; g.fillRect(0,0,128,84);
+    g.fillStyle = '#222'; g.font = 'bold 14px monospace'; g.fillText('LOT A-0231', 10, 26);
+    for(let i=0;i<22;i++) g.fillRect(10 + i*5, 40, (i%3) + 1.5, 34);
+    return new THREE.CanvasTexture(c);
+  })();
+  const FLAWS = ['label', 'tape', 'dent'];
+
+  function createBox(flaw){
+    const g = new THREE.Group();
+    const bodyMat = new THREE.MeshStandardMaterial({color:0xb5813f, roughness:0.85, metalness:0.02});
+    const body = new THREE.Mesh(new THREE.BoxGeometry(BOX_W, BOX_H, BOX_D), bodyMat);
+    body.castShadow = true; body.receiveShadow = true;
+    if(flaw === 'dent'){ body.rotation.z = 0.035; body.scale.set(1, 0.97, 0.98); }
+    g.add(body);
+
+    const tapeMat = new THREE.MeshStandardMaterial({color:0xe8d9b0, roughness:0.6});
+    const tapeZ = new THREE.Mesh(new THREE.BoxGeometry(BOX_W + 0.01, 0.09, BOX_D + 0.01), tapeMat);
+    g.add(tapeZ);
+    const tapeX = new THREE.Mesh(new THREE.BoxGeometry(0.09, BOX_H + 0.01, BOX_D + 0.02), tapeMat);
+    if(flaw === 'tape') tapeX.position.x = 0.22;
+    g.add(tapeX);
+
+    const seamMat = new THREE.MeshStandardMaterial({color:0x8f6428, roughness:0.8});
+    const seam1 = new THREE.Mesh(new THREE.BoxGeometry(BOX_W*0.98, 0.02, 0.02), seamMat);
+    seam1.position.set(0, BOX_H/2 + 0.001, BOX_D*0.25);
+    g.add(seam1);
+    const seam2 = seam1.clone();
+    seam2.position.z = -BOX_D*0.25;
+    g.add(seam2);
+
+    const label = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.3), new THREE.MeshStandardMaterial({map:labelTex, roughness:0.7}));
+    label.rotation.y = Math.PI/2;
+    label.position.set(BOX_W/2 + 0.008, 0.08, 0);
+    if(flaw === 'label'){ label.rotateZ(0.16); label.position.y -= 0.06; label.position.z += 0.07; }
+    g.add(label);
+
+    g.position.y = boxRestY;
+    return g;
+  }
+
+  /* =========================================================
+     10. UI HELPERS
+  ========================================================= */
+  const plc = factory.plc;
+  const elBadge = document.getElementById('status-badge');
+  const elTotal = document.getElementById('val-total');
+  const elPass = document.getElementById('val-pass');
+  const elDefect = document.getElementById('val-defect');
+  const btnStart = document.getElementById('btn-start');
+  const btnStop = document.getElementById('btn-stop');
+  const btnEstop = document.getElementById('btn-estop');
+  const btnManual = document.getElementById('btn-manual');
+  const btnMccb = document.getElementById('btn-mccb');
+  const btnGuard = document.getElementById('btn-guard');
+  const btnDemo = document.getElementById('btn-demo');
+  const btnOl = document.getElementById('btn-ol');
+  const btnBin = document.getElementById('btn-bin');
+  const btnIO = document.getElementById('btn-io');
+  const elLedG = document.getElementById('led-green'), elLedY = document.getElementById('led-yellow'), elLedR = document.getElementById('led-red');
+
+  let sel = 0;                                   // line shown in the HMI panel
+  const selLine = () => factory.lines[sel];
+  const lineBits = L => ({
+    start:!!plc.bits[L.addr.START], sensor:!!plc.bits[L.addr.SENSOR], estop:!!plc.bits[L.addr.ESTOP], vng:!!plc.bits[L.addr.VNG],
+    guard:!!plc.bits[L.addr.GUARD], home:!!plc.bits[L.addr.CYL_HOME], exit:!!plc.bits[L.addr.EXIT], olOk:!!plc.bits[L.addr.OL_OK], binFull:!!plc.bits[L.addr.BIN_FULL],
+    motor:!!plc.bits[L.addr.MOTOR], sol:!!plc.bits[L.addr.SOL], lg:!!plc.bits[L.addr.LAMP_G], ly:!!plc.bits[L.addr.LAMP_Y], lr:!!plc.bits[L.addr.LAMP_R],
+    feeder:!!plc.bits[L.addr.FEEDER], run:!!plc.bits[L.addr.M.RUN], busy:!!plc.bits[L.addr.M.BUSY], alarm:!!plc.bits[L.addr.M.ALARM]
+  });
+  const lineRun = i => !!plc.bits[factory.lines[i].addr.M.RUN];
+  const clockStr = () => new Date().toLocaleTimeString('ko-KR', {hour12:false});
+
+  const elAlert = document.getElementById('alert-banner'); let alertTimer = null;
+  function showAlert(msg, cls, ms){
+    elAlert.textContent = msg; elAlert.className = cls; clearTimeout(alertTimer);
+    if(ms) alertTimer = setTimeout(() => { elAlert.className = ''; }, ms);
+  }
+  function setText(el, v){ if(el._v !== v){ el._v = v; el.textContent = v; } }
+  function setDisabled(el, v){ if(el.disabled !== v) el.disabled = v; }
+
+  // HMI panel: always shows the selected line (counters come from the PLC counters, never from the 3D side)
+  function updateHMI(){
+    const L = selLine(), b = lineBits(L), st = factory.lineState(L), pl = L.plant;
+    setText(elTotal, String(st.pass + st.def)); setText(elPass, String(st.pass)); setText(elDefect, String(st.def));
+    let txt = 'STOP', cls = 'badge-stop';
+    if(!STATE.mccb) txt = 'POWER OFF';
+    else if(STATE.estop) txt = 'E-STOP';
+    else if(sel === 0 && STATE.guardOpen) txt = 'GUARD OPEN';
+    else if(pl.fault.ol) txt = 'OVERLOAD';
+    else if(b.binFull) txt = 'BIN FULL';
+    else if(b.busy){ txt = 'SENSOR DETECTED'; cls = 'badge-sensor'; }
+    else if(b.run){ txt = 'RUN'; cls = 'badge-run'; }
+    setText(elBadge, txt); if(elBadge._c !== cls){ elBadge._c = cls; elBadge.className = cls; }
+    const locked = STATE.estop || !STATE.mccb || (sel === 0 && STATE.guardOpen);
+    setDisabled(btnStart, b.run || locked);
+    setDisabled(btnStop, !b.run);
+    setDisabled(btnOl, !STATE.mccb);
+    const lv = L.view.lampHud;
+    [[elLedG,lv.g,'on-green'],[elLedY,lv.y,'on-yellow'],[elLedR,lv.r,'on-red']].forEach(a => { if(a[0]._on !== a[1]){ a[0]._on = a[1]; a[0].classList.toggle(a[2], a[1]); } });
+  }
+
+  function refreshMaintButtons(){
+    const pl = selLine().plant;
+    btnOl.innerHTML = '<span class="btn-dot"></span>' + (pl.fault.ol ? '과부하 해제' : '모터 과부하');
+    btnOl.classList.toggle('fault', pl.fault.ol);
+  }
+
+  /* =========================================================
+     11. CONTROL ACTIONS (buttons only produce PLC inputs - the ladder decides what happens)
+  ========================================================= */
+  function startLine(i){
+    i = (i === undefined) ? sel : i;
+    const L = factory.lines[i], b = lineBits(L);
+    if(i === 0 && STATE.guardOpen){ showAlert('도어가 열려 있어 START 불가 (X4 OFF)', 'warn', 2500); return; }
+    if(STATE.estop){ showAlert('E-STOP 작동 중 — 해제 후 START', 'warn', 2500); return; }
+    if(!STATE.mccb) return;
+    if(L.plant.fault.ol){ showAlert(L.cfg.name + ' 모터 과부하 — 과부하 해제 후 START', 'warn', 2800); return; }
+    if(b.binFull){ showAlert(L.cfg.name + ' 불량품 통이 가득 참 — 통을 비운 뒤 START', 'warn', 2800); return; }
+    L.plant.pressStart(factory.now);
+  }
+  function stopLine(i){ i = (i === undefined) ? sel : i; factory.lines[i].plant.pressStop(factory.now); }
+
+  // Emergency stop (global, latching): X2 of every line. START is locked until it is released.
+  function toggleEstop(){
+    if(!STATE.mccb) return;
+    STATE.estop = !STATE.estop;
+    btnEstop.innerHTML = '<span class="btn-dot"></span>' + (STATE.estop ? 'E-STOP 해제 · RESET' : 'E-STOP · 비상 정지');
+    setEstopVisual();
+  }
+
+  // MCCB: main power breaker. OFF = PLC, outputs, sensors and lamps all dead (counters are retentive).
+  function toggleMccb(){
+    STATE.mccb = !STATE.mccb;
+    btnMccb.innerHTML = '<span class="btn-dot"></span>' + (STATE.mccb ? 'MCCB · 전원 ON' : 'MCCB · 전원 OFF');
+    btnEstop.disabled = !STATE.mccb;
+    setMccbVisual();
+  }
+
+  // Safety guard door (line 1): interlock X4 (NC). Opening drops the run latch at once; closing never restarts the line.
+  function toggleGuard(fromDemo){
+    if(demoI >= 0 && fromDemo !== true){ showAlert('시연 중에는 도어를 직접 조작할 수 없습니다', 'info', 2000); return; }
+    STATE.guardOpen = !STATE.guardOpen;
+    if(STATE.guardOpen) showAlert('⚠ SAFETY GUARD 도어 열림 · X4 OFF → 설비 정지', 'warn');
+    else showAlert('✔ 도어 닫힘 · 자동 재기동 없음 — START를 눌러 재가동', 'info', 4000);
+    const gc = STATE.guardOpen ? 0xff3b3b : 0x00e676;
+    guardLedMat.color.set(gc); guardLedMat.emissive.set(gc);
+    btnGuard.classList.toggle('open', STATE.guardOpen);
+    btnGuard.innerHTML = '<span class="btn-dot"></span>' + (STATE.guardOpen ? 'SAFETY GUARD · 도어 열림' : 'SAFETY GUARD · 도어 닫힘');
+  }
+
+  btnStart.addEventListener('click', () => startLine());
+  btnGuard.addEventListener('click', () => toggleGuard());
+
+  // Demo: worker opens the door, inspects, closes it again (runs on its own clock, not GSAP)
+  const DEMO = [   // wait = minimum seconds each caption stays on screen (teaching pace)
+    {cap:'① 라인 가동 중 — 컨베이어와 모터가 정상 동작하고 있습니다.', act:() => { if(!lineRun(0)) startLine(0); }, wait:5},
+    {cap:'② 작업자가 회전부·벨트 점검을 위해 안전가드로 접근합니다.', to:-2.9, wait:5},
+    {cap:'③ 도어를 열면 인터락 스위치(X4)가 OFF → PLC가 모터 출력(Y0)을 차단 → 설비 즉시 정지', act:() => { if(!STATE.guardOpen) toggleGuard(true); }, wait:7},
+    {cap:'④ 작업자가 열린 도어 안쪽으로 손을 뻗어 점검합니다.', to:-2.35, wait:5},
+    {cap:'⑤ 도어가 열려 있는 동안 START는 잠겨 있어 점검 중 재가동될 수 없습니다.', wait:7, inspect:true},
+    {cap:'⑥ 점검을 마치고 위험구역에서 나옵니다.', to:-2.9, wait:5},
+    {cap:'⑦ 도어를 닫아도 자동 재가동되지 않습니다(자동 재기동 방지) → START를 눌러야 재가동', act:() => { if(STATE.guardOpen) toggleGuard(true); }, wait:7},
+    {cap:'⑧ 작업자 퇴장 — 시연 종료', to:-7, wait:4}
+  ];
+  let demoI = -1, demoT = 0;
+  const elCap = document.getElementById('demo-caption');
+  const isSmall = () => window.matchMedia('(max-width: 700px), (max-height: 520px)').matches;
+
+  // camera glide (own clock: GSAP is paused while the door is open)
+  const cam = {t:1, dur:1.2, p0:new THREE.Vector3(), t0:new THREE.Vector3(), p1:new THREE.Vector3(), t1:new THREE.Vector3()};
+  let camSaved = null;
+  function camGo(pos, tgt){
+    cam.p0.copy(camera.position); cam.t0.copy(controls.target); cam.p1.copy(pos); cam.t1.copy(tgt); cam.t = 0;
+  }
+  function updateCam(dt){
+    if(cam.t >= 1) return;
+    cam.t = Math.min(1, cam.t + dt/cam.dur);
+    const k = cam.t*cam.t*(3 - 2*cam.t);
+    camera.position.lerpVectors(cam.p0, cam.p1, k); controls.target.lerpVectors(cam.t0, cam.t1, k);
+  }
+
+  function gotoStep(i){
+    demoI = i; demoT = 0;
+    if(i >= DEMO.length){
+      demoI = -1; worker.visible = false; btnDemo.disabled = false;
+      btnDemo.innerHTML = '<span class="btn-dot"></span>작업자 점검 시연';
+      elCap.textContent = '✔ 시연 종료 — START를 눌러 재가동하세요';
+      setTimeout(() => { if(demoI < 0) elCap.classList.remove('show'); }, 6000);
+      if(camSaved) camGo(camSaved.p, camSaved.t);
+      return;
+    }
+    elCap.innerHTML = DEMO[i].cap + '<small style="opacity:.6;font-weight:400"> · 탭: 일시정지</small>';
+    if(DEMO[i].act) DEMO[i].act();
+  }
+  function startDemo(){
+    if(demoI >= 0) return;
+    if(STATE.guardOpen){ showAlert('도어를 먼저 닫아 주세요', 'info', 2500); return; }
+    if(!STATE.mccb || STATE.estop){ showAlert('MCCB를 ON하고 E-STOP을 해제한 뒤 시연하세요', 'info', 3000); return; }
+    if(sel !== 0) setSel(0, true);
+    if(isSmall()){ hmiPanel.classList.add('collapsed'); plcDock.classList.add('collapsed'); }
+    camSaved = {p:camera.position.clone(), t:controls.target.clone()};
+    camGo(new THREE.Vector3(-8.5,3.2,11.5), new THREE.Vector3(-2.4,1.1,7.6));
+    worker.position.set(-7,0,7.5); worker.rotation.y = Math.PI/2; worker.visible = true;
+    btnDemo.disabled = true; btnDemo.innerHTML = '<span class="btn-dot"></span>시연 중…';
+    placeCap(); elCap.classList.add('show'); gotoStep(0);
+  }
+  function placeCap(){ elCap.style.bottom = (plcDock.offsetHeight + 22) + 'px'; }   // sits right above the PLC dock
+  window.addEventListener('resize', placeCap);
+  let demoPaused = false;
+  elCap.addEventListener('click', () => {
+    if(demoI < 0) return;
+    demoPaused = !demoPaused;
+    elCap.innerHTML = demoPaused ? '⏸ 일시정지 — 탭하면 계속<br><small style="font-weight:400">' + DEMO[demoI].cap + '</small>'
+                                 : DEMO[demoI].cap + '<small style="opacity:.6;font-weight:400"> · 탭: 일시정지</small>';
+  });
+  function updateDemo(dt){
+    if(demoI < 0 || demoPaused) return;
+    const st0 = DEMO[demoI]; let walk = false, arrived = true;
+    demoT += dt;
+    if(st0.to !== undefined){
+      const dx = st0.to - worker.position.x, st = 1.3*dt;
+      if(Math.abs(dx) <= st){ worker.position.x = st0.to; }
+      else { arrived = false; walk = true; worker.position.x += Math.sign(dx)*st; worker.rotation.y = dx > 0 ? Math.PI/2 : -Math.PI/2; }
+    }
+    if(!walk) worker.rotation.y = Math.PI/2;
+    const sw = walk ? Math.sin(performance.now()*0.006)*0.6 : 0;
+    wLegL.rotation.x = sw; wLegR.rotation.x = -sw; wArmL.rotation.x = -sw;
+    wArmR.rotation.x = st0.inspect ? -1.3 : sw;
+    if(arrived && demoT >= st0.wait) gotoStep(demoI+1);
+  }
+  btnDemo.addEventListener('click', startDemo);
+
+  // small screens: start with both panels collapsed; tap the header to expand
+  const hmiPanel = document.getElementById('hmi-panel'), plcDock = document.getElementById('plc-dock');
+  if(window.matchMedia('(max-width: 700px), (max-height: 520px)').matches){
+    hmiPanel.classList.add('collapsed'); plcDock.classList.add('collapsed');
+  }
+  document.getElementById('hmi-header').addEventListener('click', () => hmiPanel.classList.toggle('collapsed'));
+  plcDock.querySelector('.dock-head').addEventListener('click', () => { plcDock.classList.toggle('collapsed'); placeCap(); });
+  btnStop.addEventListener('click', () => stopLine());
+  btnEstop.addEventListener('click', toggleEstop);
+  btnMccb.addEventListener('click', toggleMccb);
+  const manualModal = document.getElementById('manual-modal');
+  btnManual.addEventListener('click', () => manualModal.classList.remove('hidden'));
+  document.getElementById('manual-close').addEventListener('click', () => manualModal.classList.add('hidden'));
+  manualModal.addEventListener('click', (e) => { if(e.target === manualModal) manualModal.classList.add('hidden'); });
+
+  // 회로도 보기: normally hidden per-module detail/circuit panels on the control cabinet
+  const btnCircuit = document.getElementById('btn-circuit');
+  let circuitShown = false;
+  btnCircuit.addEventListener('click', () => {
+    circuitShown = !circuitShown;
+    circuitPlanes.forEach(p => { p.visible = circuitShown; });
+    btnCircuit.classList.toggle('active', circuitShown);
+    btnCircuit.innerHTML = '<span class="btn-dot"></span>⚡ 회로도 ' + (circuitShown ? '숨기기' : '보기');
+  });
+
+  /* ---- line tabs, camera presets, factory-wide buttons ---- */
+  const tabsEl = document.getElementById('line-tabs');
+  const tabEls = factory.lines.map((L, i) => {
+    const t = document.createElement('button'); t.className = 'line-tab'; t.innerHTML = '<i></i>' + (i + 1);
+    t.title = L.cfg.name; t.addEventListener('click', () => setSel(i)); tabsEl.appendChild(t); return t;
+  });
+  const V3c = (x,y,z) => new THREE.Vector3(x,y,z);
+  function viewOverview(){ camGo(V3c(32,22,36), V3c(8,1,0)); }
+  function viewCabinet(){ camGo(V3c(3,4.5,-2.5), V3c(-4.5,2.4,-3)); }
+  function viewLine(i){ const ox = factory.lines[i].cfg.ox; camGo(V3c(ox+14,10,16), V3c(ox,1.2,0)); }
+
+  const dockOrig = [];   // original dock labels (written for line 1) so they can be re-addressed per line
+  function setSel(i, noCam){
+    sel = i;
+    tabEls.forEach((t, k) => t.classList.toggle('active', k === i));
+    const L = selLine();
+    document.getElementById('hmi-sub').textContent = L.cfg.name + ' · SORTING';
+    speedSlider.value = L.plant.speed; speedValueLabel.textContent = L.plant.speed.toFixed(1) + 'x';
+    refreshMaintButtons(); relabelDock(i);
+    if(ioModal && !ioModal.classList.contains('hidden')) buildIOTable();
+    if(!noCam && demoI < 0) viewLine(i);
+  }
+  document.getElementById('btn-allstart').addEventListener('click', () => factory.lines.forEach((L, i) => { if(!lineBits(L).run && !(i === 0 && STATE.guardOpen) && !L.plant.fault.ol && !lineBits(L).binFull && !STATE.estop && STATE.mccb) startLine(i); }));
+  document.getElementById('btn-allstop').addEventListener('click', () => factory.lines.forEach((L, i) => stopLine(i)));
+  document.getElementById('btn-overview').addEventListener('click', viewOverview);
+  document.getElementById('btn-cabview').addEventListener('click', viewCabinet);
+  btnOl.addEventListener('click', () => { const pl = selLine().plant; pl.fault.ol = !pl.fault.ol; refreshMaintButtons(); });
+  btnBin.addEventListener('click', () => {
+    const L = selLine();
+    if(L.plant.binCount() === 0){ showAlert(L.cfg.name + ' 불량품 통이 비어 있습니다', 'info', 1800); return; }
+    L.plant.emptyBin(); showAlert(L.cfg.name + ' 불량품 통을 비웠습니다 — START로 재가동', 'info', 2600);
+  });
+
+  const speedSlider = document.getElementById('speed-slider');
+  const speedValueLabel = document.getElementById('speed-value');
+  speedSlider.addEventListener('input', () => {
+    const v = parseFloat(speedSlider.value); selLine().plant.speed = v; speedValueLabel.textContent = v.toFixed(1) + 'x';
+  });
+
+  /* ---- PLC I/O table (per line) ---- */
+  const ioModal = document.getElementById('io-modal'), ioTable = document.getElementById('io-table'), ioStats = document.getElementById('io-stats');
+  const IN_NAMES  = ['START (누름버튼)','PHOTO SENSOR','E-STOP','VISION NG','GUARD CLOSED (인터락)','CYLINDER HOME (리드스위치)','STOP (누름버튼)','EXIT PHOTO-EYE','MOTOR OVERLOAD OK (열동계전기)','BIN FULL (레벨스위치)'];
+  const OUT_NAMES = ['MOTOR (접촉기 K1)','SOLENOID VALVE','LAMP GREEN','LAMP YELLOW','LAMP RED','FEEDER 기동','HORN (경보음)'];
+  const ioCells = [];
+  function buildIOTable(){
+    const L = selLine(), A = L.addr; ioCells.length = 0;
+    document.getElementById('io-title').textContent = 'PLC I/O 테이블 · ' + L.cfg.name;
+    let h = '<tr><th>주소</th><th>구분</th><th>이름</th><th>값</th></tr>';
+    const row = (addr, kind, name) => { h += '<tr><td>' + addr + '</td><td>' + kind + '</td><td>' + name + '</td><td class="v" data-a="' + addr + '">·</td></tr>'; };
+    IN_NAMES.forEach((n, i) => row('X' + (A.xBase + i), 'IN', n));
+    OUT_NAMES.forEach((n, i) => row('Y' + (A.yBase + i), 'OUT', n));
+    [['RUN','RUN 자기유지'],['SAFE','안전 조건 (E-STOP·도어·과부하)'],['BUSY','센서 시퀀스 진행'],['ALARM','알람'],['S_INSP','검사 대기(0.6s)'],['S_OK','양품 정지(1.0s)'],['S_NGD','배출 지연(0.3s)'],['S_PUSH','실린더 전진(1.0s)'],['S_RET','실린더 복귀 대기']]
+      .forEach(m => row(A.M[m[0]], 'M', m[1]));
+    ioTable.innerHTML = h;
+    ioTable.querySelectorAll('td.v').forEach(td => ioCells.push(td));
+  }
+  function refreshIOTable(){
+    for(let i = 0; i < ioCells.length; i++){
+      const td = ioCells[i], on = !!plc.bits[td.dataset.a];
+      if(td._on !== on){ td._on = on; td.textContent = on ? 'ON' : 'OFF'; td.className = 'v ' + (on ? 'on1' : 'off1'); }
+    }
+    const L = selLine();
+    ioStats.textContent = 'PLC ' + (plc.powered ? 'RUN' : 'POWER OFF') + ' · 스캔 ' + (plc.scanDt*1000).toFixed(0) + 'ms 주기 · 프로그램 ' + plc.rungs.length + ' rung · 스캔 횟수 ' + plc.scans
+      + ' · PASS C=' + (plc.counters[L.addr.C.PASS] | 0) + ' / DEFECT C=' + (plc.counters[L.addr.C.DEF] | 0);
+  }
+  btnIO.addEventListener('click', () => { buildIOTable(); refreshIOTable(); ioModal.classList.remove('hidden'); });
+  document.getElementById('io-close').addEventListener('click', () => ioModal.classList.add('hidden'));
+  ioModal.addEventListener('click', e => { if(e.target === ioModal) ioModal.classList.add('hidden'); });
+
+  /* ---- alarm log (edge-detected from PLC / plant state) ---- */
+  const alarmLog = [], alarmActive = Object.create(null);
+  function alarmCheck(key, active, text){
+    if(active && !alarmActive[key]){ alarmActive[key] = alarmLog.push({key:key, text:text, time:clockStr(), active:true}); }
+    else if(!active && alarmActive[key]){
+      for(let i = alarmLog.length - 1; i >= 0; i--) if(alarmLog[i].key === key && alarmLog[i].active){ alarmLog[i].active = false; alarmLog[i].clear = clockStr(); break; }
+      alarmActive[key] = 0;
+    }
+  }
+  function scanAlarms(){
+    const pw = STATE.mccb;
+    alarmCheck('estop', pw && STATE.estop, 'E-STOP 작동 — 전 라인 정지');
+    alarmCheck('guard', pw && STATE.guardOpen, 'LINE 1 안전가드 도어 열림 (X4 OFF)');
+    factory.lines.forEach(L => {
+      alarmCheck('ol' + L.index, pw && L.plant.fault.ol, L.cfg.name + ' 모터 과부하 트립 (열동계전기)');
+      alarmCheck('bin' + L.index, pw && lineBits(L).binFull, L.cfg.name + ' 불량품 통 가득 참 — 비우기 필요');
+    });
+    alarmCheck('power', !pw, 'MCCB OFF — 주전원 차단 (PLC 정지)');
+  }
+
+  /* ---- factory dashboard (refreshed 4x per second) ---- */
+  const fpTable = document.getElementById('fp-table'), fpAlarms = document.getElementById('fp-alarms'), fpCount = document.getElementById('fp-alarm-count');
+  const prodEvents = factory.lines.map(() => []), prodLast = factory.lines.map(() => 0);
+  let dashT = 0;
+  function updateDashboard(){
+    let h = '<tr><th>LINE</th><th>상태</th><th>양품</th><th>불량</th><th>수율</th><th>개/분</th><th>가동률</th></tr>';
+    let tp = 0, td = 0, tu = 0;
+    factory.lines.forEach((L, i) => {
+      const st = factory.lineState(L), b = lineBits(L), n = st.pass + st.def;
+      for(let k = prodLast[i]; k < n; k++) prodEvents[i].push(factory.now);
+      prodLast[i] = n;
+      while(prodEvents[i].length && prodEvents[i][0] < factory.now - 60) prodEvents[i].shift();
+      const upm = prodEvents[i].length, up = L.plant.stats.tTotal > 0 ? Math.round(100*L.plant.stats.tRun/L.plant.stats.tTotal) : 0;
+      let s = 'STOP', c = 's-stop';
+      if(!STATE.mccb){ s = 'OFF'; } else if(b.alarm || L.plant.fault.ol){ s = 'ALARM'; c = 's-alarm'; } else if(b.busy){ s = 'CHECK'; c = 's-busy'; } else if(b.run){ s = 'RUN'; c = 's-run'; }
+      h += '<tr class="' + (i === sel ? 'sel' : '') + '" data-i="' + i + '"><td>' + (i + 1) + '</td><td class="' + c + '">' + s + '</td><td>' + st.pass + '</td><td>' + st.def + '</td><td>' + (n ? Math.round(100*st.pass/n) + '%' : '-') + '</td><td>' + upm + '</td><td>' + up + '%</td></tr>';
+      tp += st.pass; td += st.def; tu += up;
+    });
+    const tn = tp + td;
+    h += '<tr class="tot"><td>ALL</td><td></td><td>' + tp + '</td><td>' + td + '</td><td>' + (tn ? Math.round(100*tp/tn) + '%' : '-') + '</td><td>' + prodEvents.reduce((a, e) => a + e.length, 0) + '</td><td>' + Math.round(tu/factory.lines.length) + '%</td></tr>';
+    fpTable.innerHTML = h;
+    const act = alarmLog.filter(a => a.active).length;
+    setText(fpCount, 'ALARM ' + act); fpCount.className = act ? 'hot' : '';
+    let ah = '';
+    for(let i = alarmLog.length - 1, shown = 0; i >= 0 && shown < 6; i--, shown++){
+      const a = alarmLog[i];
+      ah += '<div class="al ' + (a.active ? 'act' : 'clr') + '"><b>' + a.time + '</b> ' + a.text + (a.active ? '' : ' <em>(복귀 ' + a.clear + ')</em>') + '</div>';
+    }
+    fpAlarms.innerHTML = ah || '<div class="al clr">알람 없음</div>';
+  }
+  fpTable.addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if(tr) setSel(parseInt(tr.dataset.i, 10)); });
+  document.getElementById('fp-clear').addEventListener('click', () => { for(let i = alarmLog.length - 1; i >= 0; i--) if(!alarmLog[i].active) alarmLog.splice(i, 1); });
+
+  /* =========================================================
+     12B. PLC I/O DISPLAY (cabinet LEDs / wires / dock all read the real PLC bits)
+  ========================================================= */
+  const P1 = {x4:false, x3:false, x0:false, x1:false, x2:false, y0:false, y1:false, y2:false};   // line 1 (the cabinet)
+  const Ps = {x4:false, x3:false, x0:false, x1:false, x2:false, y0:false, y1:false, y2:false};   // selected line (the dock)
+  function fillP(P, L){
+    const b = lineBits(L);
+    P.x0 = b.start; P.x1 = b.sensor; P.x2 = b.estop; P.x3 = b.vng; P.x4 = b.guard; P.y0 = b.motor; P.y1 = b.sol; P.y2 = b.lg || b.ly || b.lr;
+  }
+  const FLOWS = [
+    {id:'flow-a', nodes:[['START',()=>Ps.x0],['X0',()=>Ps.x0],['PLC',()=>Ps.x0||Ps.y0],['Y0',()=>Ps.y0],['RELAY',()=>Ps.y0],['MOTOR',()=>Ps.y0]]},
+    {id:'flow-b', nodes:[['PHOTO SENSOR',()=>Ps.x1],['X1',()=>Ps.x1],['VISION',()=>(selLine().plant.inspecting||Ps.x3)&&STATE.mccb],['X3',()=>Ps.x3],['PLC',()=>Ps.x3||Ps.y1],['Y1',()=>Ps.y1],['SOLENOID',()=>Ps.y1],['CYLINDER',()=>Ps.y1]]}
+  ];
+  FLOWS.forEach(f => {
+    const row = document.getElementById(f.id);
+    f.els = f.nodes.map((n,i) => {
+      if(i) row.insertAdjacentHTML('beforeend', '<i>→</i>');
+      const sp = document.createElement('span'); sp.textContent = n[0]; row.appendChild(sp); return sp;
+    });
+  });
+  const ladderEls = Array.prototype.slice.call(document.querySelectorAll('[data-l]'));
+  const elJudge = document.getElementById('judge');
+  // dock labels are written for line 1 (X0..); show the addresses of whichever line is selected
+  function relabelDock(k){
+    const off = k*16, fix = t => t.replace(/\b([XY])(\d+)\b/g, (m,a,n) => a + (parseInt(n,10) + off));
+    ladderEls.forEach(el => { if(el._o === undefined) el._o = el.textContent; el.textContent = fix(el._o); });
+    FLOWS.forEach(f => f.els.forEach((el,i) => { if(el._o === undefined) el._o = f.nodes[i][0]; el.textContent = fix(el._o); }));
+    document.getElementById('dock-title').textContent = 'PLC I/O · ' + factory.lines[k].cfg.name + ' (X' + (k*16) + '~ / Y' + (k*16) + '~)';
+  }
+
+  function setLed(m,on){ m.emissiveIntensity = on ? 1.6 : 0.05; }
+  function refreshPLC(){
+    const L0 = factory.lines[0], pl0 = L0.plant;
+    fillP(P1, L0); fillP(Ps, selLine());
+    ['x0','x1','x2','x3','x4','y0','y1','y2'].forEach(k => setLed(leds[k], P1[k]));
+    setLed(leds.run, lineRun(0) && STATE.mccb);
+    setLed(visionRing.material, pl0.inspecting && STATE.mccb);
+    visionCone.visible = pl0.inspecting && STATE.mccb;
+    smpsOk.emissiveIntensity = STATE.mccb ? 1.5 : 0.05;
+    guardLedMat.emissiveIntensity = STATE.mccb ? 1.5 : 0.05;
+    wires.start.on = P1.x0; wires.sensor.on = P1.x1; wires.estop.on = P1.x2;
+    wires.y0.on = P1.y0; wires.y0b.on = P1.y0; wires.sol.on = P1.y1; wires.lamp.on = P1.y2; wires.vision.on = P1.x3; wires.guard.on = P1.x4;
+    ['start','sensor','estop','sol','lamp','vision','guard'].forEach(k => { wires[k+'I'].on = wires[k].on; });
+
+    FLOWS.forEach(f => f.nodes.forEach((n,i) => f.els[i].classList.toggle('on', !!n[1]())));
+    const L = {x0:Ps.x0, y0h:Ps.y0, x2n:!Ps.x2 && (Ps.x0 || Ps.y0), x4:Ps.x4 && (Ps.x0 || Ps.y0), x1:Ps.x1, x3:Ps.x3, y0:Ps.y0, y1:Ps.y1};
+    ladderEls.forEach(el => el.classList.toggle('on', !!L[el.dataset.l]));
+    const j = selLine().plant.judge;
+    setText(elJudge, 'VISION 판정: ' + j);
+    const jc = j === 'NG' ? 'ng' : (j === 'OK' ? 'ok' : ''); if(elJudge._c !== jc){ elJudge._c = jc; elJudge.className = jc; }
+  }
+  function updateWires(delta){
+    Object.keys(wires).forEach(k => {
+      const w = wires[k], on = (w.on || w.always) && STATE.mccb;
+      w.mat.emissiveIntensity = on ? 1.3 : 0.28;
+      w.pulse.visible = on;
+      if(on){ w.t = (w.t + delta*0.45) % 1; w.pulse.position.copy(w.path.getPointAt(w.t)); }
+    });
+  }
+
+  // 3D push buttons (START / STOP / E-STOP / door / MCCB) are clickable; drags still orbit the camera
+  const ray = new THREE.Raycaster(), mouseV = new THREE.Vector2();
+  let downXY = null;
+  renderer.domElement.addEventListener('pointerdown', e => { downXY = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener('pointerup', e => {
+    if(!downXY || Math.hypot(e.clientX - downXY[0], e.clientY - downXY[1]) > 5) return;
+    mouseV.set(e.clientX/window.innerWidth*2 - 1, -(e.clientY/window.innerHeight)*2 + 1);
+    ray.setFromCamera(mouseV, camera);
+    const hit = ray.intersectObjects(clickables, false)[0];
+    if(!hit) return;
+    const parts = String(hit.object.userData.action || '').split(':'), a = parts[0], li = parts.length > 1 ? parseInt(parts[1], 10) : 0;
+    if(a === 'start') startLine(li); else if(a === 'stop') stopLine(li); else if(a === 'estop') toggleEstop(); else if(a === 'guard') toggleGuard();
+    else if(a === 'mccb') toggleMccb();
+  });
+
+  /* =========================================================
+     12C. VIEW SYNC: the 3D meshes only mirror the plant model / PLC outputs
+  ========================================================= */
+  function disposeBox(g){
+    g.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material) o.material.dispose(); });   // shared label texture is kept
+  }
+  function syncView(L, delta, t){
+    const V = L.view, pl = L.plant, b = lineBits(L), off = pl.barOffset;
+    for(let i = 0; i < V.beltBars.length; i++)
+      V.beltBars[i].position.z = (CONVEYOR.zStart - BAR_SPACING) + (((i + 1)*BAR_SPACING + off) % BELT_PERIOD);
+    for(let i = 0; i < pl.boxes.length; i++){
+      const bx = pl.boxes[i];
+      if(!bx.view){
+        if(bx.state === 'gone') continue;
+        bx.view = createBox(bx.isDefect ? FLAWS[bx.flawIdx % FLAWS.length] : null); V.group.add(bx.view);
+      }
+      if(bx.state === 'gone'){ V.group.remove(bx.view); disposeBox(bx.view); bx.view = null; continue; }
+      const g = bx.view, sc = bx.state === 'fade' ? Math.max(0.001, 1 - bx.fadeT/0.3) : 1;
+      g.position.set(bx.x, bx.y, bx.z); g.rotation.set(0, bx.rotY, bx.rotZ); g.scale.set(sc, sc, sc);
+    }
+    // cylinder rod grows out of the body, head pushes
+    const ext = pl.cylExt;
+    V.pusherHead.position.x = pusherRestX + 0.75 + ext;
+    V.pusherRod.scale.y = (1.3 + ext) / 1.3; V.pusherRod.position.x = pusherRestX + 0.1 + ext/2;
+    // sensor, valve, motor, bin level, lamp
+    V.sensorLedMat.emissiveIntensity = b.sensor ? 1.5 : 0.15; V.sensorLedMat.emissive.set(b.sensor ? 0xff0000 : 0x550000);
+    V.laserMat.opacity = b.sensor ? 0.85 : 0.4; V.laserMat.color.set(b.sensor ? 0xff5555 : 0xff2222);
+    V.valveLedMat.emissiveIntensity = b.sol ? 1.6 : 0.05;
+    if(pl.motorOn) V.shaftG.rotation.x += pl.speed * delta * 3;
+    const bc = b.binFull ? 0xff3b3b : 0x00e676; V.binLedMat.color.setHex(bc); V.binLedMat.emissive.setHex(bc);
+    V.updateLamp(b.lg, b.ly, b.lr, t);
+    const st = stations[L.index];
+    if(st) for(let i = 0; i < st.leds.length; i++) st.leds[i].mat.emissiveIntensity = plc.bits[st.leds[i].bit] ? 1.6 : 0.05;
+  }
+
+  /* =========================================================
+     13. MAIN LOOP:  plants -> PLC scan -> plants (fixed 20 ms step inside factory.step), then mirror to 3D
+  ========================================================= */
+  const clock = new THREE.Clock();
+
+  function animate(){
+    requestAnimationFrame(animate);
+    const delta = Math.min(clock.getDelta(), 0.05), t = performance.now();
+
+    factory.mccb = STATE.mccb; factory.estop = STATE.estop; factory.guardOpen = STATE.guardOpen;
+    factory.step(delta);
+    for(let i = 0; i < factory.lines.length; i++) syncView(factory.lines[i], delta, t);
+
+    doorAng += ((STATE.guardOpen ? -1.75 : 0) - doorAng) * Math.min(1, delta*6);   // door swing
+    guardDoor.rotation.y = doorAng;
+    updateDemo(delta);
+    updateCam(delta);
+    zoneGlow.material.color.set(STATE.guardOpen ? 0xff2b2b : 0xffcc00);
+    zoneGlow.material.opacity = STATE.guardOpen ? 0.42 + 0.22*Math.sin(t*0.008) : 0.14;
+
+    refreshPLC();
+    updateWires(delta);
+    scanAlarms();
+    updateHMI();
+    dashT += delta;
+    if(dashT > 0.25){ dashT = 0; updateDashboard(); if(!ioModal.classList.contains('hidden')) refreshIOTable(); }
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  setSel(0, true);
+  refreshMaintButtons();
+  placeCap();
+  animate();
+
+})();
+</script>
+</body>
+</html>

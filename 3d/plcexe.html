@@ -1,0 +1,303 @@
+<!DOCTYPE html><html lang="ko"><head><base target="_blank"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>정·역회전 인터록 결선 실습 | 3D 디지털 트윈</title>
+<style>
+*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#222;font-family:'Malgun Gothic',system-ui,sans-serif;color:#eaf0f6;user-select:none}
+canvas{display:block;width:100vw;height:100vh;touch-action:none}
+#hud{position:fixed;top:8px;left:8px;width:236px;max-height:94vh;overflow:auto;background:rgba(15,25,38,.84);border:1px solid #3b5573;border-radius:10px;padding:9px;font-size:12px}
+#hud h3{margin:0 0 5px;font-size:13px;color:#7cc4ff}#hud small{color:#9fb3c8;display:block;margin-top:5px;line-height:1.45}
+.b{margin:2px;padding:6px 8px;border:1px solid #4a6a8c;background:#1d3550;color:#fff;border-radius:6px;font:inherit;cursor:pointer}
+.b:active{background:#2f7bd0}.g{background:#1d6b3a}.r{background:#8a2430}.v{background:#3a3f55}
+#st{margin-top:6px;line-height:1.65}.ok{color:#6f6}.bad{color:#ff6b6b}
+#msg{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:rgba(0,0,0,.7);padding:8px 14px;border-radius:20px;font-size:13px;pointer-events:none;display:none;white-space:nowrap}
+#al{position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#b3141f;padding:8px 16px;border-radius:8px;font-weight:bold;display:none;pointer-events:none;animation:bl .4s infinite alternate}
+@keyframes bl{to{background:#5a0a10}}
+#fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none}
+#pad{position:fixed;right:10px;bottom:10px;display:grid;grid-template-columns:repeat(3,44px);gap:4px}
+#pad button{height:44px;opacity:.65;border-radius:8px;border:1px solid #567;background:#1d3550;color:#fff;font-size:18px}
+#links{position:fixed;top:8px;right:8px;z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+#lab,#lab2,#lab3{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;background:#1d6b3a;border:1px solid #4fbf7a;border-radius:8px;color:#fff;font-size:13px;font-weight:bold;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+#lab:hover{background:#25884a}#lab:active{background:#175530}
+#lab3{background:#16506a;border-color:#2fd9ff}#lab3:hover{background:#1c6786}#lab3:active{background:#103d52}
+#lab2{background:#1d4f8a;border-color:#5aa0ee}#lab2:hover{background:#2563a8}#lab2:active{background:#173f6e}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="links"><a id="lab3" href="conveyer.html" target="_self">← PLC 컨베이어</a>
+<a id="lab" href="https://ai.yit.ac.kr/3d/elec/interlockLab.html" target="_blank" rel="noopener noreferrer">⚡ 정·역회전 인터록 결선 실습</a>
+<a id="lab2" href="https://claude.ai/artifact/AzsBarHQQcHXS6YC8pw7bi" target="_blank" rel="noopener noreferrer">⚡ Y-Δ 자동 기동 회로</a></div>
+<div id="hud"><h3 id="ttl"></h3><div id="ctl"></div><div id="st"></div><small>이동 WASD/방향키 · 드래그로 시선 · 클릭으로 조작 · E 문 열기</small></div>
+<div id="msg"></div><div id="al"></div><div id="fade"></div>
+<div id="pad"><span></span><button data-k="w">▲</button><span></span><button data-k="a">◀</button><button data-k="s">▼</button><button data-k="d">▶</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const T=THREE,$=id=>document.getElementById(id),PI=Math.PI;
+const rd=new T.WebGLRenderer({canvas:$('c'),antialias:true});rd.setPixelRatio(Math.min(devicePixelRatio,2));rd.toneMapping=T.ACESFilmicToneMapping;rd.outputEncoding=T.sRGBEncoding;
+const cam=new T.PerspectiveCamera(65,1,.05,60);
+const Mt=(c,r=.55,m=0)=>new T.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+const MET=Mt(0xc9ced3,.3,.9),DK=Mt(0x1f2428,.6,.2),CU=Mt(0xb87333,.35,.8);
+const bx=(g,w,h,d,m,x,y,z)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);g.add(o);return o};
+const cy=(g,r,h,m,x,y,z,ax)=>{const o=new T.Mesh(new T.CylinderGeometry(r,r,h,18),m);o.position.set(x,y,z);if(ax=='x')o.rotation.z=PI/2;if(ax=='z')o.rotation.x=PI/2;g.add(o);return o};
+const tex={};
+function lab(g,s,x,y,z,w,h,o={}){const k=s+(o.c||'')+(o.bg||'');let t=tex[k];
+ if(!t){const c=document.createElement('canvas');c.width=o.W||256;c.height=Math.round(c.width*h/w);const q=c.getContext('2d');
+  q.fillStyle=o.bg||'rgba(0,0,0,0)';q.fillRect(0,0,c.width,c.height);q.fillStyle=o.c||'#fff';q.textAlign='center';q.textBaseline='middle';
+  const L=s.split('\n'),wd=Math.max(...L.map(a=>[...a].reduce((n,ch)=>n+(ch>'\u00ff'?1:.58),0)));
+  q.font='bold '+Math.min(c.height/L.length*.8,c.width*.94/wd)+'px Malgun Gothic,sans-serif';
+  L.forEach((a,i)=>q.fillText(a,c.width/2,c.height*(i+.5)/L.length));t=tex[k]=new T.CanvasTexture(c)}
+ const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:t,transparent:true}));m.position.set(x,y,z);m.rotation.y=o.ry||0;m.rotation.x=o.rx||0;g.add(m);return m}
+function board(g,w,h,x,y,z,draw){const c=document.createElement('canvas');c.width=1024;c.height=Math.round(1024*h/w);const q=c.getContext('2d'),t=new T.CanvasTexture(c);
+ const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:t}));m.position.set(x,y,z);g.add(m);bx(g,w+.1,h+.1,.03,DK,x,y,z-.02);
+ return{up(){draw(q,c.width,c.height);t.needsUpdate=true}}}
+/* ---------- 전선 (전류 흐름 표시) ---------- */
+const SG=new T.CylinderGeometry(1,1,1,6),SPH=new T.SphereGeometry(1,8,6),UP=new T.Vector3(0,1,0);
+function wire(g,pts,col,cond){const mat=new T.MeshStandardMaterial({color:col,roughness:.5,emissive:col,emissiveIntensity:0});
+ const P=pts.map(p=>new T.Vector3(...p)),L=[0];
+ for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],d=b.clone().sub(a),l=d.length();L.push(L[i-1]+l);
+  const m=new T.Mesh(SG,mat);m.scale.set(.011,l,.011);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(UP,d.normalize());g.add(m);
+  const j=new T.Mesh(SPH,mat);j.scale.setScalar(.011);j.position.copy(b);g.add(j)}
+ const dots=[0,1].map(()=>{const d=new T.Mesh(SPH,new T.MeshBasicMaterial({color:0xfff3a0}));d.scale.setScalar(.022);d.visible=false;g.add(d);return d});
+ return{P,L,mat,cond,dots}}
+function wup(ws,t){ws.forEach(w=>{const on=w.cond();w.mat.emissiveIntensity=on?.8:0;const n=w.L.length-1;
+ w.dots.forEach((d,k)=>{d.visible=on;if(!on)return;const u=((t*.45+k/2)%1)*w.L[n];let i=1;while(i<n&&w.L[i]<u)i++;d.position.copy(w.P[i-1]).lerp(w.P[i],(u-w.L[i-1])/(w.L[i]-w.L[i-1]))})})}
+/* ---------- 공통 장비 ---------- */
+const scr=(g,x,y,z=-2.655)=>cy(g,.022,.04,MET,x,y,z,'z');
+const tg=(g,s,x,y,c)=>lab(g,s,x,y,-2.651,.075,.05,{W:128,c});
+function mc(g,x,y,nm,sub,coil){bx(g,.5,.5,.18,Mt(0x30353c,.5,.1),x,y,-2.75);
+ lab(g,nm+'\n'+sub,x,y+.03,-2.652,.4,.14,{bg:'#e9edf1',c:'#111'});
+ const im=new T.MeshStandardMaterial({color:0x333333,emissive:0x22ff66,emissiveIntensity:0});bx(g,.2,.045,.01,im,x,y-.08,-2.655);
+ for(let k=0;k<3;k++){if(coil&&k!=1)continue;scr(g,x+(k-1)*.1,y+.2);scr(g,x+(k-1)*.1,y-.2);tg(g,coil?'A1':'L'+(k+1),x+(k-1)*.1,y+.145);tg(g,coil?'A2':'T'+(k+1),x+(k-1)*.1,y-.145)}
+ return im}
+function pbtn(o,g,x,y,col,fn,z){const m=new T.MeshStandardMaterial({color:col,roughness:.3,emissive:col,emissiveIntensity:.15});cy(g,.062,.03,DK,x,y,z-.02,'z');const h=cy(g,.045,.045,m,x,y,z,'z');h.userData={click:fn,z0:z};o.click.push(h);return h}
+const lamp=(g,x,y,col,z)=>{const m=new T.MeshStandardMaterial({color:col,roughness:.2,emissive:col,emissiveIntensity:0});cy(g,.06,.03,DK,x,y,z-.02,'z');cy(g,.048,.05,m,x,y,z,'z');return m};
+function mccb(o,g,x,y,w,h,fn){const b=bx(g,w,h,.18,Mt(0x25292e,.4,.2),x,y,-2.75);lab(g,'MCCB 3P',x,y+.03,-2.652,w*.85,.08,{bg:'#d9dde1',c:'#111'});
+ const lv=new T.Group();lv.position.set(x,y+h/2,-2.655);g.add(lv);const l=bx(lv,.07,.12,.05,Mt(0xd6a100),0,.06,0);
+ [b,l].forEach(m=>{m.userData={click:fn};o.click.push(m)});return lv}
+function motor(g,x,z,ty){const m=new T.Group();m.position.set(x,ty,z);g.add(m);const bl=Mt(0x2d6a8f,.45,.5);
+ bx(m,.72,.03,.42,DK,0,.015,0);cy(m,.19,.66,bl,0,.22,0,'x');for(let i=0;i<8;i++)cy(m,.2,.02,bl,-.27+i*.075,.22,0,'x');
+ cy(m,.2,.06,DK,-.36,.22,0,'x');cy(m,.17,.06,DK,.35,.22,0,'x');bx(m,.26,.08,.2,DK,0,.44,0);
+ const rot=new T.Group();rot.position.set(.5,.22,0);m.add(rot);cy(rot,.035,.2,MET,0,0,0,'x');bx(rot,.03,.1,.03,Mt(0xffd400),.05,.06,0);bx(rot,.04,.02,.2,Mt(0xffd400),.1,0,0);
+ lab(m,'3상 유도전동기\n0.75kW 380V',0,.22,.202,.3,.12,{bg:'#d9dde1',c:'#111'});
+ const tx=[x-.1,x,x+.1];tx.forEach((a,i)=>{cy(g,.02,.03,MET,a,ty+.5,z,'');});
+ return{rot,tx,ty:ty+.51}}
+function bench(o,cx,cz,w,d,ph){const g=o.sc,st=Mt(0x4a5560,.5,.7);
+ bx(g,w,.05,d,Mt(0xd5d9dd,.35,.1),cx,.85,cz);bx(g,w+.02,.03,d+.02,st,cx,.82,cz);
+ [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>bx(g,.06,.82,.06,st,cx+a*(w/2-.05),.41,cz+b*(d/2-.05)));bx(g,w-.1,.03,d-.1,st,cx,.25,cz);
+ if(ph){bx(g,w,ph,.06,Mt(0xcfd6dc,.5,.2),cx,.85+ph/2,cz-d/2+.03);[2.58,1.85].forEach(y=>bx(g,w-.3,.035,.012,Mt(0x2b3036,.4,.8),cx,y,-2.83))}
+ o.col.push([cx-w/2,cz-d/2,cx+w/2,cz+d/2])}
+/* ---------- 실습실 공통 쉘(조명/벽/문) ---------- */
+function shell(){const sc=new T.Scene();sc.background=new T.Color(0xdfe6ee);const o={sc,col:[],click:[],doors:[]},H=3.6;
+ const fc=document.createElement('canvas');fc.width=fc.height=256;const f=fc.getContext('2d');f.fillStyle='#b9c0c7';f.fillRect(0,0,256,256);f.strokeStyle='#8f989f';f.lineWidth=4;f.strokeRect(0,0,256,256);
+ f.strokeStyle='rgba(0,0,0,.06)';for(let i=0;i<40;i++){f.beginPath();f.moveTo(Math.random()*256,Math.random()*256);f.lineTo(Math.random()*256,Math.random()*256);f.stroke()}
+ const ft=new T.CanvasTexture(fc);ft.wrapS=ft.wrapT=T.RepeatWrapping;ft.repeat.set(16,12);ft.anisotropy=4;
+ const fl=new T.Mesh(new T.PlaneGeometry(16,12),new T.MeshStandardMaterial({map:ft,roughness:.3,metalness:.05}));fl.rotation.x=-PI/2;sc.add(fl);
+ const wm=Mt(0xeef1f4,.9),bd=Mt(0x6f8aa6,.8);
+ bx(sc,16.4,H,.2,wm,0,H/2,-6.1);bx(sc,16.4,H,.2,wm,0,H/2,6.1);bx(sc,.2,H,12,wm,-8.1,H/2,0);bx(sc,.2,H,12,wm,8.1,H/2,0);bx(sc,16.4,.04,12.4,Mt(0xf4f6f8,.9),0,H,0);
+ bx(sc,16,.9,.02,bd,0,.45,-5.99);bx(sc,.02,.9,12,bd,-7.99,.45,0);bx(sc,.02,.9,12,bd,7.99,.45,0);bx(sc,.02,.9,12,Mt(0x6f8aa6,.8),7.99,.45,0);
+ const fm=new T.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:1.5});
+ for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j+=2){bx(sc,1.3,.06,.28,fm,i*4.5,H-.05,j*2.8);bx(sc,1.4,.03,.38,Mt(0xaaaaaa),i*4.5,H-.02,j*2.8)}
+ sc.add(new T.HemisphereLight(0xffffff,0x8d97a3,.85));sc.add(new T.AmbientLight(0xffffff,.35));
+ [[-4.5,-2.8],[4.5,-2.8],[-4.5,2.8],[4.5,2.8]].forEach(([x,z])=>{const l=new T.PointLight(0xfff8ee,.55,20,1.6);l.position.set(x,H-.4,z);sc.add(l)});
+ // 부대 설비: 스툴, 소화기, 공구함, 안전표지
+ [-1,1].forEach(a=>{cy(sc,.17,.04,Mt(0x2b3036),a*1.2,.52,-1.0,'');cy(sc,.02,.5,MET,a*1.2,.25,-1.0,'')});
+ bx(sc,.6,1.9,1.2,Mt(0x5b6b7a,.5,.4),7.5,.95,-4.4);bx(sc,.02,1.7,1.0,Mt(0x4a5866),7.19,.95,-4.4);o.col.push([7.2,-5,7.8,-3.8]);
+ cy(sc,.08,.45,Mt(0xc0182b,.4),-7.8,.3,2.6,'');cy(sc,.04,.1,DK,-7.8,.58,2.6,'');lab(sc,'소화기',-7.95,.95,2.6,.4,.15,{ry:PI/2,bg:'#c0182b'});
+ lab(sc,'⚠ 감전 주의\n통전 중 접촉 금지',-6.5,2.3,-5.94,1.1,.5,{bg:'#f2c200',c:'#111'});
+ return o}
+function door(o,side,title,to){const x=side*7.98,g=new T.Group();g.position.set(x,0,0);o.sc.add(g);const fr=Mt(0x4b525a,.5,.6);
+ bx(g,.12,2.3,.08,fr,0,1.15,-.62);bx(g,.12,2.3,.08,fr,0,1.15,.62);bx(g,.12,.08,1.3,fr,0,2.3,0);
+ const pv=new T.Group();pv.position.set(0,0,-.55);g.add(pv);const lf=bx(pv,.06,2.12,1.1,Mt(0xb9c6d1,.4,.4),0,1.06,.55);
+ bx(pv,.14,.04,.04,MET,0,1.0,.95);bx(pv,.07,.6,.8,Mt(0xdbe6ef,.2,.2),0,1.4,.55);
+ lab(o.sc,title+(side<0?'  ◀':'  ▶'),side*7.9,2.65,0,2.2,.4,{bg:'#0d6b3c',ry:-side*PI/2,W:512});
+ bx(o.sc,1.3,.01,1.0,Mt(0x333b44,.9),side*7.4,.006,0);
+ const d={pv,side,x:side*7.98,to,title};lf.userData={click:()=>tryDoor(d)};o.click.push(lf);o.doors.push(d)}
+/* ---------- 래더 도면 ---------- */
+function lad(c,W,H,title,rs){c.fillStyle='#0e1a28';c.fillRect(0,0,W,H);c.textAlign='center';c.fillStyle='#fff';c.font='bold 30px Malgun Gothic';c.fillText(title,W/2,42);
+ c.lineWidth=6;const G='#4cff7a',D='#6d7f92',R='#e5484d';c.strokeStyle='#f0b429';c.beginPath();c.moveTo(45,75);c.lineTo(45,H-15);c.moveTo(W-45,75);c.lineTo(W-45,H-15);c.stroke();
+ const ln=(a,b,d,e,h)=>{c.strokeStyle=h?G:D;c.beginPath();c.moveTo(a,b);c.lineTo(d,e);c.stroke()};
+ const ct=(x,y,n,cl,nc)=>{c.strokeStyle=cl?G:R;c.beginPath();c.moveTo(x-14,y-22);c.lineTo(x-14,y+22);c.moveTo(x+14,y-22);c.lineTo(x+14,y+22);if(nc){c.moveTo(x-26,y+24);c.lineTo(x+26,y-24)}c.stroke();c.fillStyle='#cfe3f7';c.font='21px Malgun Gothic';c.fillText(n,x,y-32)};
+ rs.forEach(r=>{const y=r.y,h1=r.pw&&r.stop.cl,run=h1&&(r.pp||r.self),il=!r.il||r.il.miss||r.il.cl,out=run&&il;
+  ln(45,y,150,y,r.pw);ct(190,y,r.stop.n,r.stop.cl,true);ln(220,y,290,y,h1);ln(290,y,290,y+95,h1);ln(290,y,345,y,h1);ln(290,y+95,345,y+95,h1);
+  ct(370,y,r.pb,r.pp);ct(370,y+95,r.aux,r.self);ln(400,y,460,y,h1&&r.pp);ln(400,y+95,460,y+95,h1&&r.self);ln(460,y,460,y+95,run);ln(460,y,540,y,run);
+  if(r.il&&r.il.miss){c.fillStyle=R;c.font='bold 23px Malgun Gothic';c.fillText('✖ '+r.il.n+' 누락',625,y+8);ln(540,y,700,y,run)}
+  else if(r.il){ln(540,y,590,y,run);ct(620,y,r.il.n,r.il.cl,true);ln(650,y,700,y,out)}else ln(540,y,700,y,run);
+  ln(700,y,772,y,out);c.strokeStyle=r.coilOn?G:D;c.fillStyle=r.coilOn?'rgba(76,255,122,.35)':'rgba(0,0,0,0)';c.beginPath();c.arc(800,y,28,0,7);c.fill();c.stroke();
+  c.fillStyle='#fff';c.font='bold 21px Malgun Gothic';c.fillText(r.coil,800,y+7);ln(828,y,W-45,y,r.coilOn)})}
+/* ---------- 상태 ---------- */
+const S={mccb:true,trip:false,F:false,R:false,pF:false,pR:false,pS:false,il:true,swapErr:false,short:0,om:0,ang:0};
+const B={F:0,R:0,S:0},S1={run:false,rev:false,s:0,wt:0,ang:0,yd:false},S2={pw:true,mc:false,pON:0,pOFF:0,ang:0,om:0};
+const pwr=()=>S.mccb&&!S.trip;
+const dirNow=()=>S.F&&S.R?(S.swapErr?1:0):S.F?1:S.R?(S.swapErr?1:-1):0;
+function logic(dt){const pw=pwr();S.F=pw&&!S.pS&&(S.pF||S.F)&&(!S.il||!S.R);S.R=pw&&!S.pS&&(S.pR||S.R)&&(!S.il||!S.F);
+ if(S.F&&S.R&&!S.swapErr){S.short+=dt;if(S.short>1.4){S.trip=true;S.mccb=false;S.F=S.R=false}}else if(!S.trip)S.short=Math.max(0,S.short-dt*2)}
+const rooms=[];let P={x:0,z:3.6,yaw:0,pitch:-.08,room:0};
+/* ================= 방 0 : 정·역회전 인터록 실습실 ================= */
+function room0(){const o=shell(),g=o.sc;o.title='정·역회전 인터록 실습실';bench(o,0,-2.4,4.4,1,2.15);
+ const ZW=-2.62,PH=[0xd62828,0xeeeeee,0x1f4fd8],PC=['#ff6b6b','#ffffff','#6ea8ff'],WS={feed:[],o1:[],o2:[]};
+ // MCCB
+ const lv=mccb(o,g,0,2.58,.36,.5,()=>A.mccb());for(let k=0;k<3;k++){scr(g,(k-1)*.1,2.33);lab(g,'RST'[k],(k-1)*.1,2.4,-2.651,.06,.05,{W:64,c:PC[k]})}
+ // 접촉기 + 인터록 b접점
+ const im1=mc(g,-.7,1.85,'MC1','정회전'),im2=mc(g,.7,1.85,'MC2','역회전');
+ const ax1=Mt(0x22aa44,.4),ax2=Mt(0x22aa44,.4);bx(g,.08,.2,.14,ax1,-.4,1.85,-2.74);bx(g,.08,.2,.14,ax2,.4,1.85,-2.74);
+ const ilg=new T.Group();g.add(ilg);const Y=0xf2c200;
+ ilg.add(...[]);WS.il=[wire(ilg,[[-.4,1.93,-2.6],[.4,1.77,-2.6]],Y,()=>false),wire(ilg,[[.4,1.93,-2.585],[-.4,1.77,-2.585]],Y,()=>false)];
+ const ilOk=lab(g,'인터록 (b접점 상호 결선)',0,2.0,-2.6,.7,.08,{c:'#7dff9b'}),ilBad=lab(g,'⚠ 인터록 b접점 누락!',0,2.0,-2.6,.7,.08,{c:'#ff5a5a'});
+ lab(g,'MC1 b',-.4,1.72,-2.665,.1,.05,{W:64,c:'#fff'});
+ // 피더(MCCB→MC): 상별 레인
+ const lane=[2.27,2.23,2.19];
+ for(let c=0;c<2;c++)for(let i=0;i<3;i++){const mx=(i-1)*.1,tx=(c?.7:-.7)+(i-1)*.1,z=ZW+.012*i+c*.005;WS.feed.push(wire(g,[[mx,2.33,z],[mx,lane[i],z],[tx,lane[i],z],[tx,2.05,z]],PH[i],pwr))}
+ // 모터
+ const mo=motor(g,1.75,-2.3,.875),TX=mo.tx,TY=mo.ty;'UVW'.split('').forEach((s,i)=>lab(g,s,TX[i],mo.ty-.06,-2.19,.09,.06,{W:64,bg:'#222'}));
+ for(let k=0;k<3;k++){const bxk=-.7+(k-1)*.1,z=ZW+.011*k;WS.o1.push(wire(g,[[bxk,1.65,z],[bxk,1.56-.025*k,z],[TX[k],1.56-.025*k,z],[TX[k],TY,-2.3]],PH[k],()=>pwr()&&S.F))}
+ let o2g;function build2(){if(o2g)g.remove(o2g);o2g=new T.Group();g.add(o2g);const map=S.swapErr?[0,1,2]:[2,1,0];
+  WS.o2=[0,1,2].map(k=>{const bxk=.7+(k-1)*.1,z=ZW+.011*(k+3),ly=1.56-.025*(3+k);return wire(o2g,[[bxk,1.65,z],[bxk,ly,z],[TX[map[k]],ly,z],[TX[map[k]],TY,-2.3]],PH[k],()=>pwr()&&S.R)})}
+ A.rebuild=build2;build2();
+ // 조작반
+ bx(g,3.2,.4,.06,Mt(0xe9ecef,.5),0,1.12,-2.81);const PZ=-2.745,LZ=-2.76;
+ const b0=pbtn(o,g,-1.2,1.15,0xd32f2f,()=>A.S(),PZ),b1=pbtn(o,g,-.7,1.15,0x2e9e4f,()=>A.F(),PZ),b2=pbtn(o,g,-.2,1.15,0x1e5bd8,()=>A.R(),PZ);
+ const l1=lamp(g,.5,1.15,0x22dd55,LZ),l2=lamp(g,.9,1.15,0xffa000,LZ),l3=lamp(g,1.3,1.15,0xff2020,LZ);
+ [['PB0 정지',-1.2],['PB1 정회전',-.7],['PB2 역회전',-.2],['PL1 정',.5],['PL2 역',.9],['단락 경보',1.3]].forEach(([s,x])=>lab(g,s,x,.99,-2.777,.4,.1,{c:'#111'}));
+ // 장식: 제목, 단자대, 과부하계전기, 범례
+ lab(g,'정·역회전\n인터록 실습대',-1.55,2.6,-2.8,1.1,.55,{bg:'#12324f',c:'#fff'});
+ for(let i=0;i<8;i++){bx(g,.09,.16,.1,Mt(i%2?0xd0d4d8:0x9aa4ae,.6),-1.9+i*.11,1.75,-2.75);scr(g,-1.9+i*.11,1.8)}lab(g,'TB 단자대',-1.5,1.9,-2.652,.5,.08,{c:'#111'});
+ bx(g,.36,.4,.18,Mt(0x3a5a40,.5),1.4,1.85,-2.75);lab(g,'THR\n과부하계전기',1.4,1.85,-2.652,.32,.2,{bg:'#e9edf1',c:'#111'});
+ lab(g,'R(적) S(백) T(청)\nMC2 : R↔T 상 교체',1.45,2.62,-2.8,1.0,.55,{bg:'#12324f',c:'#fff'});
+ const s=lamp; // 경고등(상단)
+ const beacon=new T.MeshStandardMaterial({color:0xff2020,emissive:0xff0000,emissiveIntensity:0});cy(g,.07,.14,beacon,0,3.08,-2.82,'');
+ // 도면 보드
+ const ladder=board(g,3.4,2.4,-5,2.0,-5.94,(c,W,H)=>{const p=pwr();lad(c,W,H,'제어회로 : 정·역회전 자기유지 + 인터록',[
+  {y:150,pw:p,stop:{n:'PB0 정지(b)',cl:!S.pS},pb:'PB1 정(a)',pp:S.pF,aux:'MC1 a',self:S.F,il:{n:'MC2 b',cl:!S.R,miss:!S.il},coil:'MC1',coilOn:S.F},
+  {y:440,pw:p,stop:{n:'PB0 정지(b)',cl:!S.pS},pb:'PB2 역(a)',pp:S.pR,aux:'MC2 a',self:S.R,il:{n:'MC1 b',cl:!S.F,miss:!S.il},coil:'MC2',coilOn:S.R}])});
+ const phase=board(g,3.4,2.4,5,2.0,-5.94,(c,W,H)=>{c.fillStyle='#0e1a28';c.fillRect(0,0,W,H);c.textAlign='center';c.fillStyle='#fff';c.font='bold 30px Malgun Gothic';c.fillText('주회로 상 순서 / 상 교체 구조',W/2,42);
+  const col=['#ff5a5a','#f2f2f2','#5b8dff'],ty=[290,350,410],map2=S.swapErr?[0,1,2]:[2,1,0],ac=[S.F&&pwr(),S.R&&pwr()];
+  [[0,[0,1,2]],[1,map2]].forEach(([gi,mp])=>{const gy=150+gi*270;c.fillStyle=ac[gi]?'#4cff7a':'#9fb3c8';c.font='bold 25px Malgun Gothic';
+   c.fillText(gi?(S.swapErr?'MC2 (결선 오류!) R→U · S→V · T→W':'MC2 역회전 : R→W · S→V · T→U (R↔T 교체)'):'MC1 정회전 : R→U · S→V · T→W',460,gy-30);
+   for(let k=0;k<3;k++){const y=gy+k*55;c.globalAlpha=ac[gi]?1:.28;c.lineWidth=ac[gi]?10:6;c.strokeStyle=col[k];c.beginPath();c.moveTo(150,y);c.lineTo(440,y);c.lineTo(640,ty[mp[k]]);c.lineTo(790,ty[mp[k]]);c.stroke();c.globalAlpha=1;c.fillStyle=col[k];c.font='bold 30px Malgun Gothic';c.fillText('RST'[k],110,y+10)}});
+  c.fillStyle='#fff';'UVW'.split('').forEach((s,i)=>c.fillText(s,825,ty[i]+10));c.strokeStyle='#fff';c.lineWidth=5;c.beginPath();c.arc(930,350,52,0,7);c.stroke();c.font='bold 38px Malgun Gothic';c.fillText('M',930,345);c.font='24px Malgun Gothic';c.fillText('3~',930,378);
+  c.font='bold 60px Malgun Gothic';c.fillStyle='#ffd400';c.fillText(S.om>.6?'↻':S.om<-.6?'↺':'',930,455);c.font='22px Malgun Gothic';c.fillText(S.om>.6?'CW(정)':S.om<-.6?'CCW(역)':'정지',930,490);
+  c.fillStyle='#9fb3c8';c.font='22px Malgun Gothic';c.fillText('전동기 회전 방향은 3상 중 임의의 두 상을 바꾸면 반대가 된다',W/2,H-24)});
+ // 불꽃
+ const N=60,sp=new Float32Array(N*3).fill(-9),sv=new Float32Array(N*3),sl=new Float32Array(N),sg=new T.BufferGeometry();sg.setAttribute('position',new T.BufferAttribute(sp,3));
+ const spt=new T.Points(sg,new T.PointsMaterial({color:0xffc04d,size:.07,blending:T.AdditiveBlending,transparent:true,depthWrite:false}));spt.frustumCulled=false;g.add(spt);
+ const fl=new T.PointLight(0xff3020,0,6);fl.position.set(1.75,1.5,-2.0);g.add(fl);
+ door(o,-1,'3상 유도전동기 실습 공간',1);door(o,1,'자기유지 기동·정지 회로 실습 공간',2);
+ let tk=0;
+ o.upd=(dt,t)=>{logic(dt);['F','R','S'].forEach(k=>B[k]=Math.max(0,B[k]-dt));
+  [[b0,'S'],[b1,'F'],[b2,'R']].forEach(([h,k])=>h.position.z=h.userData.z0-(B[k]>0?.02:0));
+  const set=(m,on)=>{m.emissiveIntensity=on?1.2:0;m.color.set(on?0x33ff77:0x333333)};set(im1,S.F);set(im2,S.R);
+  ax1.color.set(S.il?(S.F?0xcc2222:0x22aa44):0x666666);ax2.color.set(S.il?(S.R?0xcc2222:0x22aa44):0x666666);
+  ilg.visible=ilOk.visible=S.il;ilBad.visible=!S.il;lv.rotation.x=S.mccb?0:.9;
+  l1.emissiveIntensity=S.F?1.4:.04;l2.emissiveIntensity=S.R?1.4:.04;const alarm=S.short>0||S.trip,bl=alarm&&Math.sin(t*20)>0;
+  l3.emissiveIntensity=bl?1.6:alarm?.2:.04;beacon.emissiveIntensity=bl?2:0;
+  const tgt=(S.F&&S.R&&!S.swapErr)?0:dirNow()*16;S.om+=(tgt-S.om)*Math.min(1,dt*(tgt?1.6:.9));S.ang+=S.om*dt;mo.rot.rotation.x=-S.ang;
+  wup([...WS.feed,...WS.o1,...WS.o2],t);
+  const hot=S.F&&S.R&&!S.swapErr&&!S.trip;fl.intensity=hot?2.5*(.4+.6*Math.abs(Math.sin(t*35))):0;
+  for(let k=0;k<(hot?4:0);k++){const i=sl.findIndex(l=>l<=0);if(i<0)break;sl[i]=.4+Math.random()*.4;sp[i*3]=TX[Math.random()<.5?0:2];sp[i*3+1]=TY;sp[i*3+2]=-2.3;sv[i*3]=(Math.random()-.5)*2;sv[i*3+1]=Math.random()*2.5+.5;sv[i*3+2]=Math.random()*1.5}
+  for(let i=0;i<N;i++){if(sl[i]>0){sl[i]-=dt;sv[i*3+1]-=6*dt;for(let a=0;a<3;a++)sp[i*3+a]+=sv[i*3+a]*dt}else sp[i*3+1]=-9}
+  sg.attributes.position.needsUpdate=true;tk+=dt;if(tk>.1){tk=0;ladder.up();phase.up()}};
+ o.hud='<button class="b r" onclick="A.S()">■ 정지</button><button class="b g" onclick="A.F()">▶ 정회전</button><button class="b g" onclick="A.R()">◀ 역회전</button><br><button class="b" onclick="A.mccb()">MCCB ON/OFF·리셋</button><br><button class="b v" onclick="A.il()">인터록 b접점 제거/복구</button><br><button class="b v" onclick="A.swap()">MC2 상 교체 오류 ON/OFF</button>';
+ o.views=[['실습대 정면',0,.3,0,-.1],['접촉기·결선',0,-.6,0,.08],['모터 단자',1.0,-.8,-.46,-.12],['제어회로도',-4.2,-2.6,0,.1],['상 교체도',4.2,-2.6,0,.1]];
+ o.stat=()=>{const m=Math.abs(S.om)<.6?'정지':S.om>0?'정회전 (CW)':'역회전 (CCW)';
+  return`MCCB: ${S.trip?'<b class=bad>트립</b>':S.mccb?'<b class=ok>ON</b>':'OFF'}<br>MC1 ${S.F?'<b class=ok>투입</b>':'개방'} · MC2 ${S.R?'<b class=ok>투입</b>':'개방'}<br>모터: <b>${m}</b>${S.R&&S.swapErr&&S.om>.6?' <b class=bad>⚠ 역지령인데 정회전!</b>':''}<br>인터록: ${S.il?'<b class=ok>결선됨</b>':'<b class=bad>누락</b>'}<br>MC2 상 교체: ${S.swapErr?'<b class=bad>없음(오류)</b>':'<b class=ok>R↔T 정상</b>'}`};
+ o.alarm=()=>S.trip?'⚡ MCCB 트립 — 상간 단락(R–T) ! MCCB를 클릭해 리셋':S.short>0?'⚠ 상간 단락! MC1·MC2 동시 투입':'';
+ o.hint='실험: ①정회전→정지→역회전 ②인터록 제거 후 정회전 중 역회전 → 단락 ③상 교체 오류 후 역회전';
+ return o}
+/* ================= 방 1 : 3상 유도전동기 실습 공간 ================= */
+function room1(){const o=shell(),g=o.sc;o.title='3상 유도전동기 실습 공간';bench(o,0,-2.4,4.4,1,0);
+ const cm=new T.Group();cm.position.set(-1.1,1.7,-2.4);g.add(cm);bx(g,.9,.1,.7,DK,-1.1,.93,-2.4);
+ const sh=new T.Shape();sh.absarc(0,0,.78,0,6.283);const hole=new T.Path();hole.absarc(0,0,.52,0,6.283,true);sh.holes.push(hole);
+ const stator=new T.Mesh(new T.ExtrudeGeometry(sh,{depth:.5,bevelEnabled:false,curveSegments:48}),Mt(0x3b6f93,.45,.5));stator.position.z=-.25;cm.add(stator);
+ const CP=[0xff4040,0xffffff,0x4070ff],pos=[[0,'U1',0],[60,'V2',1],[120,'W1',2],[180,'U2',0],[240,'V1',1],[300,'W2',2]],coils=[];
+ pos.forEach(([a,n,ph])=>{const r=a*PI/180,gg=new T.Group();gg.rotation.z=r;cm.add(gg);const mt=new T.MeshStandardMaterial({color:0xb87333,metalness:.7,roughness:.35,emissive:CP[ph],emissiveIntensity:0});
+  bx(gg,.12,.2,.46,mt,.58,0,0);coils.push({a:r,mt});lab(cm,n,Math.cos(r)*.66,Math.sin(r)*.66,.27,.12,.07,{W:128,bg:'#111'})});
+ const rt=new T.Group();cm.add(rt);cy(rt,.42,.5,Mt(0x9aa3ab,.35,.8),0,0,0,'z');for(let i=0;i<16;i++){const a=i/16*6.283;bx(rt,.03,.1,.52,Mt(0xe1e5e8,.3,.9),Math.cos(a)*.4,Math.sin(a)*.4,0).rotation.z=a}
+ bx(rt,.05,.2,.02,Mt(0xd32f2f),.28,0,.27);cy(cm,.06,1.1,MET,0,0,0,'z');lab(cm,'회전자(농형)',0,-.28,.3,.4,.08,{c:'#111',bg:'#e9edf1'});
+ const fa=new T.Group();fa.position.z=.33;cm.add(fa);bx(fa,.8,.05,.03,Mt(0xffd400),0,0,0);const cone=new T.Mesh(new T.ConeGeometry(.1,.2,12),Mt(0xffd400));cone.rotation.z=-PI/2;cone.position.x=.45;fa.add(cone);
+ [stator,rt.children[0]].forEach(m=>{m.userData={click:()=>A1.run()};o.click.push(m)});
+ lab(g,'고정자 권선 U·V·W → 회전자계 (노란 화살표)',-1.1,2.62,-2.4,1.9,.16,{c:'#111',bg:'#f2c200',W:512});
+ const rm=motor(g,1.2,-2.4,.875);
+ bx(g,.9,.03,.34,Mt(0x2b3036),1.2,.89,-1.98);const pz=[-2.07,-1.93],px=[1.0,1.2,1.4],nm=[['U1','V1','W1'],['W2','U2','V2']];
+ pz.forEach((z,r)=>px.forEach((x,i)=>{cy(g,.03,.05,MET,x,.93,z,'');lab(g,nm[r][i],x,.915,z+(r?.07:-.07),.1,.05,{rx:-PI/2,W:64})}));
+ const yg=new T.Group(),dg=new T.Group();g.add(yg,dg);bx(yg,.5,.02,.04,CU,1.2,.96,pz[1]);px.forEach(x=>bx(dg,.04,.02,.18,CU,x,.96,-2.0));
+ lab(g,'결선 단자판',1.2,.915,-1.82,.5,.07,{rx:-PI/2,W:128});
+ const wave=board(g,4.2,2.0,0,2.5,-5.94,(c,W,H)=>{c.fillStyle='#0e1a28';c.fillRect(0,0,W,H);c.fillStyle='#fff';c.textAlign='center';c.font='bold 30px Malgun Gothic';
+  c.fillText('3상 교류 파형 · 상순 '+(S1.rev?'U→W→V (2상 교체: 역회전)':'U→V→W (정회전)'),W/2,40);
+  const ph=[0,S1.rev?-4.19:-2.094,S1.rev?-2.094:-4.19],col=['#ff5a5a','#f2f2f2','#5b8dff'];c.lineWidth=5;const my=H/2+20,A=H*.3;
+  c.strokeStyle='#445a70';c.lineWidth=2;c.beginPath();c.moveTo(60,my);c.lineTo(W-60,my);c.stroke();
+  for(let k=0;k<3;k++){c.strokeStyle=col[k];c.lineWidth=5;c.beginPath();for(let x=0;x<=900;x+=6){const a=x/900*12.566,y=my-A*Math.sin(a+ph[k]);x?c.lineTo(60+x,y):c.moveTo(60+x,y)}c.stroke();c.fillStyle=col[k];c.font='bold 26px Malgun Gothic';c.fillText('UVW'[k],36,my-A*Math.sin(ph[k])+8)}
+  const cx=60+(S1.wt%12.566)/12.566*900;c.strokeStyle='#ffd400';c.lineWidth=3;c.beginPath();c.moveTo(cx,70);c.lineTo(cx,H-20);c.stroke();
+  [0,1,2].forEach(k=>{c.fillStyle=col[k];c.beginPath();c.arc(cx,my-A*Math.sin(S1.wt%12.566+ph[k]),9,0,7);c.fill()})});
+ door(o,1,'정·역회전 인터록 실습실',0);
+ let tk=0;o.upd=(dt,t)=>{const tg=S1.run?1:0;S1.s+=(tg-S1.s)*Math.min(1,dt*1.8);const dir=S1.rev?-1:1,w=3;S1.wt+=S1.s*w*dt;S1.ang+=dir*S1.s*w*.95*dt;
+  const th=-dir*S1.wt;fa.rotation.z=th;fa.visible=S1.s>.05;coils.forEach(c=>c.mt.emissiveIntensity=S1.s*Math.pow(Math.max(0,Math.cos(c.a-th)),2)*1.6);
+  rt.rotation.z=-S1.ang;rm.rot.rotation.x=-S1.ang;yg.visible=!S1.yd;dg.visible=S1.yd;tk+=dt;if(tk>.06){tk=0;wave.up()}};
+ o.hud='<button class="b g" onclick="A1.run()">전원 ON/OFF</button><button class="b v" onclick="A1.rev()">상순 교체 (R↔T)</button><br><button class="b v" onclick="A1.yd()">Y / Δ 결선 전환</button>';
+ o.views=[['실습대 정면',0,.3,0,-.1],['회전자계 근접',-1.1,-.4,0,0],['결선 단자판',1.2,-.3,0,-.5]];
+ o.stat=()=>`전원: ${S1.run?'<b class=ok>ON</b>':'OFF'}<br>회전자계/전동기: <b>${S1.s<.1?'정지':S1.rev?'역회전 (CCW)':'정회전 (CW)'}</b><br>결선: <b>${S1.yd?'Δ (상전압=선간전압)':'Y (상전압=선간÷√3, 기동전류 1/3)'}</b>`;
+ o.alarm=()=>'';o.hint='고정자 3상 권선이 120° 위상차로 여자되어 회전자계가 생기고 회전자가 뒤따라 회전 (시각화용 저속)';return o}
+/* ================= 방 2 : 자기유지 기동·정지 회로 실습 공간 ================= */
+function room2(){const o=shell(),g=o.sc;o.title='자기유지 기동·정지 회로 실습 공간';bench(o,0,-2.4,4.4,1,2.15);const ZW=-2.62,RD=0xd62828,BL=0x1f4fd8,ws=[];
+ const lv=mccb(o,g,-1.4,2.75,.3,.4,()=>{S2.pw=!S2.pw});const blk=(x,y,w,h,n,col)=>{const m=Mt(col,.5);bx(g,w,h,.1,m,x,y,-2.79);lab(g,n,x,y-h/2-.05,-2.74,w+.2,.08,{c:'#111'});return m};
+ const trm=(x,y)=>{scr(g,x,y,-2.73)};
+ bx(g,.14,.12,.1,Mt(0x9aa4ae),-1.4,2.35,-2.79);trm(-1.4,2.35);lab(g,'L1',-1.55,2.35,-2.7,.12,.07,{c:'#111'});
+ const off=pbtn(o,g,-.95,2.35,0xd32f2f,()=>A2.off(),-2.725);blk(-.95,2.35,.26,.26,'PB-OFF (b접점)',0xe3e7ea);[-1.08,-.82].forEach(x=>trm(x,2.35));
+ const on=pbtn(o,g,-.2,2.62,0x2e9e4f,()=>A2.on(),-2.725);blk(-.2,2.62,.26,.26,'PB-ON (a접점)',0xe3e7ea);[-.33,-.07].forEach(x=>trm(x,2.62));
+ const axm=blk(-.2,2.08,.26,.26,'MC 보조 a접점 (자기유지)',0xcfd5da);[-.33,-.07].forEach(x=>trm(x,2.08));
+ blk(.55,2.35,.4,.26,'THR b (과부하)',0x3a5a40);[.38,.72].forEach(x=>trm(x,2.35));
+ const im=mc(g,1.0,1.6,'MC','전자접촉기',true);bx(g,.14,.12,.1,Mt(0x9aa4ae),1.3,1.2,-2.79);trm(1.3,1.2);lab(g,'N',1.3,1.1,-2.7,.12,.07,{c:'#111'});
+ bx(g,.9,.3,.06,Mt(0xe9ecef,.5),-1.0,1.25,-2.81);const lr=lamp(g,-1.3,1.28,0x22dd55,-2.76),ls=lamp(g,-.9,1.28,0xff3030,-2.76);lab(g,'RUN',-1.3,1.14,-2.777,.3,.08,{c:'#111'});lab(g,'STOP',-.9,1.14,-2.777,.3,.08,{c:'#111'});
+ lab(g,'자기유지 기동·정지 회로',.75,2.88,-2.8,1.4,.3,{bg:'#12324f',W:512});
+ const w=(p,c,f)=>ws.push(wire(g,p.map(a=>[a[0],a[1],ZW]),c,f)),h1=()=>S2.pw&&!(S2.pOFF>0),run=()=>h1()&&(S2.pON>0||S2.mc);
+ w([[-1.4,2.55],[-1.4,2.35]],RD,()=>S2.pw);w([[-1.4,2.35],[-1.08,2.35]],RD,()=>S2.pw);w([[-.82,2.35],[-.55,2.35]],RD,h1);
+ w([[-.55,2.35],[-.55,2.62],[-.33,2.62]],RD,h1);w([[-.55,2.35],[-.55,2.08],[-.33,2.08]],RD,h1);
+ w([[-.07,2.62],[.2,2.62],[.2,2.35]],RD,()=>h1()&&S2.pON>0);w([[-.07,2.08],[.2,2.08],[.2,2.35]],RD,()=>h1()&&S2.mc);
+ w([[.2,2.35],[.38,2.35]],RD,run);w([[.72,2.35],[1.0,2.35],[1.0,1.8]],RD,run);w([[1.0,1.4],[1.0,1.2],[1.3,1.2]],BL,()=>S2.mc);
+ const mo=motor(g,1.8,-2.3,.875);
+ const ladder=board(g,3.2,1.2,-4.6,2.2,-5.94,(c,W,H)=>lad(c,W,H,'자기유지 회로 (MC 보조 a접점으로 ON 신호 유지)',[{y:140,pw:S2.pw,stop:{n:'PB-OFF(b)',cl:!(S2.pOFF>0)},pb:'PB-ON(a)',pp:S2.pON>0,aux:'MC a(유지)',self:S2.mc,il:null,coil:'MC',coilOn:S2.mc}]));
+ door(o,-1,'정·역회전 인터록 실습실',0);let tk=0;
+ o.upd=(dt,t)=>{S2.pON=Math.max(0,S2.pON-dt);S2.pOFF=Math.max(0,S2.pOFF-dt);S2.mc=run();
+  im.emissiveIntensity=S2.mc?1.2:0;im.color.set(S2.mc?0x33ff77:0x333333);axm.color.set(S2.mc?0x22aa44:0xcfd5da);lv.rotation.x=S2.pw?0:.9;
+  on.position.z=-2.725-(S2.pON>0?.02:0);off.position.z=-2.725-(S2.pOFF>0?.02:0);lr.emissiveIntensity=S2.mc?1.4:.04;ls.emissiveIntensity=(!S2.mc&&S2.pw)?1.4:.04;
+  S2.om+=((S2.mc?16:0)-S2.om)*Math.min(1,dt*1.6);S2.ang+=S2.om*dt;mo.rot.rotation.x=-S2.ang;wup(ws,t);tk+=dt;if(tk>.1){tk=0;ladder.up()}};
+ o.hud='<button class="b g" onclick="A2.on()">▶ PB-ON (눌렀다 뗌)</button><button class="b r" onclick="A2.off()">■ PB-OFF</button><br><button class="b" onclick="A2.pw()">전원 MCCB ON/OFF</button>';
+ o.views=[['실습대 정면',0,.3,0,-.1],['제어 결선 확대',-.2,-.7,0,.1],['제어회로도',-4.6,-2.4,0,.15]];
+ o.stat=()=>`전원: ${S2.pw?'<b class=ok>ON</b>':'OFF'}<br>MC 코일: ${S2.mc?'<b class=ok>여자(자기유지)</b>':'소자'}<br>부하 전동기: <b>${S2.mc?'운전':'정지'}</b>`;
+ o.alarm=()=>'';o.hint='PB-ON을 눌렀다 떼도 MC 보조 a접점이 닫혀 운전 유지 → PB-OFF(b)로 해제';return o}
+/* ---------- 조작 ---------- */
+const A={S(){S.pS=true;B.S=.35;setTimeout(()=>S.pS=false,350)},F(){S.pF=true;B.F=.35;setTimeout(()=>S.pF=false,350)},R(){S.pR=true;B.R=.35;setTimeout(()=>S.pR=false,350)},
+ mccb(){if(S.trip){S.trip=false;S.mccb=true;S.short=0}else S.mccb=!S.mccb},il(){S.il=!S.il},swap(){S.swapErr=!S.swapErr;A.rebuild()},
+ view(i){const v=rooms[P.room].views[i];vt={t:0,x0:P.x,z0:P.z,y0:P.yaw,p0:P.pitch,v}}};
+const A1={run(){S1.run=!S1.run},rev(){S1.rev=!S1.rev},yd(){S1.yd=!S1.yd}},A2={on(){S2.pON=.4},off(){S2.pOFF=.4},pw(){S2.pw=!S2.pw}};
+rooms.push(room0(),room1(),room2());
+function setHud(){const r=rooms[P.room];$('ttl').textContent=r.title;$('ctl').innerHTML=r.hud+'<br>'+r.views.map((v,i)=>`<button class="b v" onclick="A.view(${i})">${v[0]}</button>`).join('')+'<small>'+r.hint+'</small>'}
+setInterval(()=>{const r=rooms[P.room],a=r.alarm();$('st').innerHTML=r.stat();$('al').style.display=a?'block':'none';$('al').textContent=a},150);
+/* ---------- 이동·문 전환 ---------- */
+const keys={};let tr=null,vt=null,sayT=0;
+const say=(s,t=2)=>{$('msg').textContent=s;sayT=t};
+const hit=(o,x,z)=>Math.abs(x)>7.5||Math.abs(z)>5.5||o.col.some(b=>x>b[0]-.3&&x<b[2]+.3&&z>b[1]-.3&&z<b[3]+.3);
+function tryDoor(d){if(tr)return;if(Math.hypot(P.x-d.x,P.z)>3.6){say('문 가까이 다가가세요');return}tr={d,t:0,sx:P.x,sz:P.z,sy:((P.yaw%(2*PI))+3*PI)%(2*PI)-PI}}
+function stepTr(dt){const d=tr.d;tr.t+=dt;const t=tr.t;
+ if(!tr.sw){d.pv.rotation.y=d.side*1.5*Math.min(1,t/.6);const u=Math.min(1,t/1.4),e=u*u*(3-2*u),ty=-d.side*PI/2,df=((ty-tr.sy+3*PI)%(2*PI))-PI;
+  P.x=tr.sx+(d.x+d.side*.3-tr.sx)*e;P.z=tr.sz*(1-e);P.yaw=tr.sy+df*e;P.pitch*=.97;$('fade').style.opacity=Math.max(0,Math.min(1,(t-.7)/.7));
+  if(t>=1.4){const from=P.room;d.pv.rotation.y=0;P.room=d.to;const ad=rooms[P.room].doors.find(a=>a.to==from);tr.ad=ad;tr.sw=true;tr.t2=0;ad.pv.rotation.y=ad.side*1.5;setHud()}}
+ else{tr.t2+=dt;const ad=tr.ad,u=Math.min(1,tr.t2/1.0),e=u*u*(3-2*u);P.x=ad.x-ad.side*(.4+1.2*e);P.z=0;P.yaw=ad.side*PI/2;
+  ad.pv.rotation.y=ad.side*1.5*(1-Math.min(1,tr.t2/.9));$('fade').style.opacity=Math.max(0,1-tr.t2/.7);if(tr.t2>=1){ad.pv.rotation.y=0;tr=null}}}
+function stepView(dt){vt.t+=dt/.9;const u=Math.min(1,vt.t),e=u*u*(3-2*u),v=vt.v;P.x=vt.x0+(v[1]-vt.x0)*e;P.z=vt.z0+(v[2]-vt.z0)*e;
+ const df=((v[3]-vt.y0+3*PI)%(2*PI))-PI;P.yaw=vt.y0+df*e;P.pitch=vt.p0+(v[4]-vt.p0)*e;if(u>=1)vt=null}
+function move(dt){const r=rooms[P.room],f=(keys.w||keys.ArrowUp?1:0)-(keys.s||keys.ArrowDown?1:0),sd=(keys.d?1:0)-(keys.a?1:0),tn=(keys.ArrowLeft?1:0)-(keys.ArrowRight?1:0);
+ if(tn){P.yaw+=tn*1.6*dt;vt=null}if(!f&&!sd)return;vt=null;const sp=2.6*dt,fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),rx=Math.cos(P.yaw),rz=-Math.sin(P.yaw);
+ const nx=P.x+(fx*f+rx*sd)*sp,nz=P.z+(fz*f+rz*sd)*sp;if(!hit(r,nx,P.z))P.x=nx;if(!hit(r,P.x,nz))P.z=nz}
+const cv=$('c'),ray=new T.Raycaster(),v2=new T.Vector2();let dn=null;
+cv.addEventListener('pointerdown',e=>{dn={lx:e.clientX,ly:e.clientY,t:performance.now(),m:0};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{if(!dn||tr)return;const dx=e.clientX-dn.lx,dy=e.clientY-dn.ly;dn.m+=Math.abs(dx)+Math.abs(dy);dn.lx=e.clientX;dn.ly=e.clientY;if(dn.m>8){vt=null;P.yaw-=dx*.005;P.pitch=Math.max(-1,Math.min(1,P.pitch-dy*.004))}});
+cv.addEventListener('pointerup',e=>{if(dn&&dn.m<8&&performance.now()-dn.t<600&&!tr){const r=cv.getBoundingClientRect();v2.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height*2-1));ray.setFromCamera(v2,cam);
+ const h=ray.intersectObjects(rooms[P.room].click,false)[0];if(h&&h.object.userData.click)h.object.userData.click()}dn=null});
+const kn=e=>e.key.length>1?e.key:e.key.toLowerCase();
+addEventListener('keydown',e=>{keys[kn(e)]=true;if(kn(e)=='e'){const d=rooms[P.room].doors.find(d=>Math.hypot(P.x-d.x,P.z)<3);if(d)tryDoor(d)}});addEventListener('keyup',e=>keys[kn(e)]=false);
+document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;b.addEventListener('pointerdown',()=>keys[k]=true);['pointerup','pointerleave'].forEach(n=>b.addEventListener(n,()=>keys[k]=false))});
+function rs(){rd.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+setHud();let last=performance.now(),tk=0;
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;tk+=dt;const r=rooms[P.room];
+ if(tr)stepTr(dt);else{move(dt);if(vt)stepView(dt)}
+ rooms[P.room].upd(dt,tk);
+ const nd=!tr&&r.doors.find(d=>Math.hypot(P.x-d.x,P.z)<3);if(sayT>0){sayT-=dt;$('msg').style.display='block'}else if(nd){$('msg').textContent='E 키 / 문 클릭 : '+nd.title+'(으)로 이동';$('msg').style.display='block'}else $('msg').style.display='none';
+ cam.position.set(P.x,1.65,P.z);cam.rotation.set(P.pitch,P.yaw,0,'YXZ');rd.render(rooms[P.room].sc,cam);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></body></html>
