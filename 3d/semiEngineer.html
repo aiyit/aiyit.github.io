@@ -17,7 +17,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 #bt button{font:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--line );border-radius:4px;background:transparent;color:var(--ink );cursor:pointer}
 #bt button.on{background:var(--acc );color:#fff;border-color:var(--acc )}
 #bt button:focus-visible{outline:2px solid var(--acc );outline-offset:2px}
-#ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(16,32,46,.45 );padding:16px;box-sizing:border-box}
+#ov{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(16,32,46,.45 );padding:16px;box-sizing:border-box}
 .card{position:static;max-width:380px;padding:20px 22px}
 .card b{font-size:17px}.card p{margin:8px 0;font-size:13px;color:var(--mute );line-height:1.5}
 .card ul{margin:8px 0 14px;padding:0;list-style:none;font-size:13px;line-height:1.8}.card kbd{font:inherit;font-weight:700;color:var(--acc )}
@@ -47,6 +47,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 #mbar{height:8px;border-radius:4px;background:var(--line );margin:6px 0 4px;overflow:hidden}#mf{height:100%;width:0;background:#2fbf62;transition:width .3s}
 #mt .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}#mt button:disabled{opacity:.4;cursor:default}
 #mbc{background:var(--acc );border-color:var(--acc );color:#fff}#mi{margin-top:10px;font-size:12px;color:var(--mute )}
+.kh{margin-top:12px;padding:9px 11px;border-radius:5px;border:1px solid var(--line );background:rgba(15,95,168,.06);font-size:12px;line-height:1.65}
+.kh b{display:block;margin-bottom:2px;color:var(--acc )}
+.kh ul{margin:0;padding:0;list-style:none}
+.kh kbd{font:inherit;font-weight:700;color:var(--acc );margin-right:4px}
 #gd{left:12px;top:52px;width:min(500px,calc(100vw - 24px ) );padding:10px 12px;font-size:12px;display:none;box-sizing:border-box}
 #gd table{width:100%;min-width:820px;border-collapse:collapse}#gd th{text-align:left;color:var(--mute );font-weight:600;padding:2px 5px}#gd td{padding:3px 5px;border-top:1px solid var(--line )}
 #gd button{font:inherit;font-size:11px;padding:3px 8px;border:1px solid var(--line );border-radius:3px;background:transparent;color:var(--ink );cursor:pointer}
@@ -56,7 +60,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 #vrb{left:150px;display:none}#gb:focus-visible,#vrb:focus-visible{outline:2px solid var(--acc );outline-offset:2px}
 </style></head><body>
 <canvas id="c"></canvas>
-<div id="ov"><div class="box card"><b>반도체 FAB 설비 유지보수 교육</b><p>1인칭 시점으로 클린룸을 이동하며 8대 공정 장비를 확인하고 유지보수 교육을 진행합니다.</p><ul><li><kbd>W A S D</kbd> 또는 방향키: 이동</li><li><kbd>마우스</kbd>: 시점 회전</li><li><kbd>E</kbd>: 바라보는 장비와 상호작용</li><li><kbd>Tab</kbd>: 전체 진행 현황 · <kbd>1–8</kbd>: 장비 위치 안내</li><li><kbd>Esc</kbd>: release the mouse</li></ul><button id="go">FAB 입장</button></div></div>
+<div id="ov"><div class="box card"><b>반도체 FAB 설비 유지보수 교육</b><p>1인칭 시점으로 클린룸을 이동하며 8대 공정 장비를 확인하고 유지보수 교육을 진행합니다.</p><ul><li><kbd>W S</kbd> · <kbd>↑ ↓</kbd> 또는 <kbd>마우스 휠</kbd>: 전진 · 후진</li><li><kbd>A D</kbd> · <kbd>← →</kbd> 또는 <kbd>마우스 드래그</kbd>: 좌우 방향 회전</li><li><kbd>E</kbd>: 바라보는 장비와 상호작용</li><li><kbd>Tab</kbd>: 전체 진행 현황 · <kbd>1–8</kbd>: 장비 위치 안내</li><li><kbd>더블클릭</kbd>: 포인터 잠금 전환 (<kbd>Esc</kbd> 해제)</li></ul><button id="go">FAB 입장</button></div></div>
 <div id="xh"></div><div class="box" id="hint"></div>
 <div class="box" id="pr"></div>
 <div class="box" id="gd"><b>전체 장비 유지보수 현황</b><table><thead><tr><th></th><th>No.</th><th>장비명</th><th>전체</th><th>완료</th><th>잔여</th><th>%</th><th>상태</th><th></th></tr></thead><tbody id="gt"></tbody></table><div class="nt" id="gall"></div><div class="nt">Tab: 대시보드 닫기 · 숫자 1–8: 장비 안내 · 0: 안내 해제</div></div>
@@ -68,7 +72,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 <h3 id="m3"></h3><p id="m4"></p><h3>중요성</h3><p id="m5"></p><div id="mi"></div>
 <h3>교육 단계</h3><ul id="m7"></ul><div id="mbar"><div id="mf"></div></div><div id="mp" class="nt"></div>
 <div class="row"><button id="mbp">이전 단계 (B )</button><button id="mbn">다음 단계 (N )</button></div>
-<div class="row"><button id="mbc">단계 완료 (C )</button><button id="mbx">교육 종료 (X )</button></div></div>
+<div class="row"><button id="mbc">단계 완료 (C )</button><button id="mbx">교육 종료 (X )</button></div>
+<div class="kh"><b>유지보수 교육 단축키 안내</b><ul><li><kbd>[B]</kbd> 이전 단계: 직전 교육 단계로 이동합니다.</li><li><kbd>[N]</kbd> 다음 단계: 현재 단계를 완료한 뒤 다음 단계로 진행합니다.</li><li><kbd>[C]</kbd> 단계 완료: 대상 구성요소를 확인한 후 현재 단계를 완료 처리합니다.</li><li><kbd>[X]</kbd> 교육 종료: 강조 표시를 해제하고 유지보수 교육을 마칩니다.</li><li><kbd>[F]</kbd> 위치·시점 재안내: 현재 구성요소 위치로 다시 이동하고 시점을 맞춥니다.</li></ul></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const T=THREE,W=44,L=76,H=8,HW=W/2,HL=L/2;
@@ -78,7 +83,21 @@ const rn=new T.WebGLRenderer({canvas:document.getElementById('c' ),antialias:tru
 rn.setPixelRatio(Math.min(devicePixelRatio,1.5 ) );rn.outputEncoding=T.sRGBEncoding;
 // ---------- helpers ----------
 const M={};
-function mat(c,o={} ){const k=[c,o.m,o.r,o.e,o.t].join('|' );return M[k]||(M[k]=new T.MeshStandardMaterial({color:c,metalness:o.m??.3,roughness:o.r??.55,emissive:o.e||0,transparent:!!o.t,opacity:o.t||1,side:o.t?T.DoubleSide:T.FrontSide} ) )}
+/* 금속 반사용 절차적 환경맵 (천장 조명 패널·벽·바닥이 비치는 클린룸 느낌) */
+const ENVMAP=(()=>{try{const c=document.createElement('canvas');c.width=1024;c.height=512;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,512);
+ g.addColorStop(0,'#ffffff');g.addColorStop(.3,'#eef3f7');g.addColorStop(.5,'#b9c5d0');g.addColorStop(.62,'#6e7b87');g.addColorStop(1,'#a3aeb8');x.fillStyle=g;x.fillRect(0,0,1024,512);
+ x.fillStyle='#ffffff';for(let i=0;i<16;i++){x.fillRect(i*64+8,36,48,24);x.fillRect(i*64+8,92,48,14)}
+ x.fillStyle='rgba(38,54,70,.5)';for(let i=0;i<8;i++)x.fillRect(i*128+44,196,26,130);
+ x.fillStyle='rgba(120,200,255,.35)';for(let i=0;i<4;i++)x.fillRect(i*256+90,160,90,28);
+ const t=new T.CanvasTexture(c);t.mapping=T.EquirectangularReflectionMapping;t.encoding=T.sRGBEncoding;
+ const pm=new T.PMREMGenerator(rn);const e=pm.fromEquirectangular(t).texture;pm.dispose();t.dispose();return e}catch(err){return null}})();
+function mat(c,o={} ){const k=[c,o.m,o.r,o.e,o.t].join('|' );if(M[k])return M[k];
+ let m=o.m??.3,r=o.r??.55;
+ if(c===EQC ){m=.85;r=.35} // 장비 프레임: metalness .85 / roughness .35
+ else if(c===METAL ){m=Math.max(m,.85 );r=Math.min(r,.35 )} // 금속 프레임
+ const mt=new T.MeshStandardMaterial({color:c,metalness:m,roughness:r,emissive:o.e||0,transparent:!!o.t,opacity:o.t||1,side:o.t?T.DoubleSide:T.FrontSide} );
+ if(ENVMAP&&m>=.5&&!o.t ){mt.envMap=ENVMAP;mt.envMapIntensity=1.15}
+ return M[k]=mt}
 function add(p,n,geo,x,y,z,c,o={} ){const m=new T.Mesh(geo,mat(c,o ) );m.name=n;m.position.set(x,y,z );p.add(m );return m}
 const GC={};const gk=(k,f )=>GC[k]||(GC[k]=f( ) );
 const B=(p,n,w,h,d,x,y,z,c,o )=>add(p,n,gk('b'+w+'_'+h+'_'+d,( )=>new T.BoxGeometry(w,h,d ) ),x,y,z,c,o );
@@ -87,13 +106,13 @@ function Tr(p,n,R,t,x,y,z,c,o ){const m=add(p,n,new T.TorusGeometry(R,t,10,32 ),
 const D=(p,n,r,x,y,z,c,o )=>add(p,n,new T.SphereGeometry(r,24,12,0,Math.PI*2,0,Math.PI/2 ),x,y,z,c,o );
 function tex(w,h,fn ){const c=document.createElement('canvas' );c.width=w;c.height=h;fn(c.getContext('2d' ),w,h );const t=new T.CanvasTexture(c );t.encoding=T.sRGBEncoding;t.anisotropy=8;return t}
 const COL=[];
-const white=0xeef1f4,steel=0xaab4bf,gray=0x7d8894,dark=0x2a3038,blue=0x2f6fb3,orange=0xff7a2f,glass=0x1b2a3a;
+const S=c=>new T.Color(c).convertSRGBToLinear().getHex();/* FAB 권장 색상: 장비 청색 #527D9B, 금속 #929DA5, 안전 #E9C84A, 배관 적/청/황 */const EQC=S(0x527D9B),METAL=S(0x929DA5),SAFE=S(0xE9C84A),PIPE_R=S(0xB94E4E),PIPE_B=S(0x397DAE),PIPE_Y=S(0xD4B64C);const white=EQC,steel=METAL,gray=METAL,dark=0x2a3038,blue=EQC,orange=0xff7a2f,glass=0x1b2a3a;
 // common sub-assemblies
 function tower(g,x,y,z ){B(g,'Signal_Tower_Pole',.05,.8,.05,x,y,z,gray );[[0xff3b30,0],[0xffc400,.14],[0x2ecc40,.28]].forEach(([c,o],i )=>C(g,'Signal_Tower_Lamp_'+(i+1 ),.07,.12,x,y+.45+o,z,c,{e:c,m:0,r:.3} ) )}
 function screen(g,x,y,z,w=.7,h=.5 ){return B(g,'Control_Panel_Display',w,h,.06,x,y,z,0x0a1a2e,{e:0x1e5fa8,r:.2} )}
 function console_(g,x,z ){B(g,'Operator_Console_Base',.7,1.1,.6,x,.55,z,white );screen(g,x,1.4,z+.05 );}
 function foup(g,x,y,z ){B(g,'FOUP_Carrier',.42,.34,.46,x,y,z,0xf0a830,{r:.4,m:.1} )}
-function efem(g,x,z,w,n ){B(g,'EFEM_Housing',w,1.9,1.1,x,.95,z,white,{m:.2} );B(g,'EFEM_Fan_Filter_Unit',w,.25,1.1,x,2.02,z,0xd3dae1 );
+function efem(g,x,z,w,n ){B(g,'EFEM_Housing',w,1.9,1.1,x,.95,z,white,{m:.2} );B(g,'EFEM_Fan_Filter_Unit',w,.25,1.1,x,2.02,z,EQC );
  for(let i=0;i<n;i++ ){const fx=x+(i-(n-1 )/2 )*1.25;B(g,'Loadport_'+(i+1 )+'_Shelf',.75,.1,.7,fx,1.0,z+.9,gray );B(g,'Loadport_'+(i+1 )+'_Door',.5,.5,.04,fx,1.35,z+.56,dark );foup(g,fx,1.22,z+.9 )}
  C(g,'Wafer_Handling_Robot',.18,.5,x,1.0,z-.1,steel,{m:.7} )}
 function pipe(g,n,r,h,x,y,z,c,ax ){return C(g,n,r,h,x,y,z,c,{ax,m:.6,r:.35,s:12} )}
@@ -107,7 +126,7 @@ function czochralski(g ){
  C(g,'Pull_Chamber',.5,1.6,0,4.4,0,steel,{m:.8,r:.25} );
  B(g,'Seed_Lift_Drive',1.2,.5,1.0,0,5.4,0,white );
  C(g,'Rotation_Motor',.25,.5,0,5.9,0,dark );
- pipe(g,'Coolant_Pipe_L',.08,3.2,-.9,2.8,-1.35,0x3b82c4,'y' );pipe(g,'Coolant_Pipe_R',.08,3.2,.9,2.8,-1.35,0x3b82c4,'y' );
+ pipe(g,'Coolant_Pipe_L',.08,3.2,-.9,2.8,-1.35,PIPE_B,'y' );pipe(g,'Coolant_Pipe_R',.08,3.2,.9,2.8,-1.35,PIPE_B,'y' );
  B(g,'Ingot_Cradle',1.8,.9,.7,3.0,.45,0,gray );C(g,'Silicon_Ingot',.3,1.5,3.0,1.2,0,0x808a96,{ax:'x',m:.9,r:.2} );
  console_(g,-3.0,.9 );tower(g,2.0,1.1,-1.4 );
  return [8.2,4.4]}
@@ -118,19 +137,19 @@ function oxidation(g ){
   C(g,'Heater_Zone_'+(i+1 ),.42,1.6,-.6,y,-.2,orange,{ax:'z',e:0x7a2a08} );
   C(g,'Door_Flange_'+(i+1 ),.4,.12,-.6,y,2.2,steel,{ax:'z',m:.8} );
   B(g,'Boat_Loader_Paddle_'+(i+1 ),.12,.05,.9,-.6,y-.2,1.9,0xe8e0c8 )}
- B(g,'Gas_Cabinet',1.3,2.6,2.4,3.1,1.3,0,0xdfe5ea );C(g,'Exhaust_Duct',.25,1.2,3.1,3.2,0,gray,{m:.6,s:16} );
- pipe(g,'Gas_Line',.04,1.8,1.9,.6,.8,0x3b82c4,'x' );
+ B(g,'Gas_Cabinet',1.3,2.6,2.4,3.1,1.3,0,EQC );C(g,'Exhaust_Duct',.25,1.2,3.1,3.2,0,gray,{m:.6,s:16} );
+ pipe(g,'Gas_Line',.04,1.8,1.9,.6,.8,PIPE_B,'x' );
  console_(g,-3.9,1.2 );tower(g,1.5,3.6,-1.2 );
  return [8.4,3.8,-.4]}
 function litho(g ){
  B(g,'Scanner_Body',4.6,2.6,3.4,0,1.3,0,white );
- B(g,'Illuminator_Module',3.2,1.0,2.4,0,3.1,-.2,0xc9d4de );
+ B(g,'Illuminator_Module',3.2,1.0,2.4,0,3.1,-.2,EQC );
  C(g,'Projection_Lens_Column',.65,1.4,0,4.3,-.2,0x3d4652,{m:.6,r:.3} );
  Tr(g,'Lens_Flange',.7,.07,0,3.65,-.2,steel,{m:.8} );
  B(g,'Reticle_Stage',1.6,.5,1.4,0,5.25,-.2,gray );
  B(g,'Stage_Enclosure_Glass',2.4,1.1,1.0,0,1.3,2.2,0x9fc4e0,{t:.28,m:.1} );
  C(g,'Wafer_Chuck',.4,.06,0,1.0,2.2,steel,{m:.8} );B(g,'Wafer_Stage_Base',1.4,.15,.8,0,.9,2.2,dark );
- B(g,'Light_Source_Cabinet',2.2,3.2,2.2,3.7,1.6,-.4,0x2a5d96 );
+ B(g,'Light_Source_Cabinet',2.2,3.2,2.2,3.7,1.6,-.4,EQC );
  C(g,'Laser_Beam_Tube',.12,1.0,2.1,2.7,-.4,steel,{ax:'x',m:.8} );
  B(g,'Wafer_Handler_Unit',1.7,1.6,2.0,-3.2,.8,.4,white );
  B(g,'Loadport_1_Shelf',.8,.1,.7,-3.2,1.0,1.75,gray );foup(g,-3.2,1.22,1.75 );
@@ -139,35 +158,35 @@ function litho(g ){
  return [9,5.6,.4,.5]}
 function etcher(g ){
  efem(g,0,1.7,5.2,2 );
- C(g,'Transfer_Module',1.2,1.0,0,1.4,-.4,0x9aa6b2,{s:6,m:.7,r:.3} );C(g,'Mainframe_Base',1.15,.7,0,.35,-.4,white,{s:6} );
+ C(g,'Transfer_Module',1.2,1.0,0,1.4,-.4,METAL,{s:6,m:.7,r:.3} );C(g,'Mainframe_Base',1.15,.7,0,.35,-.4,white,{s:6} );
  [[-2.2,-.4],[2.2,-.4],[0,-2.3]].forEach(([x,z],k )=>{const n=k+1;
   B(g,'Chamber_Base_'+n,1.4,.7,1.4,x,.35,z,white );C(g,'Process_Chamber_'+n,.85,1.3,x,1.35,z,steel,{m:.8,r:.25} );
-  C(g,'Chamber_Lid_'+n,.9,.2,x,2.1,z,0x6d7884,{m:.7} );Tr(g,'ICP_Coil_'+n,.55,.06,x,2.28,z,0xd08a2a,{m:.9} );
+  C(g,'Chamber_Lid_'+n,.9,.2,x,2.1,z,METAL,{m:.7} );Tr(g,'ICP_Coil_'+n,.55,.06,x,2.28,z,0xd08a2a,{m:.9} );
   B(g,'RF_Match_Box_'+n,.5,.5,.5,x,2.6,z,white );B(g,'Slit_Valve_'+n,.5,.4,.3,x*.55,1.35,z*.7-.2,dark )} );
- B(g,'RF_Generator',1.0,1.4,.8,-3.8,.7,-1.8,0xdfe5ea );C(g,'Dry_Vacuum_Pump',.4,1.0,3.8,.5,-1.8,0x5e6a76,{m:.6} );
- pipe(g,'Foreline_Pipe',.07,1.6,3.0,.3,-1.0,steel,'x' );pipe(g,'Gas_Line_1',.04,1.5,0,2.6,-2.3,0x3b82c4,'z' );
+ B(g,'RF_Generator',1.0,1.4,.8,-3.8,.7,-1.8,EQC );C(g,'Dry_Vacuum_Pump',.4,1.0,3.8,.5,-1.8,0x5e6a76,{m:.6} );
+ pipe(g,'Foreline_Pipe',.07,1.6,3.0,.3,-1.0,PIPE_Y,'x' );pipe(g,'Gas_Line_1',.04,1.5,0,2.6,-2.3,PIPE_B,'z' );
  tower(g,-2.6,2.3,1.0 );
  return [8.6,6,0,-.4]}
 function cvd(g ){
  efem(g,0,1.7,5.2,2 );
- C(g,'Transfer_Chamber',1.3,1.0,0,1.4,-.4,0xa2adb8,{s:8,m:.7} );C(g,'Mainframe_Base',1.25,.7,0,.35,-.4,white,{s:8} );
+ C(g,'Transfer_Chamber',1.3,1.0,0,1.4,-.4,METAL,{s:8,m:.7} );C(g,'Mainframe_Base',1.25,.7,0,.35,-.4,white,{s:8} );
  [[-2.4,-.4],[2.4,-.4],[0,-2.5]].forEach(([x,z],k )=>{const n=k+1;
   B(g,'Chamber_Base_'+n,1.7,.8,1.7,x,.4,z,white );B(g,'Reaction_Chamber_'+n,1.6,1.0,1.6,x,1.3,z,steel,{m:.8,r:.3} );
-  B(g,'Chamber_Lid_'+n,1.7,.2,1.7,x,1.9,z,0x707c88,{m:.7} );C(g,'Showerhead_Plate_'+n,.5,.06,x,1.78,z,gray,{m:.9} );
+  B(g,'Chamber_Lid_'+n,1.7,.2,1.7,x,1.9,z,METAL,{m:.7} );C(g,'Showerhead_Plate_'+n,.5,.06,x,1.78,z,gray,{m:.9} );
   Tr(g,'Heater_Ring_'+n,.62,.06,x,1.0,z,orange,{e:0x7a2a08} );C(g,'Gas_Inlet_Manifold_'+n,.15,.7,x,2.35,z,steel,{m:.8} );
-  B(g,'Remote_Plasma_Unit_'+n,.6,.5,.6,x,2.95,z,0x2a5d96 )} );
- B(g,'Gas_Panel',1.2,2.1,.9,-4.3,1.05,-.6,0xdfe5ea );B(g,'Pump_Module_A',.9,.9,.9,4.3,.45,-1.0,0x5e6a76 );B(g,'Pump_Module_B',.9,.9,.9,4.3,.45,.3,0x5e6a76 );
- pipe(g,'Exhaust_Line',.1,2.6,3.5,.5,-.5,steel,'x' );tower(g,2.6,2.3,1.0 );
+  B(g,'Remote_Plasma_Unit_'+n,.6,.5,.6,x,2.95,z,EQC )} );
+ B(g,'Gas_Panel',1.2,2.1,.9,-4.3,1.05,-.6,EQC );B(g,'Pump_Module_A',.9,.9,.9,4.3,.45,-1.0,0x5e6a76 );B(g,'Pump_Module_B',.9,.9,.9,4.3,.45,.3,0x5e6a76 );
+ pipe(g,'Exhaust_Line',.1,2.6,3.5,.5,-.5,PIPE_Y,'x' );tower(g,2.6,2.3,1.0 );
  return [9.6,6.4,0,-.5]}
 function pvd(g ){
  efem(g,0,1.7,5.2,2 );
- C(g,'Transfer_Chamber',1.3,1.0,0,1.4,-.4,0x9aa6b2,{s:12,m:.7} );C(g,'Mainframe_Base',1.25,.7,0,.35,-.4,white,{s:12} );
+ C(g,'Transfer_Chamber',1.3,1.0,0,1.4,-.4,METAL,{s:12,m:.7} );C(g,'Mainframe_Base',1.25,.7,0,.35,-.4,white,{s:12} );
  [[-2.3,-.5],[2.3,-.5],[0,-2.4]].forEach(([x,z],k )=>{const n=k+1;
-  C(g,'Chamber_Body_'+n,.9,1.0,x,.5,z,0x6d7884,{m:.8} );C(g,'Sputter_Chamber_Wall_'+n,.9,.7,x,1.35,z,steel,{m:.8,r:.25} );
-  D(g,'Chamber_Dome_'+n,.9,x,1.7,z,0xc3ccd5,{m:.8,r:.2} );C(g,'Target_Plate_'+n,.5,.08,x,2.6,z,0xd6b25a,{m:.9,r:.25} );
+  C(g,'Chamber_Body_'+n,.9,1.0,x,.5,z,METAL,{m:.8} );C(g,'Sputter_Chamber_Wall_'+n,.9,.7,x,1.35,z,steel,{m:.8,r:.25} );
+  D(g,'Chamber_Dome_'+n,.9,x,1.7,z,METAL,{m:.8,r:.2} );C(g,'Target_Plate_'+n,.5,.08,x,2.6,z,0xd6b25a,{m:.9,r:.25} );
   C(g,'Magnetron_Housing_'+n,.4,.5,x,2.95,z,dark,{m:.5} );B(g,'Magnetron_Motor_'+n,.3,.4,.3,x,3.4,z,gray )} );
- C(g,'Cryopump',.45,1.4,-4.0,.7,-.8,0xd0a840,{m:.7,r:.3} );B(g,'DC_Power_Supply',1.0,1.6,.8,4.1,.8,-1.2,0xdfe5ea );
- pipe(g,'Vacuum_Line',.1,1.8,-3.1,1.0,-.8,steel,'x' );tower(g,2.6,2.3,1.0 );
+ C(g,'Cryopump',.45,1.4,-4.0,.7,-.8,0xd0a840,{m:.7,r:.3} );B(g,'DC_Power_Supply',1.0,1.6,.8,4.1,.8,-1.2,EQC );
+ pipe(g,'Vacuum_Line',.1,1.8,-3.1,1.0,-.8,PIPE_Y,'x' );tower(g,2.6,2.3,1.0 );
  return [9.6,6.2,0,-.5]}
 function prober(g ){
  B(g,'Granite_Base',3.8,.9,3.0,0,.45,0,0x5a626b,{m:.1,r:.3} );B(g,'Prober_Frame',3.4,1.3,2.6,0,1.55,0,white );
@@ -175,7 +194,7 @@ function prober(g ){
  Tr(g,'Probe_Card_Ring',.62,.05,0,2.75,.3,0x2e8b57,{m:.3} );C(g,'Probe_Card',.6,.05,0,2.8,.3,0x2e8b57,{m:.2} );
  C(g,'Probe_Needle_Array',.08,.2,0,2.65,.3,0xd0a840,{rt:.01,m:.9,s:10} );
  [-1.5,1.5].forEach((x,i )=>B(g,'Test_Head_Support_'+(i+1 ),.3,1.8,.3,x,3.0,.3,gray ) );
- B(g,'Tester_Head',2.8,1.2,1.7,0,4.2,.3,0x2a5d96 );B(g,'Tester_Interface_Ring',1.2,.1,1.2,0,3.55,.3,dark );
+ B(g,'Tester_Head',2.8,1.2,1.7,0,4.2,.3,EQC );B(g,'Tester_Interface_Ring',1.2,.1,1.2,0,3.55,.3,dark );
  B(g,'Loader_Unit',1.5,1.8,2.2,2.9,.9,.2,white );B(g,'Wafer_Cassette',.5,.6,.5,2.9,2.1,.9,0xf0a830 );
  C(g,'Alignment_Microscope',.12,.7,-1.0,3.0,.9,dark,{m:.6} );
  B(g,'Monitor',.8,.55,.06,-2.7,1.8,.6,0x0a1a2e,{e:0x1e5fa8} );B(g,'Monitor_Arm',.1,1.2,.1,-2.7,1.1,.6,gray );
@@ -183,7 +202,7 @@ function prober(g ){
  return [7.4,3.6,.6]}
 function bonder(g ){
  B(g,'Base_Table',2.8,.8,2.2,0,.4,0,steel,{m:.6} );B(g,'Machine_Deck',2.4,.5,1.8,0,1.05,0,white );
- B(g,'XY_Table',1.2,.2,1.0,0,1.4,.2,gray,{m:.7} );B(g,'Heater_Block',.8,.1,.4,0,1.55,.2,0x6d7884,{m:.8} );B(g,'Leadframe',.6,.02,.2,0,1.62,.2,0xd0a840,{m:.9} );
+ B(g,'XY_Table',1.2,.2,1.0,0,1.4,.2,gray,{m:.7} );B(g,'Heater_Block',.8,.1,.4,0,1.55,.2,METAL,{m:.8} );B(g,'Leadframe',.6,.02,.2,0,1.62,.2,0xd0a840,{m:.9} );
  B(g,'Bond_Head',.7,.6,.6,0,2.1,-.35,dark );B(g,'Transducer_Arm',.08,.08,.9,0,1.95,.2,steel,{m:.8} );
  C(g,'캐필러리',.05,.3,0,1.78,.6,0xd8d8d0,{rt:.05,m:.2} );(g.children.at(-1 ).geometry=new T.CylinderGeometry(.05,.012,.3,12 ) );
  C(g,'Wire_Spool',.2,.12,-.4,2.6,-.55,0xd0a840,{ax:'z',m:.9} );B(g,'Spool_Bracket',.06,.4,.2,-.4,2.4,-.55,gray );
@@ -205,7 +224,7 @@ function fitText(x,s,max,f,wt ){do{x.font=wt+' '+f+'px system-ui,Arial';f-=2}whi
 function place(d ){
  const g=new T.Group( );g.name='EQ0'+d.n+'_'+d.eq;
  const [w,dp,cx=0,cz=0]=d.fn(g );const ow=w+1,od=dp+1;
- [[cx,cz-od/2,ow,.12],[cx,cz+od/2,ow,.12],[cx-ow/2,cz,.12,od],[cx+ow/2,cz,.12,od]].forEach(([x,z,a,b] )=>B(g,'Safety_Zone_Line',a,.02,b,x,.011,z,0xf2c200,{m:0,r:.8} ) );
+ [[cx,cz-od/2,ow,.12],[cx,cz+od/2,ow,.12],[cx-ow/2,cz,.12,od],[cx+ow/2,cz,.12,od]].forEach(([x,z,a,b] )=>B(g,'Safety_Zone_Line',a,.02,b,x,.011,z,SAFE,{m:0,r:.8} ) );
  // equipment ID stand (floor-standing label )
  const sz=cz+od/2+.8;C(g,'ID_Stand_Post',.03,.9,0,.45,sz,gray,{s:8} );B(g,'ID_Stand_Foot',.5,.04,.4,0,.02,sz,dark );
  const lt=tex(512,200,(x,w,h )=>{x.fillStyle='#10202e';x.fillRect(0,0,w,h );x.fillStyle='#f2c200';x.font='700 120px system-ui,Arial';x.textBaseline='middle';x.fillText('0'+d.n,24,h/2+4 );
@@ -216,7 +235,11 @@ function place(d ){
  {const px=g.position.x,pz=g.position.z,wp=(lx,lz )=>d.side<0?[px+lz,pz-lx]:[px-lz,pz+lx];
   const a=wp(cx-w/2,cz-dp/2 ),b=wp(cx+w/2,cz+dp/2 ),s0=wp(0,sz );
   COL.push({x0:Math.min(a[0],b[0] ),x1:Math.max(a[0],b[0] ),z0:Math.min(a[1],b[1] ),z1:Math.max(a[1],b[1] )} );
-  COL.push({x0:s0[0]-.3,x1:s0[0]+.3,z0:s0[1]-.3,z1:s0[1]+.3} )}
+  COL.push({x0:s0[0]-.3,x1:s0[0]+.3,z0:s0[1]-.3,z1:s0[1]+.3} );
+  // 중앙 통로 → 장비 전면 황색 유도선(점선 + 화살표)
+  const fr=wp(cx+Math.min(.9,ow/2-.3 ),cz+od/2+.05 ),gx0=d.side*.95,gx1=fr[0]-d.side*.1,gz=fr[1],glen=Math.abs(gx1-gx0 );
+  for(let t=0;t+.9<=glen-.9;t+=1.4 )B(env,'Guide_Line_0'+d.n,.9,.02,.14,gx0+d.side*(t+.45 ),.012,gz,SAFE,{m:0,r:.8} );
+  const ar=add(env,'Guide_Arrow_0'+d.n,new T.CircleGeometry(.4,3,d.side>0?0:Math.PI ),gx1-d.side*.45,.013,gz,SAFE,{m:0,r:.8} );ar.rotation.x=-Math.PI/2}
  g.traverse(o=>{if(o.isMesh )o.userData.equipmentId=d.n} );scene.add(g );
  // wall banner
  const st=tex(1024,224,(x,w,h )=>{x.fillStyle='#f4f7fa';x.fillRect(0,0,w,h );x.fillStyle='#0f5fa8';x.fillRect(0,0,200,h );x.fillStyle='#fff';x.font='700 120px system-ui,Arial';x.textAlign='center';x.textBaseline='middle';x.fillText('0'+d.n,100,h/2+4 );
@@ -226,23 +249,26 @@ function place(d ){
 // ---------- environment ----------
 const env=new T.Group( );env.name='FAB_Environment';scene.add(env );
 function rep(t,a,b ){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(a,b );return t}
-const floorT=rep(tex(256,256,(x,w,h )=>{x.fillStyle='#cfd6dc';x.fillRect(0,0,w,h );x.strokeStyle='#aab3bb';x.lineWidth=3;x.strokeRect(0,0,w,h );x.fillStyle='#b9c2ca';for(let i=0;i<8;i++ )for(let j=0;j<8;j++ ){x.beginPath( );x.arc(16+i*32,16+j*32,3,0,7 );x.fill( )}} ),W/.6,L/.6 );
+const floorT=rep(tex(256,256,(x,w,h )=>{x.fillStyle='#4A5057';x.fillRect(0,0,w,h );x.strokeStyle='#3A4046';x.lineWidth=3;x.strokeRect(0,0,w,h );x.fillStyle='#41474D';for(let i=0;i<8;i++ )for(let j=0;j<8;j++ ){x.beginPath( );x.arc(16+i*32,16+j*32,3,0,7 );x.fill( )}} ),W/.6,L/.6 );
 const fl=new T.Mesh(new T.PlaneGeometry(W,L ),new T.MeshStandardMaterial({map:floorT,roughness:.3,metalness:.1} ) );fl.rotation.x=-Math.PI/2;fl.name='Raised_Floor';env.add(fl );
-function wallT(len ){return rep(tex(256,512,(x,w,h )=>{x.fillStyle='#f3f6f8';x.fillRect(0,0,w,h );x.fillStyle='#c6d0da';x.fillRect(0,h*.86,w,h*.14 );x.fillStyle='#0f5fa8';x.fillRect(0,h*.84,w,h*.02 );x.fillStyle='#d4dbe2';x.fillRect(0,0,3,h );x.fillRect(0,h*.5,w,2 )} ),len/1.5,1 )}
+function wallT(len ){return rep(tex(256,512,(x,w,h )=>{x.fillStyle='#DCE5EA';x.fillRect(0,0,w,h );x.fillStyle='#c6d0da';x.fillRect(0,h*.86,w,h*.14 );x.fillStyle='#0f5fa8';x.fillRect(0,h*.84,w,h*.02 );x.fillStyle='#d4dbe2';x.fillRect(0,0,3,h );x.fillRect(0,h*.5,w,2 )} ),len/1.5,1 )}
 [[-HW,0,W>0?L:0,Math.PI/2],[HW,0,L,-Math.PI/2],[0,-HL,W,0],[0,HL,W,Math.PI]].forEach(([x,z,len,ry],i )=>{
  const m=new T.Mesh(new T.PlaneGeometry(len,H ),new T.MeshStandardMaterial({map:wallT(len ),roughness:.6} ) );
  if(i<2 ){m.position.set(x,H/2,0 )}else m.position.set(x,H/2,z );m.rotation.y=ry;m.name='Wall_'+i;env.add(m )} );
-for(const s of[-1,1] )for(const z of[-18,0,18] ){B(env,'Structural_Column',.6,H,.6,s*(HW-.3 ),H/2,z,0xd9dfe5,{m:.2} );COL.push({x0:s*(HW-.3 )-.3,x1:s*(HW-.3 )+.3,z0:z-.3,z1:z+.3} )}
-const door=new T.Group( );door.name='Cleanroom_Entry_Door';B(door,'Door_Frame',3.4,3.2,.12,0,1.6,HL-.06,0x8a96a2 );B(door,'Door_Leaf_L',1.6,3.0,.06,-.8,1.5,HL-.12,0xc3ccd5 );B(door,'Door_Leaf_R',1.6,3.0,.06,.8,1.5,HL-.12,0xc3ccd5 );B(door,'Door_Window_L',.8,1.0,.07,-.8,1.9,HL-.13,0x9fc4e0,{t:.5} );B(door,'Door_Window_R',.8,1.0,.07,.8,1.9,HL-.13,0x9fc4e0,{t:.5} );B(door,'Exit_Sign',.8,.25,.05,0,3.6,HL-.1,0x2ecc40,{e:0x1a7a28} );env.add(door );
-for(const s of[-1,1] ){B(env,'Aisle_Line',.12,.02,L-8,s*(HW-9.5 ),.011,0,0xf2c200,{m:0} );}
-B(env,'Center_Walkway',1.6,.015,L-8,0,.008,0,0x2f7fb8,{m:0,r:.8} );
+for(const s of[-1,1] )for(const z of[-18,0,18] ){B(env,'Structural_Column',.6,H,.6,s*(HW-.3 ),H/2,z,METAL,{m:.2} );COL.push({x0:s*(HW-.3 )-.3,x1:s*(HW-.3 )+.3,z0:z-.3,z1:z+.3} )}
+const door=new T.Group( );door.name='Cleanroom_Entry_Door';B(door,'Door_Frame',3.4,3.2,.12,0,1.6,HL-.06,METAL );B(door,'Door_Leaf_L',1.6,3.0,.06,-.8,1.5,HL-.12,METAL );B(door,'Door_Leaf_R',1.6,3.0,.06,.8,1.5,HL-.12,METAL );B(door,'Door_Window_L',.8,1.0,.07,-.8,1.9,HL-.13,0x9fc4e0,{t:.5} );B(door,'Door_Window_R',.8,1.0,.07,.8,1.9,HL-.13,0x9fc4e0,{t:.5} );B(door,'Exit_Sign',.8,.25,.05,0,3.6,HL-.1,0x2ecc40,{e:0x1a7a28} );env.add(door );
+for(const s of[-1,1] ){B(env,'Aisle_Line',.12,.02,L-8,s*(HW-9.5 ),.011,0,SAFE,{m:0} );}
+// 바닥 중앙 안전 통로 표시 (황색 외곽선 + 중앙 점선 + 양끝 마감선)
+for(const sx of[-.8,.8] )B(env,'Center_Safety_Line',.14,.02,L-8,sx,.011,0,SAFE,{m:0,r:.8} );
+for(const sz2 of[-(HL-4 ),HL-4] )B(env,'Center_Safety_End',1.74,.02,.14,0,.011,sz2,SAFE,{m:0,r:.8} );
+for(let z=-(HL-5 );z<=HL-5;z+=2 )B(env,'Center_Safety_Dash',.12,.02,1.1,0,.011,z,SAFE,{m:0,r:.8} );
 // ceiling
 const ceil=new T.Group( );ceil.name='Ceiling_System';env.add(ceil );
-const cm=new T.Mesh(new T.PlaneGeometry(W,L ),new T.MeshStandardMaterial({map:rep(tex(128,128,(x,w,h )=>{x.fillStyle='#f4f6f8';x.fillRect(0,0,w,h );x.strokeStyle='#c9d1d8';x.lineWidth=3;x.strokeRect(0,0,w,h )} ),W/1.2,L/1.2 ),roughness:.8} ) );cm.rotation.x=Math.PI/2;cm.position.y=H;ceil.add(cm );
+const cm=new T.Mesh(new T.PlaneGeometry(W,L ),new T.MeshStandardMaterial({map:rep(tex(128,128,(x,w,h )=>{x.fillStyle='#E9EEF2';x.fillRect(0,0,w,h );x.strokeStyle='#C2CDD5';x.lineWidth=3;x.strokeRect(0,0,w,h )} ),W/1.2,L/1.2 ),roughness:.8} ) );cm.rotation.x=Math.PI/2;cm.position.y=H;ceil.add(cm );
 for(const x of[-16,-6,6,16] )for(let z=-33;z<=33;z+=9.4 )B(ceil,'LED_Light_Panel',1.2,.05,2.4,x,H-.03,z,0xffffff,{e:0xdfe8f0,m:0} );
-for(const z of[-36,-18,0,18,36] )B(ceil,'Steel_Truss_Beam',W,.5,.3,0,H-.8,z,0xb7c0c9,{m:.5} );
-for(const s of[-1,1] ){B(ceil,'HVAC_Duct',1.2,.7,L-4,s*(HW-4 ),H-1.3,0,0xc8cfd6,{m:.4} );B(ceil,'Cable_Tray',.5,.1,L-4,s*6,H-1.0,0,0x6d7884,{m:.6} );}
-C(ceil,'Fire_Sprinkler_Main',.06,L-4,0,H-.7,0,0xd0342c,{ax:'z',m:.4,s:10} );
+for(const z of[-36,-18,0,18,36] )B(ceil,'Steel_Truss_Beam',W,.5,.3,0,H-.8,z,METAL,{m:.5} );
+for(const s of[-1,1] ){B(ceil,'HVAC_Duct',1.2,.7,L-4,s*(HW-4 ),H-1.3,0,METAL,{m:.4} );B(ceil,'Cable_Tray',.5,.1,L-4,s*6,H-1.0,0,METAL,{m:.6} );}
+C(ceil,'Fire_Sprinkler_Main',.06,L-4,0,H-.7,0,PIPE_R,{ax:'z',m:.4,s:10} );
 // overhead transport rails + carriers
 const oht=new T.Group( );oht.name='OHT_Rail_System';ceil.add(oht );
 for(const s of[-1,1] ){B(oht,'OHT_Rail',.15,.15,L-6,s*12,H-1.5,0,0x3d4652,{m:.6} );[-20,2,24].forEach((z,i )=>{B(oht,'OHT_Hanger',.05,.5,.05,s*12,H-1.8,z+i*s,gray );foup(oht,s*12,H-2.2,z+i*s )} )}
@@ -250,31 +276,76 @@ for(const s of[-1,1] ){B(oht,'OHT_Rail',.15,.15,L-6,s*12,H-1.5,0,0x3d4652,{m:.6}
 scene.add(new T.HemisphereLight(0xffffff,0xaab6c2,.95 ) );scene.add(new T.AmbientLight(0xffffff,.25 ) );
 {const dl=new T.DirectionalLight(0xffffff,.55 );dl.position.set(8,20,12 );scene.add(dl )}
 EQ.forEach(place );
-// ---------- first-person controller (only camera mode ) ----------
-const EYE=1.65,R=.4,SPEED=4.2,SENS=.0022,LIM=Math.PI/2-.14,BX=HW-.6,BZ=HL-.6;
-const P={x:0,z:32},V={x:0,z:0},keys={};let yaw=0,pitch=0,locked=false,fallback=false;
+/* 재질 세부 조정: 스테인리스 배관 / 진공 챔버 (공유 재질을 복제해 해당 메시에만 적용) */
+{const PIPE_RE=/Pipe|Gas_Line|Exhaust_Line|Vacuum_Line|Foreline|Cooling_Water_Line|Fire_Sprinkler_Main/,VAC_RE=/Chamber|Dome|Transfer_Module/;
+ scene.traverse(o=>{if(!o.isMesh||!o.material||o.material.transparent||/Safety|Guide|Aisle|ID_|Banner/.test(o.name ) )return;
+  const mt=VAC_RE.test(o.name )?[.95,.18]:PIPE_RE.test(o.name )?[.95,.22]:null;if(!mt )return;
+  const c=o.material.clone( );c.metalness=mt[0];c.roughness=mt[1];if(ENVMAP ){c.envMap=ENVMAP;c.envMapIntensity=1.25}o.material=c} )}
+/* 장비 경계선·패널 디테일: 모서리 윤곽선, 도어/패널 이음선, 환기 슬릿, 손잡이, 하부 걸레받이 */
+{const EDG=new T.LineBasicMaterial({color:0x0f1923,transparent:true,opacity:.75} ),SEAM=new T.LineBasicMaterial({color:0x0c151e,transparent:true,opacity:.6} ),
+ EC=new WeakMap(),PG={},noRay=()=>{};
+ const plinthGeo=(w,d)=>{const k=w+'_'+d;return PG[k]||(PG[k]=new T.BoxGeometry(w+.05,.12,d+.05 ) )};
+ function panelLines(w,h,d ){const P=[],e=.012,hw=w/2,hh=h/2,hd=d/2,nW=Math.max(1,Math.round(w/.9 )),nD=Math.max(1,Math.round(d/.9 ));
+  const seg=(a,b )=>P.push(a[0],a[1],a[2],b[0],b[1],b[2] );
+  const face=(n,len,mk )=>{ // mk(u,y) -> 3D 좌표, u는 면 가로 방향 -len/2..len/2
+   for(let i=1;i<n;i++ ){const u=-len/2+len*i/n;seg(mk(u,-hh ),mk(u,hh ) )}
+   if(h>=1.0 )seg(mk(-len/2,-hh+h*.64 ),mk(len/2,-hh+h*.64 ) );
+   if(h>=1.2 )seg(mk(-len/2,-hh+.14 ),mk(len/2,-hh+.14 ) );
+   if(h>=1.4 )for(let k=0;k<5;k++ ){const y=hh-.22-k*.05;seg(mk(-len/2+len*.12,y ),mk(-len/2+len*.12+Math.min(.4,len*.3 ),y ) )}};
+  for(const sg of[-1,1] ){face(nW,w,(u,y )=>[u,y,sg*(hd+e )] );face(nD,d,(u,y )=>[sg*(hw+e ),y,u] )}
+  return new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute(P,3 ) )}
+ scene.children.filter(g=>/^EQ0/.test(g.name ) ).forEach(g=>{const list=[];g.traverse(o=>{if(o.isMesh )list.push(o )} );
+  list.forEach(o=>{if(!o.material||o.material.transparent||/Safety|Guide|Aisle|ID_|Banner/.test(o.name ) )return;
+   o.material.polygonOffset=true;o.material.polygonOffsetFactor=1;o.material.polygonOffsetUnits=1; // 경계선이 면에 묻히지 않도록
+   const geo=o.geometry,ty=geo.type;if(ty!=='BoxGeometry'&&ty!=='CylinderGeometry'&&ty!=='TorusGeometry' )return;
+   if(!geo.boundingBox )geo.computeBoundingBox( );const sz=geo.boundingBox.getSize(new T.Vector3( ));if(Math.max(sz.x,sz.y,sz.z )<.15 )return;
+   let eg=EC.get(geo );if(!eg ){eg=new T.EdgesGeometry(geo,35 );EC.set(geo,eg )}
+   const ln=new T.LineSegments(eg,EDG );ln.name='ID_Edges';ln.raycast=noRay;o.add(ln );
+   if(ty==='BoxGeometry'&&o.material.color.getHex()===EQC&&Math.max(sz.x,sz.z )>=.9&&sz.y>=.8 ){
+    const sm=new T.LineSegments(panelLines(sz.x,sz.y,sz.z ),SEAM );sm.name='ID_Seams';sm.raycast=noRay;o.add(sm );
+    const hh=sz.y/2,eid=o.userData.equipmentId;
+    if(Math.abs(o.position.y-hh )<.06&&sz.y>=1.2 ){const pl=add(o,'ID_Plinth',plinthGeo(sz.x,sz.z ),0,-hh+.06,0,0x1b232b,{m:.3,r:.6} );pl.userData.equipmentId=eid}
+    if(sz.y>=1.2 )for(const sg of[-1,1] ){const nW=Math.max(1,Math.round(sz.x/.9 )),hx=nW>1?-sz.x/2+sz.x*Math.ceil(nW/2 )/nW:sz.x*.3;
+     for(const dx of nW>1?[-.06,.06]:[0] ){const hd=B(o,'ID_Handle',.03,.3,.03,hx+dx,-hh+sz.y*.5,sg*(sz.z/2+.015 ),0xcfd8e0,{m:.9,r:.25} );hd.userData.equipmentId=eid}}}
+  } )} )}
+// ---------- first-person controller (cursor mode default + keyboard + mouse + wheel) ----------
+const EYE=1.65,R=.4,SPEED=4.2,TURN_SPEED=1.9,SENS=.0009,LIM=Math.PI/2-.14,BX=HW-.6,BZ=HL-.6;
+const P={x:0,z:32},V={x:0,z:0},keys={};let yaw=0,pitch=0,locked=false,fallback=true,wf=0;
 const cv=rn.domElement,ov=document.getElementById('ov' ),hint=document.getElementById('hint' ),xh=document.getElementById('xh' );
 const active=( )=>locked||fallback||maint||xrOn||dashOpen;
-function ui( ){const a=active( );ov.style.display=a?'none':'flex';xh.style.display=a?'block':'none';hint.style.display=a?'block':'none';hint.textContent=maint?'화면을 드래그하거나 클릭하여 시점 회전 · B / N / C / X 키 · F 재안내':fallback?'드래그: 시점 회전 · WASD 또는 방향키: 이동':'Esc 마우스 포인터 해제'}
+function ui( ){const a=active( );ov.style.display=a?'none':'flex';xh.style.display=a?'block':'none';hint.style.display=a?'block':'none';hint.textContent=maint?'[B] 이전 · [N] 다음 · [C] 완료 · [X] 종료 · [F] 재안내 · 드래그/WASD/화살표 회전':locked?'WASD·화살표·휠: 이동/방향회전 · 마우스: 시점회전 · Esc: 커서 표시':'커서 모드 · 드래그·A/D·←/→: 방향회전 · W/S·↑/↓·휠: 전진/후진 · 더블클릭: 포인터 잠금'}
 function hit(x,z ){if(Math.abs(x )>BX||Math.abs(z )>BZ )return true;
  for(const c of COL ){const dx=Math.max(c.x0-x,0,x-c.x1 ),dz=Math.max(c.z0-z,0,z-c.z1 );if(dx*dx+dz*dz<R*R )return true}return false}
-function step(dt ){let f=(keys.KeyW||keys.ArrowUp?1:0 )-(keys.KeyS||keys.ArrowDown?1:0 ),s=(keys.KeyD||keys.ArrowRight?1:0 )-(keys.KeyA||keys.Arrow잔여?1:0 );
- if(!active( )||panelOpen||auto )f=s=0;f+=VF;s+=VS;const l=Math.hypot(f,s )||1;f/=l;s/=l;
+function step(dt ){
+ let f=(keys.KeyW||keys.ArrowUp?1:0 )-(keys.KeyS||keys.ArrowDown?1:0 )+wf;
+ let rot=(keys.KeyA||keys.ArrowLeft?1:0 )-(keys.KeyD||keys.ArrowRight?1:0 );
+ let s=0;
+ if(!active( )||panelOpen||auto ){f=0;rot=0;wf=0;}
+ wf*=Math.exp(-dt*10 );if(Math.abs(wf )<.01 )wf=0;
+ if(rot!==0 )yaw+=rot*TURN_SPEED*dt;
+ f+=VF;s+=VS;const l=Math.max(1,Math.hypot(f,s ) );f/=l;s/=l;
  const my=xrOn?headYaw( ):yaw,sp=xrOn?2.3:SPEED,tx=(-Math.sin(my )*f+Math.cos(my )*s )*sp,tz=(-Math.cos(my )*f-Math.sin(my )*s )*sp,k=1-Math.exp(-dt*12 );
  V.x+=(tx-V.x )*k;V.z+=(tz-V.z )*k;
  const nx=P.x+V.x*dt;if(hit(nx,P.z ) )V.x=0;else P.x=nx;
  const nz=P.z+V.z*dt;if(hit(P.x,nz ) )V.z=0;else P.z=nz}
-function look(dx,dy ){if(panelOpen||auto )return;yaw-=dx*SENS;pitch=Math.max(-LIM,Math.min(LIM,pitch-dy*SENS ) )}
+function look(dx,dy ){if(panelOpen||auto )return;
+ const cx=Math.max(-60,Math.min(60,dx ) ),cy=Math.max(-60,Math.min(60,dy ) );
+ yaw-=cx*SENS;pitch=Math.max(-LIM,Math.min(LIM,pitch-cy*SENS ) )}
 function toFallback( ){fallback=true;ui( )}
-function enter( ){try{const p=cv.requestPointerLock&&cv.requestPointerLock( );if(!cv.requestPointerLock )toFallback( );else if(p&&p.catch )p.catch(toFallback )}catch(e ){toFallback( )}}
+function enter( ){fallback=true;ui( )}
+function lockPtr( ){fallback=true;ui( );try{const p=cv.requestPointerLock&&cv.requestPointerLock( );if(p&&p.catch )p.catch(( )=>{} )}catch(e ){}}
 document.getElementById('go' ).onclick=enter;
-cv.addEventListener('click',( )=>{if(!active( )||((maint||dashOpen )&&!locked&&!fallback&&!xrOn ) )enter( )} );
-document.addEventListener('pointerlockchange',( )=>{locked=document.pointerLockElement===cv;if(!locked&&panelOpen )closePanel( );ui( )} );
+cv.addEventListener('dblclick',( )=>{if(!locked&&!xrOn )lockPtr( )} );
+document.addEventListener('pointerlockchange',( )=>{locked=document.pointerLockElement===cv;fallback=true;ui( )} );
 document.addEventListener('pointerlockerror',toFallback );
-addEventListener('mousemove',e=>{if(locked||((fallback||maint||dashOpen )&&e.buttons&1 ) )look(e.movementX||0,e.movementY||0 )} );
+addEventListener('mousemove',e=>{if(locked||(active( )&&!xrOn&&(e.buttons&1 ) ) )look(e.movementX||0,e.movementY||0 )} );
+addEventListener('wheel',e=>{if(!active( )||panelOpen||auto||xrOn )return;
+ if(e.target&&e.target.closest&&e.target.closest('#pn,#mt,#gd' ) )return;
+ e.preventDefault( );const d=e.deltaMode===1?e.deltaY*32:e.deltaY;
+ wf=Math.max(-2.2,Math.min(2.2,wf-Math.sign(d )*Math.min(1.4,Math.abs(d )/90 ) ) )},{passive:false} );
 addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyE'&&!e.repeat )toggleInteract( );if(e.code==='KeyM'&&panelOpen&&!e.repeat )startMaint(target );if(maint&&!e.repeat )mkey(e.code );if(e.code==='Tab' ){e.preventDefault( );if(!e.repeat )toggleDash( )}if(!maint&&!e.repeat&&e.code.length===6&&e.code.startsWith('Digit' ) )setGuide(+e.code[5] );if((e.code==='Escape'||e.code==='KeyQ' )&&panelOpen )closePanel( );if(active( )&&e.code.startsWith('Arrow' ) )e.preventDefault( )} );
 addEventListener('keyup',e=>{keys[e.code]=false} );
-addEventListener('blur',( )=>{for(const k in keys )keys[k]=false} );
+addEventListener('blur',( )=>{for(const k in keys )keys[k]=false;wf=0} );
 function rs( ){const w=innerWidth,h=innerHeight;rn.setSize(w,h,false );cam.aspect=w/h;cam.updateProjectionMatrix( )}
 addEventListener('resize',rs );rs( );ui( );
 // ---------- equipment detection and interaction ----------
@@ -360,13 +431,13 @@ const MT={
 ['정렬 카메라',['Microscope_Tube','Microscope_Camera'],'오른쪽의 현미경 튜브와 카메라를 확인합니다.','비전 정렬 시스템은 각 패드 위치를 찾아 정확한 접합을 돕습니다.'],
 ['히터 블록 및 테이블',['Heater_Block','XY_Table','Leadframe'],'헤드 아래의 XY 테이블, 히터 블록, 리드프레임을 확인합니다.','가열 블록은 와이어 접합을 돕고 테이블은 각 접합 위치를 이동시킵니다.']]};
 // extra maintenance parts that Phase 1 did not model
-GR.forEach(g=>{const n=g.userData.process,b=0x2a5d96,s0=g.children.length;
+GR.forEach(g=>{const n=g.userData.process,b=EQC,s0=g.children.length;
  if(n===1 )C(g,'Temperature_Sensor_Pyrometer',.07,.5,.6,2.9,1.25,b,{ax:'z'} );
  if(n===2 ){C(g,'Thermocouple_Probe_1',.03,.4,.35,1.45,1.6,steel,{ax:'z',m:.8} );C(g,'Thermocouple_Probe_2',.03,.4,.35,2.55,1.6,steel,{ax:'z',m:.8} )}
  if(n===3 )B(g,'Alignment_Sensor_Head',.4,.3,.4,1.4,2.8,1.4,b );
  if(n===4 )B(g,'Gas_Flow_Controller',.5,.4,.5,-3.8,1.6,-1.8,b );
  if(n===5 )B(g,'Mass_Flow_Controller',.5,.4,.5,-4.3,2.3,-.6,b );
- if(n===6 )[[-2.3,-.5],[2.3,-.5],[0,-2.4]].forEach(([x,z],k )=>C(g,'Cooling_Water_Line_'+(k+1 ),.05,.9,x+.5,3.0,z,0x3b82c4,{s:10} ) );
+ if(n===6 )[[-2.3,-.5],[2.3,-.5],[0,-2.4]].forEach(([x,z],k )=>C(g,'Cooling_Water_Line_'+(k+1 ),.05,.9,x+.5,3.0,z,PIPE_B,{s:10} ) );
  if(n===7 )B(g,'Chuck_Temperature_Controller',.6,.4,.5,2.9,2.05,-.5,b );
  for(let i=s0;i<g.children.length;i++ )g.children[i].userData.equipmentId=n} );
 scene.updateMatrixWorld(true );
