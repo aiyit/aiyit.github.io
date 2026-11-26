@@ -1,216 +1,85 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>OSI 7 Layer: Advanced Security Lab</title>
-    <script src="https://www.x3dom.org/download/dev/x3dom.js"></script>
-    <link rel="stylesheet" href="https://www.x3dom.org/download/dev/x3dom.css">
-    <style>
-        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; background: #2c3e50; color: #fff; overflow: hidden; }
-        #top-gui { position: absolute; top: 0; left: 0; width: 100%; height: 160px; background: rgba(44, 62, 80, 0.98); 
-                   border-bottom: 2px solid #f1c40f; z-index: 100; display: flex; padding: 15px; box-sizing: border-box; gap: 20px; }
-        
-        /* 상세 설명 패널: 내용이 많아짐에 따라 텍스트 가독성 및 높이 최적화 */
-        #desc-panel { position: absolute; top: 160px; left: 0; width: 100%; background: rgba(20, 30, 48, 0.9); 
-                      padding: 15px 30px; box-sizing: border-box; z-index: 99; border-bottom: 2px solid #e74c3c;
-                      font-size: 0.92em; line-height: 1.7; color: #ecf0f1; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        
-        .gui-section { display: flex; flex-direction: column; justify-content: center; border-right: 1px solid #555; padding-right: 20px; }
-        .gui-section:last-child { border-right: none; flex-grow: 1; }
-        .btn-group { display: flex; gap: 8px; margin-top: 8px; }
-        button { padding: 10px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; font-size: 0.85em; transition: 0.2s; }
-        .btn-reset { background: #e74c3c; color: #fff; }
-        .btn-step { background: #f1c40f; color: #000; min-width: 100px; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8em; margin-top: 5px; }
-        .grid-item { background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 3px; border-left: 3px solid #1abc9c; }
-        .label-span { color: #f1c40f; font-weight: bold; margin-right: 5px; }
-        
-        /* 설명문 내 강조 스타일 */
-        .desc-title { color: #f1c40f; font-weight: bold; margin-right: 10px; }
-        .desc-threat { color: #e74c3c; font-weight: bold; }
-        
-        x3d { width: 100vw; height: 100vh; border: none; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101728">
+<title>OSI 7계층 네트워크 탐험 | 초보자 인터랙티브 교재</title>
+<style>
+:root{--bg:#0b1020;--panel:#141d31;--muted:#a9b6ca;--text:#f4f7ff;--line:#2d3952;--gold:#ffd779;--cyan:#75e5ff;--shadow:0 18px 55px #03071180;--l7:#d68bff;--l6:#9caeff;--l5:#65c9ff;--l4:#55e4b1;--l3:#ffda70;--l2:#ffa765;--l1:#ff718a}
+*{box-sizing:border-box}body{margin:0;color:var(--text);background:radial-gradient(ellipse at 12% -8%,#28335c 0,transparent 38%),radial-gradient(ellipse at 90% 20%,#132f49 0,transparent 33%),var(--bg);font-family:Inter,"Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.65}button{font:inherit;color:inherit;cursor:pointer}.wrap{max-width:1180px;margin:auto;padding:28px 22px 70px}.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;padding:15px 0 27px}.eyebrow{color:var(--cyan);font-size:.78rem;letter-spacing:.16em;font-weight:800}.hero h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.13;margin:8px 0 10px;letter-spacing:-.045em}.hero p{color:var(--muted);margin:0;max-width:700px}.hero-badge{flex:none;padding:12px 16px;border:1px solid #63789d;border-radius:15px;background:linear-gradient(145deg,#ffffff17,#ffffff04);box-shadow:inset 0 1px #ffffff25;color:#dce8ff;font-size:.86rem}.panel{border:1px solid #ffffff17;background:linear-gradient(145deg,#1a2540eF,#11192ceF);border-radius:22px;box-shadow:var(--shadow)}.journey{padding:22px;margin-bottom:22px}.section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.section-head h2{font-size:1.1rem;margin:0 0 4px}.section-head p{color:var(--muted);font-size:.9rem;margin:0}.step-count{font-variant-numeric:tabular-nums;color:var(--gold);font-weight:800;white-space:nowrap}.progress{height:5px;background:#ffffff12;border-radius:99px;margin:17px 0 18px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#67d9ff,#d38bff,#ffd779);border-radius:99px;transition:width .3s}.route{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:10px;align-items:center}.device{min-width:0;display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid #ffffff17;background:#ffffff08;border-radius:14px;transition:.2s}.device.active{border-color:#77ddff;box-shadow:0 0 25px #58d7ff20}.device-ico{width:37px;height:37px;display:grid;place-items:center;flex:none;border-radius:11px;background:linear-gradient(145deg,#ffffff26,#ffffff06);font-size:1.2rem}.device b{display:block;font-size:.84rem}.device small{display:block;color:var(--muted);font-size:.7rem;line-height:1.25}.arrow{color:#8193b0;font-size:1.1rem}.packet-line{height:22px;margin:9px 3%;position:relative}.packet-line:before{content:"";position:absolute;top:10px;left:0;right:0;border-top:1px dashed #72809b}.packet{position:absolute;left:0;top:0;width:21px;height:21px;border:2px solid #fff8;border-radius:6px;background:linear-gradient(145deg,#fff9,var(--cyan));box-shadow:0 0 18px #78ddff;transition:left .35s;transform:translateX(-50%)}.stage-caption{font-size:.88rem;color:#e2e9f7;margin:10px 2px 0;min-height:1.6em}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.toolbar h2{font-size:1.2rem;margin:0}.controls{display:flex;gap:8px}.btn{border:1px solid #ffffff24;background:#ffffff0c;border-radius:11px;padding:9px 13px;font-size:.86rem;transition:.18s}.btn:hover:not(:disabled){transform:translateY(-1px);background:#ffffff18;border-color:#ffffff55}.btn:disabled{opacity:.4;cursor:not-allowed}.btn.primary{color:#161b2b;background:linear-gradient(135deg,#ffe6a1,#f6b851);border:0;font-weight:850;box-shadow:0 7px 20px #e7aa3a30}.main-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:20px;align-items:start}.layers-panel{padding:19px}.layers-head{display:flex;justify-content:space-between;align-items:center;margin:0 2px 13px}.layers-head h2{font-size:1.05rem;margin:0}.layers-head span{font-size:.74rem;color:var(--muted)}.stack{display:flex;flex-direction:column;gap:9px}.layer{--c:#fff;position:relative;display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 13px;border-radius:14px;border:1px solid color-mix(in srgb,var(--c) 35%,transparent);background:linear-gradient(105deg,color-mix(in srgb,var(--c) 15%,#182137),#121a2b 65%);box-shadow:inset 0 1px #ffffff20,0 6px 15px #0002;transition:transform .18s,border .18s,filter .18s}.layer:before{content:"";position:absolute;inset:0 auto 0 0;width:4px;border-radius:14px 0 0 14px;background:linear-gradient(180deg,#fff9,var(--c));box-shadow:0 0 15px color-mix(in srgb,var(--c) 70%,transparent)}.layer:hover{transform:translateX(3px);filter:brightness(1.12)}.layer.selected{outline:2px solid color-mix(in srgb,var(--c) 80%,white);outline-offset:1px;box-shadow:0 0 24px color-mix(in srgb,var(--c) 20%,transparent),inset 0 1px #ffffff30}.layer-num{width:39px;height:39px;display:grid;place-items:center;border-radius:11px;font-weight:900;color:#111827;background:linear-gradient(145deg,#fff,var(--c) 65%,color-mix(in srgb,var(--c) 60%,#606b83));box-shadow:inset 0 1px #fff9,0 5px 14px #0005}.layer-title{font-size:.93rem;font-weight:850;line-height:1.25}.layer-sub{display:block;font-size:.76rem;color:#b8c3d5;font-weight:500;margin-top:3px}.pdu{font-size:.72rem;font-weight:800;color:#e9eef8;padding:4px 8px;border:1px solid #ffffff20;background:#0b1120aa;border-radius:99px;white-space:nowrap}.detail{padding:23px;position:sticky;top:16px;overflow:hidden}.detail:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--active,#75e5ff),transparent)}.detail-kicker{font-size:.76rem;color:var(--active,#75e5ff);letter-spacing:.1em;font-weight:850}.detail h2{font-size:1.5rem;line-height:1.3;margin:5px 0 10px}.detail .lead{color:#dce6f8;margin:0 0 19px}.explain{padding:14px 15px;border:1px solid #ffffff12;border-radius:14px;background:#ffffff08;margin-bottom:12px}.explain h3{font-size:.83rem;color:var(--active,#75e5ff);margin:0 0 6px}.explain p{font-size:.88rem;color:#d2dced;margin:0}.analogy{background:linear-gradient(110deg,color-mix(in srgb,var(--active,#75e5ff) 12%,#151d30),#151d30);border-color:color-mix(in srgb,var(--active,#75e5ff) 25%,transparent)}.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{border:1px solid #ffffff1e;background:#ffffff09;padding:5px 9px;border-radius:99px;font-size:.74rem;color:#e2eafb}.remember{margin-top:14px;padding:13px 15px;border-left:3px solid var(--active,#75e5ff);background:#ffffff08;border-radius:0 12px 12px 0;font-size:.88rem}.remember b{color:var(--gold)}.journey-note{padding:18px 20px;margin-top:20px;display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:start}.note-icon{font-size:1.3rem}.journey-note h2{font-size:.98rem;margin:0 0 4px}.journey-note p{color:var(--muted);font-size:.86rem;margin:0}.journey-note strong{color:#ecf4ff}.footer{text-align:center;color:#8592a9;font-size:.76rem;margin-top:25px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:780px){.wrap{padding:18px 14px 44px}.hero{align-items:flex-start;flex-direction:column;padding-top:8px}.hero-badge{font-size:.76rem}.route{grid-template-columns:1fr auto 1fr;gap:8px}.route .device:nth-of-type(5){grid-column:1}.route .arrow:nth-of-type(4){display:none}.route .arrow:nth-of-type(6){display:none}.device{padding:9px}.device-ico{width:32px;height:32px}.packet-line{margin:8px 6%}.main-grid{grid-template-columns:1fr}.detail{position:static}.toolbar{align-items:flex-start;flex-direction:column}.controls{width:100%}.controls .btn{flex:1}.layer{grid-template-columns:40px minmax(0,1fr) auto;padding:10px 11px;gap:10px}.layer-num{width:35px;height:35px}.layer-title{font-size:.87rem}.layer-sub{font-size:.7rem}.pdu{font-size:.67rem;padding:4px 7px}}
+@media(max-width:420px){.model-panel{padding:15px}.model-stage{height:270px}.model-head{align-items:flex-start}.model-tools{gap:4px}.model-tools .btn{font-size:.72rem;padding:6px 7px}.journey{padding:16px}.route{grid-template-columns:1fr auto 1fr}.device{gap:7px}.device b{font-size:.74rem}.device small{font-size:.64rem}.arrow{font-size:.9rem}.layer{grid-template-columns:36px minmax(0,1fr) auto;gap:8px;padding:9px}.layer-num{width:32px;height:32px}.layer-title{font-size:.8rem}.layer-sub{font-size:.66rem}.pdu{font-size:.61rem}.detail{padding:19px}.detail h2{font-size:1.3rem}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+.model-panel{padding:18px 20px 15px;margin-bottom:20px;overflow:hidden}.model-head{display:flex;justify-content:space-between;gap:14px;align-items:center}.model-head h2{font-size:1.05rem;margin:0 0 3px}.model-head p{font-size:.81rem;color:var(--muted);margin:0}.model-tools{display:flex;gap:7px;flex:none}.model-tools .btn{padding:7px 10px}.model-stage{height:310px;display:grid;place-items:center;perspective:900px;overflow:hidden;background:radial-gradient(ellipse at center,#34436655,transparent 68%);border-radius:16px}.model-svg{height:100%;width:min(100%,520px);overflow:visible;transform:rotateY(var(--model-rot,0deg)) rotateX(4deg);transform-style:preserve-3d;transition:transform .45s cubic-bezier(.2,.7,.2,1);filter:drop-shadow(0 20px 18px #0005)}.model-layer{cursor:pointer;outline:none;transition:filter .2s}.model-layer polygon{stroke:#ffffff78;stroke-width:1.15;transition:filter .2s,stroke-width .2s}.model-layer:hover polygon,.model-layer.selected polygon{filter:brightness(1.38) drop-shadow(0 0 8px var(--glow));stroke:#fff;stroke-width:2}.model-layer.selected .top-face{stroke-width:2.6}.model-label{fill:#fff;font-size:13px;font-weight:800;text-anchor:middle;dominant-baseline:middle;pointer-events:none;paint-order:stroke;stroke:#101728;stroke-width:2px;stroke-linejoin:round}.model-sub{fill:#fff;font-size:9px;font-weight:600;text-anchor:middle;dominant-baseline:middle;opacity:.9;pointer-events:none;paint-order:stroke;stroke:#101728;stroke-width:1.5px}.model-floor{fill:#101827;opacity:.45}.model-hint{text-align:center;color:#a9b6ca;font-size:.76rem;margin:3px 0 0}
+
+.packet-build{margin:12px 0 4px;padding:12px 14px;border:1px solid #ffffff17;border-radius:14px;background:linear-gradient(120deg,#0c1425,#17223a);min-height:78px}.packet-build-label{display:block;font-size:.76rem;font-weight:800;color:var(--gold);margin-bottom:9px}.packet-fields{display:flex;gap:5px;align-items:stretch;min-height:34px;overflow-x:auto;padding:3px 2px 6px}.packet-field{display:inline-flex;justify-content:center;align-items:center;min-width:66px;padding:5px 9px;border-radius:7px;font-size:.72rem;font-weight:850;color:#101827;background:linear-gradient(145deg,#ffffff,#cdd8e8);box-shadow:inset 0 1px 1px #fff9,0 3px 8px #0004;white-space:nowrap;animation:fieldIn .28s ease-out}.packet-field.data{background:linear-gradient(145deg,#d6e2f5,#8ca0bd)}.packet-field.tcp{background:linear-gradient(145deg,#b8ffd9,#4ed49a)}.packet-field.ip{background:linear-gradient(145deg,#fff0b0,#edbc4c)}.packet-field.ethernet{background:linear-gradient(145deg,#ffd3a4,#f29445)}.packet-field.fcs{background:linear-gradient(145deg,#ffd0da,#ee8297)}@keyframes fieldIn{from{opacity:.1;transform:translateY(8px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}.packet-field.removing{opacity:.45;text-decoration:line-through}
+
+
+/* Interactive 3D network topology and packet cutaway */
+.model-stage{height:390px;perspective:1100px;touch-action:pan-y;cursor:grab;overflow:hidden}.model-stage.dragging{cursor:grabbing}.model-orbit{width:100%;height:100%;transform-style:preserve-3d;transform:perspective(1100px) rotateX(0deg) rotateY(0deg);transform-origin:50% 48%;transition:transform .16s ease-out}.model-svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 18px 17px #0007)}.net-floor{fill:#0e1728;stroke:#465978;stroke-width:2}.net-grid{stroke:#43506b;stroke-width:1;opacity:.25}.net-wire{fill:none;stroke:#7b91b3;stroke-width:8;stroke-linecap:round;stroke-dasharray:10 8}.net-wire-glow{fill:none;stroke:#78e5ff;stroke-width:3;opacity:.8}.net-label{fill:#f4f7ff;font-size:20px;font-weight:850;text-anchor:middle;paint-order:stroke;stroke:#101728;stroke-width:4px;stroke-linejoin:round}.net-sub{fill:#b9c8df;font-size:13px;font-weight:650;text-anchor:middle;paint-order:stroke;stroke:#101728;stroke-width:3px}.net-small{fill:#e6eefc;font-size:12px;font-weight:750;text-anchor:middle;paint-order:stroke;stroke:#101728;stroke-width:3px}.net-node{transition:filter .2s,opacity .2s}.net-node.active{filter:drop-shadow(0 0 14px #73e8ff);opacity:1}.net-node:not(.active){opacity:.86}.net-layer{stroke:#ffffffa0;stroke-width:1}.packet-shell{filter:drop-shadow(0 0 14px #78e5ff);transition:transform .4s cubic-bezier(.2,.8,.2,1)}.packet-part{stroke:#fff9;stroke-width:1.3}.packet-part-label{fill:#101827;font-size:11px;font-weight:900;text-anchor:middle;dominant-baseline:middle;pointer-events:none}.packet-data-glyph{fill:#fff;font-size:13px;font-weight:850;text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:#17243b;stroke-width:3px}.model-hint{text-align:center;color:#a9b6ca;font-size:.76rem;margin:3px 0 0}
+@media(max-width:780px){.model-stage{height:300px}.net-label{font-size:22px}.net-sub{font-size:15px}.net-small{font-size:14px}}
+@media(max-width:420px){.model-panel{padding:14px}.model-stage{height:260px}.model-head{align-items:flex-start}.model-tools{gap:4px}.model-tools .btn{font-size:.75rem;padding:6px 8px}}
+
+
+/* Stronger depth cues: elevated 3D platform, isometric sidewalls and orbital perspective */
+.model-stage{height:430px;perspective:850px;background:radial-gradient(ellipse at 50% 60%,#8dbfff16 0,transparent 57%),linear-gradient(180deg,#111a2b,#0d1525);border:1px solid #8eb9ef26;border-radius:18px}.model-orbit{transform-origin:50% 58%;transform-style:preserve-3d;backface-visibility:visible;will-change:transform}.model-svg{filter:drop-shadow(0 26px 20px #0009) drop-shadow(0 0 18px #68cfff17);transform-style:preserve-3d}.net-floor{fill:url(#floorGradient);stroke:#839bc0aa;stroke-width:3;filter:drop-shadow(0 14px 12px #0009)}.net-wire{stroke-width:12;stroke-dasharray:12 10;filter:drop-shadow(0 4px 4px #0008)}.net-wire-glow{stroke-width:4;filter:drop-shadow(0 0 6px #70e9ff)}.net-layer{stroke:#ffffffb8;stroke-width:1.5;filter:drop-shadow(0 4px 3px #0008)}.net-node.active{filter:drop-shadow(0 0 18px #78e5ff) drop-shadow(0 9px 8px #0009)}.packet-part{stroke:#fff;stroke-width:1.7;filter:drop-shadow(0 5px 5px #0009)}.packet-shell{filter:drop-shadow(0 0 17px #78e5ff) drop-shadow(0 8px 9px #0009)}.play-btn{min-width:190px;background:linear-gradient(145deg,#baffd9,#52d99b)!important;color:#092116!important;box-shadow:0 8px 25px #44d99335!important}.play-btn.playing{background:linear-gradient(145deg,#ffe9ad,#ffc34f)!important;color:#271a00!important}.spin-btn{border-color:#76dfff77!important;color:#adf0ff!important}.simulation-controls .btn{min-height:42px}.net-grid{opacity:.34}
+@media(max-width:780px){.model-stage{height:330px}.simulation-controls{flex-wrap:wrap}.simulation-controls .play-btn{flex-basis:100%}.model-tools{flex-wrap:wrap;justify-content:flex-end}.spin-btn{flex-basis:100%}}
+@media(max-width:420px){.model-stage{height:275px}.model-tools .btn{font-size:.72rem;padding:6px 7px}.simulation-controls .btn{font-size:.76rem;padding:8px 9px}.simulation-controls .play-btn{flex-basis:100%}}
+
+</style>
 </head>
 <body>
-
-<div id="top-gui">
-    <div class="gui-section">
-        <div style="font-size: 0.7em; color: #bdc3c7;">CONTROLS</div>
-        <div class="btn-group">
-            <button class="btn-reset" onclick="resetSim()">초기화</button>
-            <button class="btn-step" onclick="prevStep()" id="prevBtn">이전</button>
-            <button class="btn-step" onclick="nextStep()" id="nextBtn">다음 단계</button>
-        </div>
-    </div>
-    <div class="gui-section">
-        <div id="info-title" style="font-size: 1.1em; font-weight: bold; color: #f1c40f; margin-bottom: 5px;">전문가용 보안 교육 모드</div>
-        <div class="info-grid">
-            <div class="grid-item"><span class="label-span">계층:</span> <span id="layer-text">-</span></div>
-            <div class="grid-item"><span class="label-span">프로토콜:</span> <span id="proto-text">-</span></div>
-            <div class="grid-item"><span class="label-span">보안위협:</span> <span id="hack-text">-</span></div>
-            <div class="grid-item"><span class="label-span">PDU 단위:</span> <span id="pdu-name">-</span></div>
-        </div>
-    </div>
-</div>
-
-<div id="desc-panel">
-    <div id="detailed-desc">시뮬레이션을 시작하면 해당 계층의 <strong>프로토콜 분석 및 보안 취약점 리포트</strong>가 상세히 출력됩니다.</div>
-</div>
-
-<x3d>
-    <scene>
-        <viewpoint id="mainView" position="0 10 45" orientation="0 1 0 0"></viewpoint>
-        <background skyColor='0.17 0.24 0.31'></background>
-        
-        <transform id="tower-sender" translation="-21 0 0">
-            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="1 1 1"></material></appearance>
-            <text string='"SENDER"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
-        </transform>
-        <transform id="tower-switch" translation="-7 0 0">
-            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="0.8 0.9 1"></material></appearance>
-            <text string='"SWITCH"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
-        </transform>
-        <transform id="tower-router" translation="7 0 0">
-            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="1 0.8 0.8"></material></appearance>
-            <text string='"ROUTER"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
-        </transform>
-        <transform id="tower-receiver" translation="21 0 0">
-            <transform translation="0 -3 0"><billboard><shape><appearance><material diffuseColor="1 1 1"></material></appearance>
-            <text string='"RECEIVER"' scale="1.2 1.2 1.2"></text></shape></billboard></transform>
-        </transform>
-
-        <group>
-            <transform translation="-14 0.5 0" rotation="0 0 1 1.57"><shape><appearance><material diffuseColor="0.95 0.77 0.06"></material></appearance><cylinder radius="0.04" height="12"></cylinder></shape></transform>
-            <transform translation="0 0.5 0" rotation="0 0 1 1.57"><shape><appearance><material diffuseColor="0.95 0.77 0.06"></material></appearance><cylinder radius="0.04" height="12"></cylinder></shape></transform>
-            <transform translation="14 0.5 0" rotation="0 0 1 1.57"><shape><appearance><material diffuseColor="0.95 0.77 0.06"></material></appearance><cylinder radius="0.04" height="12"></cylinder></shape></transform>
-        </group>
-
-        <transform id="pdu-mover" translation="-21 15 0">
-            <group id="pdu-horizontal-group"></group>
-            <transform translation="0 2.0 0"><billboard><text id="pdu-label" string='""' scale='0.4 0.4 0.4'></text></billboard></transform>
-        </transform>
-    </scene>
-</x3d>
-
+<main class="wrap">
+<header class="hero"><div><div class="eyebrow">NETWORKING · BEGINNER'S GUIDE</div><h1>인터넷 데이터의<br>OSI 7계층 네트워크 전송</h1><p>송신지에서 만든 데이터가 수신지까지 어떻게 전달되는지 살펴보자. <strong>다음 단계</strong>를 눌러 헤더가 붙고 벗겨지는 과정을 따라가자.</p></div><div class="hero-badge">OSI 7계층 · 그림으로 익히기</div></header>
+<section class="panel journey" aria-label="네트워크 전송 시뮬레이션"><div class="section-head"><div><h2>한 번의 웹 요청의 이동 경로</h2><p>예: 송신지에서 수신지로 웹페이지 요청 보내기</p></div><div class="step-count" id="stepCount">준비</div></div><div class="progress" aria-label="진행도"><i id="progressFill"></i></div><div class="route"><div class="device" id="dev-client"><div class="device-ico">💻</div><div><b>송신지</b><small>브라우저가 요청을 생성</small></div></div><span class="arrow" aria-hidden="true">→</span><div class="device" id="dev-switch"><div class="device-ico">🔀</div><div><b>스위치</b><small>로컬 링크에서 프레임 전달</small></div></div><span class="arrow" aria-hidden="true">→</span><div class="device" id="dev-router"><div class="device-ico">📡</div><div><b>라우터</b><small>다음 네트워크로 전달</small></div></div><span class="arrow" aria-hidden="true">→</span><div class="device" id="dev-server"><div class="device-ico">🗄️</div><div><b>수신지 서버</b><small>요청을 받아 처리</small></div></div></div><div class="packet-line" aria-label="요청이 이동하는 위치"><span class="packet" id="packet"></span></div><div class="packet-build" aria-label="패킷 구성"><span class="packet-build-label" id="packetBuildLabel">데이터가 준비된 상태</span><div class="packet-fields" id="packetFields" aria-live="polite"></div></div><p class="stage-caption" id="stageCaption" aria-live="polite">다음을 눌러 송신지에서 헤더가 붙고, 수신지에서 벗겨지는 과정을 살펴보자.</p><div class="controls simulation-controls" style="margin-top:14px"><button class="btn primary play-btn" id="playBtn" type="button">▶ 시뮬레이션 시작</button><button class="btn" id="prevBtn" type="button">← 이전</button><button class="btn" id="nextBtn" type="button">다음 단계 →</button><button class="btn" id="resetBtn" type="button">처음부터</button></div></section>
+<div class="toolbar"><h2>OSI 7계층 한눈에 보기</h2><span style="color:var(--muted);font-size:.82rem">계층 카드를 눌러 자세히 알아보자</span></div>
+<section class="panel model-panel" aria-label="송신지에서 수신지까지 패킷 이동 3D 모델"><div class="model-head"><div><h2>송신지 → 수신지 3D 네트워크 모형</h2><p>단계를 진행하면 패킷 헤더가 실제로 추가·교체·제거되는 모습이 모형에 반영된다. 빈 공간을 드래그하거나 버튼으로 회전하자.</p></div><div class="model-tools"><button class="btn" id="rotateLeft" type="button" aria-label="3D 모형 왼쪽으로 회전">↶</button><button class="btn" id="rotateRight" type="button" aria-label="3D 모형 오른쪽으로 회전">↷</button><button class="btn" id="rotateReset" type="button">정면</button><button class="btn spin-btn" id="rotate360" type="button">360° 회전</button></div></div><div class="model-stage" id="modelStage"><div class="model-orbit" id="modelOrbit"><svg class="model-svg" id="modelSvg" viewBox="0 0 1000 440" role="img" aria-label="송신지 컴퓨터에서 스위치와 라우터를 거쳐 수신지 서버로 이동하는 패킷의 3차원 개념도"></svg></div></div><p class="model-hint" id="modelHint">처음부터 ‘다음 단계’를 눌러 패킷이 만들어지는 과정을 모형에서 확인하자. 드래그로 회전 가능.</p></section>
+<div class="main-grid"><section class="panel layers-panel" aria-label="OSI 계층 목록"><div class="layers-head"><h2>데이터가 거치는 7계층의 역할</h2><span>송신은 7→1 · 수신은 1→7</span></div><div class="stack" id="layerStack"></div></section><article class="panel detail" id="detail" aria-live="polite"></article></div>
+<aside class="panel journey-note"><div class="note-icon">💡</div><div><h2>꼭 기억할 두 가지</h2><p><strong>캡슐화:</strong> 송신지는 계층을 내려가며 필요한 제어 정보를 덧붙인다. <strong>역캡슐화:</strong> 수신지는 계층을 올라가며 해당 정보를 확인하고 벗겨 낸다. 단, 실제 인터넷에서 OSI 7계층마다 모두 별도 헤더가 생기는 것은 아니다. 이 예시에서는 대표적인 TCP·IP·이더넷 헤더를 보여준다. 라우터는 링크 헤더를 다음 링크에 맞게 새로 만들며, IP 헤더의 TTL 등 일부 값도 바꿀 수 있다. TCP/IP와 OSI의 계층 구분도 정확히 일치하지 않는다.</p></div></aside>
+<div class="footer">이 페이지는 네트워크 학습용 개념도이다. 실제 경로와 장비 구성은 네트워크마다 다를 수 있다.</div>
+</main>
 <script>
-    const layerData = [
-        { 
-            name: "7. Application Layer (응용 계층)", color: "0.5 0.2 0.9", pdu: "Data", proto: "HTTP/3, DNS, MQTT, FTP", hack: "L7 DDoS, Injection", 
-            desc: "<b>[프로토콜]</b> HTTP/3(QUIC기반), DNS, SMTP, MQTT <br><b>[주요 기능]</b> 사용자 응용 프로세스와 직접 통신하여 네트워크 서비스를 제공하는 창구 역할을 수행합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>SQL Injection / XSS:</span> 앱 취약점을 이용해 DB 정보를 탈취하거나 악성 스크립트를 실행합니다. <span class='desc-threat'>L7 DDoS:</span> 정상적인 HTTP 요청을 대량으로 보내 서버 자원을 고갈시킵니다." 
-        },
-        { 
-            name: "6. Presentation Layer (표현 계층)", color: "0.2 0.4 0.8", pdu: "Data", proto: "TLS 1.3, JPEG, ASCII", hack: "암호화 취약점 공격", 
-            desc: "<b>[프로토콜]</b> TLS 1.3, SSL, JPEG, MPEG, ASCII <br><b>[주요 기능]</b> 데이터의 인코딩/디코딩, 압축, 암호화 및 복호화를 통해 서로 다른 시스템 간 데이터 형식을 통일합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>암호화 미비:</span> 취약한 SSL 버전 사용 시 패킷 스니핑을 통해 데이터 본문을 노출합니다. <span class='desc-threat'>SSL Stripping:</span> HTTPS 연결을 강제로 HTTP로 다운그레이드하여 평문 데이터를 가로챕니다." 
-        },
-        { 
-            name: "5. Session Layer (세션 계층)", color: "0.2 0.6 0.9", pdu: "Data", proto: "RPC, NetBIOS, PAP", hack: "Session Hijacking", 
-            desc: "<b>[프로토콜]</b> RPC, NetBIOS, PAP, PPTP <br><b>[주요 기능]</b> 응용 프로그램 간의 세션을 설정, 관리, 종료하며 통신 중 체크포인트를 두어 동기화를 유지합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>Session Hijacking:</span> 이미 인증된 사용자의 세션 ID를 탈취하여 별도의 로그인 없이 시스템 권한을 획득합니다. <span class='desc-threat'>Brute Force:</span> 인증 과정의 허점을 이용해 세션 연결 권한을 강제로 탈취합니다." 
-        },
-        { 
-            name: "4. Transport Layer (전송 계층)", color: "0.1 0.7 0.3", pdu: "Segment / Datagram", proto: "TCP, UDP", hack: "SYN Flood, Port Scan", 
-            desc: "<b>[프로토콜]</b> TCP (신뢰성 전송), UDP (속도 중심) <br><b>[주요 기능]</b> 종단간(End-to-End) 오류 검출 및 복구, 흐름 제어, 포트 주소를 통한 프로세스 구분을 담당합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>SYN Flooding:</span> TCP 3-Way Handshake의 취약점을 악용해 가짜 연결 요청을 보내 백로그 큐를 가득 채웁니다. <span class='desc-threat'>Port Scanning:</span> 열려 있는 포트를 확인하여 후속 공격을 위한 시스템 정보를 수집합니다." 
-        },
-        { 
-            name: "3. Network Layer (네트워크 계층)", color: "0.9 0.8 0.1", pdu: "Packet", proto: "IPv4/v6, ICMP, IPsec", hack: "IP Spoofing, Smurf", 
-            desc: "<b>[프로토콜]</b> IPv4, IPv6, ICMP, ARP, IPsec <br><b>[주요 기능]</b> 논리적 주소(IP)를 부여하고 목적지까지의 최적 경로를 설정하는 라우팅(Routing)을 수행합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>IP Spoofing:</span> 송신자 IP 주소를 공격 대상이나 신뢰받는 호스트로 위장합니다. <span class='desc-threat'>Smurf Attack:</span> ICMP Echo 요청의 발신 주소를 희생자로 속여 브로드캐스트함으로써 대량의 응답 패킷이 희생자에게 쏟아지게 합니다." 
-        },
-        { 
-            name: "2. Data Link Layer (데이터 링크 계층)", color: "0.9 0.5 0.1", pdu: "Frame", proto: "Ethernet, ARP, VLAN", hack: "ARP Spoofing, MAC Flood", 
-            desc: "<b>[프로토콜]</b> Ethernet, ARP, VLAN(802.1Q), PPP <br><b>[주요 기능]</b> 인접 노드 간의 신뢰성 있는 데이터 전송을 위해 물리적 주소(MAC)를 할당하고 흐름/오류를 제어합니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>ARP Spoofing:</span> 가짜 ARP 응답을 보내 희생자의 트래픽이 공격자에게 오도록 가로챕니다(MITM). <span class='desc-threat'>MAC Flooding:</span> 스위치의 MAC 테이블을 가짜 정보로 가득 채워 허브처럼 동작하게 유도하여 정보를 탈취합니다." 
-        },
-        { 
-            name: "1. Physical Layer (물리 계층)", color: "0.8 0.2 0.2", pdu: "Bit", proto: "1000Base-T, WiFi(PHY)", hack: "Wiretapping, Jamming", 
-            desc: "<b>[프로토콜]</b> Ethernet(PHY), RS-232, Wi-Fi 6 <br><b>[주요 기능]</b> 0과 1의 비트 스트림을 전기, 광, 무선 신호로 변환하여 물리적 매체로 전송하는 하드웨어 단계입니다. <br><b>[해킹위협 및 내용]</b> <span class='desc-threat'>Wiretapping(도청):</span> 케이블에 물리적 탭을 설치하여 신호를 복제합니다. <span class='desc-threat'>RF Jamming:</span> 강력한 전파 간섭 신호를 발생시켜 무선 네트워크 통신을 물리적으로 마비시킵니다." 
-        }
-    ];
+const layers=[
+{id:7,en:'Application',ko:'응용 계층',pdu:'데이터',color:'var(--l7)',role:'사용자 앱이 네트워크 서비스를 이용하는 계층이다.',detail:'브라우저가 수신지 서버에 “이 페이지를 보내 줘”라고 HTTP 요청을 만든다. 이메일 앱이나 메신저도 각각 필요한 네트워크 요청을 만든다. 응용 계층은 앱과 네트워크 사이의 창구다.',analogy:'식당에서 손님이 메뉴를 고르고 주문하는 과정에 비유할 수 있다. 실제 네트워크 앱이 식당처럼 동작한다는 뜻은 아니다.',examples:['HTTP / HTTPS','DNS','SMTP · IMAP'],remember:'브라우저와 앱이 네트워크에 무엇을 요청할지 정한다.'},
+{id:6,en:'Presentation',ko:'표현 계층',pdu:'데이터',color:'var(--l6)',role:'데이터 형식을 맞추고 필요하면 암호화하거나 압축한다.',detail:'서로 다른 형식의 데이터를 약속된 방식으로 표현한다. 필요하면 압축하거나 암호화하고, 수신 측은 적절한 권한과 키가 있을 때 내용을 복원한다. 실제 인터넷에서는 이런 기능이 한 계층에만 모여 있지 않다.',analogy:'다른 언어로 번역하거나 편지를 잠금 봉투에 넣는 일에 비유할 수 있다. 실제 암호화는 수학적 알고리즘으로 처리한다.',examples:['문자 인코딩','JPEG · PNG','TLS 암호화 기능'],remember:'데이터의 표현 형식과 암호화·압축을 다룬다.'},
+{id:5,en:'Session',ko:'세션 계층',pdu:'데이터',color:'var(--l5)',role:'기기 사이의 대화가 이어지도록 세션을 관리한다.',detail:'대화의 시작·유지·종료와 재개 지점을 다루는 개념이다. 다만 오늘날 인터넷 앱의 세션 관리는 OSI 세션 계층 하나가 전담하기보다 앱과 다른 계층에 나뉘어 구현된다.',analogy:'전화 통화를 시작하고 이어 가다 끝내는 절차에 비유할 수 있다. 인터넷 세션이 실제 전화 통화와 똑같다는 뜻은 아니다.',examples:['세션 관리 개념','RPC','앱의 로그인 세션'],remember:'통신을 하나의 이어지는 대화로 관리하는 개념이다.'},
+{id:4,en:'Transport',ko:'전송 계층',pdu:'세그먼트 / 데이터그램',color:'var(--l4)',role:'포트 번호로 앱을 구분하고 전송 방식을 정한다.',detail:'TCP는 순서 확인과 재전송 등으로 신뢰성 있는 전달을 돕는다. UDP는 연결 관리 부담이 적지만 전달 자체를 보장하지 않는다. 포트 번호는 한 기기 안에서 데이터를 받을 앱을 구분한다.',analogy:'IP 주소가 건물 주소라면 포트 번호는 건물 안의 부서 번호와 비슷하다. TCP와 UDP는 서로 다른 전송 방식이다.',examples:['TCP','UDP','포트 443 (HTTPS에서 흔히 사용)'],remember:'기기 안의 앱은 포트로 구분하고, TCP·UDP가 전송 방식을 정한다.'},
+{id:3,en:'Network',ko:'네트워크 계층',pdu:'패킷',color:'var(--l3)',role:'IP 주소를 바탕으로 다른 네트워크까지 갈 다음 방향을 찾는다.',detail:'IP 패킷에는 출발지와 목적지 IP 주소가 들어간다. 라우터는 목적지 IP를 확인해 다음 홉을 선택한다. 각 라우터가 다음 방향을 이어서 고르며 패킷을 전달한다.',analogy:'봉투의 주소를 보고 다음 우체국으로 보내는 일에 비유할 수 있다. 인터넷 라우팅은 실제 우편 배달과는 다른 기술이다.',examples:['IPv4 / IPv6','IP','ICMP'],remember:'IP 주소와 네트워크 사이의 경로 전달을 담당한다.'},
+{id:2,en:'Data Link',ko:'데이터 링크 계층',pdu:'프레임',color:'var(--l2)',role:'같은 링크에서 이웃한 장치끼리 프레임을 주고받는다.',detail:'이더넷이나 Wi-Fi 링크에서는 프레임을 사용한다. 스위치는 MAC 주소를 참고해 로컬 링크에서 프레임을 전달한다. 라우터를 지나 다음 링크로 갈 때는 그 링크에 맞는 새 프레임을 만든다.',analogy:'긴 여정에서 구간별 셔틀이 이웃한 정류장 사이를 잇는 모습에 비유할 수 있다. 실제 네트워크 장비가 셔틀처럼 움직인다는 뜻은 아니다.',examples:['Ethernet','Wi-Fi 링크','MAC 주소 · 스위치'],remember:'가까운 장치 간 링크 전달과 프레임을 다룬다.'},
+{id:1,en:'Physical',ko:'물리 계층',pdu:'비트',color:'var(--l1)',role:'0과 1을 전기·빛·전파 신호로 바꾸어 매체를 통해 보낸다.',detail:'구리 케이블의 전기 신호, 광섬유의 빛, Wi-Fi의 전파처럼 신호가 실제 매체를 따라 이동한다. 수신 장치는 신호를 비트(0과 1)로 복원한다. 케이블·커넥터·주파수 등 물리적 전송 조건을 다룬다.',analogy:'글자를 목소리나 빛 신호로 바꿔 멀리 보내는 과정에 비유할 수 있다. 비트가 실제 작은 상자에 담겨 전선을 흐른다는 뜻은 아니다.',examples:['구리 케이블','광섬유','Wi-Fi 전파'],remember:'실제 매체로 비트를 보내는 가장 아래 계층이다.'}
+];
+const steps=[
+{pos:0,device:'client',layer:7,label:'응용 데이터 만들기',text:'송신지: 브라우저가 HTTP 요청 데이터를 만든다. 아직 전송 계층 헤더는 붙지 않았다.',op:'start'},
+{pos:0,device:'client',layer:6,label:'표현 계층 처리',text:'송신지: 데이터 형식과 암호화 등을 처리한다. OSI 모델의 표현 계층에 해당하는 별도 헤더가 항상 생기는 것은 아니다.',op:'noop'},
+{pos:0,device:'client',layer:5,label:'세션 계층 처리',text:'송신지: 대화의 이어짐을 관리하는 기능을 다룬다. 실제 인터넷에서는 이 기능이 앱 등 여러 곳에 나뉠 수 있다.',op:'noop'},
+{pos:0,device:'client',layer:4,label:'전송 계층 헤더 추가',text:'송신지: TCP를 사용하면 출발지·목적지 포트 등 TCP 헤더를 데이터 앞에 붙인다. UDP라면 UDP 헤더를 사용한다.',op:'add',field:'TCP 헤더',kind:'tcp'},
+{pos:0,device:'client',layer:3,label:'네트워크 계층 헤더 추가',text:'송신지: 출발지·목적지 IP 주소가 담긴 IP 헤더를 앞에 붙인다. 이제 TCP 세그먼트가 IP 패킷 안에 들어간다.',op:'add',field:'IP 헤더',kind:'ip'},
+{pos:0,device:'client',layer:2,label:'링크 계층 헤더·꼬리 추가',text:'송신지: 다음 링크의 목적지 MAC 주소 등을 담은 이더넷 헤더와 오류 검사용 FCS를 붙여 프레임을 만든다.',op:'addLink'},
+{pos:0,device:'client',layer:1,label:'비트로 신호 전송',text:'송신지: 프레임의 비트가 전기·빛·무선 신호로 바뀌어 케이블이나 전파를 따라 나간다. 비트 자체에 별도 헤더가 붙는 것은 아니다.',op:'noop'},
+{pos:.34,device:'switch',layer:2,label:'스위치에서 프레임 전달',text:'스위치: 이더넷 프레임의 목적지 MAC 주소를 확인해 로컬 링크의 다음 장치로 전달한다. 프레임의 링크 헤더는 유지된다.',op:'noop'},
+{pos:.67,device:'router',layer:3,label:'라우터에서 링크 프레임 교체',text:'라우터: 들어온 링크 프레임을 열어 IP 패킷을 확인한다. 다음 링크로 보낼 때 기존 이더넷 헤더·FCS를 벗기고 새 링크용 헤더·FCS를 붙인다. IP 헤더는 전달 과정에서 TTL 등 일부 값이 바뀔 수 있다.',op:'rebuildLink'},
+{pos:1,device:'server',layer:1,label:'수신지에서 신호 읽기',text:'수신지: 신호를 비트로 복원하고 프레임을 받는다. 이제 헤더를 바깥쪽부터 확인하며 벗긴다.',op:'noop'},
+{pos:1,device:'server',layer:2,label:'링크 헤더·꼬리 제거',text:'수신지: 목적지 MAC 주소와 FCS를 확인한 뒤 이더넷 헤더와 꼬리를 벗긴다. 안쪽에는 IP 패킷이 남는다.',op:'stripLink'},
+{pos:1,device:'server',layer:3,label:'IP 헤더 확인·제거',text:'수신지: 목적지 IP 주소가 이 장치와 맞는지 확인하고 IP 헤더를 벗긴다. 안쪽에는 TCP 세그먼트가 남는다.',op:'remove',field:'IP 헤더'},
+{pos:1,device:'server',layer:4,label:'TCP 헤더 확인·제거',text:'수신지: TCP 포트와 순서·오류 정보를 확인하고 TCP 헤더를 처리한다. 데이터는 알맞은 앱으로 전달된다.',op:'remove',field:'TCP 헤더'},
+{pos:1,device:'server',layer:5,label:'세션 기능 처리',text:'수신지: 필요한 대화·세션 정보를 앱의 통신 흐름에 맞게 처리한다.',op:'noop'},
+{pos:1,device:'server',layer:6,label:'표현·암호화 처리',text:'수신지: 적용된 형식 변환이나 암호화를 처리해 앱이 사용할 수 있는 내용을 복원한다.',op:'noop'},
+{pos:1,device:'server',layer:7,label:'응용 데이터 전달',text:'수신지: 원래의 HTTP 요청 데이터가 수신지 서버 앱에 도착한다. 응답 데이터는 반대 방향으로 같은 원리를 따라 이동한다.',op:'done'}
+];
+const packetStates=[];let packetHeaders=['데이터'];steps.forEach(s=>{if(s.op==='add')packetHeaders.unshift(s.field);if(s.op==='addLink')packetHeaders.unshift('이더넷 헤더'),packetHeaders.push('FCS');if(s.op==='rebuildLink')packetHeaders=['이더넷 헤더(다음 링크)','IP 헤더','TCP 헤더','데이터','FCS(새 링크)'];if(s.op==='stripLink')packetHeaders=['IP 헤더','TCP 헤더','데이터'];if(s.op==='remove')packetHeaders=packetHeaders.filter(h=>h!==s.field);packetStates.push([...packetHeaders])});
 
-    const simulationPath = [
-        { stage: "ENCAP", layer: 0, pos: [-21, 9.0, 0], h: 1, msg: "송신측: 애플리케이션 서비스 실행" },
-        { stage: "ENCAP", layer: 1, pos: [-21, 7.5, 0], h: 2, msg: "송신측: TLS 암호화 및 인코딩 적용" },
-        { stage: "ENCAP", layer: 2, pos: [-21, 6.0, 0], h: 3, msg: "송신측: 통신 세션 수립 및 동기화" },
-        { stage: "ENCAP", layer: 3, pos: [-21, 4.5, 0], h: 4, msg: "송신측: TCP 포트번호 및 흐름제어 삽입" },
-        { stage: "ENCAP", layer: 4, pos: [-21, 3.0, 0], h: 5, msg: "송신측: IP 패킷 생성 (라우팅 주소 결합)" },
-        { stage: "ENCAP", layer: 5, pos: [-21, 1.5, 0], h: 6, msg: "송신측: 이더넷 프레임 구성 (MAC 주소)" },
-        { stage: "ENCAP", layer: 6, pos: [-21, 0.0, 0], h: 7, msg: "송신측: 전기 신호로 물리 매체 전송 시작" },
-        { stage: "TRANS", layer: 5, pos: [-7, 0.0, 0], h: 7, msg: "L2 스위치: 인접 장치 간 하드웨어 주소 교환" },
-        { stage: "TRANS", layer: 4, pos: [7, 0.0, 0], h: 7, msg: "L3 라우터: 네트워크 간 패킷 최적 경로 선정" },
-        { stage: "TRANS", layer: 6, pos: [21, 0.0, 0], h: 7, msg: "수신측: 신호 수집 및 디지털 변환 시작" },
-        { stage: "DECAP", layer: 5, pos: [21, 1.5, 0], h: 6, msg: "수신측: MAC 주소 일치 확인 및 역캡슐화" },
-        { stage: "DECAP", layer: 4, pos: [21, 3.0, 0], h: 5, msg: "수신측: IP 패킷 검증 및 조립" },
-        { stage: "DECAP", layer: 3, pos: [21, 4.5, 0], h: 4, msg: "수신측: TCP 세그먼트 순서 정렬 및 신뢰성 확인" },
-        { stage: "DECAP", layer: 2, pos: [21, 6.0, 0], h: 3, msg: "수신측: 통신 세션 정상 종료 확인" },
-        { stage: "DECAP", layer: 1, pos: [21, 7.5, 0], h: 2, msg: "수신측: 암호화 해제 및 데이터 파싱" },
-        { stage: "DECAP", layer: 0, pos: [21, 9.0, 0], h: 1, msg: "수신측: 최종 응용 서비스 데이터 도달" }
-    ];
+let selected=0,step=-1;const stack=document.getElementById('layerStack');
+function renderLayers(){stack.innerHTML=layers.map((l,i)=>`<button class="layer ${selected===i?'selected':''}" style="--c:${l.color}" data-index="${i}" aria-pressed="${selected===i}"><span class="layer-num">${l.id}</span><span><span class="layer-title">${l.ko}</span><span class="layer-sub">${l.en} · ${l.role}</span></span><span class="pdu">${l.pdu}</span></button>`).join('');stack.querySelectorAll('.layer').forEach(b=>b.addEventListener('click',()=>selectLayer(Number(b.dataset.index))));renderModel()}
+function renderModel(){const svg=document.getElementById('modelSvg');if(!svg)return;const palette={ethernet:'#ffa765',ip:'#ffda70',tcp:'#55e4b1',data:'#a9b9d3',fcs:'#ff718a'};const headerColor=n=>n.startsWith('TCP')?palette.tcp:n.startsWith('IP')?palette.ip:n.startsWith('FCS')?palette.fcs:n.startsWith('이더넷')?palette.ethernet:palette.data;const slab=(x,y,l,idx)=>{const z=22,hw=82,hh=22;const c=l.color;const top=`${x},${y} ${x+hw},${y+hh} ${x},${y+hh*2} ${x-hw},${y+hh}`;const left=`${x-hw},${y+hh} ${x},${y+hh*2} ${x},${y+hh*2+z} ${x-hw},${y+hh+z}`;const right=`${x},${y+hh*2} ${x+hw},${y+hh} ${x+hw},${y+hh+z} ${x},${y+hh*2+z}`;return `<g class="net-node ${selected===idx?'active':''}"><polygon class="net-layer" points="${left}" fill="color-mix(in srgb,${c} 55%,#182136)"/><polygon class="net-layer" points="${right}" fill="color-mix(in srgb,${c} 38%,#101827)"/><polygon class="net-layer" points="${top}" fill="color-mix(in srgb,${c} 84%,#26344c)"/><text class="net-small" x="${x}" y="${y+hh+4}">L${l.id} ${l.ko}</text></g>`};const tower=(x,label,sub,server)=>{let slabs='';for(let i=0;i<7;i++)slabs+=slab(x,244-i*24,layers[6-i],6-i);let device=server?`<g><polygon points="${x-46},232 ${x},210 ${x+46},232 ${x},254" fill="#c8d5e8"/><polygon points="${x-46},232 ${x},254 ${x},280 ${x-46},258" fill="#657994"/><polygon points="${x},254 ${x+46},232 ${x+46},258 ${x},280" fill="#40516c"/><circle cx="${x+23}" cy="245" r="3" fill="#63f1c2"/></g>`:`<g><polygon points="${x-49},220 ${x},197 ${x+49},220 ${x},244" fill="#b7c9e4"/><polygon points="${x-49},220 ${x},244 ${x},268 ${x-49},244" fill="#59708e"/><polygon points="${x},244 ${x+49},220 ${x+49},244 ${x},268" fill="#354863"/><circle cx="${x-11}" cy="227" r="3" fill="#5ad9ff"/></g>`;return `<g>${slabs}${device}<text class="net-label" x="${x}" y="300">${label}</text><text class="net-sub" x="${x}" y="322">${sub}</text></g>`};const box=(x,label,sub,kind)=>`<g class="net-node ${step>=0&&steps[step].device===kind?'active':''}"><polygon points="${x-51},218 ${x},194 ${x+51},218 ${x},242" fill="${kind==='router'?'#6daaff':'#b490ff'}"/><polygon points="${x-51},218 ${x},242 ${x},280 ${x-51},256" fill="${kind==='router'?'#3764a2':'#654caf'}"/><polygon points="${x},242 ${x+51},218 ${x+51},256 ${x},280" fill="${kind==='router'?'#24456f':'#48347f'}"/><text class="net-label" x="${x}" y="302">${label}</text><text class="net-sub" x="${x}" y="323">${sub}</text></g>`;const cur=step>=0?steps[step]:null,progress=cur?cur.pos:0,packetX=155+progress*690;const state=step>=0?packetStates[step]:['데이터'];const parts=state.map(n=>({name:n,label:n.startsWith('이더넷')?'이더넷 헤더':n.startsWith('FCS')?'FCS':n,color:headerColor(n)}));const chipW=Math.min(112,430/Math.max(parts.length,1)),gap=4,total=parts.length*(chipW+gap)-gap,startX=0;let packet='';parts.forEach((p,i)=>{const x=startX+i*(chipW+gap),y=124,w=chipW,h=33,z=8;packet+=`<g class="packet-part"><polygon points="${x},${y} ${x+z},${y-z} ${x+w+z},${y-z} ${x+w},${y}" fill="${p.color}"/><polygon points="${x+w},${y} ${x+w+z},${y-z} ${x+w+z},${y+h-z} ${x+w},${y+h}" fill="color-mix(in srgb,${p.color} 58%,#172137)"/><rect class="packet-part" x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${p.color}"/><text class="packet-part-label" x="${x+w/2}" y="${y+h/2}">${p.label}</text></g>`});const activeNode=cur?cur.device:'';let grid='';for(let x=55;x<=945;x+=55)grid+=`<path class="net-grid" d="M${x} 360 l50 24"/>`;svg.innerHTML=`<ellipse class="net-floor" cx="500" cy="354" rx="465" ry="54"/><g>${grid}</g><path class="net-wire" d="M155 250 H845"/><path class="net-wire-glow" d="M155 250 H${packetX}"/><g class="net-node ${activeNode==='client'?'active':''}">${tower(155,'송신지','데이터 생성 · 캡슐화',false)}</g>${box(385,'스위치','MAC 주소로 프레임 전달','switch')}${box(615,'라우터','IP 경로 선택 · 링크 헤더 교체','router')}<g class="net-node ${activeNode==='server'?'active':''}">${tower(845,'수신지','역캡슐화 · 앱에 전달',true)}</g><g class="packet-shell" transform="translate(${packetX-total/2-8},0)"><circle cx="${total/2+8}" cy="117" r="8" fill="#fff" stroke="#62e0ff" stroke-width="4"/>${packet}</g><text class="net-small" x="500" y="62">현재 패킷 · ${cur?cur.label:'데이터만 준비됨'}</text><text class="net-small" x="500" y="414">${cur?`현재 처리: ${cur.label}`:'송신지에서 수신지까지의 패킷 구성 변화'}</text>`;svg.querySelectorAll('.net-node').forEach(g=>g.addEventListener('click',()=>{const label=g.querySelector('.net-label')?.textContent||'';const layerNum=Number(label.match(/L(\d)/)?.[1]);if(layerNum)selectLayer(layers.findIndex(l=>l.id===layerNum))}))}
+function selectLayer(i){selected=i;const l=layers[i],d=document.getElementById('detail');d.style.setProperty('--active',l.color);d.innerHTML=`<div class="detail-kicker">OSI LAYER ${l.id} · ${l.en.toUpperCase()}</div><h2>${l.ko}</h2><p class="lead">${l.role}</p><section class="explain"><h3>무슨 일을 하나?</h3><p>${l.detail}</p></section><section class="explain analogy"><h3>쉬운 비유</h3><p>${l.analogy}</p></section><section class="explain"><h3>관련 예시</h3><div class="chips">${l.examples.map(x=>`<span class="chip">${x}</span>`).join('')}</div></section><div class="remember"><b>한 줄 기억</b><br>${l.remember}<br><span style="color:#aab6c9;font-size:.8rem">이 계층에서 다루는 데이터 단위: ${l.pdu}</span></div>`;renderLayers()}
+function renderPacket(state,label){const fields=document.getElementById('packetFields');fields.innerHTML=state.map(name=>{let kind=name.startsWith('TCP')?'tcp':name.startsWith('IP')?'ip':name.startsWith('FCS')?'fcs':name.startsWith('이더넷')?'ethernet':'data';return `<span class="packet-field ${kind}">${name}</span>`}).join('');document.getElementById('packetBuildLabel').textContent=label}
+function renderStep(){const active=step>=0,cur=steps[step],pos=active?cur.pos:0;document.getElementById('stepCount').textContent=active?`단계 ${step+1} / ${steps.length}`:'준비';document.getElementById('progressFill').style.width=active?`${(step+1)/steps.length*100}%`:'0%';document.getElementById('stageCaption').textContent=active?cur.text:'다음을 눌러 송신지에서 헤더가 붙고, 수신지에서 벗겨지는 과정을 살펴보자.';document.getElementById('packet').style.left=`${pos*100}%`;['client','switch','router','server'].forEach(name=>document.getElementById(`dev-${name}`).classList.toggle('active',active&&name===cur.device));document.getElementById('prevBtn').disabled=!active||step===0;document.getElementById('nextBtn').textContent=active&&step===steps.length-1?'완료':'다음 단계 →';document.getElementById('nextBtn').disabled=active&&step===steps.length-1;if(active){selectLayer(layers.findIndex(l=>l.id===cur.layer));renderPacket(packetStates[step],cur.label)}else renderPacket(['데이터'],'데이터만 준비된 상태 · 다음을 눌러 캡슐화 시작');renderModel();document.getElementById('modelHint').textContent=active?`단계 ${step+1}/${steps.length} · ${cur.label} · 패킷 구성과 위치가 모형에 반영된다.`:'처음부터 ‘다음 단계’를 눌러 패킷이 만들어지는 과정을 모형에서 확인하자. 드래그로 회전 가능.'}
 
-    let currentStep = 0;
-
-    function buildTopology() {
-        const nodes = [{id:'tower-sender',l:7}, {id:'tower-switch',l:2}, {id:'tower-router',l:3}, {id:'tower-receiver',l:7}];
-        nodes.forEach(node => {
-            const root = document.getElementById(node.id);
-            for(let i=0; i<node.l; i++) {
-                let t = document.createElement('transform');
-                t.setAttribute('translation', `0 ${i * 1.5} 0`);
-                let s = document.createElement('shape');
-                let m = document.createElement('material');
-                m.setAttribute('diffuseColor', layerData[6-i].color);
-                m.setAttribute('transparency', '0.6');
-                s.appendChild(document.createElement('appearance')).appendChild(m);
-                s.appendChild(document.createElement('box')).setAttribute('size', '2.5 1.2 1.8');
-                t.appendChild(s); root.appendChild(t);
-            }
-        });
-    }
-
-    function updatePDU(headerCount) {
-        const group = document.getElementById('pdu-horizontal-group');
-        while(group.firstChild) group.removeChild(group.firstChild);
-        addBlock(group, "1 1 1", 0); 
-        for (let i = 0; i < headerCount - 1; i++) {
-            addBlock(group, layerData[i].color, -(i + 1) * 0.8);
-        }
-    }
-
-    function addBlock(parent, color, xPos) {
-        let t = document.createElement('transform');
-        t.setAttribute('translation', `${xPos} 0 0`);
-        let s = document.createElement('shape');
-        let m = document.createElement('material');
-        m.setAttribute('diffuseColor', color);
-        s.appendChild(document.createElement('appearance')).appendChild(m);
-        s.appendChild(document.createElement('box')).setAttribute('size', '0.75 0.75 0.75');
-        t.appendChild(s); parent.appendChild(t);
-    }
-
-    function render() {
-        const cur = simulationPath[currentStep];
-        const mover = document.getElementById('pdu-mover');
-        const info = layerData[cur.layer];
-        
-        mover.setAttribute('translation', cur.pos.join(' '));
-        updatePDU(cur.h);
-
-        document.getElementById('info-title').innerText = cur.msg;
-        document.getElementById('layer-text').innerText = info.name;
-        document.getElementById('proto-text').innerText = info.proto;
-        document.getElementById('hack-text').innerText = info.hack;
-        document.getElementById('pdu-name').innerText = info.pdu;
-        document.getElementById('pdu-label').setAttribute('string', `"${info.pdu}"`);
-        
-        // 상세 설명문 패널에 HTML 형식으로 업데이트
-        document.getElementById('detailed-desc').innerHTML = info.desc;
-
-        document.getElementById('prevBtn').disabled = currentStep === 0;
-        document.getElementById('nextBtn').disabled = currentStep === simulationPath.length - 1;
-    }
-
-    function nextStep() { if(currentStep < simulationPath.length - 1) { currentStep++; render(); } }
-    function prevStep() { if(currentStep > 0) { currentStep--; render(); } }
-    function resetSim() { currentStep = 0; render(); }
-
-    window.onload = () => { buildTopology(); render(); };
+let playbackTimer=null;const playBtn=document.getElementById('playBtn');function stopAuto(){if(playbackTimer!==null){clearInterval(playbackTimer);playbackTimer=null}playBtn.textContent='▶ 시뮬레이션 시작';playBtn.classList.remove('playing')}playBtn.addEventListener('click',()=>{if(playbackTimer!==null){stopAuto();return}if(step>=steps.length-1)step=-1;if(step<0){step=0;renderStep()}playBtn.textContent='⏸ 일시 정지';playBtn.classList.add('playing');playbackTimer=setInterval(()=>{if(step>=steps.length-1){stopAuto();return}step++;renderStep();if(step>=steps.length-1)stopAuto()},1100)});document.getElementById('prevBtn').addEventListener('click',()=>{stopAuto();if(step>0)step--;renderStep()});document.getElementById('nextBtn').addEventListener('click',()=>{stopAuto();if(step<steps.length-1)step++;renderStep()});document.getElementById('resetBtn').addEventListener('click',()=>{stopAuto();step=-1;renderStep()});
+let modelRotation=0,modelTilt=-13;const orbit=document.getElementById('modelOrbit');function setModelRotation(degrees,tilt=modelTilt){modelRotation=degrees;modelTilt=tilt;orbit.style.transform=`perspective(850px) rotateX(${tilt}deg) rotateY(${degrees}deg)`}document.getElementById('rotateLeft').addEventListener('click',()=>setModelRotation(modelRotation-45));document.getElementById('rotateRight').addEventListener('click',()=>setModelRotation(modelRotation+45));document.getElementById('rotateReset').addEventListener('click',()=>setModelRotation(0,-13));document.getElementById('rotate360').addEventListener('click',()=>{orbit.getAnimations().forEach(a=>a.cancel());const start=`perspective(850px) rotateX(${modelTilt}deg) rotateY(${modelRotation}deg)`;const end=`perspective(850px) rotateX(${modelTilt}deg) rotateY(${modelRotation+360}deg)`;const spin=orbit.animate([{transform:start},{transform:end}],{duration:2600,easing:'cubic-bezier(.35,.05,.65,.95)'});spin.onfinish=()=>{orbit.style.transform=start;spin.cancel()}});setModelRotation(0,-13);const modelStage=document.getElementById('modelStage');let dragX=0,dragY=0,dragging=false;modelStage.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dragging=true;dragX=e.clientX;dragY=e.clientY;modelStage.classList.add('dragging');modelStage.setPointerCapture(e.pointerId)});modelStage.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-dragX,dy=e.clientY-dragY;dragX=e.clientX;dragY=e.clientY;setModelRotation(modelRotation+dx*.65,Math.max(-32,Math.min(32,modelTilt-dy*.32)))});const stopDrag=()=>{dragging=false;modelStage.classList.remove('dragging')};modelStage.addEventListener('pointerup',stopDrag);modelStage.addEventListener('pointercancel',stopDrag);
+renderLayers();selectLayer(0);renderStep();
 </script>
 </body>
 </html>
