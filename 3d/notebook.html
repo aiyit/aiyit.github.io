@@ -3,65 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>노트북 3D · CMD</title>
+<title>노트북 3D · 크리스마스 CMD</title>
 <style>
-  :root { --bg1:#1d2733; --bg2:#0b0f14; --fg:#d8e1ea; }
-  @media (prefers-color-scheme: light) { :root { --bg1:#dfe7ee; --bg2:#aebccb; --fg:#1b2530; } }
+  :root { --bg1:#123024; --bg2:#050a08; --fg:#e7f2ea; }
   html, body { margin:0; height:100%; overflow:hidden; }
   body { background:radial-gradient(ellipse at 50% 35%, var(--bg1), var(--bg2)); color:var(--fg);
          font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
   canvas { display:block; touch-action:none; }
   #hint { position:fixed; left:0; right:0; bottom:0; padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
-          text-align:center; font-size:14px; opacity:.8; pointer-events:none; }
+          text-align:center; font-size:13px; opacity:.85; pointer-events:none; }
   #kbd { position:fixed; left:-1000px; top:0; opacity:0; }
+  #music { position:fixed; top:12px; right:12px; z-index:10; padding:10px 14px; border:0; border-radius:999px;
+           background:rgba(20,60,45,.75); color:#eafff2; font-size:13px; cursor:pointer; backdrop-filter:blur(6px); }
 </style>
 </head>
 <body>
 <input id="kbd" autocomplete="off" autocapitalize="off" spellcheck="false">
-<div id="hint">키보드를 누르면 화면의 CMD에 입력됩니다 · 드래그로 회전 · 휠로 확대 · help 입력해 보세요</div>
+<button id="music">🎵 음악 켜기</button>
+<div id="hint">키보드 입력 · 드래그 회전 · 휠 확대 · help / open notepad / open calc / tree / music</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function () {
-  /* ---------- Renderer / Scene ---------- */
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   document.body.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x081410, 14, 28);
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
   let camDist = 9;
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x223344, 0.7));
-  const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+  scene.add(new THREE.HemisphereLight(0xbfe8ff, 0x0d2418, 0.75));
+  const sun = new THREE.DirectionalLight(0xfff4e0, 0.85);
   sun.position.set(4, 8, 5); sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  Object.assign(sun.shadow.camera, { left:-6, right:6, top:6, bottom:-6 });
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left:-7, right:7, top:7, bottom:-7 });
   scene.add(sun);
-  const glow = new THREE.PointLight(0x9fd0ff, 0.6, 6);
-  scene.add(glow);
 
-  const ground = new THREE.Mesh(new THREE.CircleGeometry(8, 64),
-    new THREE.ShadowMaterial({ opacity: 0.35 }));
-  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
-  scene.add(ground);
+  const screenLight = new THREE.PointLight(0x7fffd0, 1.0, 9);
+  scene.add(screenLight);
 
-  /* ---------- Terminal (canvas texture) ---------- */
-  const cv = document.createElement('canvas');
-  cv.width = 1024; cv.height = 640;
+  // 눈 내리는 배경
+  const snowGeo = new THREE.BufferGeometry();
+  const N = 900, pos = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    pos[i*3] = (Math.random() - .5) * 30;
+    pos[i*3+1] = Math.random() * 16;
+    pos[i*3+2] = (Math.random() - .5) * 30;
+  }
+  snowGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const snow = new THREE.Points(snowGeo, new THREE.PointsMaterial({ color:0xffffff, size:.07, transparent:true, opacity:.85 }));
+  scene.add(snow);
+
+  // 바닥
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(10, 64), new THREE.ShadowMaterial({ opacity:.4 }));
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+  /* ---------- Terminal ---------- */
+  const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 640;
   const g = cv.getContext('2d');
-  const tex = new THREE.CanvasTexture(cv);
-  tex.anisotropy = 8;
+  const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 8;
 
   const PROMPT = 'C:\\Users\\Student>';
-  const lines = [
+  let lines = [
     'Microsoft Windows [Version 10.0.22631.4460]',
     '(c) Microsoft Corporation. All rights reserved.',
+    '',
+    '크리스마스 3D 노트북에 오신 것을 환영합니다!',
+    'help 를 입력해 사용 가능한 명령을 확인하세요.',
     ''
   ];
   let input = '', cursorOn = true;
   const FONT = '22px Consolas, "D2Coding", "Courier New", monospace';
   const LH = 28, PAD = 16, TITLE = 40;
+
+  const fs = {
+    'C:\\Users\\Student': {
+      type:'dir',
+      children:{
+        'Documents': { type:'dir', children:{} },
+        'Downloads': { type:'dir', children:{} },
+        'readme.txt': { type:'file', content:'안녕하세요!\n이것은 3D 노트북의 가상 파일입니다.\n\nnotepad memo.txt 로 메모장을 열어보세요.' },
+        'memo.txt': { type:'file', content:'크리스마스 선물 목록:\n- 따뜻한 차\n- 책\n- 좋은 하루' }
+      }
+    }
+  };
+  let cwd = 'C:\\Users\\Student';
 
   function wrap(text) {
     g.font = FONT;
@@ -73,93 +101,205 @@
   }
 
   function draw() {
-    g.fillStyle = '#0c0c0c'; g.fillRect(0, 0, cv.width, cv.height);
-    // title bar
+    g.fillStyle = '#07130e'; g.fillRect(0, 0, cv.width, cv.height);
     g.fillStyle = '#f3f3f3'; g.fillRect(0, 0, cv.width, TITLE);
     g.fillStyle = '#111'; g.fillRect(14, 12, 16, 16);
     g.font = '18px "Segoe UI", sans-serif'; g.fillStyle = '#222'; g.textBaseline = 'middle';
     g.fillText('C:\\WINDOWS\\system32\\cmd.exe', 42, 21);
     g.font = '22px "Segoe UI", sans-serif';
     g.fillText('—', cv.width - 150, 20); g.fillText('□', cv.width - 100, 20); g.fillText('✕', cv.width - 50, 20);
-    // body
-    g.font = FONT; g.textBaseline = 'alphabetic'; g.fillStyle = '#cccccc';
+
+    g.font = FONT; g.textBaseline = 'alphabetic'; g.fillStyle = '#b8ffd8';
     const all = [];
     lines.forEach(l => wrap(l).forEach(w => all.push(w)));
-    const cur = wrap(PROMPT + input);
-    cur.forEach(w => all.push(w));
+    wrap(PROMPT + input).forEach(w => all.push(w));
     const rows = Math.floor((cv.height - TITLE - PAD) / LH);
     const view = all.slice(-rows);
     view.forEach((t, i) => g.fillText(t, PAD, TITLE + PAD + LH * (i + 1) - 8));
     if (cursorOn) {
-      const last = cur[cur.length - 1], x = PAD + g.measureText(last).width;
-      g.fillRect(x + 2, TITLE + PAD + LH * view.length - 8 - 20, 12, 22);
+      const last = wrap(PROMPT + input).pop();
+      g.fillStyle = '#7fffd0';
+      g.fillRect(PAD + g.measureText(last).width + 2, TITLE + PAD + LH * view.length - 8 - 20, 12, 22);
     }
     tex.needsUpdate = true;
   }
 
-  function run(cmdLine) {
-    const raw = cmdLine.trim(), [c, ...rest] = raw.split(/\s+/), arg = rest.join(' ');
-    switch (c.toLowerCase()) {
-      case '': break;
-      case 'cls': lines.length = 0; return;
-      case 'help':
-        lines.push('Supported commands:', '  HELP   CLS   ECHO   VER   DATE   TIME', '  DIR    WHOAMI HOSTNAME  COLOR  EXIT'); break;
-      case 'echo': lines.push(arg || 'ECHO is on.'); break;
-      case 'ver': lines.push('', 'Microsoft Windows [Version 10.0.22631.4460]'); break;
-      case 'date': lines.push('The current date is: ' + new Date().toLocaleDateString('ko-KR')); break;
-      case 'time': lines.push('The current time is: ' + new Date().toLocaleTimeString('en-GB')); break;
-      case 'whoami': lines.push('desktop-3d\\student'); break;
-      case 'hostname': lines.push('DESKTOP-3D'); break;
-      case 'dir':
-        lines.push(' Directory of C:\\Users\\Student', '',
-          '11/23/2026  09:00 AM    <DIR>          Documents',
-          '11/23/2026  09:00 AM    <DIR>          Downloads',
-          '11/23/2026  09:12 AM             1,024 notebook.html',
-          '               1 File(s)          1,024 bytes'); break;
-      case 'color': lines.push('(color change is not supported in this demo)'); break;
-      case 'exit': lines.push('Nice try. The window stays open.'); break;
-      default:
-        lines.push("'" + c + "' is not recognized as an internal or external command,", 'operable program or batch file.');
+  function out(...xs) { lines.push(...xs); lines.push(''); }
+
+  function resolvePath(name) {
+    if (!name) return cwd;
+    if (name === '..') {
+      const p = cwd.split('\\'); p.pop();
+      return p.join('\\') || 'C:\\';
     }
-    lines.push('');
+    return cwd.endsWith('\\') ? cwd + name : cwd + '\\' + name;
   }
 
-  /* ---------- Laptop model ---------- */
+  function run(raw) {
+    const cmd = raw.trim();
+    if (!cmd) return;
+    const [c, ...rest] = cmd.split(/\s+/);
+    const arg = rest.join(' ');
+    const dir = fs[cwd];
+
+    switch (c.toLowerCase()) {
+      case 'cls': lines.length = 0; return;
+      case 'help':
+        out('사용 가능한 명령:', '  HELP CLS ECHO VER DATE TIME WHOAMI HOSTNAME', '  DIR CD MKDIR TYPE DEL TREE PWD', '  OPEN NOTEPAD|CALC|EXPLORER', '  CLOSE COLOR THEME BRIGHTNESS RGB', '  MUSIC PLAY|STOP  SOUND ON|OFF  OPEN|CLOSE  EXIT');
+        break;
+      case 'echo': out(arg || 'ECHO is on.'); break;
+      case 'ver': out('', 'Microsoft Windows [Version 10.0.22631.4460]'); break;
+      case 'date': out('현재 날짜: ' + new Date().toLocaleDateString('ko-KR')); break;
+      case 'time': out('현재 시간: ' + new Date().toLocaleTimeString('ko-KR')); break;
+      case 'whoami': out('desktop-3d\\student'); break;
+      case 'hostname': out('DESKTOP-3D'); break;
+      case 'pwd': out(cwd); break;
+      case 'dir': {
+        out(' ' + cwd + ' 디렉터리', '');
+        Object.entries(dir.children).forEach(([n, v]) => {
+          out((v.type === 'dir' ? '<DIR>          ' : '        파일    ') + n);
+        });
+        break;
+      }
+      case 'cd': {
+        if (!arg) { out(cwd); break; }
+        const target = resolvePath(arg);
+        if (fs[target] && fs[target].type === 'dir') { cwd = target; out(cwd); }
+        else out('지정된 경로를 찾을 수 없습니다: ' + arg);
+        break;
+      }
+      case 'mkdir':
+        if (!arg) out('사용법: mkdir 폴더이름');
+        else if (dir.children[arg]) out('이미 존재하는 항목입니다.');
+        else { dir.children[arg] = { type:'dir', children:{} }; out('폴더를 만들었습니다: ' + arg); }
+        break;
+      case 'type': {
+        const f = dir.children[arg];
+        if (f && f.type === 'file') out(...f.content.split('\n'));
+        else out('파일을 찾을 수 없습니다: ' + arg);
+        break;
+      }
+      case 'del':
+        if (dir.children[arg]) { delete dir.children[arg]; out('삭제했습니다: ' + arg); }
+        else out('파일을 찾을 수 없습니다: ' + arg);
+        break;
+      case 'tree': {
+        const walk = (node, prefix) => {
+          Object.entries(node.children).forEach(([n, v], i, a) => {
+            const last = i === a.length - 1;
+            out(prefix + (last ? '└─ ' : '├─ ') + n + (v.type === 'dir' ? '\\' : ''));
+            if (v.type === 'dir') walk(v, prefix + (last ? '   ' : '│  '));
+          });
+        };
+        out(cwd); walk(dir, ''); break;
+      }
+      case 'open':
+        if (/notepad/i.test(arg)) openApp('notepad');
+        else if (/calc/i.test(arg)) openApp('calc');
+        else if (/explorer/i.test(arg)) openApp('explorer');
+        else out('사용법: open notepad | calc | explorer');
+        break;
+      case 'close': closeApp(); break;
+      case 'color': out('크리스마스 테마에서는 색상 변경이 제한됩니다.'); break;
+      case 'theme':
+        if (/dark|light/i.test(arg)) { document.documentElement.style.setProperty('--bg1', /light/i.test(arg) ? '#dfe7ee' : '#123024'); out('테마 변경: ' + arg); }
+        else out('사용법: theme dark | light');
+        break;
+      case 'brightness': {
+        const v = Math.max(0, Math.min(100, parseInt(arg) || 70));
+        screenLight.intensity = v / 70;
+        out('화면 밝기: ' + v + '%');
+        break;
+      }
+      case 'rgb': {
+        const hex = arg.replace('#','');
+        if (/^[0-9a-f]{6}$/i.test(hex)) { setKeyboardColor(parseInt(hex,16)); out('키보드 백라이트: #' + hex); }
+        else out('사용법: rgb ff0000');
+        break;
+      }
+      case 'music':
+        if (/stop|off/i.test(arg)) stopMusic();
+        else startMusic();
+        break;
+      case 'sound': soundOn = !/off/i.test(arg); out('키보드 사운드: ' + (soundOn ? 'ON' : 'OFF')); break;
+      case 'openlid': openLid(); break;
+      case 'closelid': closeLid(); break;
+      case 'shutdown': out('시스템을 종료하는 중... (데모에서는 종료되지 않습니다)'); break;
+      case 'restart': out('재시작하는 중... (데모에서는 재시작되지 않습니다)'); break;
+      case 'exit': out('창은 열려 있습니다. 데모를 즐겨주세요!'); break;
+      default:
+        out("'" + c + "'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는", '배치 파일이 아닙니다.');
+    }
+  }
+
+  /* ---------- Apps ---------- */
+  let app = null, appText = '메모장\n\n여기에 입력해 보세요!';
+  let calcA = '', calcB = '', calcOp = '';
+
+  function openApp(kind) {
+    app = kind;
+    if (kind === 'notepad') appText = fs[cwd].children['memo.txt']?.content || '새 메모';
+    if (kind === 'calc') { calcA = calcB = calcOp = ''; }
+    out('앱을 열었습니다: ' + kind);
+  }
+  function closeApp() {
+    if (app === 'notepad' && fs[cwd].children['memo.txt']) fs[cwd].children['memo.txt'].content = appText;
+    app = null;
+    out('앱을 닫았습니다.');
+  }
+
+  function drawApp() {
+    g.fillStyle = app === 'calc' ? '#12211c' : '#0f1a16';
+    g.fillRect(0, 0, cv.width, cv.height);
+    g.fillStyle = '#eafff2'; g.font = '30px "Segoe UI", sans-serif';
+    g.fillText(app === 'notepad' ? '메모장' : app === 'calc' ? '계산기' : '파일 탐색기', 24, 46);
+    g.font = '24px Consolas, monospace'; g.fillStyle = '#cfeee0';
+    if (app === 'notepad') {
+      appText.split('\n').slice(0, 18).forEach((t, i) => g.fillText(t, 24, 100 + i * 32));
+    } else if (app === 'calc') {
+      g.fillText((calcA || '0') + ' ' + calcOp + ' ' + calcB, 24, 120);
+      g.fillText('키보드로 숫자와 + - * / 를 입력하고 Enter', 24, 170);
+    } else {
+      Object.keys(fs[cwd].children).forEach((n, i) => g.fillText((fs[cwd].children[n].type === 'dir' ? '📁 ' : '📄 ') + n, 24, 110 + i * 34));
+    }
+    g.fillStyle = '#8fbfae'; g.font = '20px "Segoe UI", sans-serif';
+    g.fillText('닫으려면: close', 24, cv.height - 26);
+    tex.needsUpdate = true;
+  }
+
+  /* ---------- Laptop ---------- */
   const laptop = new THREE.Group(); scene.add(laptop);
-  const alu = new THREE.MeshStandardMaterial({ color: 0xb9c0c8, metalness: 0.85, roughness: 0.35 });
-  const dark = new THREE.MeshStandardMaterial({ color: 0x15181c, roughness: 0.6 });
+  const alu = new THREE.MeshStandardMaterial({ color:0xc9d2da, metalness:.85, roughness:.35 });
+  const dark = new THREE.MeshStandardMaterial({ color:0x141a18, roughness:.6 });
 
-  const BW = 4.2, BD = 2.9, BH = 0.14;
+  const BW = 4.2, BD = 2.9, BH = .14;
   const base = new THREE.Mesh(new THREE.BoxGeometry(BW, BH, BD), alu);
-  base.position.y = BH / 2; base.castShadow = base.receiveShadow = true; laptop.add(base);
-  const deck = new THREE.Mesh(new THREE.BoxGeometry(BW - 0.2, 0.01, BD - 0.2), dark);
-  deck.position.set(0, BH + 0.004, 0); laptop.add(deck);
+  base.position.y = BH/2; base.castShadow = base.receiveShadow = true; laptop.add(base);
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(BW-.2, .01, BD-.2), dark);
+  deck.position.set(0, BH+.004, 0); laptop.add(deck);
+  const pad = new THREE.Mesh(new THREE.BoxGeometry(1.3, .012, .8), new THREE.MeshStandardMaterial({ color:0x243029, roughness:.3, metalness:.3 }));
+  pad.position.set(0, BH+.01, 1); laptop.add(pad);
 
-  const pad = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.012, 0.8),
-    new THREE.MeshStandardMaterial({ color: 0x2a2f36, roughness: 0.3, metalness: 0.3 }));
-  pad.position.set(0, BH + 0.01, 1.0); laptop.add(pad);
-
-  // lid with hinge
   const hinge = new THREE.Group();
-  hinge.position.set(0, BH, -BD / 2 + 0.08); hinge.rotation.x = -0.28; laptop.add(hinge);
+  hinge.position.set(0, BH, -BD/2 + .08); hinge.rotation.x = -.28; laptop.add(hinge);
   const LW = BW, LHt = 2.7;
-  const lid = new THREE.Mesh(new THREE.BoxGeometry(LW, LHt, 0.09), alu);
-  lid.position.y = LHt / 2; lid.castShadow = true; hinge.add(lid);
-  const bezel = new THREE.Mesh(new THREE.PlaneGeometry(LW - 0.12, LHt - 0.12),
-    new THREE.MeshBasicMaterial({ color: 0x050607 }));
-  bezel.position.set(0, LHt / 2, 0.046); hinge.add(bezel);
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(3.84, 2.4), new THREE.MeshBasicMaterial({ map: tex }));
-  screen.position.set(0, LHt / 2 - 0.02, 0.048); hinge.add(screen);
-  const cam = new THREE.Mesh(new THREE.CircleGeometry(0.025, 16), new THREE.MeshBasicMaterial({ color: 0x1a3a5a }));
-  cam.position.set(0, LHt - 0.065, 0.049); hinge.add(cam);
-  const hg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, BW - 0.6, 24), dark);
-  hg.rotation.z = Math.PI / 2; hg.position.set(0, 0.02, 0); hinge.add(hg);
+  const lid = new THREE.Mesh(new THREE.BoxGeometry(LW, LHt, .09), alu);
+  lid.position.y = LHt/2; lid.castShadow = true; hinge.add(lid);
+  const bezel = new THREE.Mesh(new THREE.PlaneGeometry(LW-.12, LHt-.12), new THREE.MeshBasicMaterial({ color:0x040806 }));
+  bezel.position.set(0, LHt/2, .046); hinge.add(bezel);
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(3.84, 2.4), new THREE.MeshBasicMaterial({ map:tex }));
+  screen.position.set(0, LHt/2-.02, .048); hinge.add(screen);
+  const cam = new THREE.Mesh(new THREE.CircleGeometry(.025, 16), new THREE.MeshBasicMaterial({ color:0x1a3a5a }));
+  cam.position.set(0, LHt-.065, .049); hinge.add(cam);
+  const hg = new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, BW-.6, 24), dark);
+  hg.rotation.z = Math.PI/2; hg.position.set(0, .02, 0); hinge.add(hg);
 
   /* ---------- Keyboard ---------- */
   function labelTex(t) {
     const c = document.createElement('canvas'); c.width = c.height = 128;
-    const x = c.getContext('2d'); x.fillStyle = '#23272d'; x.fillRect(0, 0, 128, 128);
-    x.fillStyle = '#e6edf3'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    const x = c.getContext('2d');
+    x.fillStyle = '#1d2622'; x.fillRect(0,0,128,128);
+    x.fillStyle = '#e8fff2'; x.textAlign = 'center'; x.textBaseline = 'middle';
     x.font = (t.length > 1 ? 30 : 56) + 'px sans-serif'; x.fillText(t, 64, 68);
     return new THREE.CanvasTexture(c);
   }
@@ -170,34 +310,216 @@
     [['Shift',2.25],['z'],['x'],['c'],['v'],['b'],['n'],['m'],[','],['.'],['/'],['Shift',2.75]],
     [['Ctrl',2],['Alt',2],[' ',7],['Alt',2],['Ctrl',2]]
   ];
-  const U = 0.25, GAP = 0.03, keys = {};
+  const U = .25, GAP = .03, keys = {};
   rows.forEach((row, r) => {
-    let x = -(15 * U) / 2; const z = -0.95 + r * (U + 0.02) * 1.02 + (r === 4 ? 0.04 : 0);
-    row.forEach(([label, w = 1]) => {
-      const kw = w * U - GAP, cx = x + (w * U) / 2; x += w * U;
-      const m = new THREE.Mesh(new THREE.BoxGeometry(kw, 0.06, U - GAP),
-        [dark, dark, new THREE.MeshStandardMaterial({ map: labelTex(label === ' ' ? '' : label), roughness: 0.5 }), dark, dark, dark]);
-      m.position.set(cx, BH + 0.04, z); m.castShadow = true; laptop.add(m);
+    let x = -(15*U)/2; const z = -.95 + r*(U+.02)*1.02 + (r===4 ? .04 : 0);
+    row.forEach(([label, w=1]) => {
+      const kw = w*U-GAP, cx = x + (w*U)/2; x += w*U;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(kw, .06, U-GAP),
+        [dark, dark, new THREE.MeshStandardMaterial({ map:labelTex(label===' ' ? '' : label), roughness:.5, emissive:0x0a3d28 }), dark, dark, dark]);
+      m.position.set(cx, BH+.04, z); m.castShadow = true; laptop.add(m);
       const id = label.toLowerCase();
       (keys[id] = keys[id] || []).push(m);
     });
   });
+  function setKeyboardColor(hex) {
+    Object.values(keys).flat().forEach(k => k.material[2].emissive.setHex(hex));
+  }
   function press(id) {
     const list = keys[id.toLowerCase()]; if (!list) return;
     list.forEach(m => {
-      m.position.y = BH + 0.015;
-      m.material[2].emissive.setHex(0x335577);
+      m.position.y = BH+.015;
+      m.material[2].emissive.setHex(0x22aa77);
       clearTimeout(m._t);
-      m._t = setTimeout(() => { m.position.y = BH + 0.04; m.material[2].emissive.setHex(0); }, 110);
+      m._t = setTimeout(() => { m.position.y = BH+.04; m.material[2].emissive.setHex(0x0a3d28); }, 110);
     });
   }
+
+  /* ---------- Sound ---------- */
+  let audio = null, soundOn = true;
+  function ensureAudio() { if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === 'suspended') audio.resume(); }
+  function keySound() {
+    if (!soundOn) return; ensureAudio();
+    const o = audio.createOscillator(), gn = audio.createGain();
+    o.type = 'square'; o.frequency.value = 170 + Math.random()*70;
+    gn.gain.setValueAtTime(.05, audio.currentTime);
+    gn.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .07);
+    o.connect(gn).connect(audio.destination); o.start(); o.stop(audio.currentTime + .08);
+  }
+
+  /* Original upbeat, danceable K-pop-inspired instrumental loop.
+     Original composition: four-on-the-floor kick, syncopated bass,
+     pluck synth, claps, chord stabs and vocal-like chops. */
+  let musicOn = false, musicTimer = null, step = 0;
+
+  const BPM = 126;
+  const STEP_MS = 60000 / BPM / 4; // 16th note
+
+  const progressions = [
+    { root: 220.00, chord: [220.00, 261.63, 329.63] }, // A minor
+    { root: 174.61, chord: [174.61, 220.00, 261.63] }, // F major
+    { root: 196.00, chord: [196.00, 246.94, 293.66] }, // G major
+    { root: 246.94, chord: [246.94, 293.66, 369.99] }  // B minor
+  ];
+  const pluckNotes = [440, 523.25, 659.25, 783.99, 880, 1046.5];
+  const chopNotes = [523.25, 659.25, 783.99, 880];
+
+  function masterOut() {
+    ensureAudio();
+    if (!window._musicBus) {
+      const comp = audio.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.knee.value = 20; comp.ratio.value = 3;
+      comp.connect(audio.destination);
+      const rev = audio.createConvolver();
+      const len = audio.sampleRate * 1.6, buf = audio.createBuffer(2, len, audio.sampleRate);
+      for (let ch=0; ch<2; ch++) {
+        const d = buf.getChannelData(ch);
+        for (let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2.5);
+      }
+      rev.buffer = buf;
+      const revGain = audio.createGain(); revGain.gain.value = .22;
+      rev.connect(revGain).connect(comp);
+      window._musicBus = { dry: comp, rev, revGain };
+    }
+    return window._musicBus;
+  }
+
+  function tone(freq, dur, type='sine', gain=.08, attack=.01, release=.2, detune=0, wet=.2) {
+    const bus = masterOut();
+    const o = audio.createOscillator(), gn = audio.createGain(), f = audio.createBiquadFilter();
+    o.type = type; o.frequency.value = freq; o.detune.value = detune;
+    f.type = 'lowpass'; f.frequency.value = type === 'sawtooth' ? 3600 : 5200;
+    const t = audio.currentTime;
+    gn.gain.setValueAtTime(.0001, t);
+    gn.gain.exponentialRampToValueAtTime(gain, t + attack);
+    gn.gain.exponentialRampToValueAtTime(.0001, t + dur + release);
+    o.connect(f).connect(gn);
+    gn.connect(bus.dry);
+    const wetGain = audio.createGain(); wetGain.gain.value = wet;
+    gn.connect(wetGain).connect(bus.rev);
+    o.start(t); o.stop(t + dur + release + .05);
+  }
+
+  function noiseHit(dur=.06, gain=.06, hp=5000, wet=.25) {
+    const bus = masterOut();
+    const len = Math.floor(audio.sampleRate * dur);
+    const buf = audio.createBuffer(1, len, audio.sampleRate), d = buf.getChannelData(0);
+    for (let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 1.6);
+    const src = audio.createBufferSource(); src.buffer = buf;
+    const f = audio.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp;
+    const gn = audio.createGain(); gn.gain.value = gain;
+    src.connect(f).connect(gn).connect(bus.dry);
+    const wetGain = audio.createGain(); wetGain.gain.value = wet;
+    gn.connect(wetGain).connect(bus.rev);
+    src.start();
+  }
+
+  function kick() {
+    const bus = masterOut();
+    const o = audio.createOscillator(), gn = audio.createGain(), t = audio.currentTime;
+    o.frequency.setValueAtTime(160, t);
+    o.frequency.exponentialRampToValueAtTime(48, t + .09);
+    gn.gain.setValueAtTime(.30, t);
+    gn.gain.exponentialRampToValueAtTime(.001, t + .22);
+    o.connect(gn).connect(bus.dry); o.start(t); o.stop(t + .25);
+  }
+
+  function clap() {
+    const bus = masterOut();
+    for (let i=0;i<3;i++) {
+      setTimeout(() => noiseHit(.05, .09, 1800, .35), i * 12);
+    }
+  }
+
+  function scheduleBar() {
+    if (!musicOn) return;
+    const bar = Math.floor(step / 16) % progressions.length;
+    const section = Math.floor(step / 64) % 4;
+    const beat = step % 16;
+    const p = progressions[bar];
+
+    // Chord stabs: energetic rhythmic chords
+    if (beat === 0 || beat === 6 || beat === 10 || beat === 14) {
+      p.chord.forEach((f, i) => tone(f * 2, .12, 'sawtooth', .035, .004, .07, i*6, .18));
+    }
+
+    // Driving bass: syncopated 16th-note pattern
+    if ([0,3,6,8,11,14].includes(beat)) {
+      const oct = (beat === 6 || beat === 14) ? 2 : 1;
+      tone(p.root * oct, .16, 'sawtooth', .13, .005, .06, 0, .05);
+    }
+
+    // Four-on-the-floor kick
+    if (beat % 4 === 0) kick();
+
+    // Clap / snare
+    if (beat === 4 || beat === 12) clap();
+
+    // Offbeat hats for dance groove
+    if (beat % 2 === 1) noiseHit(.03, beat % 4 === 3 ? .05 : .03, 7500, .18);
+
+    // Bright pluck lead
+    if (section >= 1 && beat % 2 === 0) {
+      const n = pluckNotes[(Math.floor(step / 2) * 3 + bar * 5) % pluckNotes.length];
+      tone(n, .12, 'square', .032, .003, .1, 0, .3);
+    }
+
+    // Vocal-like chopped synth hook
+    if (section >= 2 && [2,5,7,10,13].includes(beat)) {
+      const n = chopNotes[(step + bar * 2) % chopNotes.length];
+      tone(n, .16, 'sawtooth', .028, .01, .16, 8, .45);
+    }
+
+    // Build-up and drop variation
+    if (section === 3 && beat === 15) {
+      for (let i=0;i<8;i++) setTimeout(() => noiseHit(.03, .03 + i*.004, 3000 + i*900, .2), i * 35);
+    }
+
+    step++;
+    musicTimer = setTimeout(scheduleBar, STEP_MS);
+  }
+
+  function startMusic() {
+    ensureAudio();
+    if (musicOn) return;
+    musicOn = true; step = 0;
+    document.getElementById('music').textContent = '🔇 음악 끄기';
+    scheduleBar();
+    out('🎵 신나고 흥겨운 오리지널 댄스 배경 음악을 재생합니다. (music stop으로 중지)');
+  }
+  function stopMusic() {
+    musicOn = false; clearTimeout(musicTimer);
+    document.getElementById('music').textContent = '🎵 음악 켜기';
+    if (lines.length) out('음악을 중지했습니다.');
+  }
+  document.getElementById('music').addEventListener('click', () => musicOn ? stopMusic() : startMusic());
 
   /* ---------- Input ---------- */
   const alias = { backspace:'backspace', enter:'enter', tab:'tab', shift:'shift', control:'ctrl', alt:'alt', capslock:'caps' };
   window.addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey) return;
     const k = e.key, id = alias[k.toLowerCase()] || k;
-    press(id);
+    press(id); keySound();
+
+    if (app === 'notepad') {
+      if (k === 'Backspace') appText = appText.slice(0, -1);
+      else if (k === 'Enter') appText += '\n';
+      else if (k === 'Escape') closeApp();
+      else if (k.length === 1) appText += k;
+      drawApp(); e.preventDefault(); return;
+    }
+    if (app === 'calc') {
+      if (/^[0-9]$/.test(k)) { if (calcOp) calcB += k; else calcA += k; }
+      else if (['+','-','*','/'].includes(k)) calcOp = k;
+      else if (k === 'Enter') {
+        const a = parseFloat(calcA), b = parseFloat(calcB);
+        const r = calcOp === '+' ? a+b : calcOp === '-' ? a-b : calcOp === '*' ? a*b : calcOp === '/' ? (b ? a/b : NaN) : a;
+        calcA = isNaN(r) ? '오류' : String(r); calcB = ''; calcOp = '';
+      }
+      else if (k === 'Escape') closeApp();
+      drawApp(); e.preventDefault(); return;
+    }
+
     if (k === 'Backspace') { input = input.slice(0, -1); e.preventDefault(); }
     else if (k === 'Enter') { lines.push(PROMPT + input); run(input); input = ''; e.preventDefault(); }
     else if (k === 'Tab') { input += '    '; e.preventDefault(); }
@@ -205,38 +527,53 @@
     else return;
     cursorOn = true; draw();
   });
-  // 한글/IME 및 모바일 입력 지원
-  const kbd = document.getElementById('kbd');
-  kbd.addEventListener('compositionend', e => { input += e.data; kbd.value = ''; draw(); });
-  window.addEventListener('pointerup', () => kbd.focus({ preventScroll: true }));
-  setInterval(() => { cursorOn = !cursorOn; draw(); }, 530);
 
-  /* ---------- Orbit (drag / wheel) ---------- */
-  let rotY = -0.5, rotX = 0.45, drag = null;
+  const kbd = document.getElementById('kbd');
+  kbd.addEventListener('compositionend', e => {
+    if (app === 'notepad') { appText += e.data; drawApp(); }
+    else input += e.data;
+    kbd.value = ''; app ? drawApp() : draw();
+  });
+  window.addEventListener('pointerup', () => kbd.focus({ preventScroll:true }));
+  setInterval(() => {
+    cursorOn = !cursorOn;
+    app ? drawApp() : draw();
+  }, 530);
+
+  /* ---------- Orbit ---------- */
+  let rotY = -.5, rotX = .45, drag = null;
   const el = renderer.domElement;
-  el.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointerdown', e => { drag = { x:e.clientX, y:e.clientY }; el.setPointerCapture(e.pointerId); });
   el.addEventListener('pointermove', e => {
     if (!drag) return;
-    rotY += (e.clientX - drag.x) * 0.008;
-    rotX = Math.max(0.05, Math.min(1.3, rotX + (e.clientY - drag.y) * 0.006));
-    drag = { x: e.clientX, y: e.clientY };
+    rotY += (e.clientX-drag.x)*.008;
+    rotX = Math.max(.05, Math.min(1.3, rotX + (e.clientY-drag.y)*.006));
+    drag = { x:e.clientX, y:e.clientY };
   });
   el.addEventListener('pointerup', () => drag = null);
-  el.addEventListener('wheel', e => { camDist = Math.max(5, Math.min(16, camDist + e.deltaY * 0.01)); e.preventDefault(); }, { passive: false });
+  el.addEventListener('wheel', e => { camDist = Math.max(5, Math.min(16, camDist + e.deltaY*.01)); e.preventDefault(); }, { passive:false });
 
   function resize() {
     const w = innerWidth, h = innerHeight;
-    renderer.setSize(w, h); camera.aspect = w / h;
-    camera.fov = w / h < 1 ? 55 : 40; camera.updateProjectionMatrix();
+    renderer.setSize(w, h); camera.aspect = w/h;
+    camera.fov = w/h < 1 ? 55 : 40; camera.updateProjectionMatrix();
   }
   addEventListener('resize', resize); resize();
 
   function loop() {
     requestAnimationFrame(loop);
-    camera.position.set(Math.sin(rotY) * Math.cos(rotX) * camDist, Math.sin(rotX) * camDist + 0.8, Math.cos(rotY) * Math.cos(rotX) * camDist);
+    const t = performance.now() * .001;
+    const arr = snow.geometry.attributes.position.array;
+    for (let i = 1; i < arr.length; i += 3) {
+      arr[i] -= .012 + (i % 7) * .001;
+      if (arr[i] < 0) arr[i] = 16;
+    }
+    snow.geometry.attributes.position.needsUpdate = true;
+
+    camera.position.set(Math.sin(rotY)*Math.cos(rotX)*camDist, Math.sin(rotX)*camDist+.8, Math.cos(rotY)*Math.cos(rotX)*camDist);
     camera.lookAt(0, 1.1, 0);
-    const p = new THREE.Vector3(0, 1.6, 1.6).applyEuler(new THREE.Euler(0, 0, 0));
-    glow.position.copy(p);
+    const p = new THREE.Vector3(0, 1.6, 1.6).applyEuler(new THREE.Euler(0,0,0));
+    screenLight.position.copy(p);
     renderer.render(scene, camera);
   }
   draw(); loop();
