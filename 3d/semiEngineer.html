@@ -202,121 +202,233 @@ function czochralski(g ){
  return [8.2,4.8,0,.25];
 }
 function oxidation(g ){
- B(g,'Furnace_Housing',5,3.6,2.8,-.6,1.8,0,white );
- for(let i=0;i<3;i++ ){const y=.9+i*1.1;
-  C(g,'Quartz_Tube_'+(i+1 ),.3,3.4,-.6,y,.5,0xbfe6f2,{ax:'z',m:.1,r:.1,t:.7} );
-  C(g,'Heater_Zone_'+(i+1 ),.42,1.6,-.6,y,-.2,orange,{ax:'z',e:0x7a2a08} );
-  C(g,'Door_Flange_'+(i+1 ),.4,.12,-.6,y,2.2,steel,{ax:'z',m:.8} );
-  B(g,'Boat_Loader_Paddle_'+(i+1 ),.12,.05,.9,-.6,y-.2,1.9,0xe8e0c8 )}
- B(g,'Gas_Cabinet',1.3,2.6,2.4,3.1,1.3,0,EQC );C(g,'Exhaust_Duct',.25,1.2,3.1,3.2,0,gray,{m:.6,s:16} );
- pipe(g,'Gas_Line',.04,1.8,1.9,.6,.8,PIPE_B,'x' );
- console_(g,-3.9,1.2 );tower(g,1.5,3.6,-1.2 );
- return [8.4,3.8,-.4]}
+ const WHT=0xf0f4f8,DRK=0x262e36,CAB=0x4a5560,SS=0x929da5,SIG_R=0xd93829,SIG_Y=0xf2b705,SIG_G=0x27ae60;
+ // 하부 베이스 캐비닛 & 레벨링 풋
+ B(g,'Base_Cabinet_Front',4.6,.95,1.1,0,.48,1.35,WHT,{m:.12,r:.5} );
+ B(g,'Base_Cabinet_Door_L',1.1,.7,.04,-1.1,.48,1.91,WHT,{m:.12} );
+ B(g,'Base_Cabinet_Door_R',1.1,.7,.04,1.1,.48,1.91,WHT,{m:.12} );
+ B(g,'Base_Cabinet_Center',1.4,.75,.04,0,.48,1.91,WHT,{m:.12} );
+ [[-2.0,-1.4],[2.0,-1.4],[-2.0,1.6],[2.0,1.6]].forEach(([x,z],i)=>C(g,'Leveling_Foot_'+(i+1),.11,.12,x,.06,z,DRK,{m:.5,s:12}));
+ // 중앙 성장/산화 챔버 (스테인리스)
+ C(g,'Growth_Chamber',1.05,2.4,0,2.35,0,SS,{m:.92,r:.18,s:36} );
+ C(g,'Chamber_Mid_Ring',1.12,.18,0,1.55,0,SS,{m:.9,r:.2,s:32} );
+ C(g,'Chamber_Upper_Flange',1.18,.22,0,3.55,0,SS,{m:.9,r:.2,s:32} );
+ B(g,'Viewport_Window',.38,.32,.06,0,2.55,1.08,0x1a1008,{e:0xa05020} );
+ // 상부 헤드 & 인상/배기 타워
+ C(g,'Top_Head_Cylinder',.55,1.1,0,4.35,0,SS,{m:.9,r:.2,s:28} );
+ B(g,'Top_Head_Housing',1.4,.55,1.3,0,5.15,0,WHT,{m:.15,r:.45} );
+ C(g,'Exhaust_Duct_Top',.32,.9,0,5.85,0,SS,{m:.7,r:.3,s:16} );
+ B(g,'Top_Flange_Plate',1.6,.12,1.5,0,5.55,0,SS,{m:.85,r:.25} );
+ // 좌측 컨트롤 패널 (모니터·비상정지·버튼)
+ B(g,'Left_Control_Cabinet',1.15,3.6,.75,-2.35,1.9,1.0,WHT,{m:.12,r:.5} );
+ B(g,'Control_Panel_Display',.62,.48,.04,-2.35,2.55,1.38,0x0a1a2e,{e:0x1e5fa8,r:.2} );
+ C(g,'E_Stop_Button',.06,.05,-2.55,1.85,1.4,SIG_R,{ax:'z',m:.1,e:0x5a0d0a} );
+ C(g,'Start_Button',.045,.04,-2.4,1.85,1.4,SIG_G,{ax:'z',m:.1,e:0x0a4a20} );
+ B(g,'Left_Lower_Door',1.0,.9,.04,-2.35,.7,1.38,WHT,{m:.12} );
+ // 시그널 타워
+ B(g,'Signal_Tower_Pole',.05,.85,.05,-2.55,3.7,1.0,gray );
+ [[SIG_R,0],[SIG_Y,.14],[SIG_G,.28]].forEach(([c,dy],i)=>C(g,'Signal_Tower_Lamp_'+(i+1),.065,.12,-2.55,4.15+dy,1.0,c,{e:c,m:0,r:.25}));
+ // 우측 유틸리티 캐비닛 & 배관 다발
+ B(g,'Right_Utility_Cabinet',1.25,3.8,.9,2.45,2.0,.9,CAB,{m:.2,r:.5} );
+ B(g,'Right_Upper_Box',1.1,1.0,.85,2.4,4.0,.85,WHT,{m:.15,r:.45} );
+ // 냉각수/가스 배관 (우측 및 후면)
+ pipe(g,'Coolant_Pipe_Main',.06,2.8,1.6,3.2,.4,PIPE_B,'y' );
+ pipe(g,'Coolant_Pipe_Side',.05,1.8,2.1,2.6,1.2,PIPE_B,'z' );
+ pipe(g,'Gas_Line_1',.04,1.6,1.9,3.5,-.3,PIPE_B,'y' );
+ pipe(g,'Gas_Line_2',.04,1.4,2.3,2.8,.6,PIPE_Y,'z' );
+ pipe(g,'Exhaust_Line',.08,1.5,0,4.0,-1.2,PIPE_Y,'x' );
+ // 게이지 및 밸브
+ C(g,'Pressure_Gauge_1',.08,.04,2.55,2.8,1.35,0xc0c8d0,{ax:'z',m:.3} );
+ C(g,'Pressure_Gauge_2',.08,.04,2.55,2.4,1.35,0xc0c8d0,{ax:'z',m:.3} );
+ B(g,'Valve_Block',.35,.4,.25,2.0,1.6,1.3,DRK,{m:.4} );
+ // 하단 개방부 흑색 코일/보트 (사진의 흑색 나선형 구조)
+ C(g,'Heater_Coil_Base',.85,.15,0,.95,0,0x1a1e22,{m:.3,r:.6,s:24} );
+ for(let i=0;i<7;i++){
+  C(g,'Heater_Zone_Coil_'+(i+1),.72,.08,0,1.05+i*.12,0,0x22262b,{m:.4,r:.5,s:20} );
+ }
+ B(g,'Boat_Loader_Platform',1.6,.08,1.0,0,.82,0,SS,{m:.7,r:.3} );
+ // 추가 석영관/튜브 힌트 (측면)
+ C(g,'Quartz_Tube_1',.18,1.8,-.7,2.0,.9,0xbfe6f2,{ax:'z',m:.1,r:.1,t:.55} );
+ C(g,'Quartz_Tube_2',.18,1.8,.7,2.0,.9,0xbfe6f2,{ax:'z',m:.1,r:.1,t:.55} );
+ // 후면 프레임
+ B(g,'Rear_Frame',4.2,.2,3.2,0,4.8,-1.4,EQC,{m:.2,r:.45} );
+ B(g,'Side_Frame_L',.18,4.5,.22,-2.4,2.4,-.8,EQC,{m:.25,r:.45} );
+ B(g,'Side_Frame_R',.18,4.5,.22,2.4,2.4,-.8,EQC,{m:.25,r:.45} );
+ return [9.2,5.2,0,.3]}
 function litho(g ){
- B(g,'Scanner_Body',4.6,2.6,3.4,0,1.3,0,white );
- B(g,'Illuminator_Module',3.2,1.0,2.4,0,3.1,-.2,EQC );
- C(g,'Projection_Lens_Column',.65,1.4,0,4.3,-.2,0x3d4652,{m:.6,r:.3} );
- Tr(g,'Lens_Flange',.7,.07,0,3.65,-.2,steel,{m:.8} );
- B(g,'Reticle_Stage',1.6,.5,1.4,0,5.25,-.2,gray );
- B(g,'Stage_Enclosure_Glass',2.4,1.1,1.0,0,1.3,2.2,0x9fc4e0,{t:.28,m:.1} );
- C(g,'Wafer_Chuck',.4,.06,0,1.0,2.2,steel,{m:.8} );B(g,'Wafer_Stage_Base',1.4,.15,.8,0,.9,2.2,dark );
- B(g,'Light_Source_Cabinet',2.2,3.2,2.2,3.7,1.6,-.4,EQC );
- C(g,'Laser_Beam_Tube',.12,1.0,2.1,2.7,-.4,steel,{ax:'x',m:.8} );
- B(g,'Wafer_Handler_Unit',1.7,1.6,2.0,-3.2,.8,.4,white );
- B(g,'Loadport_1_Shelf',.8,.1,.7,-3.2,1.0,1.75,gray );foup(g,-3.2,1.22,1.75 );
- B(g,'Loadport_2_Shelf',.8,.1,.7,-2.0,.95,2.1,gray );foup(g,-2.0,1.17,2.1 );
- tower(g,1.9,2.6,1.4 );console_(g,2.6,2.2 );
- return [9,5.6,.4,.5]}
+ const WHT=0xf2f5f8,DRK=0x2a3038,NAV=0x1e2a38,SS=0x929da5,SIG_R=0xd93829,SIG_Y=0xf2b705,SIG_G=0x27ae60;
+ // 좌측 컨트롤 캐비닛 + 시그널 타워 + 모니터
+ B(g,'Left_Cabinet',1.6,4.2,1.4,-4.2,2.15,0,WHT,{m:.12,r:.5} );
+ B(g,'Left_Cabinet_Door_U',1.4,1.8,.04,-4.2,3.1,.72,WHT,{m:.12} );
+ B(g,'Left_Cabinet_Door_L',1.4,1.6,.04,-4.2,1.1,.72,WHT,{m:.12} );
+ B(g,'Left_Vent_U',.7,.35,.03,-4.2,2.6,.72,DRK,{m:.3} );
+ B(g,'Left_Vent_L',.7,.35,.03,-4.2,.7,.72,DRK,{m:.3} );
+ B(g,'Control_Panel_Display',.7,.55,.05,-3.35,2.35,.75,0x0a1a2e,{e:0x1e5fa8,r:.2} );
+ C(g,'E_Stop',.055,.05,-3.55,1.85,.78,SIG_R,{ax:'z',m:.1,e:0x5a0d0a} );
+ C(g,'Start_Btn',.04,.04,-3.35,1.85,.78,SIG_G,{ax:'z',m:.1,e:0x0a4a20} );
+ C(g,'Yellow_Btn',.04,.04,-3.15,1.85,.78,SIG_Y,{ax:'z',m:.1,e:0x6a4a00} );
+ B(g,'Keyboard_Tray',.9,.06,.35,-3.35,1.55,.9,DRK,{m:.3} );
+ B(g,'Signal_Tower_Pole',.05,1.1,.05,-4.7,4.3,.4,gray );
+ [[SIG_R,0],[SIG_Y,.14],[SIG_G,.28]].forEach(([c,dy],i)=>C(g,'Signal_Tower_Lamp_'+(i+1),.06,.12,-4.7,4.85+dy,.4,c,{e:c,m:0,r:.25}));
+ // 중앙 본체 상부 패널
+ B(g,'Upper_Panel_Block',7.2,1.4,2.6,0,4.0,0,WHT,{m:.12,r:.5} );
+ B(g,'Upper_Panel_Seam',7.0,.04,2.55,0,3.4,0,NAV,{m:.2} );
+ // 중앙 개방 챔버 영역
+ B(g,'Main_Frame_L',.8,2.4,2.4,-2.6,2.3,0,WHT,{m:.15,r:.45} );
+ B(g,'Main_Frame_R',.8,2.4,2.4,2.6,2.3,0,WHT,{m:.15,r:.45} );
+ B(g,'Main_Frame_Top',5.2,.5,2.4,0,3.55,0,WHT,{m:.15,r:.45} );
+ // 중앙 은색 공정 챔버 (실린더)
+ C(g,'Process_Chamber',.85,1.15,0,2.05,.15,SS,{m:.9,r:.18,s:32} );
+ C(g,'Chamber_Upper_Ring',.95,.18,0,2.7,.15,SS,{m:.88,r:.2,s:28} );
+ C(g,'Projection_Lens_Column',.55,.7,0,1.4,.15,0x3d4652,{m:.6,r:.3} );
+ Tr(g,'Lens_Flange',.6,.06,0,1.75,.15,SS,{m:.8} );
+ B(g,'Wafer_Stage_Base',1.6,.12,1.2,0,1.05,.15,DRK,{m:.4} );
+ C(g,'Wafer_Chuck',.45,.05,0,1.15,.15,SS,{m:.85} );
+ // 챔버 주변 실린더/액추에이터
+ [-.9,.9].forEach((x,i)=>{
+  C(g,'Actuator_Cylinder_'+(i+1),.12,.55,x,2.55,.55,SS,{m:.7,s:12} );
+  B(g,'Actuator_Mount_'+(i+1),.25,.2,.25,x,2.9,.55,DRK,{m:.3} );
+ });
+ // 좌우 사이드 모듈
+ B(g,'Side_Module_L',1.4,2.0,1.8,-2.0,2.0,1.0,WHT,{m:.12,r:.5} );
+ B(g,'Side_Module_R',1.4,2.0,1.8,2.0,2.0,1.0,WHT,{m:.12,r:.5} );
+ // 우측 글라스 윈도우 모듈
+ B(g,'Right_Window_Frame',1.3,1.6,.9,3.3,2.2,.6,WHT,{m:.15} );
+ B(g,'Right_Window_Glass',.9,1.1,.04,3.3,2.25,1.05,0x1a2a3a,{t:.35,m:.1,e:0x1e3a5a} );
+ // 우측 컨트롤/유틸 캐비닛
+ B(g,'Right_Cabinet',1.8,4.2,1.5,4.5,2.15,0,WHT,{m:.12,r:.5} );
+ B(g,'Right_Cabinet_Door_U',1.5,1.6,.04,4.5,3.0,.76,WHT,{m:.12} );
+ B(g,'Right_Cabinet_Door_L',1.5,1.5,.04,4.5,1.1,.76,WHT,{m:.12} );
+ B(g,'Right_Vent',.6,.4,.03,4.5,2.5,.76,DRK,{m:.3} );
+ B(g,'Right_Small_Display',.4,.3,.04,4.1,2.3,.78,0x0a1a2e,{e:0x1e5fa8,r:.25} );
+ C(g,'Right_E_Stop',.05,.05,4.85,2.0,.78,SIG_R,{ax:'z',m:.1,e:0x5a0d0a} );
+ // 하부 캐비닛 열
+ for(let i=0;i<6;i++){
+  const x=-3.0+i*1.2;
+  B(g,'Lower_Cabinet_'+(i+1),1.1,1.0,1.6,x,.55,0,WHT,{m:.12,r:.5} );
+  B(g,'Lower_Vent_'+(i+1),.55,.25,.03,x,.45,.82,DRK,{m:.3} );
+ }
+ // 상단 배기/유틸 파이프
+ pipe(g,'Exhaust_Pipe_1',.08,1.2,3.8,4.6,.8,SS,'y' );
+ pipe(g,'Exhaust_Pipe_2',.08,1.0,4.2,4.4,.6,SS,'z' );
+ B(g,'Top_Utility_Box',1.4,.6,1.0,4.0,4.6,.5,WHT,{m:.15} );
+ // 후면 프레임
+ B(g,'Rear_Frame',9.0,.25,2.8,0,4.5,-1.3,NAV,{m:.2,r:.45} );
+ return [11.5,5.8,0,.2]}
 function etcher(g ){
- const WHT=0xeef1f4,LGR=0xd8dee4,DGR=0x3b424a,BLK=0x1e2328,GRF=0xb8c0c8,BLU=0x1b6ca8,COP=0xd08a2a;
- // 1. 전면 EFEM (SEMES MICHELAN OX 스타일: 고형 세로 프레임 + 3연식 로드포트 + 양개형 프레임리스 글라스 도어 + 우측 다크 컨트롤 컬럼)
- B(g,'EFEM_Wall',4.3,3.7,.85,-.45,1.95,1.95,WHT,{m:.1,r:.5} );
- B(g,'EFEM_Plinth',4.3,.1,.85,-.45,.05,1.95,DGR,{m:.3,r:.6} );
- // 상부 FFU 모듈 2기 & 상단 좌측 브랜드 패널 (MICHELAN OX / SEMES)
- [-1.45,.55].forEach((x,i )=>B(g,'EFEM_Fan_Filter_Unit_'+(i+1 ),1.65,.32,.95,x,3.96,1.95,LGR,{m:.2,r:.4} ) );
- const brT=tex(512,256,(x,w,h )=>{x.fillStyle='#eef1f4';x.fillRect(0,0,w,h );
-  x.fillStyle='#1f7a6e';x.font='900 44px system-ui,Arial';x.fillText('MICHELAN',210,72 );
-  x.fillStyle='#2c353d';x.font='700 32px system-ui,Arial';x.fillText('OX',395,112 );
-  x.fillStyle='#1b6ca8';x.font='900 28px system-ui,Arial';x.fillText('SEMES',110,232 )} );
- const brP=new T.Mesh(new T.PlaneGeometry(2.4,1.2 ),new T.MeshBasicMaterial({map:brT} ) );
- brP.name='Brand_Panel';brP.position.set(-.45,3.15,2.385 );g.add(brP );
- // 상부 타공 에어 리턴 그릴 & 하부 3단 FOUP 로드포트
- B(g,'EFEM_Perforated_Grille',3.9,.55,.03,-.45,2.45,2.38,GRF,{m:.4,r:.45} );
- [-1.75,-.45,.85].forEach((fx,i )=>{const n=i+1;
-  B(g,'Loadport_'+n+'_Pedestal',1.05,1.2,.65,fx,.65,2.52,LGR,{m:.15,r:.5} );
-  B(g,'Loadport_'+n+'_Shelf',1.1,.08,.75,fx,1.28,2.56,GRF,{m:.6,r:.35} );
-  B(g,'Loadport_'+n+'_Door',.72,.52,.04,fx,1.65,2.38,BLK,{m:.2} );
-  // 투명 FOUP 웨이퍼 캐리어 + 내부 웨이퍼 스택
-  B(g,'FOUP_Carrier_'+n,.56,.46,.52,fx,1.56,2.62,0xc8dce8,{t:.42,m:.1,r:.15} );
-  B(g,'FOUP_Top_Flange_'+n,.44,.04,.44,fx,1.81,2.62,BLK,{m:.2} );
-  for(let w=0;w<4;w++ )C(g,'Wafer_Slot_'+n+'_'+(w+1 ),.2,.012,fx,1.42+w*.07,2.62,0x5a7088,{m:.9,r:.2} )
- } );
- // 좌우 전면 개방형 클린 글라스 도어 + 알루미늄 힌지 프레임
- [[-2.48,-1.82],[.62,1.28]].forEach(([x0,x1],i )=>{const n=i+1,xm=(x0+x1 )/2;
-  B(g,'EFEM_Door_Post_Outer_'+n,.06,2.85,.06,x0,1.48,3.02,GRF,{m:.85,r:.25} );
-  B(g,'EFEM_Door_Post_Inner_'+n,.06,2.85,.06,x1,1.48,2.42,GRF,{m:.85,r:.25} );
-  B(g,'EFEM_Door_Top_Bar_'+n,.06,.06,.66,xm,2.88,2.72,GRF,{m:.85,r:.25} );
-  B(g,'EFEM_Door_Bot_Bar_'+n,.06,.06,.66,xm,.12,2.72,GRF,{m:.85,r:.25} );
-  const gl=add(g,'EFEM_Door_Glass_'+n,new T.BoxGeometry(.02,2.7,.62 ),xm,1.5,2.72,0xa8cce0,{t:.26,m:.1,r:.1} );
-  gl.rotation.y=i===0?-.78:.78;
- } );
- // 우측 다크 그레이 제어 컬럼 + 상부 모니터 + 하부 키보드 트레이 + 적/황/녹 시그널 타워
- B(g,'Control_Column',1.05,3.8,.95,2.22,1.9,1.95,DGR,{m:.2,r:.45} );
- B(g,'Control_Column_Edge',.14,3.8,.96,2.8,1.9,1.95,WHT,{m:.1,r:.5} );
- B(g,'Monitor_Bezel',.72,.68,.06,2.22,2.35,2.43,GRF,{m:.5,r:.4} );
- B(g,'Control_Panel_Display',.58,.54,.03,2.22,2.35,2.46,0x7d8a96,{e:0x34485a,r:.25} );
- B(g,'Keyboard_Recess',.72,.65,.12,2.22,1.62,2.4,BLK,{m:.2} );
- B(g,'Keyboard_Tray',.85,.06,.45,2.22,1.32,2.65,BLK,{m:.25,r:.5} );
- B(g,'Side_Emergency_Stop',.06,.06,.04,2.64,1.88,2.44,0xc9302c,{e:0x5a0d0a,m:0} );
- tower(g,2.22,3.15,2.48 );
- // EFEM 하부 레벨링 풋
- [-2.4,-.45,1.5,2.65].forEach((x,i )=>{
-  C(g,'Leveling_Foot_Pad_'+(i+1 ),.1,.04,x,.02,2.45,DGR,{m:.5} );
-  C(g,'Leveling_Foot_Stem_'+(i+1 ),.03,.1,x,.07,2.45,GRF,{m:.8} )
- } );
-
- // 2. 중앙 진공 트랜스퍼 모듈(TM) & 3연식 ICP 플라즈마 공정 챔버 클러스터
- C(g,'Transfer_Module',1.25,.85,0,1.55,.35,METAL,{s:6,m:.85,r:.22} );
- C(g,'Mainframe_Base',1.2,.95,0,.62,.35,LGR,{s:6,m:.2,r:.5} );
- [[-2.35,-.25],[2.35,-.25],[0,-2.35]].forEach(([x,z],k )=>{const n=k+1;
-  // 하부 캐비닛(캐스터 & 환기 루버 포함)
-  B(g,'Chamber_Base_'+n,1.55,.95,1.55,x,.55,z,WHT,{m:.1,r:.5} );
-  B(g,'Chamber_Vent_'+n,.55,.28,.03,x,.55,z+(z<-1?-.78:.78 ),DGR,{m:.3} );
-  [[-.55,-.55],[.55,-.55],[-.55,.55],[.55,.55]].forEach(([dx,dz],ci )=>
-   C(g,'Chamber_Caster_'+n+'_'+(ci+1 ),.07,.06,x+dx,.07,z+dz,BLK,{ax:'x',m:.4} ) );
-  // 공정 챔버 본체 + 리드 + ICP 코일 + 상부 RF 매칭 박스
-  C(g,'Process_Chamber_'+n,.88,1.15,x,1.62,z,steel,{m:.88,r:.22} );
-  C(g,'Chamber_Lid_'+n,.92,.18,x,2.28,z,METAL,{m:.75,r:.25} );
-  Tr(g,'ICP_Coil_'+n,.56,.065,x,2.45,z,COP,{m:.92,r:.2} );
-  B(g,'RF_Match_Box_'+n,.82,.72,.82,x,2.92,z,WHT,{m:.12,r:.48} );
-  B(g,'Slit_Valve_'+n,.58,.42,.34,x*.52,1.55,z*.62+.12,DGR,{m:.4} )
- } );
-
- // 3. 상부 좌/우 오버헤드 유틸리티·가스 매니폴드 캐비닛 (사진 우상단 직립 박스형 모듈 반영)
- B(g,'Overhead_Manifold_Box_R',1.35,1.45,1.15,2.45,3.35,-.25,WHT,{m:.12,r:.48} );
- B(g,'Overhead_Manifold_Slot_R',.14,.85,.04,2.45,3.35,.34,DGR,{m:.3} );
- B(g,'Overhead_Support_Strut_R',.32,.65,.32,2.45,2.32,-.25,GRF,{m:.75,r:.3} );
- B(g,'Overhead_Manifold_Box_L',1.25,1.35,1.05,-2.45,3.25,-.35,WHT,{m:.12,r:.48} );
-
- // 4. 우측/좌측 서브 유틸리티 모듈: RF 발생기 · 드라이 진공 펌프 · 포어라인 · 가스 공급 배관
- B(g,'RF_Generator',1.15,1.65,.95,-3.65,.82,-1.55,WHT,{m:.12,r:.48} );
- B(g,'RF_Generator_Panel',.6,.8,.04,-3.65,1.05,-1.06,DGR,{m:.3} );
- C(g,'Dry_Vacuum_Pump',.44,1.15,3.65,.58,-1.65,0x5a6570,{m:.7,r:.35} );
- pipe(g,'Foreline_Pipe',.08,1.75,2.95,1.15,-1.15,PIPE_Y,'x' );
- pipe(g,'Gas_Line_1',.045,1.85,0,3.25,-2.35,PIPE_B,'z' );
- pipe(g,'Gas_Line_2',.045,1.5,2.45,2.55,-.25,PIPE_B,'y' );
- return [8.8,6.6,0,.35]}
+ const WHT=0xf2f5f8,DRK=0x2a3038,NAV=0x1e2a38,SS=0x929da5,SIG_R=0xd93829,SIG_Y=0xf2b705,SIG_G=0x27ae60,BLU=0x1b6ca8;
+ // 좌측 컨트롤 캐비닛 (Lam Research 스타일)
+ B(g,'Left_Control_Cabinet',2.2,3.8,1.5,-3.3,1.95,0,WHT,{m:.12,r:.5} );
+ B(g,'Left_Upper_Door',1.9,1.5,.04,-3.3,2.9,.76,WHT,{m:.12} );
+ B(g,'Left_Lower_Door',1.9,1.4,.04,-3.3,1.0,.76,WHT,{m:.12} );
+ B(g,'Left_Vent_L',.7,.3,.03,-3.3,.55,.76,DRK,{m:.3} );
+ B(g,'Left_Vent_R',.7,.3,.03,-2.5,.55,.76,DRK,{m:.3} );
+ // 모니터 + 버튼 + 키보드
+ B(g,'Control_Panel_Display',.95,.7,.05,-3.0,2.45,.78,0x0a1a2e,{e:0x1e5fa8,r:.2} );
+ C(g,'E_Stop',.07,.06,-3.5,1.85,.8,SIG_R,{ax:'z',m:.1,e:0x5a0d0a} );
+ C(g,'Yellow_Btn',.05,.05,-3.25,1.85,.8,SIG_Y,{ax:'z',m:.1,e:0x6a4a00} );
+ C(g,'Green_Btn',.045,.04,-3.05,1.85,.8,SIG_G,{ax:'z',m:.1,e:0x0a4a20} );
+ C(g,'Green_Btn2',.045,.04,-2.85,1.85,.8,SIG_G,{ax:'z',m:.1,e:0x0a4a20} );
+ B(g,'Keyboard_Tray',1.4,.06,.4,-3.0,1.55,.95,DRK,{m:.3} );
+ // 시그널 타워
+ B(g,'Signal_Tower_Pole',.05,1.0,.05,-4.2,4.0,.3,gray );
+ [[SIG_R,0],[SIG_Y,.14],[SIG_G,.28]].forEach(([c,dy],i)=>C(g,'Signal_Tower_Lamp_'+(i+1),.06,.12,-4.2,4.55+dy,.3,c,{e:c,m:0,r:.25}));
+ // 중앙 메인 챔버 (스테인리스 실린더 + 뷰포트)
+ C(g,'Process_Chamber',1.35,1.6,0,2.15,.2,SS,{m:.92,r:.16,s:36} );
+ C(g,'Chamber_Upper_Lid',1.45,.35,0,3.05,.2,SS,{m:.9,r:.18,s:32} );
+ C(g,'Chamber_Top_Cylinder',.55,.9,0,3.7,.2,SS,{m:.88,r:.2,s:24} );
+ B(g,'Viewport_Window',.7,.4,.08,0,2.25,1.55,0x1a1008,{e:0x6080a0} );
+ B(g,'Viewport_Frame',.85,.52,.06,0,2.25,1.52,SS,{m:.8,r:.25} );
+ // 챔버 상단 배관·밸브 다발
+ pipe(g,'Top_Pipe_1',.05,1.0,-.4,4.2,.5,PIPE_B,'y' );
+ pipe(g,'Top_Pipe_2',.05,.9,.4,4.1,.4,PIPE_B,'y' );
+ pipe(g,'Top_Pipe_3',.04,.8,0,4.3,.8,SS,'z' );
+ B(g,'RF_Match_Box',.7,.5,.55,1.0,3.6,.6,WHT,{m:.15,r:.45} );
+ C(g,'ICP_Coil',.7,.08,0,3.35,.2,0xd08a2a,{m:.9,r:.2,s:20} );
+ // 중앙 하부 패널 (ASher 로고 영역)
+ B(g,'Center_Lower_Panel',3.2,1.3,1.4,0,1.0,.3,WHT,{m:.12,r:.5} );
+ B(g,'Center_Blue_Stripe',3.0,.04,1.35,0,1.35,.35,BLU,{m:.1} );
+ B(g,'Center_Lower_Door_L',1.4,.7,.04,-.7,.7,1.0,WHT,{m:.12} );
+ B(g,'Center_Lower_Door_R',1.4,.7,.04,.7,.7,1.0,WHT,{m:.12} );
+ // 우측 유틸리티 캐비닛
+ B(g,'Right_Utility_Cabinet',1.8,3.6,1.6,3.2,1.9,.2,WHT,{m:.12,r:.5} );
+ B(g,'Right_Upper_Box',1.5,1.2,1.3,3.2,3.5,.3,WHT,{m:.15} );
+ B(g,'Right_Vent',.7,.55,.04,3.2,2.6,1.0,DRK,{m:.3} );
+ B(g,'Right_Lower_Door',1.5,1.5,.04,3.2,1.0,1.0,WHT,{m:.12} );
+ // 우측 추가 모듈·배관
+ B(g,'Far_Right_Module',1.2,3.2,1.2,4.6,1.7,.4,WHT,{m:.12,r:.5} );
+ pipe(g,'Side_Gas_Line',.04,1.6,3.5,2.8,1.2,PIPE_B,'y' );
+ pipe(g,'Side_Exhaust',.06,1.4,4.0,2.5,.8,PIPE_Y,'z' );
+ C(g,'Dry_Vacuum_Pump',.35,1.0,4.5,.6,-.3,0x5a6570,{m:.7,r:.35} );
+ // 하부 베이스 & 풋
+ B(g,'Base_Plinth',8.5,.15,2.4,0,.08,0,NAV,{m:.2} );
+ [[-3.8,-.9],[3.8,-.9],[-3.8,.9],[3.8,.9],[-1.5,-.9],[1.5,-.9]].forEach(([x,z],i)=>C(g,'Leveling_Foot_'+(i+1),.1,.12,x,.06,z,DRK,{m:.5,s:12}));
+ // 후면 프레임
+ B(g,'Rear_Frame',8.0,.2,2.6,0,4.0,-1.2,NAV,{m:.2,r:.45} );
+ return [10.2,5.4,0,.25]}
 function cvd(g ){
- efem(g,0,1.7,5.2,2 );
- C(g,'Transfer_Chamber',1.3,1.0,0,1.4,-.4,METAL,{s:8,m:.7} );C(g,'Mainframe_Base',1.25,.7,0,.35,-.4,white,{s:8} );
- [[-2.4,-.4],[2.4,-.4],[0,-2.5]].forEach(([x,z],k )=>{const n=k+1;
-  B(g,'Chamber_Base_'+n,1.7,.8,1.7,x,.4,z,white );B(g,'Reaction_Chamber_'+n,1.6,1.0,1.6,x,1.3,z,steel,{m:.8,r:.3} );
-  B(g,'Chamber_Lid_'+n,1.7,.2,1.7,x,1.9,z,METAL,{m:.7} );C(g,'Showerhead_Plate_'+n,.5,.06,x,1.78,z,gray,{m:.9} );
-  Tr(g,'Heater_Ring_'+n,.62,.06,x,1.0,z,orange,{e:0x7a2a08} );C(g,'Gas_Inlet_Manifold_'+n,.15,.7,x,2.35,z,steel,{m:.8} );
-  B(g,'Remote_Plasma_Unit_'+n,.6,.5,.6,x,2.95,z,EQC )} );
- B(g,'Gas_Panel',1.2,2.1,.9,-4.3,1.05,-.6,EQC );B(g,'Pump_Module_A',.9,.9,.9,4.3,.45,-1.0,0x5e6a76 );B(g,'Pump_Module_B',.9,.9,.9,4.3,.45,.3,0x5e6a76 );
- pipe(g,'Exhaust_Line',.1,2.6,3.5,.5,-.5,PIPE_Y,'x' );tower(g,2.6,2.3,1.0 );
- return [9.6,6.4,0,-.5]}
+ const WHT=0xf2f5f8,DRK=0x2a3038,NAV=0x1e2a38,SS=0x929da5,SIG_R=0xd93829,SIG_Y=0xf2b705,SIG_G=0x27ae60,BLU=0x1b6ca8;
+ // 좌측 컨트롤 캐비닛 (Applied Materials Producer SE)
+ B(g,'Left_Control_Cabinet',2.0,4.0,1.5,-4.0,2.05,0,WHT,{m:.12,r:.5} );
+ B(g,'Left_Upper_Door',1.7,1.6,.04,-4.0,3.1,.76,WHT,{m:.12} );
+ B(g,'Left_Lower_Door',1.7,1.5,.04,-4.0,1.1,.76,WHT,{m:.12} );
+ B(g,'Left_Vent_L',.65,.35,.03,-4.15,.55,.76,DRK,{m:.3} );
+ B(g,'Left_Vent_R',.65,.35,.03,-3.5,.55,.76,DRK,{m:.3} );
+ B(g,'Control_Panel_Display',.9,.65,.05,-3.55,2.45,.78,0x0a1a2e,{e:0x1e5fa8,r:.2} );
+ C(g,'E_Stop',.07,.06,-3.9,1.85,.8,SIG_R,{ax:'z',m:.1,e:0x5a0d0a} );
+ C(g,'Green_Btn',.045,.04,-3.65,1.85,.8,SIG_G,{ax:'z',m:.1,e:0x0a4a20} );
+ C(g,'Blue_Btn',.045,.04,-3.45,1.85,.8,BLU,{ax:'z',m:.1,e:0x0a2a5a} );
+ B(g,'Keyboard_Tray',1.3,.06,.4,-3.55,1.55,.95,DRK,{m:.3} );
+ // 시그널 타워
+ B(g,'Signal_Tower_Pole',.05,1.1,.05,-4.85,4.2,.3,gray );
+ [[SIG_R,0],[SIG_Y,.14],[SIG_G,.28]].forEach(([c,dy],i)=>C(g,'Signal_Tower_Lamp_'+(i+1),.06,.12,-4.85,4.8+dy,.3,c,{e:c,m:0,r:.25}));
+ // 중앙 메인 트랜스퍼/공정 챔버 클러스터
+ C(g,'Transfer_Chamber',1.5,1.3,0,1.9,.15,SS,{m:.9,r:.18,s:28} );
+ C(g,'Mainframe_Base',1.55,.5,0,.85,.15,WHT,{m:.15,r:.45,s:24} );
+ // 중앙 뷰포트
+ B(g,'Viewport_Window',.55,.55,.08,0,2.0,1.65,0x0a1018,{e:0x304050} );
+ B(g,'Viewport_Frame',.7,.7,.06,0,2.0,1.62,SS,{m:.8,r:.25} );
+ // 상부 공정 챔버 3기 (좌·중·우)
+ [[-1.8,.3],[0,.6],[1.8,.3]].forEach(([x,z],k)=>{
+  const n=k+1;
+  C(g,'Reaction_Chamber_'+n,1.0,1.1,x,2.8,z,SS,{m:.9,r:.18,s:28} );
+  C(g,'Chamber_Lid_'+n,1.1,.25,x,3.45,z,SS,{m:.88,r:.2,s:24} );
+  C(g,'Showerhead_Plate_'+n,.45,.08,x,2.55,z,gray,{m:.9} );
+  Tr(g,'Heater_Ring_'+n,.55,.05,x,2.2,z,0xff7a2f,{e:0x7a2a08} );
+  C(g,'Gas_Inlet_Manifold_'+n,.12,.55,x,3.7,z,SS,{m:.8,s:12} );
+  B(g,'Remote_Plasma_Unit_'+n,.5,.4,.5,x,4.15,z,WHT,{m:.15} );
+ });
+ // 챔버 상단 복잡한 배관·밸브
+ pipe(g,'Top_Gas_1',.05,1.2,-1.2,4.0,.8,PIPE_B,'y' );
+ pipe(g,'Top_Gas_2',.05,1.0,1.2,3.9,.6,PIPE_B,'y' );
+ pipe(g,'Top_Exhaust_1',.07,1.4,0,4.3,1.0,SS,'z' );
+ pipe(g,'Top_Exhaust_2',.06,1.1,2.0,3.8,.5,SS,'x' );
+ B(g,'Upper_Manifold_Box',1.2,.6,.9,0,4.4,.3,WHT,{m:.15} );
+ // 중앙 하부 캐비닛
+ for(let i=0;i<5;i++){
+  const x=-2.4+i*1.2;
+  B(g,'Lower_Cabinet_'+(i+1),1.1,1.1,1.5,x,.6,.2,WHT,{m:.12,r:.5} );
+  B(g,'Lower_Vent_'+(i+1),.5,.28,.03,x,.5,.95,DRK,{m:.3} );
+ }
+ // 우측 유틸리티 타워
+ B(g,'Right_Utility_Tower',1.6,3.8,1.4,3.8,2.0,.3,WHT,{m:.12,r:.5} );
+ B(g,'Right_Upper_Door',1.3,1.4,.04,3.8,3.0,1.0,WHT,{m:.12} );
+ B(g,'Right_Window',.35,.7,.04,3.8,2.3,1.02,0x1a2a3a,{t:.3,m:.1} );
+ B(g,'Right_Lower_Door',1.3,1.3,.04,3.8,1.0,1.0,WHT,{m:.12} );
+ // 우측 하단 펌프 모듈
+ B(g,'Pump_Module',1.3,.7,1.0,4.5,.4,.8,WHT,{m:.15} );
+ C(g,'Pump_Body',.35,.55,4.5,.55,1.0,0x5a6570,{m:.7,r:.35} );
+ // 측면 가스/냉각 배관
+ pipe(g,'Side_Coolant',.05,2.0,3.0,2.5,1.2,PIPE_B,'y' );
+ pipe(g,'Side_Gas_Line',.04,1.8,2.5,2.8,-.5,PIPE_B,'z' );
+ pipe(g,'Exhaust_Line',.08,2.2,4.2,1.5,-.3,PIPE_Y,'x' );
+ // 베이스 & 레벨링 풋
+ B(g,'Base_Plinth',9.5,.12,2.6,0,.06,0,NAV,{m:.2} );
+ [[-4.2,-1.0],[4.2,-1.0],[-4.2,1.0],[4.2,1.0],[-1.5,-1.0],[1.5,-1.0],[3.0,1.0]].forEach(([x,z],i)=>
+  C(g,'Leveling_Foot_'+(i+1),.1,.12,x,.06,z,DRK,{m:.5,s:12}));
+ // 후면 프레임
+ B(g,'Rear_Frame',9.0,.2,2.8,0,4.2,-1.3,NAV,{m:.2,r:.45} );
+ return [11.0,5.8,0,.2]}
 function pvd(g ){
  efem(g,0,1.7,5.2,2 );
  C(g,'Transfer_Chamber',1.3,1.0,0,1.4,-.4,METAL,{s:12,m:.7} );C(g,'Mainframe_Base',1.25,.7,0,.35,-.4,white,{s:12} );
@@ -383,10 +495,10 @@ function bonder(g ){
  return [4.4,2.4]}
 const EQ=[
  {n:1,proc:'웨이퍼 제조',name:'초크랄스키 단결정 성장로',short:'단결정 성장로',eq:'Czochralski_Furnace',fn:czochralski,side:-1,z:-27},
- {n:2,proc:'산화',name:'산화 Furnace',short:'산화 Furnace',eq:'산화_Furnace',fn:oxidation,side:-1,z:-9},
+ {n:2,proc:'산화',name:'수직 산화로',short:'수직 산화로',eq:'Vertical_Oxidation_Furnace',fn:oxidation,side:-1,z:-9},
  {n:3,proc:'포토리소그래피',name:'노광 장비',short:'노광 장비',eq:'Lithography_Scanner',fn:litho,side:-1,z:9},
- {n:4,proc:'식각',name:'플라즈마 식각 장비',short:'플라즈마 식각 장비',eq:'Plasma_Etcher',fn:etcher,side:-1,z:27},
- {n:5,proc:'박막 증착',name:'CVD 장비명',short:'CVD 장비명',eq:'CVD_장비명',fn:cvd,side:1,z:-27},
+ {n:4,proc:'식각',name:'ASher Dry Etch',short:'ASher Dry Etch',eq:'Lam_ASher_Dry_Etch',fn:etcher,side:-1,z:27},
+ {n:5,proc:'박막 증착',name:'Producer SE CVD',short:'Producer SE',eq:'Applied_Producer_SE',fn:cvd,side:1,z:-27},
  {n:6,proc:'금속 배선',name:'PVD 스퍼터링 장비명',short:'PVD 스퍼터링',eq:'PVD_Sputtering',fn:pvd,side:1,z:-9},
  {n:7,proc:'EDS 검사',name:'웨이퍼 프로버',short:'웨이퍼 프로버',eq:'Wafer_Prober',fn:prober,side:1,z:9},
  {n:8,proc:'패키징',name:'와이어 본더',short:'와이어 본더',eq:'Wire_Bonder',fn:bonder,side:1,z:27}];
